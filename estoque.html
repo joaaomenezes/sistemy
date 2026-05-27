@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexoERP — Estoque</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --bg:      #0a0d12;
+      --surface: #10151e;
+      --card:    #141b27;
+      --border:  #1e2a3a;
+      --accent:  #00c896;
+      --accent2: #0077ff;
+      --warn:    #ff6b35;
+      --danger:  #ff4757;
+      --text:    #e8edf5;
+      --muted:   #6b7f96;
+      --sidebar: 240px;
+      --sidebar-c: 68px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; display: flex; min-height: 100vh; overflow-x: hidden; }
+
+    /* ══ SIDEBAR ══ */
+    .sidebar { width: var(--sidebar); min-height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; transition: width .3s cubic-bezier(.4,0,.2,1); overflow: hidden; }
+    .sidebar.collapsed { width: var(--sidebar-c); }
+    .sidebar-brand { display: flex; align-items: center; gap: 12px; padding: 20px 18px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    .brand-icon { width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0; background: linear-gradient(135deg, var(--accent), #008a60); display: flex; align-items: center; justify-content: center; font-family: 'Syne',sans-serif; font-weight: 800; font-size: 13px; color: #021c14; }
+    .brand-text { font-family: 'Syne',sans-serif; font-size: 18px; font-weight: 800; letter-spacing: -.5px; transition: opacity .2s; }
+    .brand-text span { color: var(--accent); }
+    .sidebar.collapsed .brand-text { opacity: 0; }
+    .sidebar-toggle { position: absolute; top: 22px; right: -12px; width: 24px; height: 24px; border-radius: 50%; background: var(--card); border: 1px solid var(--border); color: var(--muted); font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; transition: color .2s, border-color .2s; }
+    .sidebar-toggle:hover { color: var(--text); border-color: var(--accent); }
+    .sidebar-section { padding: 10px 12px; }
+    .sidebar-section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); padding: 8px 6px 4px; white-space: nowrap; transition: opacity .2s; }
+    .sidebar.collapsed .sidebar-section-label { opacity: 0; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 9px 10px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 13.5px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: background .18s, color .18s; margin-bottom: 2px; }
+    .nav-item i { font-size: 17px; flex-shrink: 0; }
+    .nav-item:hover { background: var(--card); color: var(--text); }
+    .nav-item.active { background: rgba(0,200,150,.1); color: var(--accent); }
+    .nav-item .badge { margin-left: auto; flex-shrink: 0; background: var(--accent2); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 100px; }
+    .nav-label { transition: opacity .2s; }
+    .sidebar.collapsed .nav-label { opacity: 0; }
+    .sidebar.collapsed .badge { display: none; }
+    .sidebar-footer { margin-top: auto; padding: 12px; border-top: 1px solid var(--border); }
+    .user-row { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; transition: background .18s; }
+    .user-row:hover { background: var(--card); }
+    .user-avatar { width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0; background: linear-gradient(135deg,#2d5298,#1a3a7a); display: flex; align-items: center; justify-content: center; font-family: 'Syne',sans-serif; font-weight: 700; font-size: 12px; color: #fff; }
+    .user-info { overflow: hidden; transition: opacity .2s; }
+    .sidebar.collapsed .user-info { opacity: 0; }
+    .user-name { font-weight: 600; font-size: 13px; white-space: nowrap; }
+    .user-role { color: var(--muted); font-size: 11px; }
+
+    /* ══ MAIN ══ */
+    .main { margin-left: var(--sidebar); flex: 1; display: flex; flex-direction: column; min-height: 100vh; transition: margin-left .3s cubic-bezier(.4,0,.2,1); }
+    .main.collapsed { margin-left: var(--sidebar-c); }
+    .topbar { height: 64px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; position: sticky; top: 0; z-index: 50; }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .page-title { font-family: 'Syne',sans-serif; font-size: 18px; font-weight: 700; letter-spacing: -.5px; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .icon-btn { width: 36px; height: 36px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); color: var(--muted); font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: color .18s, border-color .18s; }
+    .icon-btn:hover { color: var(--text); border-color: var(--accent); }
+    .icon-btn .dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--danger); border: 2px solid var(--surface); }
+
+    /* ══ CONTENT ══ */
+    .content { padding: 28px; flex: 1; }
+    .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+    .page-header h1 { font-family: 'Syne',sans-serif; font-size: 26px; font-weight: 800; letter-spacing: -1px; }
+    .page-header p { color: var(--muted); margin-top: 4px; font-size: 13px; }
+    .header-actions { display: flex; gap: 10px; }
+    .btn-sm { padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; font-family: 'DM Sans',sans-serif; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap; border: none; text-decoration: none; }
+    .btn-primary-sm { background: var(--accent); color: #021c14; }
+    .btn-primary-sm:hover { opacity: .88; }
+    .btn-ghost-sm { background: none; border: 1px solid var(--border) !important; color: var(--text); }
+    .btn-ghost-sm:hover { border-color: var(--muted) !important; }
+    .btn-warn-sm { background: rgba(255,107,53,.12); border: 1px solid rgba(255,107,53,.3) !important; color: var(--warn); }
+    .btn-warn-sm:hover { background: rgba(255,107,53,.2); }
+
+    /* KPI strip */
+    .kpi-strip { display: grid; grid-template-columns: repeat(5,1fr); gap: 14px; margin-bottom: 24px; }
+    .kpi-mini { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; display: flex; align-items: center; gap: 14px; transition: border-color .25s; cursor: default; }
+    .kpi-mini:hover { border-color: rgba(0,200,150,.2); }
+    .kpi-mini-icon { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .kpi-mini-icon.g { background: rgba(0,200,150,.1); color: var(--accent); }
+    .kpi-mini-icon.b { background: rgba(0,119,255,.1); color: var(--accent2); }
+    .kpi-mini-icon.o { background: rgba(255,107,53,.1); color: var(--warn); }
+    .kpi-mini-icon.r { background: rgba(255,71,87,.1); color: var(--danger); }
+    .kpi-mini-icon.p { background: rgba(168,85,247,.1); color: #a855f7; }
+    .kpi-mini-val { font-family: 'Syne',sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -1px; }
+    .kpi-mini-lbl { color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+    /* ══ ALERTAS ══ */
+    .alertas-strip { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .alerta-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 16px; border-radius: 10px;
+      font-size: 13px; cursor: pointer;
+      transition: opacity .2s;
+      animation: slideDown .3s ease;
+    }
+    @keyframes slideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:none} }
+    .alerta-item:hover { opacity: .85; }
+    .alerta-item.critico { background: rgba(255,71,87,.08); border: 1px solid rgba(255,71,87,.2); }
+    .alerta-item.baixo   { background: rgba(255,107,53,.08); border: 1px solid rgba(255,107,53,.2); }
+    .alerta-item i { font-size: 16px; flex-shrink: 0; }
+    .alerta-item.critico i { color: var(--danger); }
+    .alerta-item.baixo   i { color: var(--warn); }
+    .alerta-txt { flex: 1; }
+    .alerta-txt strong { font-weight: 600; }
+    .alerta-txt span { color: var(--muted); margin-left: 6px; }
+    .alerta-dismiss { color: var(--muted); font-size: 14px; padding: 4px; border-radius: 5px; transition: color .15s; }
+    .alerta-dismiss:hover { color: var(--text); }
+
+    /* ══ TABS ══ */
+    .tabs-row { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+    .tab-btn { padding: 10px 20px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .18s, border-color .18s; display: flex; align-items: center; gap: 7px; white-space: nowrap; }
+    .tab-btn i { font-size: 14px; }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; animation: fadeIn .25s ease; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+
+    /* Toolbar */
+    .toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+    .search-input { flex: 1; min-width: 200px; max-width: 340px; display: flex; align-items: center; gap: 8px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 9px 14px; transition: border-color .2s; }
+    .search-input:focus-within { border-color: var(--accent); }
+    .search-input input { background: none; border: none; outline: none; color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 13px; width: 100%; }
+    .search-input input::placeholder { color: var(--muted); }
+    .filter-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-btn { padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; background: var(--card); border: 1px solid var(--border); color: var(--muted); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all .18s; }
+    .filter-btn:hover { color: var(--text); border-color: var(--muted); }
+    .filter-btn.active { background: rgba(0,200,150,.08); border-color: var(--accent); color: var(--accent); }
+    .select-filter { padding: 8px 12px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 12px; outline: none; cursor: pointer; }
+    .select-filter option { background: var(--card); }
+
+    /* ══ TABLE ══ */
+    .table-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th { padding: 13px 16px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); background: var(--surface); border-bottom: 1px solid var(--border); white-space: nowrap; cursor: pointer; user-select: none; }
+    thead th:hover { color: var(--text); }
+    tbody td { padding: 13px 16px; border-bottom: 1px solid rgba(30,42,58,.7); vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr { transition: background .15s; cursor: pointer; }
+    tbody tr:hover td { background: rgba(255,255,255,.025); }
+
+    .prod-cell { display: flex; align-items: center; gap: 12px; }
+    .prod-emoji { width: 36px; height: 36px; border-radius: 9px; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .prod-name { font-weight: 600; font-size: 13px; }
+    .prod-sku  { color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+    /* stock bar */
+    .stock-cell { min-width: 140px; }
+    .stock-nums { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+    .stock-val { font-family: 'Syne',sans-serif; font-size: 14px; font-weight: 800; }
+    .stock-val.ok   { color: var(--accent); }
+    .stock-val.low  { color: var(--warn); }
+    .stock-val.zero { color: var(--danger); }
+    .stock-minmax { font-size: 10px; color: var(--muted); }
+    .stock-bar-bg { height: 5px; background: var(--border); border-radius: 100px; overflow: hidden; }
+    .stock-bar-fill { height: 100%; border-radius: 100px; transition: width .4s; }
+
+    .status-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 100px; font-size: 11px; font-weight: 600; }
+    .status-pill::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; }
+    .status-pill.ok   { background: rgba(0,200,150,.1); color: var(--accent); }
+    .status-pill.low  { background: rgba(255,107,53,.1); color: var(--warn); }
+    .status-pill.zero { background: rgba(255,71,87,.1); color: var(--danger); }
+
+    .action-cell { display: flex; gap: 6px; opacity: 0; transition: opacity .15s; }
+    tbody tr:hover .action-cell { opacity: 1; }
+    .act-btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); font-size: 13px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .15s; }
+    .act-btn:hover { color: var(--text); border-color: var(--muted); }
+    .act-btn.up:hover  { color: var(--accent);  border-color: var(--accent); }
+    .act-btn.down:hover{ color: var(--danger);  border-color: var(--danger); }
+    .act-btn.adj:hover { color: var(--accent2); border-color: var(--accent2); }
+
+    .table-footer { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; }
+    .pagination { display: flex; gap: 4px; }
+    .pg-btn { width: 30px; height: 30px; border-radius: 6px; border: 1px solid var(--border); background: none; color: var(--muted); font-size: 12px; font-family: 'DM Sans',sans-serif; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .15s; }
+    .pg-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .pg-btn.active { background: var(--accent); border-color: var(--accent); color: #021c14; font-weight: 700; }
+
+    /* ══ MOVIMENTAÇÕES ══ */
+    .mov-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .mov-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .mov-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .mov-title { font-family: 'Syne',sans-serif; font-size: 15px; font-weight: 700; }
+    .mov-list { padding: 0 0 8px; }
+    .mov-item { display: flex; align-items: center; gap: 12px; padding: 11px 20px; border-bottom: 1px solid rgba(30,42,58,.5); transition: background .15s; cursor: default; }
+    .mov-item:last-child { border-bottom: none; }
+    .mov-item:hover { background: rgba(255,255,255,.02); }
+    .mov-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .mov-icon.entrada { background: rgba(0,200,150,.1); color: var(--accent); }
+    .mov-icon.saida   { background: rgba(255,71,87,.1);  color: var(--danger); }
+    .mov-icon.ajuste  { background: rgba(0,119,255,.1);  color: var(--accent2); }
+    .mov-icon.transf  { background: rgba(168,85,247,.1); color: #a855f7; }
+    .mov-info { flex: 1; min-width: 0; }
+    .mov-name { font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mov-meta { color: var(--muted); font-size: 11px; margin-top: 2px; }
+    .mov-qty { font-family: 'Syne',sans-serif; font-size: 15px; font-weight: 800; text-align: right; }
+    .mov-qty.pos { color: var(--accent); }
+    .mov-qty.neg { color: var(--danger); }
+    .mov-time { color: var(--muted); font-size: 10px; text-align: right; margin-top: 2px; }
+
+    /* ══ DEPOSITOS ══ */
+    .dep-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .dep-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; transition: border-color .2s; }
+    .dep-card:hover { border-color: rgba(0,200,150,.25); }
+    .dep-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+    .dep-icon { width: 42px; height: 42px; border-radius: 10px; background: rgba(0,200,150,.1); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .dep-badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 100px; background: rgba(0,200,150,.1); color: var(--accent); }
+    .dep-name { font-family: 'Syne',sans-serif; font-size: 16px; font-weight: 800; letter-spacing: -.3px; margin-bottom: 4px; }
+    .dep-addr { color: var(--muted); font-size: 12px; margin-bottom: 16px; }
+    .dep-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .dep-stat { background: var(--surface); border-radius: 8px; padding: 10px 12px; }
+    .dep-stat-val { font-family: 'Syne',sans-serif; font-size: 18px; font-weight: 800; }
+    .dep-stat-lbl { color: var(--muted); font-size: 10px; margin-top: 2px; }
+
+    /* ══ MODAL MOVIMENTAÇÃO ══ */
+    .modal-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,.65); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .25s; }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal { background: var(--card); border: 1px solid var(--border); border-radius: 18px; width: 100%; max-width: 520px; display: flex; flex-direction: column; transform: translateY(20px) scale(.97); transition: transform .3s cubic-bezier(.34,1.2,.64,1); overflow: hidden; }
+    .modal-overlay.open .modal { transform: none; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); }
+    .modal-header h2 { font-family: 'Syne',sans-serif; font-size: 19px; font-weight: 800; letter-spacing: -.5px; }
+    .modal-close { width: 30px; height: 30px; border-radius: 7px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .15s; }
+    .modal-close:hover { color: var(--text); border-color: var(--muted); }
+    .modal-body { padding: 24px; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* tipo de movimentação */
+    .mov-type-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 20px; }
+    .mov-type-btn { padding: 12px 8px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; text-align: center; transition: all .18s; }
+    .mov-type-btn:hover { border-color: var(--muted); }
+    .mov-type-btn.sel { border-color: var(--accent); background: rgba(0,200,150,.08); }
+    .mov-type-btn i { font-size: 20px; display: block; margin-bottom: 5px; color: var(--muted); transition: color .18s; }
+    .mov-type-btn.sel i { color: var(--accent); }
+    .mov-type-btn span { font-size: 11px; font-weight: 600; color: var(--muted); transition: color .18s; }
+    .mov-type-btn.sel span { color: var(--text); }
+
+    /* form elements */
+    .form-group { margin-bottom: 16px; }
+    label.lbl { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-bottom: 7px; }
+    .inp-wrap { position: relative; display: flex; align-items: center; }
+    .inp-wrap i.pre { position: absolute; left: 12px; color: var(--muted); font-size: 15px; pointer-events: none; }
+    input.field, select.field, textarea.field { width: 100%; padding: 10px 12px 10px 36px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 13px; outline: none; transition: border-color .2s, box-shadow .2s; }
+    input.field.ni, select.field.ni { padding-left: 12px; }
+    select.field { cursor: pointer; -webkit-appearance: none; }
+    select.field option { background: var(--card); }
+    input.field:focus, select.field:focus, textarea.field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,200,150,.08); }
+    input.field::placeholder { color: var(--muted); }
+
+    /* qty big input */
+    .qty-big-wrap { display: flex; align-items: center; gap: 12px; }
+    .qty-big-btn { width: 42px; height: 42px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .15s; flex-shrink: 0; }
+    .qty-big-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .qty-big-input { flex: 1; padding: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; color: var(--text); font-family: 'Syne',sans-serif; font-size: 22px; font-weight: 800; text-align: center; outline: none; transition: border-color .2s; }
+    .qty-big-input:focus { border-color: var(--accent); }
+
+    /* produto selecionado preview */
+    .prod-preview { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; }
+    .prod-preview .pp-emoji { font-size: 28px; }
+    .prod-preview .pp-name { font-weight: 600; font-size: 14px; }
+    .prod-preview .pp-stock { color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .prod-preview .pp-stock strong { color: var(--accent); }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .btn-cancel { padding: 10px 20px; border-radius: 9px; border: 1px solid var(--border); background: none; color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: border-color .18s; }
+    .btn-cancel:hover { border-color: var(--muted); }
+    .btn-save { padding: 10px 24px; border-radius: 9px; border: none; background: var(--accent); color: #021c14; font-family: 'DM Sans',sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: opacity .18s; }
+    .btn-save:hover { opacity: .88; }
+
+    /* toast */
+    .toast { position: fixed; bottom: 28px; right: 28px; z-index: 2000; background: var(--card); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; gap: 12px; font-size: 13px; box-shadow: 0 12px 40px rgba(0,0,0,.4); transform: translateY(80px); opacity: 0; transition: transform .4s cubic-bezier(.34,1.2,.64,1), opacity .3s; }
+    .toast.show { transform: none; opacity: 1; }
+    .toast i { color: var(--accent); font-size: 20px; }
+
+    /* empty */
+    .empty-state { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 60px 24px; text-align: center; }
+    .empty-state.show { display: flex; }
+    .empty-state i { font-size: 44px; color: var(--border); margin-bottom: 14px; }
+    .empty-state h3 { font-family: 'Syne',sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .empty-state p { color: var(--muted); font-size: 13px; }
+
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    @media(max-width:1100px) { .kpi-strip { grid-template-columns: repeat(3,1fr); } .dep-grid { grid-template-columns: 1fr 1fr; } }
+    @media(max-width:900px) { .sidebar { width: var(--sidebar-c); } .main { margin-left: var(--sidebar-c); } .kpi-strip { grid-template-columns: repeat(2,1fr); } .mov-grid { grid-template-columns: 1fr; } }
+  
+    /* ── Hover automático da sidebar ── */
+    .sidebar { transition: width .28s cubic-bezier(.4,0,.2,1); }
+    .sidebar.collapsed:hover { width: var(--sidebar); }
+    .sidebar.collapsed:hover .brand-text,
+    .sidebar.collapsed:hover .sidebar-section-label,
+    .sidebar.collapsed:hover .nav-label,
+    .sidebar.collapsed:hover .badge,
+    .sidebar.collapsed:hover .user-info { opacity: 1; display: flex;flex-direction: column; }
+
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar collapsed" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">N</div>
+    <span class="brand-text">Nexo<span>ERP</span></span>
+  </div>
+  <div class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle">
+    <i class="bi bi-chevron-right" id="toggleIcon"></i>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Principal</div>
+    <a href="dashboard.html" class="nav-item"><i class="bi bi-grid-1x2-fill"></i><span class="nav-label">Dashboard</span></a>
+    <a href="pdv.html" class="nav-item"><i class="bi bi-display"></i><span class="nav-label">PDV</span></a>
+    <a href="vendas.html" class="nav-item"><i class="bi bi-cart4"></i><span class="nav-label">Vendas</span><span class="badge">12</span></a>
+    <a href="clientes.html" class="nav-item"><i class="bi bi-people-fill"></i><span class="nav-label">Clientes</span></a>
+    <a href="produtos.html" class="nav-item"><i class="bi bi-box-seam-fill"></i><span class="nav-label">Produtos</span></a>
+    <a href="estoque.html" class="nav-item active"><i class="bi bi-stack"></i><span class="nav-label">Estoque</span></a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Financeiro</div>
+    <a href="#" class="nav-item"><i class="bi bi-graph-up-arrow"></i><span class="nav-label">Relatórios</span></a>
+    <a href="#" class="nav-item"><i class="bi bi-credit-card-2-back-fill"></i><span class="nav-label">Financeiro</span></a>
+    <a href="#" class="nav-item"><i class="bi bi-receipt-cutoff"></i><span class="nav-label">Fiscal / NF-e</span></a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Sistema</div>
+    <a href="#" class="nav-item"><i class="bi bi-briefcase-fill"></i><span class="nav-label">Parceiros</span></a>
+    <a href="#" class="nav-item"><i class="bi bi-gear-fill"></i><span class="nav-label">Configurações</span></a>
+  </div>
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="user-avatar">JD</div>
+      <div class="user-info">
+        <div class="user-name">João Desenvolvedor</div>
+        <div class="user-role">Administrador</div>
+      </div>
+      <i class="bi bi-three-dots-vertical" style="color:var(--muted);margin-left:auto;font-size:15px;flex-shrink:0"></i>
+    </div>
+    <button class="nav-item" type="button" onclick="NexoAuth.confirmLogout()" style="width:100%;border:0;background:transparent;margin-top:8px">
+      <i class="bi bi-box-arrow-left"></i><span class="nav-label">Sair</span>
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main collapsed" id="mainContent">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="page-title">Estoque</span>
+      <span style="color:var(--muted);font-size:12px">/</span>
+      <span style="color:var(--muted);font-size:13px">Visão Geral</span>
+    </div>
+    <div class="topbar-right">
+      <div class="icon-btn" title="Alertas de estoque"><i class="bi bi-bell"></i><div class="dot"></div></div>
+      <div class="icon-btn"><i class="bi bi-question-circle"></i></div>
+      <div class="user-avatar">JD</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <h1>Estoque</h1>
+        <p>Controle de entradas, saídas, ajustes e posição por depósito.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-sm btn-ghost-sm"><i class="bi bi-download"></i> Exportar</button>
+        <button class="btn-sm btn-ghost-sm" onclick="openMov(null,'transferencia')"><i class="bi bi-arrow-left-right"></i> Transferir</button>
+        <button class="btn-sm btn-warn-sm" onclick="openMov(null,'ajuste')"><i class="bi bi-sliders"></i> Ajuste</button>
+        <button class="btn-sm btn-primary-sm" onclick="openMov(null,'entrada')"><i class="bi bi-plus-lg"></i> Entrada</button>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-strip">
+      <div class="kpi-mini"><div class="kpi-mini-icon g"><i class="bi bi-boxes"></i></div><div><div class="kpi-mini-val" id="kpi-total">0</div><div class="kpi-mini-lbl">Itens em estoque</div></div></div>
+      <div class="kpi-mini"><div class="kpi-mini-icon b"><i class="bi bi-currency-dollar"></i></div><div><div class="kpi-mini-val" id="kpi-valor">R$ 0</div><div class="kpi-mini-lbl">Valor em estoque</div></div></div>
+      <div class="kpi-mini"><div class="kpi-mini-icon o"><i class="bi bi-exclamation-triangle-fill"></i></div><div><div class="kpi-mini-val" id="kpi-baixo">0</div><div class="kpi-mini-lbl">Estoque baixo</div></div></div>
+      <div class="kpi-mini"><div class="kpi-mini-icon r"><i class="bi bi-x-circle-fill"></i></div><div><div class="kpi-mini-val" id="kpi-zerado">0</div><div class="kpi-mini-lbl">Sem estoque</div></div></div>
+      <div class="kpi-mini"><div class="kpi-mini-icon p"><i class="bi bi-arrow-down-up"></i></div><div><div class="kpi-mini-val" id="kpi-movs">0</div><div class="kpi-mini-lbl">Movimentações hoje</div></div></div>
+    </div>
+
+    <!-- Alertas -->
+    <div class="alertas-strip" id="alertasStrip"></div>
+
+    <!-- Tabs -->
+    <div class="tabs-row">
+      <div class="tab-btn active" onclick="switchTab(this,'t-posicao')"><i class="bi bi-list-ul"></i> Posição de Estoque</div>
+      <div class="tab-btn" onclick="switchTab(this,'t-movimentacoes')"><i class="bi bi-arrow-down-up"></i> Movimentações</div>
+      <div class="tab-btn" onclick="switchTab(this,'t-depositos')"><i class="bi bi-building"></i> Depósitos</div>
+    </div>
+
+    <!-- TAB: POSIÇÃO -->
+    <div class="tab-panel active" id="t-posicao">
+      <div class="toolbar">
+        <div class="search-input">
+          <i class="bi bi-search" style="color:var(--muted)"></i>
+          <input type="text" id="searchInput" placeholder="Buscar produto, SKU..." oninput="applyFilters()">
+        </div>
+        <div class="filter-group">
+          <button class="filter-btn active" onclick="setFilter(this,'todos')">Todos</button>
+          <button class="filter-btn" onclick="setFilter(this,'ok')">Normal</button>
+          <button class="filter-btn" onclick="setFilter(this,'baixo')"><i class="bi bi-exclamation-triangle"></i> Baixo</button>
+          <button class="filter-btn" onclick="setFilter(this,'zero')"><i class="bi bi-x-circle"></i> Zerado</button>
+        </div>
+        <select class="select-filter" id="depFilter" onchange="applyFilters()">
+          <option value="">Todos os depósitos</option>
+          <option>Depósito Principal</option>
+          <option>Loja 1</option>
+          <option>Loja 2</option>
+        </select>
+      </div>
+
+      <div class="table-card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th onclick="sortStock('nome')">Produto ↕</th>
+                <th>Depósito</th>
+                <th onclick="sortStock('estoque')">Posição ↕</th>
+                <th>Status</th>
+                <th>Última entrada</th>
+                <th>Fornecedor</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="stockTableBody"></tbody>
+          </table>
+          <div class="empty-state" id="emptyStock">
+            <i class="bi bi-stack"></i>
+            <h3>Nenhum produto encontrado</h3>
+            <p>Tente ajustar os filtros de busca.</p>
+          </div>
+        </div>
+        <div class="table-footer">
+          <span id="tableInfo">—</span>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: MOVIMENTAÇÕES -->
+    <div class="tab-panel" id="t-movimentacoes">
+      <div class="toolbar" style="margin-bottom:20px">
+        <div class="search-input">
+          <i class="bi bi-search" style="color:var(--muted)"></i>
+          <input type="text" id="movSearch" placeholder="Buscar movimentação..." oninput="renderMovs()">
+        </div>
+        <div class="filter-group">
+          <button class="filter-btn active" onclick="setMovFilter(this,'todos')">Todas</button>
+          <button class="filter-btn" onclick="setMovFilter(this,'entrada')"><i class="bi bi-arrow-down-circle"></i> Entradas</button>
+          <button class="filter-btn" onclick="setMovFilter(this,'saida')"><i class="bi bi-arrow-up-circle"></i> Saídas</button>
+          <button class="filter-btn" onclick="setMovFilter(this,'ajuste')"><i class="bi bi-sliders"></i> Ajustes</button>
+          <button class="filter-btn" onclick="setMovFilter(this,'transferencia')"><i class="bi bi-arrow-left-right"></i> Transferências</button>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Produto</th>
+                <th>Qtd</th>
+                <th>Depósito</th>
+                <th>Motivo</th>
+                <th>Operador</th>
+                <th>Data/Hora</th>
+              </tr>
+            </thead>
+            <tbody id="movsTableBody"></tbody>
+          </table>
+          <div class="empty-state" id="emptyMovs">
+            <i class="bi bi-arrow-down-up"></i>
+            <h3>Nenhuma movimentação</h3>
+            <p>Registre uma entrada ou ajuste para começar.</p>
+          </div>
+        </div>
+        <div class="table-footer">
+          <span id="movsInfo">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: DEPÓSITOS -->
+    <div class="tab-panel" id="t-depositos">
+      <div class="dep-grid" id="depGrid"></div>
+    </div>
+
+  </div><!-- /content -->
+</div>
+
+<!-- MODAL MOVIMENTAÇÃO -->
+<div class="modal-overlay" id="movOverlay" onclick="handleOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2 id="movModalTitle">Nova Entrada</h2>
+        <div style="color:var(--muted);font-size:12px;margin-top:2px" id="movModalSub">Registre a entrada de mercadoria</div>
+      </div>
+      <div class="modal-close" onclick="closeMov()"><i class="bi bi-x-lg"></i></div>
+    </div>
+    <div class="modal-body">
+
+      <!-- tipo -->
+      <div class="mov-type-grid" id="movTypeGrid">
+        <div class="mov-type-btn sel" onclick="selectMovType(this,'entrada')"><i class="bi bi-arrow-down-circle-fill"></i><span>Entrada</span></div>
+        <div class="mov-type-btn" onclick="selectMovType(this,'saida')"><i class="bi bi-arrow-up-circle-fill"></i><span>Saída</span></div>
+        <div class="mov-type-btn" onclick="selectMovType(this,'ajuste')"><i class="bi bi-sliders"></i><span>Ajuste</span></div>
+        <div class="mov-type-btn" onclick="selectMovType(this,'transferencia')"><i class="bi bi-arrow-left-right"></i><span>Transferência</span></div>
+      </div>
+
+      <!-- produto preview -->
+      <div class="prod-preview" id="prodPreview" style="display:none">
+        <div class="pp-emoji" id="ppEmoji">📦</div>
+        <div>
+          <div class="pp-name" id="ppName">—</div>
+          <div class="pp-stock">Estoque atual: <strong id="ppStock">0</strong> un · Mín: <strong id="ppMin">0</strong> · Máx: <strong id="ppMax">0</strong></div>
+        </div>
+      </div>
+
+      <!-- produto select -->
+      <div class="form-group">
+        <label class="lbl">Produto *</label>
+        <div class="inp-wrap"><i class="bi bi-box-seam pre"></i>
+          <select class="field" id="movProduto" onchange="onProdutoChange()">
+            <option value="">Selecione o produto...</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- quantidade -->
+      <div class="form-group">
+        <label class="lbl">Quantidade *</label>
+        <div class="qty-big-wrap">
+          <div class="qty-big-btn" onclick="changeMovQty(-1)">−</div>
+          <input class="qty-big-input" type="number" id="movQty" value="1" min="1">
+          <div class="qty-big-btn" onclick="changeMovQty(1)">+</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="lbl">Depósito</label>
+          <div class="inp-wrap"><i class="bi bi-building pre"></i>
+            <select class="field" id="movDeposito">
+              <option>Depósito Principal</option>
+              <option>Loja 1</option>
+              <option>Loja 2</option>
+              <option>Galpão Externo</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" id="movDepDestinoGrp" style="display:none">
+          <label class="lbl">Depósito Destino</label>
+          <div class="inp-wrap"><i class="bi bi-building-fill pre"></i>
+            <select class="field" id="movDepDestino">
+              <option>Loja 1</option>
+              <option>Loja 2</option>
+              <option>Galpão Externo</option>
+              <option>Depósito Principal</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="lbl">Motivo</label>
+          <div class="inp-wrap"><i class="bi bi-chat-text pre"></i>
+            <select class="field" id="movMotivo">
+              <option>Compra de fornecedor</option>
+              <option>Devolução de cliente</option>
+              <option>Acerto de inventário</option>
+              <option>Transferência interna</option>
+              <option>Venda PDV</option>
+              <option>Perda / Avaria</option>
+              <option>Outro</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="lbl">Custo unitário (R$)</label>
+          <div class="inp-wrap"><i class="bi bi-currency-dollar pre"></i>
+            <input class="field" type="text" id="movCusto" placeholder="0,00">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="lbl">Observação</label>
+        <div class="inp-wrap"><i class="bi bi-pencil pre"></i>
+          <input class="field" type="text" id="movObs" placeholder="Nota fiscal, referência, detalhe...">
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeMov()">Cancelar</button>
+      <button class="btn-save" onclick="saveMov()"><i class="bi bi-check2"></i> Registrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="bi bi-check-circle-fill"></i><span id="toastMsg">—</span></div>
+
+<script src="auth.js"></script>
+<script>
+NexoAuth.requireAuth();
+
+// ═══════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════
+let products = [
+  { id:1,  nome:'Arroz Integral 1kg',      sku:'ALI-001', cat:'Alimentos',    emoji:'🍎', custo:5.20,   estoque:142, estoqueMin:20,  estoqueMax:300, deposito:'Depósito Principal', fornecedor:'Fornecedor A', ultimaEntrada:'20/05/2026' },
+  { id:2,  nome:'Detergente Neutro 500ml', sku:'LIM-002', cat:'Limpeza',      emoji:'🧹', custo:1.80,   estoque:87,  estoqueMin:15,  estoqueMax:200, deposito:'Depósito Principal', fornecedor:'Fornecedor B', ultimaEntrada:'18/05/2026' },
+  { id:3,  nome:'Parafuso Sextavado 8mm',  sku:'FER-003', cat:'Ferramentas',  emoji:'🔩', custo:14.00,  estoque:3,   estoqueMin:10,  estoqueMax:100, deposito:'Depósito Principal', fornecedor:'Fornecedor C', ultimaEntrada:'10/04/2026' },
+  { id:4,  nome:'Smartphone Samsung A15',  sku:'ELE-004', cat:'Eletrônicos',  emoji:'📱', custo:890.00, estoque:8,   estoqueMin:3,   estoqueMax:30,  deposito:'Loja 1',             fornecedor:'Fornecedor A', ultimaEntrada:'15/05/2026' },
+  { id:5,  nome:'Camiseta Polo M',          sku:'VES-005', cat:'Vestuário',   emoji:'👕', custo:35.00,  estoque:0,   estoqueMin:5,   estoqueMax:50,  deposito:'Loja 1',             fornecedor:'Fornecedor B', ultimaEntrada:'02/03/2026' },
+  { id:6,  nome:'Ibuprofeno 600mg cx30',   sku:'MED-006', cat:'Medicamentos', emoji:'💊', custo:9.50,   estoque:54,  estoqueMin:10,  estoqueMax:200, deposito:'Depósito Principal', fornecedor:'Fornecedor C', ultimaEntrada:'22/05/2026' },
+  { id:7,  nome:'Notebook Dell Inspiron',  sku:'ELE-007', cat:'Eletrônicos',  emoji:'💻', custo:2600.00,estoque:2,   estoqueMin:2,   estoqueMax:10,  deposito:'Loja 1',             fornecedor:'Fornecedor A', ultimaEntrada:'14/04/2026' },
+  { id:8,  nome:'Café Torrado 500g',       sku:'ALI-008', cat:'Alimentos',    emoji:'☕', custo:8.90,   estoque:0,   estoqueMin:20,  estoqueMax:150, deposito:'Depósito Principal', fornecedor:'Fornecedor B', ultimaEntrada:'01/03/2026' },
+];
+
+let movimentacoes = [
+  { id:1, tipo:'entrada',      prodId:1, produto:'Arroz Integral 1kg',      qty:50,  deposito:'Depósito Principal', destino:'',             motivo:'Compra de fornecedor', operador:'João D.', data:'26/05/2026 08:14' },
+  { id:2, tipo:'saida',        prodId:2, produto:'Detergente Neutro 500ml', qty:10,  deposito:'Depósito Principal', destino:'',             motivo:'Venda PDV',            operador:'João D.', data:'26/05/2026 09:30' },
+  { id:3, tipo:'transferencia',prodId:4, produto:'Smartphone Samsung A15',  qty:3,   deposito:'Depósito Principal', destino:'Loja 1',       motivo:'Transferência interna',operador:'Maria F.', data:'25/05/2026 14:20' },
+  { id:4, tipo:'ajuste',       prodId:3, produto:'Parafuso Sextavado 8mm',  qty:-7,  deposito:'Depósito Principal', destino:'',             motivo:'Acerto de inventário', operador:'João D.', data:'24/05/2026 16:00' },
+  { id:5, tipo:'entrada',      prodId:6, produto:'Ibuprofeno 600mg cx30',   qty:100, deposito:'Depósito Principal', destino:'',             motivo:'Compra de fornecedor', operador:'Carlos S.', data:'22/05/2026 10:45' },
+  { id:6, tipo:'saida',        prodId:7, produto:'Notebook Dell Inspiron',  qty:1,   deposito:'Loja 1',             destino:'',             motivo:'Venda PDV',            operador:'Lucas A.', data:'21/05/2026 11:10' },
+];
+
+const DEPOSITOS = [
+  { nome:'Depósito Principal', icone:'🏭', endereco:'Rua Industrial, 400 — Bauru/SP', cor:'var(--accent)' },
+  { nome:'Loja 1',             icone:'🏪', endereco:'Av. Brasil, 1200 — Centro',      cor:'var(--accent2)' },
+  { nome:'Loja 2',             icone:'🏬', endereco:'Rua das Flores, 80 — Jardins',   cor:'var(--warn)' },
+];
+
+let currentFilter = 'todos';
+let movFilter = 'todos';
+let sortDir = 1;
+let filtered = [...products];
+let currentPage = 1;
+const perPage = 8;
+let movType = 'entrada';
+let editingMovProdId = null;
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+function init() {
+  applyFilters();
+  renderMovs();
+  renderDepositos();
+  renderAlertas();
+  updateKPIs();
+  populateProdSelect();
+}
+
+// ═══════════════════════════════════════════════
+// KPIs
+// ═══════════════════════════════════════════════
+function updateKPIs() {
+  const total = products.reduce((s,p) => s + p.estoque, 0);
+  const valor = products.reduce((s,p) => s + p.estoque * p.custo, 0);
+  const baixo = products.filter(p => p.estoque > 0 && p.estoque <= p.estoqueMin).length;
+  const zerado = products.filter(p => p.estoque === 0).length;
+  const hoje = movimentacoes.filter(m => m.data.startsWith('26/05/2026')).length;
+  document.getElementById('kpi-total').textContent  = total;
+  document.getElementById('kpi-valor').textContent  = 'R$ ' + fmt(valor);
+  document.getElementById('kpi-baixo').textContent  = baixo;
+  document.getElementById('kpi-zerado').textContent = zerado;
+  document.getElementById('kpi-movs').textContent   = hoje;
+}
+
+// ═══════════════════════════════════════════════
+// ALERTAS
+// ═══════════════════════════════════════════════
+function renderAlertas() {
+  const strip = document.getElementById('alertasStrip');
+  const criticos = products.filter(p => p.estoque === 0);
+  const baixos   = products.filter(p => p.estoque > 0 && p.estoque <= p.estoqueMin);
+  let html = '';
+  criticos.forEach(p => {
+    html += `<div class="alerta-item critico" onclick="openMov(${p.id},'entrada')">
+      <i class="bi bi-x-circle-fill"></i>
+      <div class="alerta-txt"><strong>${p.nome}</strong><span>· Estoque zerado — clique para registrar entrada</span></div>
+      <div class="alerta-dismiss" onclick="event.stopPropagation();this.parentElement.remove()"><i class="bi bi-x"></i></div>
+    </div>`;
+  });
+  baixos.forEach(p => {
+    html += `<div class="alerta-item baixo" onclick="openMov(${p.id},'entrada')">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <div class="alerta-txt"><strong>${p.nome}</strong><span>· Estoque baixo: ${p.estoque} un (mín: ${p.estoqueMin})</span></div>
+      <div class="alerta-dismiss" onclick="event.stopPropagation();this.parentElement.remove()"><i class="bi bi-x"></i></div>
+    </div>`;
+  });
+  strip.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════
+// POSIÇÃO DE ESTOQUE
+// ═══════════════════════════════════════════════
+function stockStatus(p) {
+  if(p.estoque === 0)              return 'zero';
+  if(p.estoque <= p.estoqueMin)    return 'baixo';
+  return 'ok';
+}
+function stockLabel(p) {
+  const s = stockStatus(p);
+  if(s==='zero') return 'Zerado';
+  if(s==='baixo') return 'Baixo';
+  return 'Normal';
+}
+
+function setFilter(el, val) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  currentFilter = val;
+  currentPage = 1;
+  applyFilters();
+}
+
+function applyFilters() {
+  const q   = (document.getElementById('searchInput').value || '').toLowerCase();
+  const dep = document.getElementById('depFilter').value;
+  filtered = products.filter(p => {
+    const matchQ   = !q || p.nome.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q);
+    const matchDep = !dep || p.deposito === dep;
+    const s = stockStatus(p);
+    const matchF = currentFilter === 'todos' || s === currentFilter;
+    return matchQ && matchDep && matchF;
+  });
+  currentPage = 1;
+  renderTable();
+}
+
+function sortStock(key) {
+  filtered.sort((a,b) => {
+    const av = typeof a[key]==='number' ? a[key] : a[key].toLowerCase();
+    const bv = typeof b[key]==='number' ? b[key] : b[key].toLowerCase();
+    return av > bv ? sortDir : av < bv ? -sortDir : 0;
+  });
+  sortDir *= -1;
+  renderTable();
+}
+
+function renderTable() {
+  const body = document.getElementById('stockTableBody');
+  const empty = document.getElementById('emptyStock');
+  const start = (currentPage-1) * perPage;
+  const slice = filtered.slice(start, start + perPage);
+  const total = filtered.length;
+
+  if(!total) { body.innerHTML = ''; empty.classList.add('show'); }
+  else empty.classList.remove('show');
+
+  body.innerHTML = slice.map(p => {
+    const s = stockStatus(p);
+    const pct = Math.min(100, p.estoqueMax > 0 ? (p.estoque / p.estoqueMax) * 100 : 0);
+    const barColor = s==='zero'?'var(--danger)':s==='baixo'?'var(--warn)':'var(--accent)';
+    return `<tr onclick="openMov(${p.id},'entrada')">
+      <td><div class="prod-cell">
+        <div class="prod-emoji">${p.emoji}</div>
+        <div><div class="prod-name">${p.nome}</div><div class="prod-sku">SKU: ${p.sku}</div></div>
+      </div></td>
+      <td style="font-size:12px;color:var(--muted)">${p.deposito}</td>
+      <td class="stock-cell">
+        <div class="stock-nums">
+          <span class="stock-val ${s}">${p.estoque} <span style="font-size:10px;font-weight:400">${'un'}</span></span>
+          <span class="stock-minmax">mín ${p.estoqueMin} · máx ${p.estoqueMax}</span>
+        </div>
+        <div class="stock-bar-bg"><div class="stock-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+      </td>
+      <td><span class="status-pill ${s}">${stockLabel(p)}</span></td>
+      <td style="font-size:12px;color:var(--muted)">${p.ultimaEntrada}</td>
+      <td style="font-size:12px;color:var(--muted)">${p.fornecedor}</td>
+      <td><div class="action-cell" onclick="event.stopPropagation()">
+        <div class="act-btn up"   title="Entrada"      onclick="openMov(${p.id},'entrada')"><i class="bi bi-arrow-down-circle"></i></div>
+        <div class="act-btn down" title="Saída"        onclick="openMov(${p.id},'saida')"><i class="bi bi-arrow-up-circle"></i></div>
+        <div class="act-btn adj"  title="Ajuste"       onclick="openMov(${p.id},'ajuste')"><i class="bi bi-sliders"></i></div>
+      </div></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('tableInfo').textContent =
+    `Mostrando ${Math.min(start+1,total)}–${Math.min(start+perPage,total)} de ${total} produtos`;
+  renderPagination(total);
+}
+
+function renderPagination(total) {
+  const pages = Math.ceil(total / perPage);
+  const pg = document.getElementById('pagination');
+  if(pages <= 1) { pg.innerHTML = ''; return; }
+  let html = `<button class="pg-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}><i class="bi bi-chevron-left"></i></button>`;
+  for(let i=1;i<=pages;i++) html += `<button class="pg-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+  html += `<button class="pg-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}><i class="bi bi-chevron-right"></i></button>`;
+  pg.innerHTML = html;
+}
+function goPage(p) {
+  const pages = Math.ceil(filtered.length/perPage);
+  if(p<1||p>pages) return;
+  currentPage = p; renderTable();
+}
+
+// ═══════════════════════════════════════════════
+// MOVIMENTAÇÕES
+// ═══════════════════════════════════════════════
+function setMovFilter(el, val) {
+  document.querySelectorAll('#t-movimentacoes .filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  movFilter = val;
+  renderMovs();
+}
+
+function renderMovs() {
+  const q = (document.getElementById('movSearch')?.value || '').toLowerCase();
+  const list = movimentacoes.filter(m => {
+    const matchQ = !q || m.produto.toLowerCase().includes(q);
+    const matchF = movFilter === 'todos' || m.tipo === movFilter;
+    return matchQ && matchF;
+  });
+
+  const body = document.getElementById('movsTableBody');
+  const empty = document.getElementById('emptyMovs');
+  if(!list.length) { body.innerHTML = ''; empty.classList.add('show'); }
+  else empty.classList.remove('show');
+
+  const typeConfig = {
+    entrada:       { icon:'bi-arrow-down-circle-fill', color:'var(--accent)',  label:'Entrada',       cls:'entrada' },
+    saida:         { icon:'bi-arrow-up-circle-fill',   color:'var(--danger)',  label:'Saída',         cls:'saida' },
+    ajuste:        { icon:'bi-sliders',                color:'var(--accent2)', label:'Ajuste',        cls:'ajuste' },
+    transferencia: { icon:'bi-arrow-left-right',       color:'#a855f7',        label:'Transferência', cls:'transf' },
+  };
+
+  body.innerHTML = list.map(m => {
+    const tc = typeConfig[m.tipo] || typeConfig.entrada;
+    const qtySign = m.tipo==='saida'||(m.tipo==='ajuste'&&m.qty<0) ? 'neg' : 'pos';
+    const qtyStr  = (m.qty > 0 ? '+' : '') + m.qty;
+    return `<tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="mov-icon ${tc.cls}"><i class="bi ${tc.icon}"></i></div>
+          <span style="font-size:12px;font-weight:600;color:${tc.color}">${tc.label}</span>
+        </div>
+      </td>
+      <td><div class="prod-name" style="font-size:13px">${m.produto}</div></td>
+      <td><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:${qtySign==='pos'?'var(--accent)':'var(--danger)'}">${qtyStr}</span></td>
+      <td style="font-size:12px;color:var(--muted)">${m.deposito}${m.destino?' → '+m.destino:''}</td>
+      <td style="font-size:12px;color:var(--muted)">${m.motivo}</td>
+      <td style="font-size:12px;color:var(--muted)">${m.operador}</td>
+      <td style="font-size:11px;color:var(--muted)">${m.data}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('movsInfo').textContent = `${list.length} movimentação${list.length!==1?'ões':''}`;
+}
+
+// ═══════════════════════════════════════════════
+// DEPÓSITOS
+// ═══════════════════════════════════════════════
+function renderDepositos() {
+  const grid = document.getElementById('depGrid');
+  grid.innerHTML = DEPOSITOS.map(d => {
+    const prods  = products.filter(p => p.deposito === d.nome);
+    const itens  = prods.reduce((s,p) => s + p.estoque, 0);
+    const valor  = prods.reduce((s,p) => s + p.estoque * p.custo, 0);
+    const alertas = prods.filter(p => p.estoque <= p.estoqueMin).length;
+    return `<div class="dep-card">
+      <div class="dep-header">
+        <div class="dep-icon">${d.icone}</div>
+        <span class="dep-badge">${prods.length} SKUs</span>
+      </div>
+      <div class="dep-name">${d.nome}</div>
+      <div class="dep-addr">${d.endereco}</div>
+      <div class="dep-stats">
+        <div class="dep-stat"><div class="dep-stat-val" style="color:${d.cor}">${itens}</div><div class="dep-stat-lbl">Itens</div></div>
+        <div class="dep-stat"><div class="dep-stat-val">R$ ${fmt(valor)}</div><div class="dep-stat-lbl">Valor</div></div>
+        <div class="dep-stat"><div class="dep-stat-val" style="color:${alertas>0?'var(--warn)':'var(--accent)'}">${alertas}</div><div class="dep-stat-lbl">Alertas</div></div>
+        <div class="dep-stat"><div class="dep-stat-val">${prods.length}</div><div class="dep-stat-lbl">Produtos</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+// MODAL MOVIMENTAÇÃO
+// ═══════════════════════════════════════════════
+function populateProdSelect() {
+  const sel = document.getElementById('movProduto');
+  sel.innerHTML = '<option value="">Selecione o produto...</option>' +
+    products.map(p => `<option value="${p.id}">${p.emoji} ${p.nome} (${p.estoque} un)</option>`).join('');
+}
+
+const movTitles = {
+  entrada:'Nova Entrada', saida:'Registrar Saída',
+  ajuste:'Ajuste de Estoque', transferencia:'Transferência entre Depósitos'
+};
+const movSubs = {
+  entrada:'Registre a entrada de mercadoria no estoque',
+  saida:'Registre a saída de mercadoria do estoque',
+  ajuste:'Corrija a quantidade real em estoque',
+  transferencia:'Mova produtos entre depósitos'
+};
+
+function openMov(prodId, tipo) {
+  movType = tipo || 'entrada';
+  document.getElementById('movModalTitle').textContent = movTitles[movType];
+  document.getElementById('movModalSub').textContent   = movSubs[movType];
+  // select type btn
+  document.querySelectorAll('.mov-type-btn').forEach(b => b.classList.remove('sel'));
+  document.querySelectorAll('.mov-type-btn').forEach(b => {
+    if(b.querySelector('span').textContent.toLowerCase().replace('ê','e').replace('ã','a') ===
+       movType.replace('ê','e').replace('ã','a').replace('transferencia','transferencia')) b.classList.add('sel');
+  });
+  // select correct button
+  const btns = document.querySelectorAll('.mov-type-btn');
+  const typeMap = ['entrada','saida','ajuste','transferencia'];
+  btns.forEach((b,i) => b.classList.toggle('sel', typeMap[i]===movType));
+
+  document.getElementById('movDepDestinoGrp').style.display = movType==='transferencia' ? 'block' : 'none';
+  document.getElementById('movQty').value = 1;
+  document.getElementById('movObs').value = '';
+
+  if(prodId) {
+    document.getElementById('movProduto').value = prodId;
+    onProdutoChange();
+  } else {
+    document.getElementById('movProduto').value = '';
+    document.getElementById('prodPreview').style.display = 'none';
+  }
+  document.getElementById('movOverlay').classList.add('open');
+}
+
+function closeMov() { document.getElementById('movOverlay').classList.remove('open'); }
+function handleOverlay(e) { if(e.target===document.getElementById('movOverlay')) closeMov(); }
+
+function selectMovType(el, tipo) {
+  document.querySelectorAll('.mov-type-btn').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+  movType = tipo;
+  document.getElementById('movModalTitle').textContent = movTitles[tipo];
+  document.getElementById('movModalSub').textContent   = movSubs[tipo];
+  document.getElementById('movDepDestinoGrp').style.display = tipo==='transferencia'?'block':'none';
+}
+
+function onProdutoChange() {
+  const id = parseInt(document.getElementById('movProduto').value);
+  const p = products.find(x => x.id === id);
+  const preview = document.getElementById('prodPreview');
+  if(p) {
+    document.getElementById('ppEmoji').textContent  = p.emoji;
+    document.getElementById('ppName').textContent   = p.nome;
+    document.getElementById('ppStock').textContent  = p.estoque;
+    document.getElementById('ppMin').textContent    = p.estoqueMin;
+    document.getElementById('ppMax').textContent    = p.estoqueMax;
+    preview.style.display = 'flex';
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+function changeMovQty(delta) {
+  const inp = document.getElementById('movQty');
+  inp.value = Math.max(1, (parseInt(inp.value) || 1) + delta);
+}
+
+function saveMov() {
+  const prodId = parseInt(document.getElementById('movProduto').value);
+  const qty    = parseInt(document.getElementById('movQty').value) || 1;
+  const dep    = document.getElementById('movDeposito').value;
+  const motivo = document.getElementById('movMotivo').value;
+  const obs    = document.getElementById('movObs').value;
+
+  if(!prodId) { showToast('Selecione um produto.'); return; }
+
+  const p = products.find(x => x.id === prodId);
+  if(!p) return;
+
+  // aplica movimentação
+  if(movType === 'entrada') p.estoque += qty;
+  else if(movType === 'saida') p.estoque = Math.max(0, p.estoque - qty);
+  else if(movType === 'ajuste') p.estoque = qty; // ajuste = saldo real informado
+  else if(movType === 'transferencia') { /* sem mudança de total, só depósito */ p.deposito = document.getElementById('movDepDestino').value; }
+
+  if(movType === 'entrada') p.ultimaEntrada = new Date().toLocaleDateString('pt-BR');
+
+  // registra histórico
+  const now = new Date();
+  const dataStr = `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`;
+  const qtyFinal = movType==='ajuste' ? qty : movType==='saida' ? -qty : qty;
+  movimentacoes.unshift({
+    id: movimentacoes.length + 1,
+    tipo: movType,
+    prodId, produto: p.nome, qty: qtyFinal,
+    deposito: dep,
+    destino: movType==='transferencia' ? document.getElementById('movDepDestino').value : '',
+    motivo: obs || motivo,
+    operador: 'João D.',
+    data: dataStr,
+  });
+
+  populateProdSelect();
+  closeMov();
+  applyFilters();
+  renderMovs();
+  renderDepositos();
+  renderAlertas();
+  updateKPIs();
+
+  const labels = { entrada:'Entrada registrada ✅', saida:'Saída registrada', ajuste:'Estoque ajustado', transferencia:'Transferência realizada' };
+  showToast(labels[movType]);
+}
+
+// ═══════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════
+function switchTab(el, panelId) {
+  document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// ═══════════════════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════════════════
+let sidebarCollapsed = true;
+function toggleSidebar() {
+  sidebarCollapsed = !sidebarCollapsed;
+  document.getElementById('sidebar').classList.toggle('collapsed', sidebarCollapsed);
+  document.getElementById('mainContent').classList.toggle('collapsed', sidebarCollapsed);
+  document.getElementById('toggleIcon').className = sidebarCollapsed ? 'bi bi-chevron-right' : 'bi bi-chevron-left';
+}
+
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+function fmt(v) { return (v||0).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show'); clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+NexoAuth.renderCurrentUser();
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexoERP — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --bg:      #0a0d12;
+      --surface: #10151e;
+      --card:    #141b27;
+      --border:  #1e2a3a;
+      --accent:  #00c896;
+      --accent2: #0077ff;
+      --warn:    #ff6b35;
+      --danger:  #ff4757;
+      --text:    #e8edf5;
+      --muted:   #6b7f96;
+      --font-h:  'Syne', sans-serif;
+      --font-b:  'DM Sans', sans-serif;
+      --sidebar: 240px;
+      --sidebar-c: 68px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: var(--font-b); font-size: 14px;
+      display: flex; min-height: 100vh; overflow-x: hidden;
+    }
+
+    /* ══ SIDEBAR ══ */
+    .sidebar {
+      width: var(--sidebar);
+      min-height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0; bottom: 0;
+      z-index: 100;
+      transition: width .3s cubic-bezier(.4,0,.2,1);
+      overflow: hidden;
+    }
+    .sidebar.collapsed { width: var(--sidebar-c); }
+
+    .sidebar-brand {
+      display: flex; align-items: center; gap: 12px;
+      padding: 20px 18px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .brand-icon {
+      width: 34px; height: 34px; flex-shrink: 0;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), #008a60);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-h); font-weight: 800; font-size: 13px; color: #021c14;
+    }
+    .brand-text {
+      font-family: var(--font-h); font-size: 18px; font-weight: 800;
+      color: var(--text); letter-spacing: -0.5px;
+      transition: opacity .2s;
+    }
+    .brand-text span { color: var(--accent); }
+
+    .sidebar-toggle {
+      position: absolute; top: 22px; right: -12px;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--card); border: 1px solid var(--border);
+      color: var(--muted); font-size: 12px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: color .2s, border-color .2s;
+      z-index: 10;
+    }
+    .sidebar-toggle:hover { color: var(--text); border-color: var(--accent); }
+
+    .sidebar-section { padding: 10px 12px; }
+    .sidebar-section-label {
+      font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px;
+      color: var(--muted); padding: 8px 6px 4px;
+      white-space: nowrap; overflow: hidden;
+      transition: opacity .2s;
+    }
+    .sidebar.collapsed .sidebar-section-label { opacity: 0; }
+    .sidebar.collapsed .brand-text { opacity: 0; }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 9px 10px; border-radius: 8px;
+      color: var(--muted); text-decoration: none;
+      font-size: 13.5px; font-weight: 500;
+      cursor: pointer; white-space: nowrap;
+      transition: background .18s, color .18s;
+      margin-bottom: 2px;
+      position: relative;
+    }
+    .nav-item i { font-size: 17px; flex-shrink: 0; }
+    .nav-item:hover { background: var(--card); color: var(--text); }
+    .nav-item.active {
+      background: rgba(0,200,150,.1); color: var(--accent);
+    }
+    .nav-item .badge {
+      margin-left: auto; flex-shrink: 0;
+      background: var(--accent2); color: #fff;
+      font-size: 10px; font-weight: 700;
+      padding: 1px 6px; border-radius: 100px;
+    }
+    .nav-label { transition: opacity .2s; }
+    .sidebar.collapsed .nav-label { opacity: 0; }
+    .sidebar.collapsed .badge { display: none; }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .user-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 8px; border-radius: 8px;
+      cursor: pointer; transition: background .18s;
+    }
+    .user-row:hover { background: var(--card); }
+    .user-avatar {
+      width: 32px; height: 32px; flex-shrink: 0;
+      border-radius: 8px;
+      background: linear-gradient(135deg,#2d5298,#1a3a7a);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-h); font-weight: 700; font-size: 12px; color: #fff;
+    }
+    .user-info { overflow: hidden; transition: opacity .2s; }
+    .sidebar.collapsed .user-info { opacity: 0; }
+    .user-name { font-weight: 600; font-size: 13px; white-space: nowrap; }
+    .user-role { color: var(--muted); font-size: 11px; }
+
+    /* ══ MAIN ══ */
+    .main {
+      margin-left: var(--sidebar);
+      flex: 1;
+      display: flex; flex-direction: column;
+      min-height: 100vh;
+      transition: margin-left .3s cubic-bezier(.4,0,.2,1);
+    }
+    .main.collapsed { margin-left: var(--sidebar-c); }
+
+    /* topbar */
+    .topbar {
+      height: 64px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 28px;
+      position: sticky; top: 0; z-index: 50;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 16px; }
+    .page-title {
+      font-family: var(--font-h); font-size: 18px; font-weight: 700; letter-spacing: -0.5px;
+    }
+    .breadcrumb-sep { color: var(--muted); font-size: 12px; }
+
+    .search-box {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 8px 14px;
+      color: var(--muted); font-size: 13px;
+      min-width: 220px; cursor: text;
+      transition: border-color .2s;
+    }
+    .search-box:hover { border-color: var(--accent); }
+
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .icon-btn {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: var(--card); border: 1px solid var(--border);
+      color: var(--muted); font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; position: relative;
+      transition: color .18s, border-color .18s;
+    }
+    .icon-btn:hover { color: var(--text); border-color: var(--accent); }
+    .icon-btn .dot {
+      position: absolute; top: 6px; right: 6px;
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--accent); border: 2px solid var(--surface);
+    }
+
+    /* ══ CONTENT ══ */
+    .content { padding: 28px; flex: 1; }
+
+    /* page header */
+    .page-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 28px;
+    }
+    .page-header h1 {
+      font-family: var(--font-h); font-size: 26px; font-weight: 800;
+      letter-spacing: -1px;
+    }
+    .page-header p { color: var(--muted); margin-top: 4px; font-size: 13px; }
+    .header-actions { display: flex; gap: 10px; }
+    .btn-sm {
+      padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
+      font-family: var(--font-b); cursor: pointer; text-decoration: none;
+      display: flex; align-items: center; gap: 6px; white-space: nowrap;
+    }
+    .btn-sm-primary { background: var(--accent); color: #021c14; border: none; }
+    .btn-sm-primary:hover { opacity: .85; }
+    .btn-sm-ghost { background: none; border: 1px solid var(--border); color: var(--text); }
+    .btn-sm-ghost:hover { border-color: var(--muted); }
+
+    /* KPI row */
+    .kpi-row {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 16px; margin-bottom: 24px;
+    }
+    .kpi-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px 22px;
+      transition: border-color .25s, transform .25s;
+    }
+    .kpi-card:hover { border-color: rgba(0,200,150,.25); transform: translateY(-2px); }
+    .kpi-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+    .kpi-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .kpi-icon.g { background: rgba(0,200,150,.1); color: var(--accent); }
+    .kpi-icon.b { background: rgba(0,119,255,.1); color: var(--accent2); }
+    .kpi-icon.o { background: rgba(255,107,53,.1); color: var(--warn); }
+    .kpi-icon.r { background: rgba(255,71,87,.1); color: var(--danger); }
+    .kpi-trend {
+      font-size: 11px; font-weight: 700; padding: 3px 8px;
+      border-radius: 100px; display: flex; align-items: center; gap: 3px;
+    }
+    .kpi-trend.up   { background: rgba(0,200,150,.12); color: var(--accent); }
+    .kpi-trend.down { background: rgba(255,71,87,.12); color: var(--danger); }
+    .kpi-value {
+      font-family: var(--font-h); font-size: 28px; font-weight: 800;
+      letter-spacing: -1px; margin-bottom: 2px;
+    }
+    .kpi-label { color: var(--muted); font-size: 12px; }
+
+    /* grid 2 cols */
+    .grid2 { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px; }
+    .grid-equal { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+    /* chart card */
+    .chart-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 22px;
+    }
+    .card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px;
+    }
+    .card-title { font-family: var(--font-h); font-size: 15px; font-weight: 700; }
+    .card-sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .card-actions { display: flex; gap: 6px; }
+    .chip {
+      padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 600;
+      cursor: pointer; transition: background .18s, color .18s;
+      background: var(--surface); color: var(--muted); border: 1px solid var(--border);
+    }
+    .chip.active { background: rgba(0,200,150,.12); color: var(--accent); border-color: rgba(0,200,150,.25); }
+
+    /* SVG bar chart */
+    .bar-chart-wrap { position: relative; }
+    svg.bar-chart { width: 100%; display: block; }
+    .chart-bar { transition: opacity .2s; }
+    .chart-bar:hover { opacity: .8; }
+    .chart-labels {
+      display: flex; justify-content: space-between;
+      padding: 6px 0; color: var(--muted); font-size: 11px;
+    }
+
+    /* donut chart */
+    .donut-wrap { display: flex; align-items: center; justify-content: center; gap: 24px; }
+    svg.donut { width: 120px; height: 120px; flex-shrink: 0; }
+    .donut-legend { display: flex; flex-direction: column; gap: 10px; }
+    .donut-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+    .donut-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .donut-pct { margin-left: auto; font-weight: 700; color: var(--text); }
+
+    /* recent sales table */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      padding: 10px 12px;
+      text-align: left; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .5px; color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    tbody td {
+      padding: 12px 12px;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(30,42,58,.6);
+      vertical-align: middle;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: rgba(255,255,255,.02); }
+    .td-name { font-weight: 600; }
+    .td-sub  { color: var(--muted); font-size: 11px; margin-top: 2px; }
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 9px; border-radius: 100px; font-size: 11px; font-weight: 600;
+    }
+    .status-pill.ok   { background: rgba(0,200,150,.1); color: var(--accent); }
+    .status-pill.pend { background: rgba(255,107,53,.1); color: var(--warn); }
+    .status-pill.canc { background: rgba(255,71,87,.1); color: var(--danger); }
+    .status-pill::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; }
+
+    /* activity feed */
+    .activity-list { display: flex; flex-direction: column; gap: 0; }
+    .activity-item {
+      display: flex; gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(30,42,58,.6);
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .act-dot-wrap { display: flex; flex-direction: column; align-items: center; gap: 0; padding-top: 3px; }
+    .act-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent); flex-shrink: 0;
+    }
+    .act-dot.blue { background: var(--accent2); }
+    .act-dot.orange { background: var(--warn); }
+    .act-line { flex: 1; width: 1px; background: var(--border); min-height: 20px; }
+    .act-body { flex: 1; }
+    .act-text { font-size: 13px; line-height: 1.5; }
+    .act-text strong { font-weight: 600; }
+    .act-time { color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+    /* sparkline area */
+    .sparkline-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .sparkline-item { flex: 1; min-width: 80px; }
+    .spark-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+    .spark-val { font-family: var(--font-h); font-size: 16px; font-weight: 700; }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 1100px) {
+      .kpi-row { grid-template-columns: repeat(2,1fr); }
+      .grid2 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 700px) {
+      .sidebar { width: var(--sidebar-c); }
+      .main { margin-left: var(--sidebar-c); }
+      .kpi-row { grid-template-columns: 1fr 1fr; }
+      .grid-equal { grid-template-columns: 1fr; }
+      .content { padding: 16px; }
+    }
+  
+    /* ── Hover automático da sidebar ── */
+    .sidebar { transition: width .28s cubic-bezier(.4,0,.2,1); }
+    .sidebar.collapsed:hover { width: var(--sidebar); }
+    .sidebar.collapsed:hover .brand-text,
+    .sidebar.collapsed:hover .sidebar-section-label,
+    .sidebar.collapsed:hover .nav-label,
+    .sidebar.collapsed:hover .badge,
+    .sidebar.collapsed:hover .user-info { opacity: 1; display: flex; flex-direction: column;}
+
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar collapsed" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">N</div>
+    <span class="brand-text">Nexo<span>ERP</span></span>
+  </div>
+  <div class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle">
+    <i class="bi bi-chevron-right" id="toggleIcon"></i>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Principal</div>
+      <a href="dashboard.html" class="nav-item active"><i class="bi bi-grid-1x2-fill"></i><span class="nav-label">Dashboard</span></a>
+      <a href="pdv.html" class="nav-item"><i class="bi bi-display"></i><span class="nav-label">PDV</span></a>
+      <a href="vendas.html" class="nav-item"><i class="bi bi-cart4"></i><span class="nav-label">Vendas</span><span class="badge">12</span></a>
+      <a href="clientes.html" class="nav-item"><i class="bi bi-people-fill"></i><span class="nav-label">Clientes</span></a>
+      <a href="produtos.html" class="nav-item"><i class="bi bi-box-seam-fill"></i><span class="nav-label">Produtos</span></a>
+      <a href="estoque.html" class="nav-item"><i class="bi bi-stack"></i><span class="nav-label">Estoque</span></a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Financeiro</div>
+      <a href="#" class="nav-item"><i class="bi bi-graph-up-arrow"></i><span class="nav-label">Relatórios</span></a>
+      <a href="#" class="nav-item"><i class="bi bi-credit-card-2-back-fill"></i><span class="nav-label">Financeiro</span></a>
+      <a href="#" class="nav-item"><i class="bi bi-receipt-cutoff"></i><span class="nav-label">Fiscal / NF-e</span></a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Sistema</div>
+      <a href="#" class="nav-item"><i class="bi bi-briefcase-fill"></i><span class="nav-label">Parceiros</span></a>
+      <a href="#" class="nav-item"><i class="bi bi-gear-fill"></i><span class="nav-label">Configurações</span></a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="user-avatar">JD</div>
+      <div class="user-info">
+        <div class="user-name">João Desenvolvedor</div>
+        <div class="user-role">Administrador</div>
+      </div>
+      <i class="bi bi-three-dots-vertical" style="color:var(--muted);margin-left:auto;font-size:15px;flex-shrink:0"></i>
+    </div>
+    <button class="nav-item" type="button" onclick="NexoAuth.confirmLogout()" style="width:100%;border:0;background:transparent;margin-top:8px">
+      <i class="bi bi-box-arrow-left"></i><span class="nav-label">Sair</span>
+    </button>
+  </div>
+</aside>
+
+  <!-- MAIN -->
+  <div class="main collapsed" id="mainContent">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <span class="page-title">Dashboard</span>
+        <span class="breadcrumb-sep">/</span>
+        <span style="color:var(--muted);font-size:13px">Visão Geral</span>
+      </div>
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+        Buscar clientes, pedidos, produtos…
+      </div>
+      <div class="topbar-right">
+        <div class="icon-btn"><i class="bi bi-bell"></i><div class="dot"></div></div>
+        <div class="icon-btn"><i class="bi bi-question-circle"></i></div>
+        <div class="user-avatar" style="width:36px;height:36px;border-radius:8px;cursor:pointer">JD</div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <div class="page-header">
+        <div>
+          <h1>Bom dia, João 👋</h1>
+          <p>Terça-feira, 26 de maio de 2026 · Resumo da operação de hoje</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn-sm btn-sm-ghost"><i class="bi bi-download"></i> Exportar</button>
+          <button class="btn-sm btn-sm-primary"><i class="bi bi-plus-lg"></i> Nova Venda</button>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <div class="kpi-icon g"><i class="bi bi-currency-dollar"></i></div>
+            <div class="kpi-trend up"><i class="bi bi-arrow-up-short"></i> 12,4%</div>
+          </div>
+          <div class="kpi-value">R$ 84.230</div>
+          <div class="kpi-label">Faturamento do mês</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <div class="kpi-icon b"><i class="bi bi-cart-check-fill"></i></div>
+            <div class="kpi-trend up"><i class="bi bi-arrow-up-short"></i> 8,1%</div>
+          </div>
+          <div class="kpi-value">1.247</div>
+          <div class="kpi-label">Pedidos no mês</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <div class="kpi-icon o"><i class="bi bi-person-plus-fill"></i></div>
+            <div class="kpi-trend up"><i class="bi bi-arrow-up-short"></i> 5,3%</div>
+          </div>
+          <div class="kpi-value">348</div>
+          <div class="kpi-label">Novos clientes</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <div class="kpi-icon r"><i class="bi bi-box-seam"></i></div>
+            <div class="kpi-trend down"><i class="bi bi-arrow-down-short"></i> 2,1%</div>
+          </div>
+          <div class="kpi-value">94%</div>
+          <div class="kpi-label">Estoque disponível</div>
+        </div>
+      </div>
+
+      <!-- Charts row -->
+      <div class="grid2">
+
+        <!-- Bar chart -->
+        <div class="chart-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Faturamento</div>
+              <div class="card-sub">Receita bruta por período</div>
+            </div>
+            <div class="card-actions">
+              <span class="chip active">7D</span>
+              <span class="chip" onclick="setChip(this)">30D</span>
+              <span class="chip" onclick="setChip(this)">90D</span>
+            </div>
+          </div>
+          <div class="bar-chart-wrap">
+            <svg class="bar-chart" viewBox="0 0 540 160" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="barG" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#00c896"/>
+                  <stop offset="100%" stop-color="#008a60" stop-opacity=".7"/>
+                </linearGradient>
+                <linearGradient id="barA" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#0077ff"/>
+                  <stop offset="100%" stop-color="#0055bb" stop-opacity=".7"/>
+                </linearGradient>
+              </defs>
+              <!-- grid lines -->
+              <line x1="0" y1="140" x2="540" y2="140" stroke="#1e2a3a" stroke-width="1"/>
+              <line x1="0" y1="105" x2="540" y2="105" stroke="#1e2a3a" stroke-width=".5" stroke-dasharray="4,4"/>
+              <line x1="0" y1="70"  x2="540" y2="70"  stroke="#1e2a3a" stroke-width=".5" stroke-dasharray="4,4"/>
+              <line x1="0" y1="35"  x2="540" y2="35"  stroke="#1e2a3a" stroke-width=".5" stroke-dasharray="4,4"/>
+
+              <!-- bars (7 days) -->
+              <rect class="chart-bar" x="20"  y="90"  width="52" height="50" rx="6" fill="url(#barG)" opacity=".7"/>
+              <rect class="chart-bar" x="90"  y="70"  width="52" height="70" rx="6" fill="url(#barG)" opacity=".7"/>
+              <rect class="chart-bar" x="160" y="80"  width="52" height="60" rx="6" fill="url(#barG)" opacity=".7"/>
+              <rect class="chart-bar" x="230" y="50"  width="52" height="90" rx="6" fill="url(#barA)"/>
+              <rect class="chart-bar" x="300" y="60"  width="52" height="80" rx="6" fill="url(#barG)" opacity=".7"/>
+              <rect class="chart-bar" x="370" y="30"  width="52" height="110" rx="6" fill="url(#barA)"/>
+              <rect class="chart-bar" x="440" y="45"  width="52" height="95" rx="6" fill="url(#barG)"/>
+
+              <!-- value labels -->
+              <text x="46"  y="86"  text-anchor="middle" fill="#6b7f96" font-size="9">12k</text>
+              <text x="116" y="66"  text-anchor="middle" fill="#6b7f96" font-size="9">18k</text>
+              <text x="186" y="76"  text-anchor="middle" fill="#6b7f96" font-size="9">14k</text>
+              <text x="256" y="46"  text-anchor="middle" fill="#e8edf5" font-size="9" font-weight="700">22k</text>
+              <text x="326" y="56"  text-anchor="middle" fill="#6b7f96" font-size="9">19k</text>
+              <text x="396" y="26"  text-anchor="middle" fill="#e8edf5" font-size="9" font-weight="700">27k</text>
+              <text x="466" y="41"  text-anchor="middle" fill="#00c896" font-size="9" font-weight="700">24k</text>
+            </svg>
+          </div>
+          <div class="chart-labels">
+            <span>19/Mai</span><span>20/Mai</span><span>21/Mai</span>
+            <span>22/Mai</span><span>23/Mai</span><span>24/Mai</span><span>Hoje</span>
+          </div>
+        </div>
+
+        <!-- Donut + activity -->
+        <div class="chart-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Vendas por canal</div>
+              <div class="card-sub">Distribuição de receita</div>
+            </div>
+          </div>
+          <div class="donut-wrap" style="margin-bottom:24px">
+            <svg class="donut" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="46" fill="none" stroke="#1e2a3a" stroke-width="16"/>
+              <!-- PDV 45% -->
+              <circle cx="60" cy="60" r="46" fill="none" stroke="#00c896" stroke-width="16"
+                stroke-dasharray="130 289" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+              <!-- Loja Online 30% -->
+              <circle cx="60" cy="60" r="46" fill="none" stroke="#0077ff" stroke-width="16"
+                stroke-dasharray="86 289" stroke-dashoffset="-130" transform="rotate(-90 60 60)"/>
+              <!-- Parceiros 25% -->
+              <circle cx="60" cy="60" r="46" fill="none" stroke="#ff6b35" stroke-width="16"
+                stroke-dasharray="73 289" stroke-dashoffset="-216" transform="rotate(-90 60 60)"/>
+              <text x="60" y="56" text-anchor="middle" fill="#e8edf5" font-size="14" font-weight="800" font-family="Syne">45%</text>
+              <text x="60" y="69" text-anchor="middle" fill="#6b7f96" font-size="8">PDV</text>
+            </svg>
+            <div class="donut-legend">
+              <div class="donut-item">
+                <div class="donut-dot" style="background:var(--accent)"></div>
+                PDV Físico
+                <span class="donut-pct">45%</span>
+              </div>
+              <div class="donut-item">
+                <div class="donut-dot" style="background:var(--accent2)"></div>
+                Loja Online
+                <span class="donut-pct">30%</span>
+              </div>
+              <div class="donut-item">
+                <div class="donut-dot" style="background:var(--warn)"></div>
+                Parceiros
+                <span class="donut-pct">25%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table + Activity -->
+      <div class="grid-equal">
+
+        <!-- Recent sales -->
+        <div class="chart-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Últimas Vendas</div>
+              <div class="card-sub">Hoje · 26/05/2026</div>
+            </div>
+            <button class="btn-sm btn-sm-ghost" style="font-size:12px">Ver todas</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Valor</th>
+                  <th>Status</th>
+                  <th>Hora</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="td-name">Posto Panorama</div><div class="td-sub">#V4892</div></td>
+                  <td style="font-weight:700;color:var(--accent)">R$ 3.200</td>
+                  <td><span class="status-pill ok">Aprovado</span></td>
+                  <td style="color:var(--muted)">14:32</td>
+                </tr>
+                <tr>
+                  <td><div class="td-name">Farmácia São José</div><div class="td-sub">#V4891</div></td>
+                  <td style="font-weight:700;color:var(--accent)">R$ 870</td>
+                  <td><span class="status-pill ok">Aprovado</span></td>
+                  <td style="color:var(--muted)">14:15</td>
+                </tr>
+                <tr>
+                  <td><div class="td-name">Mercado Central</div><div class="td-sub">#V4890</div></td>
+                  <td style="font-weight:700">R$ 5.460</td>
+                  <td><span class="status-pill pend">Pendente</span></td>
+                  <td style="color:var(--muted)">13:58</td>
+                </tr>
+                <tr>
+                  <td><div class="td-name">Auto Peças SP</div><div class="td-sub">#V4889</div></td>
+                  <td style="font-weight:700;color:var(--danger)">R$ 1.200</td>
+                  <td><span class="status-pill canc">Cancelado</span></td>
+                  <td style="color:var(--muted)">13:20</td>
+                </tr>
+                <tr>
+                  <td><div class="td-name">Distribuidora Alfa</div><div class="td-sub">#V4888</div></td>
+                  <td style="font-weight:700;color:var(--accent)">R$ 8.900</td>
+                  <td><span class="status-pill ok">Aprovado</span></td>
+                  <td style="color:var(--muted)">12:45</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Activity -->
+        <div class="chart-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Atividade Recente</div>
+              <div class="card-sub">Eventos do sistema</div>
+            </div>
+          </div>
+          <div class="activity-list">
+            <div class="activity-item">
+              <div class="act-dot-wrap">
+                <div class="act-dot"></div>
+                <div class="act-line"></div>
+              </div>
+              <div class="act-body">
+                <div class="act-text">NF-e <strong>#78210</strong> emitida com sucesso para Distribuidora Alfa</div>
+                <div class="act-time">há 3 min</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="act-dot-wrap">
+                <div class="act-dot blue"></div>
+                <div class="act-line"></div>
+              </div>
+              <div class="act-body">
+                <div class="act-text">Novo cliente <strong>Mercado Central</strong> cadastrado pelo vendedor Lucas</div>
+                <div class="act-time">há 18 min</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="act-dot-wrap">
+                <div class="act-dot orange"></div>
+                <div class="act-line"></div>
+              </div>
+              <div class="act-body">
+                <div class="act-text">Alerta de estoque: <strong>Produto #204</strong> abaixo do mínimo (3 un)</div>
+                <div class="act-time">há 45 min</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="act-dot-wrap">
+                <div class="act-dot"></div>
+                <div class="act-line"></div>
+              </div>
+              <div class="act-body">
+                <div class="act-text">Contas a pagar: fatura de <strong>R$ 4.200</strong> vence em 2 dias</div>
+                <div class="act-time">há 1h 12min</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="act-dot-wrap">
+                <div class="act-dot blue"></div>
+              </div>
+              <div class="act-body">
+                <div class="act-text">Conciliação bancária concluída: <strong>47 lançamentos</strong> confirmados</div>
+                <div class="act-time">há 2h 30min</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+
+  <script src="auth.js"></script>
+  <script>
+    NexoAuth.requireAuth();
+
+    // Sidebar toggle
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    const toggleIcon = document.getElementById('toggleIcon');
+    let collapsed = true;
+
+    function toggleSidebar() {
+      collapsed = !collapsed;
+      sidebar.classList.toggle('collapsed', collapsed);
+      mainContent.classList.toggle('collapsed', collapsed);
+      toggleIcon.className = collapsed ? 'bi bi-chevron-right' : 'bi bi-chevron-left';
+    }
+
+    // Active nav item
+    function setActive(el) {
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    // Chip toggle (chart period)
+    function setChip(el) {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    // Tooltip on sidebar collapse for nav labels
+    if (window.innerWidth <= 700) {
+      sidebar.classList.add('collapsed');
+      mainContent.classList.add('collapsed');
+      collapsed = true;
+      toggleIcon.className = 'bi bi-chevron-right';
+    }
+
+    NexoAuth.renderCurrentUser();
+  </script>
+</body>
+</html>

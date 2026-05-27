@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexoERP — Produtos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --bg:      #0a0d12;
+      --surface: #10151e;
+      --card:    #141b27;
+      --border:  #1e2a3a;
+      --accent:  #00c896;
+      --accent2: #0077ff;
+      --warn:    #ff6b35;
+      --danger:  #ff4757;
+      --text:    #e8edf5;
+      --muted:   #6b7f96;
+      --sidebar: 240px;
+      --sidebar-c: 68px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; display: flex; min-height: 100vh; overflow-x: hidden; }
+
+    /* ══ SIDEBAR ══ */
+    .sidebar { width: var(--sidebar); min-height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; transition: width .3s cubic-bezier(.4,0,.2,1); overflow: hidden; }
+    .sidebar.collapsed { width: var(--sidebar-c); }
+    .sidebar-brand { display: flex; align-items: center; gap: 12px; padding: 20px 18px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    .brand-icon { width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0; background: linear-gradient(135deg, var(--accent), #008a60); display: flex; align-items: center; justify-content: center; font-family: 'Syne',sans-serif; font-weight: 800; font-size: 13px; color: #021c14; }
+    .brand-text { font-family: 'Syne',sans-serif; font-size: 18px; font-weight: 800; letter-spacing: -.5px; transition: opacity .2s; }
+    .brand-text span { color: var(--accent); }
+    .sidebar.collapsed .brand-text { opacity: 0; }
+    .sidebar-toggle { position: absolute; top: 22px; right: -12px; width: 24px; height: 24px; border-radius: 50%; background: var(--card); border: 1px solid var(--border); color: var(--muted); font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; transition: color .2s, border-color .2s; }
+    .sidebar-toggle:hover { color: var(--text); border-color: var(--accent); }
+    .sidebar-section { padding: 10px 12px; }
+    .sidebar-section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); padding: 8px 6px 4px; white-space: nowrap; transition: opacity .2s; }
+    .sidebar.collapsed .sidebar-section-label { opacity: 0; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 9px 10px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 13.5px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: background .18s, color .18s; margin-bottom: 2px; }
+    .nav-item i { font-size: 17px; flex-shrink: 0; }
+    .nav-item:hover { background: var(--card); color: var(--text); }
+    .nav-item.active { background: rgba(0,200,150,.1); color: var(--accent); }
+    .nav-item .badge { margin-left: auto; flex-shrink: 0; background: var(--accent2); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 100px; }
+    .nav-label { transition: opacity .2s; }
+    .sidebar.collapsed .nav-label { opacity: 0; }
+    .sidebar.collapsed .badge { display: none; }
+    .sidebar-footer { margin-top: auto; padding: 12px; border-top: 1px solid var(--border); }
+    .user-row { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; transition: background .18s; }
+    .user-row:hover { background: var(--card); }
+    .user-avatar { width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0; background: linear-gradient(135deg,#2d5298,#1a3a7a); display: flex; align-items: center; justify-content: center; font-family: 'Syne',sans-serif; font-weight: 700; font-size: 12px; color: #fff; }
+    .user-info { overflow: hidden; transition: opacity .2s; }
+    .sidebar.collapsed .user-info { opacity: 0; }
+    .user-name { font-weight: 600; font-size: 13px; white-space: nowrap; }
+    .user-role { color: var(--muted); font-size: 11px; }
+
+    /* ══ MAIN ══ */
+    .main { margin-left: var(--sidebar); flex: 1; display: flex; flex-direction: column; min-height: 100vh; transition: margin-left .3s cubic-bezier(.4,0,.2,1); }
+    .main.collapsed { margin-left: var(--sidebar-c); }
+    .topbar { height: 64px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; position: sticky; top: 0; z-index: 50; }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .page-title { font-family: 'Syne',sans-serif; font-size: 18px; font-weight: 700; letter-spacing: -.5px; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .icon-btn { width: 36px; height: 36px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); color: var(--muted); font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: color .18s, border-color .18s; }
+    .icon-btn:hover { color: var(--text); border-color: var(--accent); }
+    .icon-btn .dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); border: 2px solid var(--surface); }
+
+    /* ══ CONTENT ══ */
+    .content { padding: 28px; flex: 1; }
+    .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+    .page-header h1 { font-family: 'Syne',sans-serif; font-size: 26px; font-weight: 800; letter-spacing: -1px; }
+    .page-header p { color: var(--muted); margin-top: 4px; font-size: 13px; }
+    .header-actions { display: flex; gap: 10px; }
+    .btn-sm { padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; font-family: 'DM Sans',sans-serif; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap; border: none; text-decoration: none; }
+    .btn-primary-sm { background: var(--accent); color: #021c14; }
+    .btn-primary-sm:hover { opacity: .88; }
+    .btn-ghost-sm { background: none; border: 1px solid var(--border) !important; color: var(--text); }
+    .btn-ghost-sm:hover { border-color: var(--muted) !important; }
+
+    /* KPI strip */
+    .kpi-strip { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
+    .kpi-mini { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; display: flex; align-items: center; gap: 14px; transition: border-color .25s; }
+    .kpi-mini:hover { border-color: rgba(0,200,150,.2); }
+    .kpi-mini-icon { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .kpi-mini-icon.g { background: rgba(0,200,150,.1); color: var(--accent); }
+    .kpi-mini-icon.b { background: rgba(0,119,255,.1); color: var(--accent2); }
+    .kpi-mini-icon.o { background: rgba(255,107,53,.1); color: var(--warn); }
+    .kpi-mini-icon.r { background: rgba(255,71,87,.1); color: var(--danger); }
+    .kpi-mini-val { font-family: 'Syne',sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -1px; }
+    .kpi-mini-lbl { color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+    /* Toolbar */
+    .toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+    .search-input { flex: 1; min-width: 220px; max-width: 360px; display: flex; align-items: center; gap: 8px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 9px 14px; transition: border-color .2s; }
+    .search-input:focus-within { border-color: var(--accent); }
+    .search-input input { background: none; border: none; outline: none; color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 13px; width: 100%; }
+    .search-input input::placeholder { color: var(--muted); }
+    .filter-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-btn { padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; background: var(--card); border: 1px solid var(--border); color: var(--muted); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all .18s; }
+    .filter-btn:hover { color: var(--text); border-color: var(--muted); }
+    .filter-btn.active { background: rgba(0,200,150,.08); border-color: var(--accent); color: var(--accent); }
+    .toolbar-right { margin-left: auto; display: flex; gap: 6px; }
+    .view-btn { width: 34px; height: 34px; border-radius: 7px; background: var(--card); border: 1px solid var(--border); color: var(--muted); font-size: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .18s; }
+    .view-btn.active { background: rgba(0,200,150,.08); border-color: var(--accent); color: var(--accent); }
+
+    /* ══ GRID VIEW ══ */
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+    .product-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; cursor: pointer; transition: border-color .25s, transform .25s, box-shadow .25s; }
+    .product-card:hover { border-color: rgba(0,200,150,.3); transform: translateY(-3px); box-shadow: 0 16px 48px rgba(0,0,0,.3); }
+    .pc-image { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 52px; position: relative; }
+    .pc-badge { position: absolute; top: 10px; right: 10px; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 100px; }
+    .pc-badge.ativo   { background: rgba(0,200,150,.15); color: var(--accent); }
+    .pc-badge.inativo { background: rgba(107,127,150,.15); color: var(--muted); }
+    .pc-badge.baixo   { background: rgba(255,107,53,.15); color: var(--warn); }
+    .pc-body { padding: 14px 16px; }
+    .pc-cat { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 4px; }
+    .pc-name { font-family: 'Syne',sans-serif; font-weight: 700; font-size: 14px; letter-spacing: -.3px; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pc-sku { color: var(--muted); font-size: 11px; margin-bottom: 12px; }
+    .pc-footer { display: flex; justify-content: space-between; align-items: center; }
+    .pc-price { font-family: 'Syne',sans-serif; font-size: 17px; font-weight: 800; color: var(--accent); }
+    .pc-stock { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 100px; }
+    .pc-stock.ok   { background: rgba(0,200,150,.1); color: var(--accent); }
+    .pc-stock.low  { background: rgba(255,107,53,.1); color: var(--warn); }
+    .pc-stock.zero { background: rgba(255,71,87,.1); color: var(--danger); }
+    .pc-actions { display: flex; gap: 6px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .pc-act-btn { flex: 1; padding: 7px; border-radius: 7px; border: 1px solid var(--border); background: none; color: var(--muted); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-family: 'DM Sans',sans-serif; font-size: 12px; font-weight: 600; transition: all .15s; }
+    .pc-act-btn:hover { color: var(--text); border-color: var(--muted); }
+    .pc-act-btn.del:hover { color: var(--danger); border-color: var(--danger); }
+
+    /* ══ LIST VIEW ══ */
+    .table-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; display: none; }
+    .table-card.show { display: block; }
+    .products-grid.hide { display: none; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th { padding: 13px 16px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); background: var(--surface); border-bottom: 1px solid var(--border); white-space: nowrap; cursor: pointer; user-select: none; }
+    thead th:hover { color: var(--text); }
+    tbody td { padding: 13px 16px; border-bottom: 1px solid rgba(30,42,58,.7); vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr { transition: background .15s; cursor: pointer; }
+    tbody tr:hover td { background: rgba(255,255,255,.025); }
+    .prod-cell { display: flex; align-items: center; gap: 12px; }
+    .prod-emoji { width: 38px; height: 38px; border-radius: 9px; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+    .prod-name { font-weight: 600; font-size: 13px; }
+    .prod-sku  { color: var(--muted); font-size: 11px; margin-top: 2px; }
+    .status-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 100px; font-size: 11px; font-weight: 600; }
+    .status-pill::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; }
+    .status-pill.ativo  { background: rgba(0,200,150,.1); color: var(--accent); }
+    .status-pill.inativo{ background: rgba(107,127,150,.1); color: var(--muted); }
+    .action-cell { display: flex; gap: 6px; opacity: 0; transition: opacity .15s; }
+    tbody tr:hover .action-cell { opacity: 1; }
+    .act-btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); font-size: 13px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .15s; }
+    .act-btn:hover { color: var(--text); border-color: var(--muted); }
+    .act-btn.del:hover { color: var(--danger); border-color: var(--danger); background: rgba(255,71,87,.06); }
+    .table-footer { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; }
+    .pagination { display: flex; gap: 4px; }
+    .pg-btn { width: 30px; height: 30px; border-radius: 6px; border: 1px solid var(--border); background: none; color: var(--muted); font-size: 12px; font-family: 'DM Sans',sans-serif; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .15s; }
+    .pg-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .pg-btn.active { background: var(--accent); border-color: var(--accent); color: #021c14; font-weight: 700; }
+
+    /* empty state */
+    .empty-state { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 64px 24px; text-align: center; }
+    .empty-state.show { display: flex; }
+    .empty-icon { font-size: 52px; color: var(--border); margin-bottom: 16px; }
+    .empty-state h3 { font-family: 'Syne',sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .empty-state p { color: var(--muted); font-size: 13px; }
+
+    /* ══ MODAL ══ */
+    .modal-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,.65); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .25s; }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal { background: var(--card); border: 1px solid var(--border); border-radius: 18px; width: 100%; max-width: 780px; max-height: 92vh; display: flex; flex-direction: column; transform: translateY(24px) scale(.97); transition: transform .3s cubic-bezier(.34,1.2,.64,1); overflow: hidden; }
+    .modal-overlay.open .modal { transform: none; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 22px 28px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .modal-header h2 { font-family: 'Syne',sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -.5px; }
+    .modal-close { width: 32px; height: 32px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .15s; }
+    .modal-close:hover { color: var(--text); border-color: var(--muted); }
+
+    /* tabs */
+    .modal-tabs { display: flex; padding: 0 28px; border-bottom: 1px solid var(--border); flex-shrink: 0; overflow-x: auto; }
+    .m-tab { padding: 14px 18px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .18s, border-color .18s; display: flex; align-items: center; gap: 7px; }
+    .m-tab i { font-size: 14px; }
+    .m-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .modal-body { flex: 1; overflow-y: auto; padding: 28px; }
+    .tab-panel { display: none; animation: fadeIn .25s ease; }
+    .tab-panel.active { display: block; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+    /* form elements */
+    .form-section { margin-bottom: 28px; }
+    .form-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-grid.g3 { grid-template-columns: 1fr 1fr 1fr; }
+    .form-grid.g1 { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1/-1; }
+    label.lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
+    .inp-wrap { position: relative; display: flex; align-items: center; }
+    .inp-wrap i.pre { position: absolute; left: 12px; color: var(--muted); font-size: 15px; pointer-events: none; z-index:1; }
+    .inp-wrap .suf-txt { position: absolute; right: 12px; color: var(--muted); font-size: 12px; font-weight: 600; pointer-events: none; }
+    input.field, select.field, textarea.field { width: 100%; padding: 10px 12px 10px 36px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 13px; outline: none; transition: border-color .2s, box-shadow .2s; }
+    input.field.ni, select.field.ni { padding-left: 12px; }
+    textarea.field { padding-left: 12px; resize: vertical; min-height: 80px; }
+    select.field { cursor: pointer; -webkit-appearance: none; }
+    select.field option { background: var(--card); }
+    input.field:focus, select.field:focus, textarea.field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,200,150,.08); }
+    input.field.err { border-color: var(--danger); }
+    input.field::placeholder, textarea.field::placeholder { color: var(--muted); }
+    .field-err { font-size: 11px; color: var(--danger); display: none; }
+    .field-err.show { display: block; }
+
+    /* emoji picker */
+    .emoji-picker-wrap { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+    .emoji-display { width: 80px; height: 80px; border-radius: 16px; background: var(--surface); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 44px; cursor: pointer; transition: border-color .2s; flex-shrink: 0; }
+    .emoji-display:hover { border-color: var(--accent); }
+    .emoji-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+    .emoji-opt { width: 38px; height: 38px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; transition: all .15s; }
+    .emoji-opt:hover { border-color: var(--accent); background: rgba(0,200,150,.07); transform: scale(1.1); }
+    .emoji-opt.sel { border-color: var(--accent); background: rgba(0,200,150,.12); }
+
+    /* color swatch */
+    .color-swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+    .swatch { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform .15s, border-color .15s; }
+    .swatch:hover { transform: scale(1.15); }
+    .swatch.sel { border-color: var(--text); }
+
+    /* toggle switch */
+    .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(30,42,58,.5); }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-label { font-size: 13px; font-weight: 500; }
+    .toggle-sub { color: var(--muted); font-size: 11px; margin-top: 1px; }
+    .toggle { width: 40px; height: 22px; border-radius: 100px; background: var(--border); cursor: pointer; position: relative; transition: background .2s; flex-shrink: 0; }
+    .toggle.on { background: var(--accent); }
+    .toggle::after { content:''; position: absolute; width: 16px; height: 16px; border-radius: 50%; background: #fff; top: 3px; left: 3px; transition: left .2s; }
+    .toggle.on::after { left: 21px; }
+
+    /* image upload zone */
+    .upload-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 32px; text-align: center; cursor: pointer; transition: border-color .2s, background .2s; }
+    .upload-zone:hover { border-color: var(--accent); background: rgba(0,200,150,.03); }
+    .upload-zone i { font-size: 32px; color: var(--muted); margin-bottom: 12px; display: block; }
+    .upload-zone p { color: var(--muted); font-size: 13px; }
+    .upload-zone span { color: var(--accent); font-weight: 600; }
+
+    /* modal footer */
+    .modal-footer { display: flex; justify-content: space-between; align-items: center; padding: 18px 28px; border-top: 1px solid var(--border); flex-shrink: 0; }
+    .mf-info { color: var(--muted); font-size: 12px; }
+    .mf-actions { display: flex; gap: 10px; }
+    .btn-cancel { padding: 10px 20px; border-radius: 9px; border: 1px solid var(--border); background: none; color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: border-color .18s; }
+    .btn-cancel:hover { border-color: var(--muted); }
+    .btn-save { padding: 10px 24px; border-radius: 9px; border: none; background: var(--accent); color: #021c14; font-family: 'DM Sans',sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: opacity .18s; }
+    .btn-save:hover { opacity: .88; }
+
+    /* detail panel */
+    .detail-panel { position: fixed; top: 0; right: -460px; bottom: 0; width: 440px; background: var(--card); border-left: 1px solid var(--border); z-index: 200; display: flex; flex-direction: column; transition: right .3s cubic-bezier(.4,0,.2,1); overflow-y: auto; }
+    .detail-panel.open { right: 0; }
+    .dp-header { padding: 22px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .dp-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+    .dp-emoji-big { width: 64px; height: 64px; border-radius: 14px; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 34px; }
+    .dp-prod-name { font-family: 'Syne',sans-serif; font-size: 18px; font-weight: 800; letter-spacing: -.3px; margin-top: 4px; }
+    .dp-sku { color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .dp-price-big { font-family: 'Syne',sans-serif; font-size: 28px; font-weight: 800; color: var(--accent); margin-top: 8px; }
+    .dp-body { padding: 20px 24px; flex: 1; }
+    .dp-section { margin-bottom: 22px; }
+    .dp-section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 12px; }
+    .dp-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(30,42,58,.5); font-size: 13px; }
+    .dp-row:last-child { border-bottom: none; }
+    .dp-label { color: var(--muted); }
+    .dp-val { font-weight: 500; text-align: right; }
+    .dp-actions { display: flex; gap: 10px; padding: 16px 24px; border-top: 1px solid var(--border); flex-shrink: 0; }
+    .dp-btn { flex: 1; padding: 10px; border-radius: 9px; font-size: 13px; font-weight: 600; font-family: 'DM Sans',sans-serif; cursor: pointer; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; transition: opacity .18s; }
+    .dp-btn.primary { background: var(--accent); color: #021c14; border: none; }
+    .dp-btn.ghost { background: none; border: 1px solid var(--border); color: var(--text); }
+    .dp-btn:hover { opacity: .85; }
+
+    /* toast */
+    .toast { position: fixed; bottom: 28px; right: 28px; z-index: 2000; background: var(--card); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; gap: 12px; font-size: 13px; box-shadow: 0 12px 40px rgba(0,0,0,.4); transform: translateY(80px); opacity: 0; transition: transform .4s cubic-bezier(.34,1.2,.64,1), opacity .3s; }
+    .toast.show { transform: none; opacity: 1; }
+    .toast i { color: var(--accent); font-size: 20px; }
+
+    /* stock bar */
+    .stock-bar-wrap { margin-top: 6px; }
+    .stock-bar-bg { height: 4px; background: var(--border); border-radius: 100px; overflow: hidden; }
+    .stock-bar-fill { height: 100%; border-radius: 100px; transition: width .4s; }
+
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    @media(max-width:900px) {
+      .kpi-strip { grid-template-columns: repeat(2,1fr); }
+      .sidebar { width: var(--sidebar-c); }
+      .main { margin-left: var(--sidebar-c); }
+      .form-grid.g3 { grid-template-columns: 1fr 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  
+    /* ── Hover automático da sidebar ── */
+    .sidebar { transition: width .28s cubic-bezier(.4,0,.2,1); }
+    .sidebar.collapsed:hover { width: var(--sidebar); }
+    .sidebar.collapsed:hover .brand-text,
+    .sidebar.collapsed:hover .sidebar-section-label,
+    .sidebar.collapsed:hover .nav-label,
+    .sidebar.collapsed:hover .badge,
+    .sidebar.collapsed:hover .user-info { opacity: 1; display: flex;
+      flex-direction: column; }
+
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar collapsed" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">N</div>
+    <span class="brand-text">Nexo<span>ERP</span></span>
+  </div>
+  <div class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle">
+    <i class="bi bi-chevron-right" id="toggleIcon"></i>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Principal</div>
+      <a href="dashboard.html" class="nav-item"><i class="bi bi-grid-1x2-fill"></i><span class="nav-label">Dashboard</span></a>
+      <a href="pdv.html" class="nav-item"><i class="bi bi-display"></i><span class="nav-label">PDV</span></a>
+      <a href="vendas.html" class="nav-item"><i class="bi bi-cart4"></i><span class="nav-label">Vendas</span><span class="badge">12</span></a>
+      <a href="clientes.html" class="nav-item"><i class="bi bi-people-fill"></i><span class="nav-label">Clientes</span></a>
+      <a href="produtos.html" class="nav-item active"><i class="bi bi-box-seam-fill"></i><span class="nav-label">Produtos</span></a>
+      <a href="estoque.html" class="nav-item"><i class="bi bi-stack"></i><span class="nav-label">Estoque</span></a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Financeiro</div>
+      <a href="#" class="nav-item"><i class="bi bi-graph-up-arrow"></i><span class="nav-label">Relatórios</span></a>
+      <a href="#" class="nav-item"><i class="bi bi-credit-card-2-back-fill"></i><span class="nav-label">Financeiro</span></a>
+      <a href="#" class="nav-item"><i class="bi bi-receipt-cutoff"></i><span class="nav-label">Fiscal / NF-e</span></a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Sistema</div>
+      <a href="#" class="nav-item"><i class="bi bi-briefcase-fill"></i><span class="nav-label">Parceiros</span></a>
+      <a href="#" class="nav-item"><i class="bi bi-gear-fill"></i><span class="nav-label">Configurações</span></a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="user-avatar">JD</div>
+      <div class="user-info">
+        <div class="user-name">João Desenvolvedor</div>
+        <div class="user-role">Administrador</div>
+      </div>
+      <i class="bi bi-three-dots-vertical" style="color:var(--muted);margin-left:auto;font-size:15px;flex-shrink:0"></i>
+    </div>
+    <button class="nav-item" type="button" onclick="NexoAuth.confirmLogout()" style="width:100%;border:0;background:transparent;margin-top:8px">
+      <i class="bi bi-box-arrow-left"></i><span class="nav-label">Sair</span>
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main collapsed" id="mainContent">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="page-title">Produtos</span>
+      <span style="color:var(--muted);font-size:12px">/</span>
+      <span style="color:var(--muted);font-size:13px">Catálogo</span>
+    </div>
+    <div class="topbar-right">
+      <div class="icon-btn"><i class="bi bi-bell"></i><div class="dot"></div></div>
+      <div class="icon-btn"><i class="bi bi-question-circle"></i></div>
+      <div class="user-avatar">JD</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="page-header">
+      <div>
+        <h1>Produtos</h1>
+        <p>Gerencie seu catálogo de produtos, preços e estoque.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-sm btn-ghost-sm"><i class="bi bi-download"></i> Exportar</button>
+        <button class="btn-sm btn-ghost-sm"><i class="bi bi-upload"></i> Importar</button>
+        <button class="btn-sm btn-primary-sm" onclick="openModal()"><i class="bi bi-plus-lg"></i> Novo Produto</button>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-strip">
+      <div class="kpi-mini"><div class="kpi-mini-icon g"><i class="bi bi-box-seam-fill"></i></div><div><div class="kpi-mini-val" id="kpi-total">0</div><div class="kpi-mini-lbl">Total de produtos</div></div></div>
+      <div class="kpi-mini"><div class="kpi-mini-icon b"><i class="bi bi-check-circle-fill"></i></div><div><div class="kpi-mini-val" id="kpi-ativos">0</div><div class="kpi-mini-lbl">Ativos</div></div></div>
+      <div class="kpi-mini"><div class="kpi-mini-icon o"><i class="bi bi-exclamation-triangle-fill"></i></div><div><div class="kpi-mini-val" id="kpi-baixo">0</div><div class="kpi-mini-lbl">Estoque baixo</div></div></div>
+      <div class="kpi-mini"><div class="kpi-mini-icon r"><i class="bi bi-x-circle-fill"></i></div><div><div class="kpi-mini-val" id="kpi-zerado">0</div><div class="kpi-mini-lbl">Sem estoque</div></div></div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search-input">
+        <i class="bi bi-search" style="color:var(--muted)"></i>
+        <input type="text" id="searchInput" placeholder="Buscar por nome, SKU, código de barras..." oninput="applyFilters()">
+      </div>
+      <div class="filter-group">
+        <button class="filter-btn active" onclick="setFilter(this,'todos')">Todos</button>
+        <button class="filter-btn" onclick="setFilter(this,'ativo')">Ativos</button>
+        <button class="filter-btn" onclick="setFilter(this,'inativo')">Inativos</button>
+        <button class="filter-btn" onclick="setFilter(this,'baixo')"><i class="bi bi-exclamation-triangle"></i> Estoque baixo</button>
+        <button class="filter-btn" onclick="setFilter(this,'cat')"><i class="bi bi-tag"></i> Categoria</button>
+      </div>
+      <div class="toolbar-right">
+        <div class="view-btn active" id="vbtn-grid" title="Grade" onclick="setView('grid')"><i class="bi bi-grid-3x3-gap-fill"></i></div>
+        <div class="view-btn" id="vbtn-list" title="Lista" onclick="setView('list')"><i class="bi bi-list-ul"></i></div>
+      </div>
+    </div>
+
+    <!-- GRID VIEW -->
+    <div class="products-grid" id="gridView"></div>
+
+    <!-- LIST VIEW -->
+    <div class="table-card" id="listView">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th onclick="sortProducts('nome')">Produto ↕</th>
+              <th>Categoria</th>
+              <th onclick="sortProducts('preco')">Preço ↕</th>
+              <th onclick="sortProducts('estoque')">Estoque ↕</th>
+              <th>Unidade</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+        <div class="empty-state" id="emptyList">
+          <div class="empty-icon"><i class="bi bi-box-seam"></i></div>
+          <h3>Nenhum produto encontrado</h3>
+          <p>Tente ajustar os filtros ou cadastre um novo produto.</p>
+        </div>
+      </div>
+      <div class="table-footer">
+        <span id="tableInfo">—</span>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+
+    <div class="empty-state" id="emptyGrid">
+      <div class="empty-icon"><i class="bi bi-box-seam"></i></div>
+      <h3>Nenhum produto encontrado</h3>
+      <p>Cadastre seu primeiro produto clicando em "Novo Produto".</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2 id="modalTitle">Novo Produto</h2>
+        <div style="color:var(--muted);font-size:12px;margin-top:2px" id="modalSub">Preencha as informações do produto</div>
+      </div>
+      <div class="modal-close" onclick="closeModal()"><i class="bi bi-x-lg"></i></div>
+    </div>
+
+    <div class="modal-tabs">
+      <div class="m-tab active" onclick="switchTab(this,'t-geral')"><i class="bi bi-info-circle"></i> Geral</div>
+      <div class="m-tab" onclick="switchTab(this,'t-preco')"><i class="bi bi-currency-dollar"></i> Preço & Fiscal</div>
+      <div class="m-tab" onclick="switchTab(this,'t-estoque')"><i class="bi bi-stack"></i> Estoque</div>
+      <div class="m-tab" onclick="switchTab(this,'t-fotos')"><i class="bi bi-image"></i> Fotos</div>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- TAB GERAL -->
+      <div class="tab-panel active" id="t-geral">
+        <!-- Emoji picker -->
+        <div class="form-section">
+          <div class="form-section-title">Ícone do produto</div>
+          <div class="emoji-picker-wrap">
+            <div class="emoji-display" id="emojiDisplay" title="Clique para trocar">📦</div>
+            <div class="emoji-grid" id="emojiGrid"></div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Identificação</div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label class="lbl">Nome do produto *</label>
+              <div class="inp-wrap"><i class="bi bi-box-seam pre"></i>
+                <input class="field" type="text" id="f-nome" placeholder="Ex: Parafuso Sextavado 8mm">
+              </div>
+              <span class="field-err" id="e-nome">Campo obrigatório.</span>
+            </div>
+            <div class="form-group">
+              <label class="lbl">SKU / Código interno</label>
+              <div class="inp-wrap"><i class="bi bi-upc pre"></i>
+                <input class="field" type="text" id="f-sku" placeholder="PRD-0001">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="lbl">Código de barras (EAN)</label>
+              <div class="inp-wrap"><i class="bi bi-upc-scan pre"></i>
+                <input class="field" type="text" id="f-ean" placeholder="7891234567890">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="lbl">Categoria</label>
+              <div class="inp-wrap"><i class="bi bi-tag pre"></i>
+                <select class="field" id="f-cat">
+                  <option value="">Selecione...</option>
+                  <option>Alimentos</option>
+                  <option>Bebidas</option>
+                  <option>Limpeza</option>
+                  <option>Higiene</option>
+                  <option>Eletrônicos</option>
+                  <option>Ferramentas</option>
+                  <option>Vestuário</option>
+                  <option>Medicamentos</option>
+                  <option>Peças / Auto</option>
+                  <option>Construção</option>
+                  <option>Informática</option>
+                  <option>Outros</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="lbl">Marca / Fabricante</label>
+              <div class="inp-wrap"><i class="bi bi-building pre"></i>
+                <input class="field" type="text" id="f-marca" placeholder="Ex: Tramontina">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="lbl">Unidade de medida *</label>
+              <div class="inp-wrap"><i class="bi bi-rulers pre"></i>
+                <select class="field" id="f-unidade">
+                  <option value="un">UN — Unidade</option>
+                  <option value="cx">CX — Caixa</option>
+                  <option value="pc">PC — Peça</option>
+                  <option value="kg">KG — Quilo</option>
+                  <option value="g">G — Grama</option>
+                  <option value="l">L — Litro</option>
+                  <option value="ml">ML — Mililitro</option>
+                  <option value="m">M — Metro</option>
+                  <option value="m2">M² — Metro quadrado</option>
+                  <option value="par">PAR — Par</option>
+                  <option value="pct">PCT — Pacote</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group full">
+              <label class="lbl">Descrição</label>
+              <textarea class="field" id="f-desc" placeholder="Descreva o produto: características, especificações, aplicações..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Cor do card</div>
+          <div class="color-swatches" id="colorSwatches"></div>
+        </div>
+      </div>
+
+      <!-- TAB PREÇO -->
+      <div class="tab-panel" id="t-preco">
+        <div class="form-section">
+          <div class="form-section-title">Preços de venda</div>
+          <div class="form-grid g3">
+            <div class="form-group">
+              <label class="lbl">Preço de venda *</label>
+              <div class="inp-wrap"><i class="bi bi-currency-dollar pre"></i>
+                <input class="field" type="text" id="f-preco" placeholder="0,00" oninput="calcMargem()">
+              </div>
+              <span class="field-err" id="e-preco">Informe o preço.</span>
+            </div>
+            <div class="form-group">
+              <label class="lbl">Preço de custo</label>
+              <div class="inp-wrap"><i class="bi bi-currency-dollar pre"></i>
+                <input class="field" type="text" id="f-custo" placeholder="0,00" oninput="calcMargem()">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="lbl">Margem de lucro</label>
+              <div class="inp-wrap"><i class="bi bi-percent pre"></i>
+                <input class="field ni" type="text" id="f-margem" placeholder="—" readonly style="padding-left:36px;background:var(--bg);color:var(--accent);font-weight:700">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="lbl">Preço mínimo</label>
+              <div class="inp-wrap"><i class="bi bi-arrow-down pre"></i>
+                <input class="field" type="text" id="f-precoMin" placeholder="0,00">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="lbl">Desconto máx. (%)</label>
+              <div class="inp-wrap"><i class="bi bi-percent pre"></i>
+                <input class="field" type="text" id="f-descMax" placeholder="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="lbl">Tabela de preço</label>
+              <div class="inp-wrap"><i class="bi bi-table pre"></i>
+                <select class="field" id="f-tabela">
+                  <option>Padrão</option>
+                  <option>Atacado</option>
+                  <option>VIP</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Dados fiscais</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="lbl">NCM</label>
+              <div class="inp-wrap"><i class="bi bi-file-earmark-text pre"></i>
+                <input class="field" type="text" id="f-ncm" placeholder="0000.00.00">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="lbl">CEST</label>
+              <div class="inp-wrap"><i class="bi bi-file-earmark-text pre"></i>
+                <input class="field" type="text" id="f-cest" placeholder="00.000.00">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="lbl">CFOP</label>
+              <div class="inp-wrap"><i class="bi bi-arrow-right-square pre"></i>
+                <select class="field" id="f-cfop">
+                  <option value="">Selecione...</option>
+                  <option value="5102">5102 — Venda dentro do estado</option>
+                  <option value="6102">6102 — Venda fora do estado</option>
+                  <option value="5405">5405 — ST</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="lbl">CST / CSOSN</label>
+              <div class="inp-wrap"><i class="bi bi-shield-check pre"></i>
+                <select class="field" id="f-cst">
+                  <option value="">Selecione...</option>
+                  <option value="400">400 — Isenta</option>
+                  <option value="500">500 — ST</option>
+                  <option value="102">102 — Tributado sem ST</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="lbl">Alíquota ICMS (%)</label>
+              <div class="inp-wrap"><i class="bi bi-percent pre"></i>
+                <input class="field" type="text" id="f-icms" placeholder="12">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="lbl">PIS / COFINS (%)</label>
+              <div class="inp-wrap"><i class="bi bi-percent pre"></i>
+                <input class="field" type="text" id="f-pis" placeholder="3,65">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB ESTOQUE -->
+      <div class="tab-panel" id="t-estoque">
+        <div class="form-section">
+          <div class="form-section-title">Quantidades</div>
+          <div class="form-grid g3">
+            <div class="form-group">
+              <label class="lbl">Estoque atual *</label>
+              <div class="inp-wrap"><i class="bi bi-stack pre"></i>
+                <input class="field" type="number" id="f-estoque" placeholder="0" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="lbl">Estoque mínimo</label>
+              <div class="inp-wrap"><i class="bi bi-arrow-down-square pre"></i>
+                <input class="field" type="number" id="f-estoqueMin" placeholder="5" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="lbl">Estoque máximo</label>
+              <div class="inp-wrap"><i class="bi bi-arrow-up-square pre"></i>
+                <input class="field" type="number" id="f-estoqueMax" placeholder="100" min="0">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Localização e fornecedor</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="lbl">Depósito / Localização</label>
+              <div class="inp-wrap"><i class="bi bi-geo-alt pre"></i>
+                <select class="field" id="f-deposito">
+                  <option>Depósito Principal</option>
+                  <option>Loja 1</option>
+                  <option>Loja 2</option>
+                  <option>Galpão externo</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="lbl">Posição (prateleira)</label>
+              <div class="inp-wrap"><i class="bi bi-grid pre"></i>
+                <input class="field" type="text" id="f-posicao" placeholder="Ex: A-03-02">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="lbl">Fornecedor principal</label>
+              <div class="inp-wrap"><i class="bi bi-truck pre"></i>
+                <select class="field" id="f-fornecedor">
+                  <option value="">Sem fornecedor</option>
+                  <option>Fornecedor A</option>
+                  <option>Fornecedor B</option>
+                  <option>Fornecedor C</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="lbl">Prazo de reposição (dias)</label>
+              <div class="inp-wrap"><i class="bi bi-calendar-week pre"></i>
+                <input class="field" type="number" id="f-prazo" placeholder="7" min="0">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Configurações de estoque</div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Controlar estoque</div><div class="toggle-sub">Avisar quando atingir estoque mínimo</div></div>
+            <div class="toggle on" id="tog-estoque" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Permitir venda sem estoque</div><div class="toggle-sub">Vender mesmo com saldo zerado</div></div>
+            <div class="toggle" id="tog-venda" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Produto perecível</div><div class="toggle-sub">Controlar validade e lote</div></div>
+            <div class="toggle" id="tog-perecivel" onclick="this.classList.toggle('on')"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB FOTOS -->
+      <div class="tab-panel" id="t-fotos">
+        <div class="form-section">
+          <div class="form-section-title">Imagens do produto</div>
+          <div class="upload-zone" onclick="alert('Em produção, aqui abriria o seletor de arquivos.')">
+            <i class="bi bi-cloud-upload"></i>
+            <p>Arraste imagens aqui ou <span>clique para selecionar</span></p>
+            <p style="margin-top:6px;font-size:11px">PNG, JPG, WEBP até 5MB · Recomendado: 800×800px</p>
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="form-section-title">Status do produto</div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Produto ativo</div><div class="toggle-sub">Aparece nas vendas e catálogo</div></div>
+            <div class="toggle on" id="tog-ativo" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Exibir no PDV</div><div class="toggle-sub">Aparecer na tela de vendas</div></div>
+            <div class="toggle on" id="tog-pdv" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Produto em destaque</div><div class="toggle-sub">Destacar no catálogo e PDV</div></div>
+            <div class="toggle" id="tog-destaque" onclick="this.classList.toggle('on')"></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /modal-body -->
+
+    <div class="modal-footer">
+      <div class="mf-info" id="mf-info">* Campos obrigatórios</div>
+      <div class="mf-actions">
+        <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+        <button class="btn-save" onclick="saveProduct()"><i class="bi bi-check2"></i> Salvar produto</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL PANEL -->
+<div class="detail-panel" id="detailPanel">
+  <div class="dp-header">
+    <div class="dp-top">
+      <div class="dp-emoji-big" id="dp-emoji"></div>
+      <div class="modal-close" onclick="closeDetail()"><i class="bi bi-x-lg"></i></div>
+    </div>
+    <div class="dp-prod-name" id="dp-name"></div>
+    <div class="dp-sku" id="dp-sku"></div>
+    <div class="dp-price-big" id="dp-price"></div>
+  </div>
+  <div class="dp-body">
+    <div class="dp-section">
+      <div class="dp-section-title">Informações</div>
+      <div id="dp-info"></div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-section-title">Estoque</div>
+      <div id="dp-stock"></div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-section-title">Fiscal</div>
+      <div id="dp-fiscal"></div>
+    </div>
+  </div>
+  <div class="dp-actions">
+    <button class="dp-btn primary" onclick="editProduct()"><i class="bi bi-pencil"></i> Editar</button>
+    <button class="dp-btn ghost" onclick="closeDetail()"><i class="bi bi-x"></i> Fechar</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="bi bi-check-circle-fill"></i><span id="toastMsg">Produto salvo!</span></div>
+
+<script src="auth.js"></script>
+<script>
+NexoAuth.requireAuth();
+
+// ─── CONSTANTS ───────────────────────────────────────────
+const EMOJIS = ['📦','🛒','🔧','🔩','💊','🧴','🧹','🍎','🥤','👕','💻','📱','🔌','🪑','🛋','🚗','🔑','📋','🧰','⚡','🌿','🧪','🎯','🏷️','🪣','🔦','🧲','📏','🖨️','📸'];
+const COLORS = ['#1e2a3a','#0d2a1f','#0d1a2d','#2a1a0d','#2a0d1a','#1a0d2a','#0d2a2a','#2a2a0d'];
+const SWATCHES = ['#00c896','#0077ff','#ff6b35','#ff4757','#a855f7','#ec4899','#f59e0b','#14b8a6','#6b7f96','#e8edf5'];
+
+let products = [
+  { id:1, nome:'Arroz Integral 1kg', sku:'ALI-001', ean:'7891234500001', cat:'Alimentos', marca:'TioJoão', unidade:'un', preco:8.90, custo:5.20, estoque:142, estoqueMin:20, estoqueMax:300, status:'ativo', emoji:'🍎', cor:'#1e2a3a', ncm:'1006.30.21', desc:'Arroz integral tipo 1, embalagem 1kg.', deposito:'Depósito Principal', fornecedor:'Fornecedor A', cadastro:'10/01/2026' },
+  { id:2, nome:'Detergente Neutro 500ml', sku:'LIM-002', ean:'7891234500002', cat:'Limpeza', marca:'Ypê', unidade:'un', preco:3.50, custo:1.80, estoque:87, estoqueMin:15, estoqueMax:200, status:'ativo', emoji:'🧹', cor:'#0d2a1f', ncm:'3402.20.00', desc:'Detergente neutro para louças.', deposito:'Depósito Principal', fornecedor:'Fornecedor B', cadastro:'10/01/2026' },
+  { id:3, nome:'Parafuso Sextavado 8mm', sku:'FER-003', ean:'7891234500003', cat:'Ferramentas', marca:'Tramontina', unidade:'cx', preco:24.90, custo:14.00, estoque:3, estoqueMin:10, estoqueMax:100, status:'ativo', emoji:'🔩', cor:'#0d1a2d', ncm:'7318.15.00', desc:'Parafuso sextavado zincado 8mm, caixa com 100 unidades.', deposito:'Depósito Principal', fornecedor:'Fornecedor C', cadastro:'15/01/2026' },
+  { id:4, nome:'Smartphone Samsung A15', sku:'ELE-004', ean:'7891234500004', cat:'Eletrônicos', marca:'Samsung', unidade:'un', preco:1299.00, custo:890.00, estoque:8, estoqueMin:3, estoqueMax:30, status:'ativo', emoji:'📱', cor:'#0d2a2a', ncm:'8517.12.31', desc:'Smartphone Android 128GB, tela 6.5", câmera 50MP.', deposito:'Loja 1', fornecedor:'Fornecedor A', cadastro:'20/01/2026' },
+  { id:5, nome:'Camiseta Polo M', sku:'VES-005', ean:'7891234500005', cat:'Vestuário', marca:'Hering', unidade:'un', preco:79.90, custo:35.00, estoque:0, estoqueMin:5, estoqueMax:50, status:'ativo', emoji:'👕', cor:'#2a1a0d', ncm:'6105.10.00', desc:'Camiseta polo masculina manga curta, tamanho M.', deposito:'Loja 1', fornecedor:'Fornecedor B', cadastro:'02/02/2026' },
+  { id:6, nome:'Ibuprofeno 600mg cx30', sku:'MED-006', ean:'7891234500006', cat:'Medicamentos', marca:'EMS', unidade:'cx', preco:18.90, custo:9.50, estoque:54, estoqueMin:10, estoqueMax:200, status:'ativo', emoji:'💊', cor:'#2a0d1a', ncm:'3004.90.69', desc:'Ibuprofeno 600mg, caixa com 30 comprimidos.', deposito:'Depósito Principal', fornecedor:'Fornecedor C', cadastro:'10/02/2026' },
+  { id:7, nome:'Notebook Dell Inspiron', sku:'ELE-007', ean:'7891234500007', cat:'Informática', marca:'Dell', unidade:'un', preco:3499.00, custo:2600.00, estoque:2, estoqueMin:2, estoqueMax:10, status:'ativo', emoji:'💻', cor:'#1a0d2a', ncm:'8471.30.12', desc:'Notebook i5 12ª geração, 8GB RAM, SSD 256GB.', deposito:'Loja 1', fornecedor:'Fornecedor A', cadastro:'14/02/2026' },
+  { id:8, nome:'Café Torrado 500g', sku:'ALI-008', ean:'7891234500008', cat:'Alimentos', marca:'Pilão', unidade:'un', preco:14.50, custo:8.90, estoque:0, estoqueMin:20, estoqueMax:150, status:'inativo', emoji:'☕', cor:'#2a2a0d', ncm:'0901.21.00', desc:'Café torrado e moído tradicional 500g.', deposito:'Depósito Principal', fornecedor:'Fornecedor B', cadastro:'01/03/2026' },
+];
+
+let filtered = [...products];
+let currentFilter = 'todos';
+let viewMode = 'grid';
+let currentPage = 1;
+const perPage = 8;
+let editingId = null;
+let selectedEmoji = '📦';
+let selectedColor = '#1e2a3a';
+let currentDetailId = null;
+let sortDir = 1;
+
+// ─── INIT ─────────────────────────────────────────────────
+function init() {
+  buildEmojiGrid();
+  buildColorSwatches();
+  applyFilters();
+}
+
+// ─── EMOJI ───────────────────────────────────────────────
+function buildEmojiGrid() {
+  const grid = document.getElementById('emojiGrid');
+  grid.innerHTML = EMOJIS.map(e =>
+    `<div class="emoji-opt ${e===selectedEmoji?'sel':''}" onclick="pickEmoji('${e}')">${e}</div>`
+  ).join('');
+}
+function pickEmoji(e) {
+  selectedEmoji = e;
+  document.getElementById('emojiDisplay').textContent = e;
+  document.querySelectorAll('.emoji-opt').forEach(el => el.classList.toggle('sel', el.textContent===e));
+}
+
+// ─── COLOR SWATCHES ──────────────────────────────────────
+function buildColorSwatches() {
+  const wrap = document.getElementById('colorSwatches');
+  wrap.innerHTML = SWATCHES.map(c =>
+    `<div class="swatch ${c===selectedColor?'sel':''}" style="background:${c}" onclick="pickColor('${c}')"></div>`
+  ).join('');
+}
+function pickColor(c) {
+  selectedColor = c;
+  document.querySelectorAll('.swatch').forEach(el => el.classList.toggle('sel', el.style.background===c||getComputedStyle(el).backgroundColor===hexToRgb(c)));
+  // simpler approach:
+  document.querySelectorAll('.swatch').forEach((el,i) => el.classList.toggle('sel', SWATCHES[i]===c));
+}
+function hexToRgb(hex) {
+  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+// ─── FILTERS ─────────────────────────────────────────────
+function setFilter(el, val) {
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  currentFilter = val;
+  currentPage = 1;
+  applyFilters();
+}
+function applyFilters() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  filtered = products.filter(p => {
+    const matchQ = !q || p.nome.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) || p.ean.includes(q) || p.cat.toLowerCase().includes(q);
+    let matchF = true;
+    if(currentFilter==='ativo')  matchF = p.status==='ativo';
+    if(currentFilter==='inativo')matchF = p.status==='inativo';
+    if(currentFilter==='baixo')  matchF = p.estoque > 0 && p.estoque <= p.estoqueMin;
+    if(currentFilter==='cat')    matchF = true; // all cats for demo
+    return matchQ && matchF;
+  });
+  currentPage = 1;
+  renderAll();
+}
+
+// ─── VIEW MODE ────────────────────────────────────────────
+function setView(mode) {
+  viewMode = mode;
+  document.getElementById('vbtn-grid').classList.toggle('active', mode==='grid');
+  document.getElementById('vbtn-list').classList.toggle('active', mode==='list');
+  document.getElementById('gridView').classList.toggle('hide', mode!=='grid');
+  document.getElementById('listView').classList.toggle('show', mode==='list');
+  renderAll();
+}
+
+// ─── RENDER ───────────────────────────────────────────────
+function renderAll() {
+  updateKPIs();
+  if(viewMode==='grid') renderGrid();
+  else renderList();
+}
+
+function stockStatus(p) {
+  if(p.estoque===0) return ['zero','Zerado'];
+  if(p.estoque<=p.estoqueMin) return ['low','Baixo'];
+  return ['ok', p.estoque+' '+p.unidade];
+}
+
+function renderGrid() {
+  const grid = document.getElementById('gridView');
+  const emptyG = document.getElementById('emptyGrid');
+  const slice = filtered.slice((currentPage-1)*perPage, currentPage*perPage);
+  if(!filtered.length) { grid.innerHTML=''; emptyG.classList.add('show'); return; }
+  emptyG.classList.remove('show');
+
+  grid.innerHTML = slice.map(p => {
+    const [sc, sl] = stockStatus(p);
+    const badgeClass = p.estoque===0?'baixo':p.estoque<=p.estoqueMin?'baixo':p.status;
+    const badgeLabel = p.estoque===0?'Zerado':p.estoque<=p.estoqueMin?'Estoque baixo':p.status==='ativo'?'Ativo':'Inativo';
+    return `<div class="product-card" onclick="openDetail(${p.id})">
+      <div class="pc-image" style="background:${p.cor}20;border-bottom:1px solid ${p.cor}30">
+        ${p.emoji}
+        <span class="pc-badge ${badgeClass}">${badgeLabel}</span>
+      </div>
+      <div class="pc-body">
+        <div class="pc-cat">${p.cat}</div>
+        <div class="pc-name" title="${p.nome}">${p.nome}</div>
+        <div class="pc-sku">SKU: ${p.sku}</div>
+        <div class="pc-footer">
+          <div class="pc-price">R$ ${fmtPrice(p.preco)}</div>
+          <span class="pc-stock ${sc}">${sl}</span>
+        </div>
+        <div class="pc-actions" onclick="event.stopPropagation()">
+          <button class="pc-act-btn" onclick="openEdit(${p.id})"><i class="bi bi-pencil"></i> Editar</button>
+          <button class="pc-act-btn del" onclick="deleteProduct(${p.id})"><i class="bi bi-trash3"></i></button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderList() {
+  const body = document.getElementById('tableBody');
+  const emptyL = document.getElementById('emptyList');
+  const start = (currentPage-1)*perPage;
+  const slice = filtered.slice(start, start+perPage);
+  if(!filtered.length) { body.innerHTML=''; emptyL.classList.add('show'); }
+  else emptyL.classList.remove('show');
+
+  body.innerHTML = slice.map(p => {
+    const [sc, sl] = stockStatus(p);
+    return `<tr onclick="openDetail(${p.id})">
+      <td><div class="prod-cell">
+        <div class="prod-emoji" style="background:${p.cor}30">${p.emoji}</div>
+        <div><div class="prod-name">${p.nome}</div><div class="prod-sku">SKU: ${p.sku}</div></div>
+      </div></td>
+      <td style="color:var(--muted);font-size:12px">${p.cat}</td>
+      <td style="font-family:'Syne',sans-serif;font-weight:800;color:var(--accent)">R$ ${fmtPrice(p.preco)}</td>
+      <td>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <span class="pc-stock ${sc}" style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:100px;font-size:11px;font-weight:600">${sl}</span>
+          <div class="stock-bar-wrap">
+            <div class="stock-bar-bg"><div class="stock-bar-fill" style="width:${Math.min(100,(p.estoque/p.estoqueMax||0)*100)}%;background:${p.estoque===0?'var(--danger)':p.estoque<=p.estoqueMin?'var(--warn)':'var(--accent)'}"></div></div>
+          </div>
+        </div>
+      </td>
+      <td style="color:var(--muted);font-size:12px">${p.unidade.toUpperCase()}</td>
+      <td><span class="status-pill ${p.status}">${p.status==='ativo'?'Ativo':'Inativo'}</span></td>
+      <td><div class="action-cell" onclick="event.stopPropagation()">
+        <div class="act-btn" onclick="openEdit(${p.id})"><i class="bi bi-pencil"></i></div>
+        <div class="act-btn del" onclick="deleteProduct(${p.id})"><i class="bi bi-trash3"></i></div>
+      </div></td>
+    </tr>`;
+  }).join('');
+
+  const total = filtered.length;
+  document.getElementById('tableInfo').textContent = `Mostrando ${Math.min(start+1,total)}–${Math.min(start+perPage,total)} de ${total} produtos`;
+  renderPagination(total);
+}
+
+function renderPagination(total) {
+  const pages = Math.ceil(total/perPage);
+  const pg = document.getElementById('pagination');
+  if(pages<=1){pg.innerHTML='';return;}
+  let html=`<button class="pg-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}><i class="bi bi-chevron-left"></i></button>`;
+  for(let i=1;i<=pages;i++) html+=`<button class="pg-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+  html+=`<button class="pg-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}><i class="bi bi-chevron-right"></i></button>`;
+  pg.innerHTML=html;
+}
+function goPage(p){
+  const pages=Math.ceil(filtered.length/perPage);
+  if(p<1||p>pages)return;
+  currentPage=p;renderAll();
+}
+
+function updateKPIs() {
+  document.getElementById('kpi-total').textContent = products.length;
+  document.getElementById('kpi-ativos').textContent = products.filter(p=>p.status==='ativo').length;
+  document.getElementById('kpi-baixo').textContent = products.filter(p=>p.estoque>0&&p.estoque<=p.estoqueMin).length;
+  document.getElementById('kpi-zerado').textContent = products.filter(p=>p.estoque===0).length;
+}
+
+// ─── SORT ─────────────────────────────────────────────────
+function sortProducts(key) {
+  filtered.sort((a,b)=>{
+    const av=typeof a[key]==='number'?a[key]:a[key].toLowerCase();
+    const bv=typeof b[key]==='number'?b[key]:b[key].toLowerCase();
+    return av>bv?sortDir:av<bv?-sortDir:0;
+  });
+  sortDir*=-1;renderAll();
+}
+
+// ─── MODAL ────────────────────────────────────────────────
+function openModal(reset=true) {
+  editingId=null;
+  document.getElementById('modalTitle').textContent='Novo Produto';
+  document.getElementById('modalSub').textContent='Preencha as informações do produto';
+  if(reset){ resetForm(); switchTab(document.querySelector('.m-tab'),'t-geral'); }
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); }
+function handleOverlayClick(e){ if(e.target===document.getElementById('modalOverlay')) closeModal(); }
+
+function switchTab(el, panelId) {
+  document.querySelectorAll('.m-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+function resetForm() {
+  ['f-nome','f-sku','f-ean','f-marca','f-desc','f-preco','f-custo','f-margem','f-precoMin',
+   'f-descMax','f-ncm','f-cest','f-icms','f-pis','f-posicao','f-prazo'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  ['f-cat','f-unidade','f-tabela','f-cfop','f-cst','f-deposito','f-fornecedor'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.selectedIndex=0;
+  });
+  document.getElementById('f-estoque').value='0';
+  document.getElementById('f-estoqueMin').value='5';
+  document.getElementById('f-estoqueMax').value='100';
+  selectedEmoji='📦'; selectedColor='#1e2a3a';
+  document.getElementById('emojiDisplay').textContent='📦';
+  buildEmojiGrid(); buildColorSwatches();
+  ['tog-estoque','tog-ativo','tog-pdv'].forEach(id=>document.getElementById(id).classList.add('on'));
+  ['tog-venda','tog-perecivel','tog-destaque'].forEach(id=>document.getElementById(id).classList.remove('on'));
+}
+
+function calcMargem() {
+  const v=parseFloat((document.getElementById('f-preco').value||'0').replace(',','.'));
+  const c=parseFloat((document.getElementById('f-custo').value||'0').replace(',','.'));
+  const el=document.getElementById('f-margem');
+  if(v>0&&c>0) { const m=((v-c)/v*100).toFixed(1); el.value=m+'%'; el.style.color=m>0?'var(--accent)':'var(--danger)'; }
+  else el.value='';
+}
+
+function saveProduct() {
+  const nome=document.getElementById('f-nome').value.trim();
+  const preco=document.getElementById('f-preco').value.trim();
+  if(!nome){ document.getElementById('f-nome').classList.add('err'); document.getElementById('e-nome').classList.add('show'); switchTab(document.querySelector('.m-tab'),'t-geral'); return; }
+  document.getElementById('f-nome').classList.remove('err'); document.getElementById('e-nome').classList.remove('show');
+
+  const p = {
+    id: editingId || Date.now(),
+    nome, sku: document.getElementById('f-sku').value||`PRD-${Date.now().toString().slice(-4)}`,
+    ean: document.getElementById('f-ean').value||'',
+    cat: document.getElementById('f-cat').value||'Outros',
+    marca: document.getElementById('f-marca').value||'',
+    unidade: document.getElementById('f-unidade').value||'un',
+    preco: parseFloat((preco||'0').replace(',','.'))||0,
+    custo: parseFloat((document.getElementById('f-custo').value||'0').replace(',','.'))||0,
+    estoque: parseInt(document.getElementById('f-estoque').value)||0,
+    estoqueMin: parseInt(document.getElementById('f-estoqueMin').value)||5,
+    estoqueMax: parseInt(document.getElementById('f-estoqueMax').value)||100,
+    status: document.getElementById('tog-ativo').classList.contains('on')?'ativo':'inativo',
+    emoji: selectedEmoji, cor: selectedColor,
+    ncm: document.getElementById('f-ncm').value||'',
+    desc: document.getElementById('f-desc').value||'',
+    deposito: document.getElementById('f-deposito').value||'Depósito Principal',
+    fornecedor: document.getElementById('f-fornecedor').value||'',
+    cadastro: new Date().toLocaleDateString('pt-BR'),
+  };
+
+  if(editingId) { const idx=products.findIndex(x=>x.id===editingId); if(idx>=0) products[idx]=p; }
+  else products.unshift(p);
+
+  closeModal(); applyFilters();
+  showToast(editingId?'Produto atualizado com sucesso!':'Produto cadastrado com sucesso!');
+}
+
+// ─── EDIT / DELETE ────────────────────────────────────────
+function openEdit(id) {
+  const p=products.find(x=>x.id===id); if(!p) return;
+  editingId=id;
+  document.getElementById('modalTitle').textContent='Editar Produto';
+  document.getElementById('modalSub').textContent=p.nome;
+  resetForm();
+  document.getElementById('f-nome').value=p.nome;
+  document.getElementById('f-sku').value=p.sku;
+  document.getElementById('f-ean').value=p.ean;
+  document.getElementById('f-marca').value=p.marca;
+  document.getElementById('f-desc').value=p.desc||'';
+  document.getElementById('f-preco').value=fmtPrice(p.preco);
+  document.getElementById('f-custo').value=fmtPrice(p.custo);
+  document.getElementById('f-estoque').value=p.estoque;
+  document.getElementById('f-estoqueMin').value=p.estoqueMin;
+  document.getElementById('f-estoqueMax').value=p.estoqueMax;
+  document.getElementById('f-ncm').value=p.ncm||'';
+  setSelectVal('f-cat',p.cat); setSelectVal('f-unidade',p.unidade);
+  setSelectVal('f-deposito',p.deposito); setSelectVal('f-fornecedor',p.fornecedor);
+  selectedEmoji=p.emoji; selectedColor=p.cor;
+  document.getElementById('emojiDisplay').textContent=p.emoji;
+  buildEmojiGrid(); buildColorSwatches();
+  if(p.status==='ativo') document.getElementById('tog-ativo').classList.add('on');
+  else document.getElementById('tog-ativo').classList.remove('on');
+  calcMargem();
+  switchTab(document.querySelector('.m-tab'),'t-geral');
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function deleteProduct(id) {
+  if(!confirm('Excluir este produto?')) return;
+  products=products.filter(p=>p.id!==id);
+  if(currentDetailId===id) closeDetail();
+  applyFilters(); showToast('Produto removido.');
+}
+
+function setSelectVal(id,val) {
+  const el=document.getElementById(id); if(!el||!val) return;
+  for(let o of el.options) if(o.value===val||o.text===val){o.selected=true;break;}
+}
+
+// ─── DETAIL PANEL ─────────────────────────────────────────
+function openDetail(id) {
+  const p=products.find(x=>x.id===id); if(!p) return;
+  currentDetailId=id;
+  document.getElementById('dp-emoji').textContent=p.emoji;
+  document.getElementById('dp-emoji').style.background=p.cor+'40';
+  document.getElementById('dp-name').textContent=p.nome;
+  document.getElementById('dp-sku').textContent='SKU: '+p.sku+' · EAN: '+(p.ean||'—');
+  document.getElementById('dp-price').textContent='R$ '+fmtPrice(p.preco);
+  const [sc]=stockStatus(p);
+  document.getElementById('dp-info').innerHTML=[
+    ['Categoria',p.cat],['Marca',p.marca||'—'],['Unidade',p.unidade.toUpperCase()],
+    ['Status',p.status==='ativo'?'Ativo':'Inativo'],['Cadastro',p.cadastro],['Descrição',p.desc||'—']
+  ].map(([l,v])=>`<div class="dp-row"><span class="dp-label">${l}</span><span class="dp-val" style="max-width:200px;text-align:right">${v}</span></div>`).join('');
+  document.getElementById('dp-stock').innerHTML=[
+    ['Atual',`<span style="color:${sc==='zero'?'var(--danger)':sc==='low'?'var(--warn)':'var(--accent)'};font-weight:700">${p.estoque} ${p.unidade.toUpperCase()}</span>`],
+    ['Mínimo',p.estoqueMin+' '+p.unidade.toUpperCase()],
+    ['Máximo',p.estoqueMax+' '+p.unidade.toUpperCase()],
+    ['Depósito',p.deposito],['Fornecedor',p.fornecedor||'—']
+  ].map(([l,v])=>`<div class="dp-row"><span class="dp-label">${l}</span><span class="dp-val">${v}</span></div>`).join('');
+  document.getElementById('dp-fiscal').innerHTML=[
+    ['NCM',p.ncm||'—'],['Custo',`R$ ${fmtPrice(p.custo)}`],
+    ['Margem',p.custo>0?((p.preco-p.custo)/p.preco*100).toFixed(1)+'%':'—']
+  ].map(([l,v])=>`<div class="dp-row"><span class="dp-label">${l}</span><span class="dp-val">${v}</span></div>`).join('');
+  document.getElementById('detailPanel').classList.add('open');
+}
+function closeDetail(){ document.getElementById('detailPanel').classList.remove('open'); currentDetailId=null; }
+function editProduct(){ if(currentDetailId){ closeDetail(); openEdit(currentDetailId); } }
+
+// ─── HELPERS ──────────────────────────────────────────────
+function fmtPrice(v) {
+  return (v||0).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// ─── SIDEBAR ──────────────────────────────────────────────
+let sidebarCollapsed = true;
+function toggleSidebar(){
+  sidebarCollapsed=!sidebarCollapsed;
+  document.getElementById('sidebar').classList.toggle('collapsed',sidebarCollapsed);
+  document.getElementById('mainContent').classList.toggle('collapsed',sidebarCollapsed);
+  document.getElementById('toggleIcon').className=sidebarCollapsed?'bi bi-chevron-right':'bi bi-chevron-left';
+}
+
+NexoAuth.renderCurrentUser();
+init();
+</script>
+</body>
+</html>
