@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistemy — Configurações</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --bg:      #0a0d12;
+      --surface: #10151e;
+      --card:    #141b27;
+      --border:  #1e2a3a;
+      --accent:  #00c896;
+      --accent2: #0077ff;
+      --warn:    #ff6b35;
+      --danger:  #ff4757;
+      --purple:  #a855f7;
+      --text:    #e8edf5;
+      --muted:   #6b7f96;
+      --sidebar: 240px;
+      --sidebar-c: 68px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; display: flex; min-height: 100vh; overflow-x: hidden; }
+
+    /* ══ SIDEBAR ══ */
+    .sidebar { width: var(--sidebar); min-height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; transition: width .28s cubic-bezier(.4,0,.2,1); overflow: hidden; }
+    .sidebar.collapsed { width: var(--sidebar-c); }
+    .sidebar.collapsed:hover { width: var(--sidebar); }
+    .sidebar-brand { display: flex; align-items: center; gap: 12px; padding: 20px 18px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    .brand-icon { width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0; background: linear-gradient(135deg, var(--accent), #008a60); display: flex; align-items: center; justify-content: center; font-family: 'Syne',sans-serif; font-weight: 800; font-size: 13px; color: #021c14; }
+    .brand-text { font-family: 'Syne',sans-serif; font-size: 18px; font-weight: 800; letter-spacing: -.5px; transition: opacity .2s; white-space: nowrap; }
+    .brand-text span { color: var(--accent); }
+    .sidebar.collapsed:not(:hover) .brand-text { opacity: 0; }
+    .sidebar-toggle { position: absolute; top: 22px; right: -12px; width: 24px; height: 24px; border-radius: 50%; background: var(--card); border: 1px solid var(--border); color: var(--muted); font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; transition: color .2s, border-color .2s; }
+    .sidebar-toggle:hover { color: var(--text); border-color: var(--accent); }
+    .sidebar-section { padding: 10px 12px; }
+    .sidebar-section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); padding: 8px 6px 4px; white-space: nowrap; transition: opacity .2s; }
+    .sidebar.collapsed:not(:hover) .sidebar-section-label { opacity: 0; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 9px 10px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 13.5px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: background .18s, color .18s; margin-bottom: 2px; }
+    .nav-item i { font-size: 17px; flex-shrink: 0; }
+    .nav-item:hover { background: var(--card); color: var(--text); }
+    .nav-item.active { background: rgba(0,200,150,.1); color: var(--accent); }
+    .nav-item .badge { margin-left: auto; flex-shrink: 0; background: var(--accent2); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 100px; }
+    .nav-label { transition: opacity .2s; white-space: nowrap; }
+    .sidebar.collapsed:not(:hover) .nav-label { opacity: 0; }
+    .sidebar.collapsed:not(:hover) .badge { opacity: 0; }
+    .sidebar-footer { margin-top: auto; padding: 12px; border-top: 1px solid var(--border); }
+    .user-row { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; transition: background .18s; }
+    .user-row:hover { background: var(--card); }
+    .user-avatar { width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0; background: linear-gradient(135deg,#2d5298,#1a3a7a); display: flex; align-items: center; justify-content: center; font-family: 'Syne',sans-serif; font-weight: 700; font-size: 12px; color: #fff; }
+    .user-info { overflow: hidden; transition: opacity .2s; display: flex; flex-direction: column; }
+    .sidebar.collapsed:not(:hover) .user-info { opacity: 0; }
+    .user-name { font-weight: 600; font-size: 13px; white-space: nowrap; }
+    .user-role { color: var(--muted); font-size: 11px; }
+
+    /* ══ MAIN ══ */
+    .main { margin-left: var(--sidebar); flex: 1; display: flex; flex-direction: column; min-height: 100vh; transition: margin-left .28s cubic-bezier(.4,0,.2,1); }
+    .main.collapsed { margin-left: var(--sidebar-c); }
+    .topbar { height: 64px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; position: sticky; top: 0; z-index: 50; }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .page-title { font-family: 'Syne',sans-serif; font-size: 18px; font-weight: 700; letter-spacing: -.5px; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .icon-btn { width: 36px; height: 36px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); color: var(--muted); font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: color .18s, border-color .18s; }
+    .icon-btn:hover { color: var(--text); border-color: var(--accent); }
+
+    /* save bar */
+    .save-bar { display: flex; align-items: center; gap: 12px; padding: 10px 28px; background: rgba(0,200,150,.06); border-bottom: 1px solid rgba(0,200,150,.2); opacity: 0; pointer-events: none; transition: opacity .3s; }
+    .save-bar.show { opacity: 1; pointer-events: all; }
+    .save-bar p { font-size: 13px; color: var(--accent); flex: 1; }
+    .btn-save-bar { padding: 8px 20px; border-radius: 8px; background: var(--accent); border: none; color: #021c14; font-family: 'DM Sans',sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: opacity .18s; }
+    .btn-save-bar:hover { opacity: .88; }
+    .btn-discard { padding: 8px 16px; border-radius: 8px; background: none; border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+    /* ══ CONTENT ══ */
+    .content { padding: 28px; flex: 1; }
+
+    /* abas laterais de configuração */
+    .config-layout { display: grid; grid-template-columns: 220px 1fr; gap: 24px; }
+    .config-nav { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 8px; height: fit-content; position: sticky; top: 92px; }
+    .config-nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 9px; color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 500; transition: background .15s, color .15s; margin-bottom: 2px; }
+    .config-nav-item i { font-size: 16px; flex-shrink: 0; }
+    .config-nav-item:hover { background: var(--surface); color: var(--text); }
+    .config-nav-item.active { background: rgba(0,200,150,.1); color: var(--accent); }
+    .config-nav-divider { height: 1px; background: var(--border); margin: 8px 4px; }
+
+    /* painéis */
+    .config-panel { display: none; animation: fadeIn .2s ease; }
+    .config-panel.active { display: block; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+
+    /* seção de configuração */
+    .cfg-section { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 20px; }
+    .cfg-section-header { margin-bottom: 20px; }
+    .cfg-section-title { font-family: 'Syne',sans-serif; font-size: 16px; font-weight: 700; letter-spacing: -.3px; margin-bottom: 4px; }
+    .cfg-section-sub { color: var(--muted); font-size: 13px; }
+
+    /* grid de campos */
+    .cfg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .cfg-grid.g3 { grid-template-columns: 1fr 1fr 1fr; }
+    .cfg-grid.g1 { grid-template-columns: 1fr; }
+    .cfg-group { display: flex; flex-direction: column; gap: 6px; }
+    .cfg-group.full { grid-column: 1/-1; }
+    label.lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
+    .inp-wrap { position: relative; display: flex; align-items: center; }
+    .inp-wrap i.pre { position: absolute; left: 12px; color: var(--muted); font-size: 14px; pointer-events: none; }
+    input.field, select.field, textarea.field { width: 100%; padding: 10px 12px 10px 35px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 13px; outline: none; transition: border-color .2s; }
+    input.field.ni, select.field.ni { padding-left: 12px; }
+    textarea.field { padding-left: 12px; resize: vertical; min-height: 80px; }
+    select.field { cursor: pointer; -webkit-appearance: none; }
+    select.field option { background: var(--card); }
+    input.field:focus, select.field:focus, textarea.field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,200,150,.08); }
+    input.field::placeholder, textarea.field::placeholder { color: var(--muted); }
+
+    /* toggle */
+    .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 13px 0; border-bottom: 1px solid rgba(30,42,58,.5); }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-info { flex: 1; padding-right: 16px; }
+    .toggle-label { font-size: 13px; font-weight: 500; }
+    .toggle-sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .toggle { width: 42px; height: 24px; border-radius: 100px; background: var(--border); cursor: pointer; position: relative; transition: background .2s; flex-shrink: 0; }
+    .toggle.on { background: var(--accent); }
+    .toggle::after { content:''; position:absolute; width:18px; height:18px; border-radius:50%; background:#fff; top:3px; left:3px; transition:left .2s; }
+    .toggle.on::after { left:21px; }
+
+    /* logo upload */
+    .logo-upload { display: flex; align-items: center; gap: 20px; }
+    .logo-preview { width: 80px; height: 80px; border-radius: 14px; background: var(--surface); border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; transition: border-color .2s; flex-shrink: 0; overflow: hidden; }
+    .logo-preview:hover { border-color: var(--accent); }
+    .logo-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .logo-actions { display: flex; flex-direction: column; gap: 8px; }
+    .btn-upload { padding: 8px 16px; border-radius: 8px; background: rgba(0,200,150,.1); border: 1px solid rgba(0,200,150,.25); color: var(--accent); font-family: 'DM Sans',sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+    .btn-upload:hover { background: rgba(0,200,150,.18); }
+    .logo-hint { color: var(--muted); font-size: 11px; }
+
+    /* cor de destaque */
+    .color-swatches { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+    .color-swatch { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform .15s, border-color .15s; position: relative; }
+    .color-swatch:hover { transform: scale(1.15); }
+    .color-swatch.sel { border-color: var(--text); }
+    .color-swatch.sel::after { content:'✓'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:#fff; }
+
+    /* usuários */
+    .user-list { display: flex; flex-direction: column; gap: 10px; }
+    .user-card { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; transition: border-color .2s; }
+    .user-card:hover { border-color: rgba(0,200,150,.2); }
+    .uc-avatar { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: 'Syne',sans-serif; font-weight: 800; font-size: 14px; }
+    .uc-info { flex: 1; }
+    .uc-name { font-weight: 600; font-size: 13px; }
+    .uc-email { color: var(--muted); font-size: 11px; margin-top: 2px; }
+    .uc-role { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 100px; }
+    .uc-role.admin   { background: rgba(0,200,150,.1);  color: var(--accent); }
+    .uc-role.vendedor{ background: rgba(0,119,255,.1);  color: var(--accent2); }
+    .uc-role.caixa   { background: rgba(255,107,53,.1); color: var(--warn); }
+    .uc-actions { display: flex; gap: 6px; }
+    .uc-btn { width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--border); background: none; color: var(--muted); font-size: 13px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .15s; }
+    .uc-btn:hover { color: var(--text); border-color: var(--muted); }
+    .uc-btn.danger:hover { color: var(--danger); border-color: var(--danger); }
+    .btn-add-user { display: flex; align-items: center; gap: 8px; padding: 11px 16px; border-radius: 9px; background: rgba(0,200,150,.08); border: 1px solid rgba(0,200,150,.2); color: var(--accent); font-family: 'DM Sans',sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; width: 100%; justify-content: center; margin-top: 12px; transition: background .18s; }
+    .btn-add-user:hover { background: rgba(0,200,150,.15); }
+
+    /* permissões */
+    .perm-table { width: 100%; border-collapse: collapse; }
+    .perm-table th { padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); background: var(--surface); border-bottom: 1px solid var(--border); }
+    .perm-table th:not(:first-child) { text-align: center; }
+    .perm-table td { padding: 12px 14px; border-bottom: 1px solid rgba(30,42,58,.5); font-size: 13px; }
+    .perm-table tr:last-child td { border-bottom: none; }
+    .perm-table td:not(:first-child) { text-align: center; }
+    .perm-check { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+    .perm-module { font-weight: 500; }
+    .perm-sub { color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+    /* notificações */
+    .notif-section { margin-bottom: 20px; }
+    .notif-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+
+    /* plano */
+    .plan-current { background: linear-gradient(135deg, rgba(0,200,150,.1), rgba(0,119,255,.08)); border: 1px solid rgba(0,200,150,.3); border-radius: 14px; padding: 24px; margin-bottom: 20px; }
+    .plan-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: #021c14; font-size: 11px; font-weight: 800; padding: 3px 12px; border-radius: 100px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: .5px; }
+    .plan-name { font-family: 'Syne',sans-serif; font-size: 24px; font-weight: 800; letter-spacing: -1px; margin-bottom: 4px; }
+    .plan-price { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+    .plan-features-list { display: flex; flex-direction: column; gap: 8px; }
+    .plan-feat { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+    .plan-feat i { color: var(--accent); font-size: 14px; }
+    .plan-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .btn-upgrade { padding: 10px 24px; border-radius: 9px; background: var(--accent); border: none; color: #021c14; font-family: 'DM Sans',sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+    .btn-upgrade:hover { opacity: .88; }
+    .btn-plan-ghost { padding: 10px 20px; border-radius: 9px; background: none; border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+    .plans-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+    .plan-opt { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; cursor: pointer; transition: border-color .2s; position: relative; }
+    .plan-opt:hover { border-color: var(--muted); }
+    .plan-opt.current { border-color: var(--accent); }
+    .plan-opt-badge { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #021c14; font-size: 10px; font-weight: 800; padding: 2px 10px; border-radius: 100px; white-space: nowrap; }
+    .plan-opt-name { font-family: 'Syne',sans-serif; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 8px; }
+    .plan-opt-price { font-family: 'Syne',sans-serif; font-size: 26px; font-weight: 800; letter-spacing: -1px; }
+    .plan-opt-price small { font-size: 12px; font-weight: 400; color: var(--muted); }
+
+    /* danger zone */
+    .danger-zone { background: rgba(255,71,87,.05); border: 1px solid rgba(255,71,87,.2); border-radius: 14px; padding: 24px; }
+    .danger-zone .cfg-section-title { color: var(--danger); }
+    .danger-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+    .danger-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,71,87,.1); }
+    .danger-row:last-child { border-bottom: none; }
+    .danger-label { font-size: 13px; font-weight: 500; }
+    .danger-sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .btn-danger { padding: 8px 16px; border-radius: 8px; background: rgba(255,71,87,.1); border: 1px solid rgba(255,71,87,.3); color: var(--danger); font-family: 'DM Sans',sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background .15s; }
+    .btn-danger:hover { background: rgba(255,71,87,.2); }
+
+    /* modal usuário */
+    .modal-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,.65); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .25s; }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal { background: var(--card); border: 1px solid var(--border); border-radius: 18px; width: 100%; max-width: 480px; transform: translateY(20px) scale(.97); transition: transform .3s cubic-bezier(.34,1.2,.64,1); overflow: hidden; }
+    .modal-overlay.open .modal { transform: none; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); }
+    .modal-header h2 { font-family: 'Syne',sans-serif; font-size: 18px; font-weight: 800; letter-spacing: -.5px; }
+    .modal-close { width: 30px; height: 30px; border-radius: 7px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .modal-close:hover { color: var(--text); }
+    .modal-body { padding: 24px; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+    .btn-cancel-m { padding: 9px 18px; border-radius: 9px; border: 1px solid var(--border); background: none; color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .btn-save-m { padding: 9px 20px; border-radius: 9px; border: none; background: var(--accent); color: #021c14; font-family: 'DM Sans',sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+    .btn-save-m:hover { opacity: .88; }
+
+    /* toast */
+    .toast { position: fixed; bottom: 28px; right: 28px; z-index: 2000; background: var(--card); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; gap: 12px; font-size: 13px; box-shadow: 0 12px 40px rgba(0,0,0,.4); transform: translateY(80px); opacity: 0; transition: transform .4s cubic-bezier(.34,1.2,.64,1), opacity .3s; }
+    .toast.show { transform: none; opacity: 1; }
+    .toast i { color: var(--accent); font-size: 18px; }
+
+    /* ── Hover automático da sidebar ── */
+    .sidebar.collapsed:not(:hover) .brand-text,
+    .sidebar.collapsed:not(:hover) .sidebar-section-label,
+    .sidebar.collapsed:not(:hover) .nav-label,
+    .sidebar.collapsed:not(:hover) .user-info { opacity: 0; }
+
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    @media(max-width:1100px) { .config-layout { grid-template-columns: 1fr; } .config-nav { position: static; display: flex; flex-wrap: wrap; gap: 4px; } .plans-grid { grid-template-columns: 1fr; } }
+    @media(max-width:900px) { .sidebar { width: var(--sidebar-c); } .main { margin-left: var(--sidebar-c); } .cfg-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar collapsed" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">N</div>
+    <span class="brand-text">Nexo<span>ERP</span></span>
+  </div>
+  <div class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle">
+    <i class="bi bi-chevron-right" id="toggleIcon"></i>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Principal</div>
+    <a href="dashboard.html" class="nav-item"><i class="bi bi-grid-1x2-fill"></i><span class="nav-label">Dashboard</span></a>
+    <a href="pdv.html" class="nav-item"><i class="bi bi-display"></i><span class="nav-label">PDV</span></a>
+    <a href="pedidos.html" class="nav-item"><i class="bi bi-file-earmark-text-fill"></i><span class="nav-label">Pedidos de Venda</span></a>
+    <a href="vendas.html" class="nav-item"><i class="bi bi-cart4"></i><span class="nav-label">Vendas</span></a>
+    <a href="clientes.html" class="nav-item"><i class="bi bi-people-fill"></i><span class="nav-label">Clientes</span></a>
+    <a href="produtos.html" class="nav-item"><i class="bi bi-box-seam-fill"></i><span class="nav-label">Produtos</span></a>
+    <a href="estoque.html" class="nav-item"><i class="bi bi-stack"></i><span class="nav-label">Estoque</span></a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Financeiro</div>
+    <a href="#" class="nav-item"><i class="bi bi-graph-up-arrow"></i><span class="nav-label">Relatórios</span></a>
+    <a href="#" class="nav-item"><i class="bi bi-credit-card-2-back-fill"></i><span class="nav-label">Financeiro</span></a>
+    <a href="#" class="nav-item"><i class="bi bi-receipt-cutoff"></i><span class="nav-label">Fiscal / NF-e</span></a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Sistema</div>
+    <a href="#" class="nav-item"><i class="bi bi-briefcase-fill"></i><span class="nav-label">Parceiros</span></a>
+    <a href="configuracoes.html" class="nav-item active"><i class="bi bi-gear-fill"></i><span class="nav-label">Configurações</span></a>
+  </div>
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="user-avatar">JD</div>
+      <div class="user-info">
+        <div class="user-name">João Desenvolvedor</div>
+        <div class="user-role">Administrador</div>
+      </div>
+      <i class="bi bi-three-dots-vertical" style="color:var(--muted);margin-left:auto;font-size:15px;flex-shrink:0"></i>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main collapsed" id="mainContent">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="page-title">Configurações</span>
+      <span style="color:var(--muted);font-size:12px">/</span>
+      <span style="color:var(--muted);font-size:13px" id="topbarSub">Geral</span>
+    </div>
+    <div class="topbar-right">
+      <div class="icon-btn"><i class="bi bi-bell"></i></div>
+      <div class="icon-btn"><i class="bi bi-question-circle"></i></div>
+      <div class="user-avatar">JD</div>
+    </div>
+  </div>
+
+  <!-- SAVE BAR -->
+  <div class="save-bar" id="saveBar">
+    <i class="bi bi-exclamation-circle" style="color:var(--accent)"></i>
+    <p>Você tem alterações não salvas.</p>
+    <button class="btn-discard" onclick="discardChanges()">Descartar</button>
+    <button class="btn-save-bar" onclick="saveChanges()"><i class="bi bi-check2"></i> Salvar alterações</button>
+  </div>
+
+  <div class="content">
+    <div class="config-layout">
+
+      <!-- NAV LATERAL -->
+      <nav class="config-nav">
+        <div class="config-nav-item active" onclick="switchPanel(this,'p-geral')"><i class="bi bi-sliders"></i> Geral</div>
+        <div class="config-nav-item" onclick="switchPanel(this,'p-empresa')"><i class="bi bi-building"></i> Empresa</div>
+        <div class="config-nav-item" onclick="switchPanel(this,'p-aparencia')"><i class="bi bi-palette"></i> Aparência</div>
+        <div class="config-nav-divider"></div>
+        <div class="config-nav-item" onclick="switchPanel(this,'p-usuarios')"><i class="bi bi-people"></i> Usuários</div>
+        <div class="config-nav-item" onclick="switchPanel(this,'p-permissoes')"><i class="bi bi-shield-check"></i> Permissões</div>
+        <div class="config-nav-divider"></div>
+        <div class="config-nav-item" onclick="switchPanel(this,'p-notificacoes')"><i class="bi bi-bell"></i> Notificações</div>
+        <div class="config-nav-item" onclick="switchPanel(this,'p-plano')"><i class="bi bi-star"></i> Plano</div>
+      </nav>
+
+      <!-- PAINÉIS -->
+      <div class="config-panels">
+
+        <!-- ══ GERAL ══ -->
+        <div class="config-panel active" id="p-geral">
+          <div class="cfg-section">
+            <div class="cfg-section-header">
+              <div class="cfg-section-title">Configurações Gerais</div>
+              <div class="cfg-section-sub">Idioma, moeda, fuso horário e formato de dados.</div>
+            </div>
+            <div class="cfg-grid">
+              <div class="cfg-group">
+                <label class="lbl">Idioma</label>
+                <div class="inp-wrap"><i class="bi bi-translate pre"></i>
+                  <select class="field" onchange="markDirty()">
+                    <option selected>🇧🇷 Português (Brasil)</option>
+                    <option>🇺🇸 English (US)</option>
+                    <option>🇪🇸 Español</option>
+                  </select>
+                </div>
+              </div>
+              <div class="cfg-group">
+                <label class="lbl">Moeda padrão</label>
+                <div class="inp-wrap"><i class="bi bi-currency-dollar pre"></i>
+                  <select class="field" onchange="markDirty()">
+                    <option selected>R$ — Real Brasileiro</option>
+                    <option>US$ — Dólar Americano</option>
+                    <option>€ — Euro</option>
+                  </select>
+                </div>
+              </div>
+              <div class="cfg-group">
+                <label class="lbl">Formato de data</label>
+                <div class="inp-wrap"><i class="bi bi-calendar pre"></i>
+                  <select class="field" onchange="markDirty()">
+                    <option selected>DD/MM/AAAA</option>
+                    <option>MM/DD/AAAA</option>
+                    <option>AAAA-MM-DD</option>
+                  </select>
+                </div>
+              </div>
+              <div class="cfg-group">
+                <label class="lbl">Fuso horário</label>
+                <div class="inp-wrap"><i class="bi bi-clock pre"></i>
+                  <select class="field" onchange="markDirty()">
+                    <option selected>(UTC-03:00) Brasília</option>
+                    <option>(UTC-04:00) Manaus</option>
+                    <option>(UTC-05:00) Acre</option>
+                    <option>(UTC+00:00) Lisboa</option>
+                  </select>
+                </div>
+              </div>
+              <div class="cfg-group">
+                <label class="lbl">Itens por página</label>
+                <div class="inp-wrap"><i class="bi bi-list-ol pre"></i>
+                  <select class="field" onchange="markDirty()">
+                    <option>10</option>
+                    <option selected>25</option>
+                    <option>50</option>
+                    <option>100</option>
+                  </select>
+                </div>
+              </div>
+              <div class="cfg-group">
+                <label class="lbl">Casas decimais</label>
+                <div class="inp-wrap"><i class="bi bi-123 pre"></i>
+                  <select class="field" onchange="markDirty()">
+                    <option>0 casas (R$ 1.234)</option>
+                    <option selected>2 casas (R$ 1.234,56)</option>
+                    <option>3 casas (R$ 1.234,567)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cfg-section">
+            <div class="cfg-section-header">
+              <div class="cfg-section-title">Comportamento do Sistema</div>
+              <div class="cfg-section-sub">Ajuste como o sistema se comporta no dia a dia.</div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><div class="toggle-label">Confirmação de ações importantes</div><div class="toggle-sub">Pedir confirmação antes de excluir ou estornar</div></div>
+              <div class="toggle on" onclick="this.classList.toggle('on');markDirty()"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><div class="toggle-label">Exibir dicas rápidas</div><div class="toggle-sub">Mostrar tooltips e atalhos nas telas</div></div>
+              <div class="toggle on" onclick="this.classList.toggle('on');markDirty()"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><div class="toggle-label">Modo compacto nas tabelas</div><div class="toggle-sub">Reduzir espaçamento para exibir mais dados</div></div>
+              <div class="toggle" onclick="this.classList.toggle('on');markDirty()"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><div class="toggle-label">Alertas de estoque baixo</div><div class="toggle-sub">Notificar quando produto atingir estoque mínimo</div></div>
+              <div class="toggle on" onclick="this.classList.toggle('on');markDirty()"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><div class="toggle-label">Vencimento de títulos</div><div class="toggle-sub">Alertar sobre duplicatas próximas do vencimento</div></div>
+              <div class="toggle on" onclick="this.classList.toggle('on');markDirty()"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ EMPRESA ══ -->
+        <div class="config-panel" id="p-empresa">
+          <div class="cfg-section">
+            <div class="cfg-section-header">
+              <div class="cfg-section-title">Dados da Empresa</div>
+              <div class="cfg-section-sub">Informações utilizadas em documentos, NF-e e relatórios.</div>
+            </div>
+
+            <div style="margin-bottom:20px">
+              <label class="lbl" style="margin-bottom:10px;display:block">Logo da empresa</label>
+              <div class="logo-upload">
+                <div class="logo-preview" id="logoPreview" onclick="document.getElementById('logoInput').click()">🏢</div>
+                <div class="logo-actions">
+                  <button class="btn-upload" onclick="document.getElementById('logoInput').click()"><i class="bi bi-upload"></i> Enviar logo</button>
+                  <div class="logo-hint">PNG ou JPG · Recomendado: 200×200px · Máx 2MB</div>
+                  <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="previewLogo(this)">
+                </div>
+              </div>
+            </div>
+
+            <div class="cfg-grid">
+              <div class="cfg-group full">
+                <label class="lbl">Razão Social *</label>
+                <div class="inp-wrap"><i class="bi bi-building pre"></i>
+                  <input class="field" type="text" placeholder="Nome completo da empresa" id="razaoSocial" oninput="markDirty()">
+                </div>
+              </div>
+              <div class="cfg-group full">
+                <label class="lbl">Nome Fantasia</label>
+                <div class="inp-wrap"><i class="bi bi-shop pre"></i>
+                  <input class="field" type="text" placeholder="Nome pelo qual a empresa é conhecida" oninput="markDirty()">
+                </div>
+              </div>
+              <div class="cfg-group">
+                <label class="lbl">CNPJ *</label>
+                <div class="inp-wrap"><i class="bi bi-card-text pre"></i>
+                  <input class="field" type="text" placeholder="00.000.000/0001-00" oninput="maskCNPJ(this);markDirty()">
+                </div>
+              </div>
+              <div class="cfg-group">
+                <label class="lbl">Inscrição Estadual</label>
+                <div class="inp-wrap"><i class="bi bi-file-earmark-text pre"></i>
+                  <input class="field" type="text" placeholder="000.000.000.000" oninput="markDirty()">
+                </div>
+              </div>
+              <div class="cfg-group">
+                <label class="lbl">Telefone</label>
+                <div class="inp-wrap"><i class="bi bi-telephone pre"></i>
+                  <input class="field" type="tel" placeholder="(00) 0000-0000" oninput="maskPhone(this);markDirty()">
+                </div>
+              </div>
+              <div class="cfg-group">
+                <label class="lbl">E-mail</label>
+                <div class="inp-wrap"><i class="bi bi-envelope pre"></i>
+                  <input class="field" type="email" placeholder="contato@empresa.com.br" oninput="markDirty()">
+                </div>
+              </div>
+              <div class="cfg-group">
+                <label class="lbl">Site</label>
+                <div class="inp-wrap"><i class="bi bi-globe pre"></i>
+                  <input class="field" type="text" placeholder="www.empresa.com.br" oninput="markDirty()">
+                </div>
+              </div>
+              <div class="cfg-group">
+                <label class="lbl">Regime Tributário</label>
+                <div class="inp-wrap"><i class="bi bi-receipt pre"></i>
+                  <select class="field" onchange="markDirty()">
+                    <option selected>Simples Nacional</option>
+                    <option>Lucro Presumido</option>
+                    <option>Lucro Real</option>
+                    <option>MEI</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cfg-section">
+            <div class="cfg-section-header">
+              <div class="cfg-section-title">Endereço</div>
+            </div>
+            <div class="cfg-grid">
+              <div class="cfg-group">
+                <label class="lbl">CEP</label>
+                <div class="inp-wrap"><i class="bi bi-geo-alt pre"></i>
+                  <input class="field" type="text" placeholder="00000-000" oninput="maskCEP(this)" onblur="buscaCEP(this)">
+                </div>
+              </div>
+              <div class="cfg-group">
+                <label class="lbl">Logradouro</label>
+                <div class="inp-wrap"><i class="bi bi-signpost pre"></i>
+                  <input class="field" type="text" id="f-logradouro" placeholder="Rua, Av..." oninput="markDirty()">
+                </div>
+              </div>
+              <div class="cfg-group">
+                <label class="lbl">Número</label>
+                <div class="inp-wrap"><i class="bi bi-hash pre"></i>
+                  <input class="field" type="text" placeholder="123" oninput="markDirty()">
+                </div>
+              </div>
+              <div class="cfg-group">
+                <label class="lbl">Complemento</label>
+                <div class="inp-wrap"><i class="bi bi-building pre"></i>
+                  <input class="field" type="text" placeholder="Sala, Bloco..." oninput="markDirty()">
+                </div>
+              </div>
+              <div class="cfg-group">
+                <label class="lbl">Bairro</label>
+                <div class="inp-wrap"><i class="bi bi-map pre"></i>
+                  <input class="field" type="text" id="f-bairro" placeholder="Centro" oninput="markDirty()">
+                </div>
+              </div>
+              <div class="cfg-group">
+                <label class="lbl">Cidade</label>
+                <div class="inp-wrap"><i class="bi bi-building-fill pre"></i>
+                  <input class="field" type="text" id="f-cidade" placeholder="São Paulo" oninput="markDirty()">
+                </div>
+              </div>
+              <div class="cfg-group">
+                <label class="lbl">Estado</label>
+                <div class="inp-wrap"><i class="bi bi-geo pre"></i>
+                  <select class="field" id="f-estado" onchange="markDirty()">
+                    <option value="">UF</option>
+                    <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
+                    <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+                    <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+                    <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
+                    <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+                    <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+                    <option selected>SP</option><option>SE</option><option>TO</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ APARÊNCIA ══ -->
+        <div class="config-panel" id="p-aparencia">
+          <div class="cfg-section">
+            <div class="cfg-section-header">
+              <div class="cfg-section-title">Identidade Visual</div>
+              <div class="cfg-section-sub">Personalize as cores e o nome do sistema.</div>
+            </div>
+            <div class="cfg-grid">
+              <div class="cfg-group">
+                <label class="lbl">Nome do sistema</label>
+                <div class="inp-wrap"><i class="bi bi-type pre"></i>
+                  <input class="field" type="text" id="nomeSystem" value="Sistemy ERP" oninput="markDirty();updatePreview()">
+                </div>
+              </div>
+              <div class="cfg-group">
+                <label class="lbl">Slogan</label>
+                <div class="inp-wrap"><i class="bi bi-chat-quote pre"></i>
+                  <input class="field" type="text" placeholder="Ex: Gestão inteligente" oninput="markDirty()">
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:20px">
+              <label class="lbl" style="display:block;margin-bottom:10px">Cor de destaque</label>
+              <div class="color-swatches" id="colorSwatches"></div>
+            </div>
+          </div>
+
+          <div class="cfg-section">
+            <div class="cfg-section-header">
+              <div class="cfg-section-title">Prévia</div>
+              <div class="cfg-section-sub">Como o cabeçalho do sistema ficará.</div>
+            </div>
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;align-items:center;gap:12px">
+              <div id="previewIcon" style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#008a60);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:#021c14">S</div>
+              <span id="previewName" style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;letter-spacing:-.5px">Sistemy<span style="color:var(--accent)">ERP</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ USUÁRIOS ══ -->
+        <div class="config-panel" id="p-usuarios">
+          <div class="cfg-section">
+            <div class="cfg-section-header">
+              <div class="cfg-section-title">Usuários do Sistema</div>
+              <div class="cfg-section-sub">Gerencie quem tem acesso ao Sistemy ERP.</div>
+            </div>
+            <div class="user-list" id="userList"></div>
+            <button class="btn-add-user" onclick="openUserModal()"><i class="bi bi-person-plus"></i> Adicionar novo usuário</button>
+          </div>
+        </div>
+
+        <!-- ══ PERMISSÕES ══ -->
+        <div class="config-panel" id="p-permissoes">
+          <div class="cfg-section">
+            <div class="cfg-section-header">
+              <div class="cfg-section-title">Permissões por Perfil</div>
+              <div class="cfg-section-sub">Defina o que cada perfil pode acessar e fazer.</div>
+            </div>
+            <div style="overflow-x:auto">
+              <table class="perm-table">
+                <thead>
+                  <tr>
+                    <th style="width:240px">Módulo</th>
+                    <th>Admin</th>
+                    <th>Gerente</th>
+                    <th>Vendedor</th>
+                    <th>Caixa</th>
+                  </tr>
+                </thead>
+                <tbody id="permTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ NOTIFICAÇÕES ══ -->
+        <div class="config-panel" id="p-notificacoes">
+          <div class="cfg-section">
+            <div class="cfg-section-header">
+              <div class="cfg-section-title">Notificações do Sistema</div>
+              <div class="cfg-section-sub">Escolha quando e como ser notificado.</div>
+            </div>
+
+            <div class="notif-section">
+              <div class="notif-section-title">Estoque</div>
+              <div class="toggle-row"><div class="toggle-info"><div class="toggle-label">Estoque abaixo do mínimo</div><div class="toggle-sub">Alertar quando produto atingir o mínimo configurado</div></div><div class="toggle on" onclick="this.classList.toggle('on');markDirty()"></div></div>
+              <div class="toggle-row"><div class="toggle-info"><div class="toggle-label">Produto zerado</div><div class="toggle-sub">Notificar imediatamente quando o estoque zerar</div></div><div class="toggle on" onclick="this.classList.toggle('on');markDirty()"></div></div>
+            </div>
+
+            <div class="notif-section">
+              <div class="notif-section-title">Financeiro</div>
+              <div class="toggle-row"><div class="toggle-info"><div class="toggle-label">Vencimento de duplicatas</div><div class="toggle-sub">Alertar X dias antes do vencimento</div></div><div class="toggle on" onclick="this.classList.toggle('on');markDirty()"></div></div>
+              <div class="toggle-row"><div class="toggle-info"><div class="toggle-label">Títulos em atraso</div><div class="toggle-sub">Notificar quando uma duplicata vencer sem pagamento</div></div><div class="toggle on" onclick="this.classList.toggle('on');markDirty()"></div></div>
+              <div class="toggle-row"><div class="toggle-info"><div class="toggle-label">Metas do dia atingidas</div><div class="toggle-sub">Notificar quando a meta diária de vendas for atingida</div></div><div class="toggle" onclick="this.classList.toggle('on');markDirty()"></div></div>
+            </div>
+
+            <div class="notif-section">
+              <div class="notif-section-title">Vendas e Pedidos</div>
+              <div class="toggle-row"><div class="toggle-info"><div class="toggle-label">Novo pedido B2B recebido</div><div class="toggle-sub">Notificar ao chegar um novo pedido pendente</div></div><div class="toggle on" onclick="this.classList.toggle('on');markDirty()"></div></div>
+              <div class="toggle-row"><div class="toggle-info"><div class="toggle-label">Pedido aprovado</div><div class="toggle-sub">Notificar o vendedor quando o pedido for aprovado</div></div><div class="toggle on" onclick="this.classList.toggle('on');markDirty()"></div></div>
+              <div class="toggle-row"><div class="toggle-info"><div class="toggle-label">Venda de alto valor</div><div class="toggle-sub">Alertar quando uma venda superar R$ 5.000</div></div><div class="toggle" onclick="this.classList.toggle('on');markDirty()"></div></div>
+            </div>
+
+            <div class="notif-section" style="margin-bottom:0">
+              <div class="notif-section-title">Antecedência para alertas</div>
+              <div class="cfg-grid" style="margin-top:12px">
+                <div class="cfg-group">
+                  <label class="lbl">Dias antes do vencimento</label>
+                  <div class="inp-wrap"><i class="bi bi-calendar-check pre"></i>
+                    <input class="field" type="number" value="3" min="1" max="30" oninput="markDirty()">
+                  </div>
+                </div>
+                <div class="cfg-group">
+                  <label class="lbl">Estoque mínimo (% do máximo)</label>
+                  <div class="inp-wrap"><i class="bi bi-percent pre"></i>
+                    <input class="field" type="number" value="20" min="5" max="50" oninput="markDirty()">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ PLANO ══ -->
+        <div class="config-panel" id="p-plano">
+          <div class="plan-current">
+            <div class="plan-badge"><i class="bi bi-star-fill"></i> Plano Atual</div>
+            <div class="plan-name">Padrão</div>
+            <div class="plan-price">R$ 129,00 / mês · Renova em 26/06/2026</div>
+            <div class="plan-features-list">
+              <div class="plan-feat"><i class="bi bi-check2-circle"></i> Até 5 usuários</div>
+              <div class="plan-feat"><i class="bi bi-check2-circle"></i> PDV completo + Pedidos B2B</div>
+              <div class="plan-feat"><i class="bi bi-check2-circle"></i> Clientes, Produtos, Estoque, Vendas</div>
+              <div class="plan-feat"><i class="bi bi-check2-circle"></i> NF-e e NFC-e inclusos</div>
+              <div class="plan-feat" style="color:var(--muted)"><i class="bi bi-x-circle" style="color:var(--border)"></i> Relatórios com IA</div>
+              <div class="plan-feat" style="color:var(--muted)"><i class="bi bi-x-circle" style="color:var(--border)"></i> Multi-loja</div>
+            </div>
+            <div class="plan-actions">
+              <button class="btn-upgrade" onclick="switchPanel(document.querySelector('.config-nav-item:last-child'),'p-plano')"><i class="bi bi-arrow-up-circle"></i> Fazer upgrade</button>
+              <button class="btn-plan-ghost">Gerenciar assinatura</button>
+            </div>
+          </div>
+
+          <div class="cfg-section">
+            <div class="cfg-section-header">
+              <div class="cfg-section-title">Comparar planos</div>
+              <div class="cfg-section-sub">Escolha o plano ideal para o seu negócio.</div>
+            </div>
+            <div class="plans-grid">
+              <div class="plan-opt">
+                <div class="plan-opt-name">Básico</div>
+                <div class="plan-opt-price">R$ 49<small>/mês</small></div>
+                <div style="color:var(--muted);font-size:12px;margin-top:6px">1 usuário · Varejo simples</div>
+              </div>
+              <div class="plan-opt current">
+                <div class="plan-opt-badge">✓ Seu plano</div>
+                <div class="plan-opt-name">Padrão</div>
+                <div class="plan-opt-price">R$ 129<small>/mês</small></div>
+                <div style="color:var(--muted);font-size:12px;margin-top:6px">5 usuários · PDV + B2B</div>
+              </div>
+              <div class="plan-opt">
+                <div class="plan-opt-name">Premium</div>
+                <div class="plan-opt-price">R$ 299<small>/mês</small></div>
+                <div style="color:var(--muted);font-size:12px;margin-top:6px">Ilimitado · IA + Multi-loja</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="danger-zone">
+            <div class="cfg-section-header">
+              <div class="cfg-section-title" style="color:var(--danger)">Zona de Perigo</div>
+              <div class="cfg-section-sub">Ações irreversíveis — tome cuidado.</div>
+            </div>
+            <div class="danger-row">
+              <div><div class="danger-label">Cancelar assinatura</div><div class="danger-sub">Sua conta será desativada ao fim do período pago</div></div>
+              <button class="btn-danger" onclick="confirmDanger('cancelar')">Cancelar assinatura</button>
+            </div>
+            <div class="danger-row">
+              <div><div class="danger-label">Limpar todos os dados</div><div class="danger-sub">Remove clientes, produtos, vendas e histórico permanentemente</div></div>
+              <button class="btn-danger" onclick="confirmDanger('limpar')">Limpar dados</button>
+            </div>
+            <div class="danger-row">
+              <div><div class="danger-label">Excluir conta</div><div class="danger-sub">Apaga a conta e todos os dados sem possibilidade de recuperação</div></div>
+              <button class="btn-danger" onclick="confirmDanger('excluir')">Excluir conta</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /config-panels -->
+    </div><!-- /config-layout -->
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- MODAL USUÁRIO -->
+<div class="modal-overlay" id="userModalOverlay" onclick="handleUserOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="userModalTitle">Novo Usuário</h2>
+      <div class="modal-close" onclick="closeUserModal()"><i class="bi bi-x-lg"></i></div>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="cfg-group">
+          <label class="lbl">Nome completo *</label>
+          <div class="inp-wrap"><i class="bi bi-person pre"></i>
+            <input class="field" type="text" id="u-nome" placeholder="João da Silva">
+          </div>
+        </div>
+        <div class="cfg-group">
+          <label class="lbl">E-mail *</label>
+          <div class="inp-wrap"><i class="bi bi-envelope pre"></i>
+            <input class="field" type="email" id="u-email" placeholder="joao@empresa.com.br">
+          </div>
+        </div>
+        <div class="cfg-group">
+          <label class="lbl">Perfil de acesso</label>
+          <div class="inp-wrap"><i class="bi bi-shield pre"></i>
+            <select class="field" id="u-perfil">
+              <option value="admin">Administrador</option>
+              <option value="gerente">Gerente</option>
+              <option value="vendedor" selected>Vendedor</option>
+              <option value="caixa">Operador de Caixa</option>
+            </select>
+          </div>
+        </div>
+        <div class="cfg-group">
+          <label class="lbl">Senha provisória</label>
+          <div class="inp-wrap"><i class="bi bi-lock pre"></i>
+            <input class="field" type="text" id="u-senha" placeholder="O usuário deverá alterar no primeiro acesso">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel-m" onclick="closeUserModal()">Cancelar</button>
+      <button class="btn-save-m" onclick="saveUser()"><i class="bi bi-check2"></i> Criar usuário</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="bi bi-check-circle-fill"></i><span id="toastMsg">—</span></div>
+
+<script src="auth.js"></script>
+<script>
+NexoAuth.requireAuth();
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+const CFG_KEY = 'nexoerp.config';
+let isDirty = false;
+
+const CORES = [
+  { hex:'#00c896', label:'Verde (padrão)' },
+  { hex:'#0077ff', label:'Azul' },
+  { hex:'#a855f7', label:'Roxo' },
+  { hex:'#ff6b35', label:'Laranja' },
+  { hex:'#ff4757', label:'Vermelho' },
+  { hex:'#ec4899', label:'Rosa' },
+  { hex:'#14b8a6', label:'Teal' },
+  { hex:'#f59e0b', label:'Âmbar' },
+];
+
+const PERMISSOES = [
+  { modulo:'Dashboard',         sub:'Visão geral do sistema',   admin:true, gerente:true,  vendedor:true,  caixa:false },
+  { modulo:'PDV / Caixa',       sub:'Realizar vendas no caixa', admin:true, gerente:true,  vendedor:true,  caixa:true  },
+  { modulo:'Pedidos de Venda',  sub:'Criar e aprovar pedidos',   admin:true, gerente:true,  vendedor:true,  caixa:false },
+  { modulo:'Vendas',            sub:'Ver histórico de vendas',   admin:true, gerente:true,  vendedor:true,  caixa:false },
+  { modulo:'Clientes',          sub:'Cadastrar e editar',        admin:true, gerente:true,  vendedor:true,  caixa:false },
+  { modulo:'Produtos',          sub:'Gerenciar catálogo',        admin:true, gerente:true,  vendedor:false, caixa:false },
+  { modulo:'Estoque',           sub:'Movimentações e ajustes',   admin:true, gerente:true,  vendedor:false, caixa:false },
+  { modulo:'Financeiro',        sub:'Contas e fluxo de caixa',   admin:true, gerente:true,  vendedor:false, caixa:false },
+  { modulo:'Relatórios',        sub:'Ver relatórios gerenciais', admin:true, gerente:true,  vendedor:false, caixa:false },
+  { modulo:'Configurações',     sub:'Alterar configurações',     admin:true, gerente:false, vendedor:false, caixa:false },
+];
+
+let usuarios = [];
+let editingUserId = null;
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+function init() {
+  buildColorSwatches();
+  buildPermTable();
+  loadUsers();
+  renderUsers();
+  NexoAuth.renderCurrentUser();
+}
+
+// ═══════════════════════════════════════════════
+// NAVEGAÇÃO
+// ═══════════════════════════════════════════════
+function switchPanel(el, panelId) {
+  document.querySelectorAll('.config-nav-item').forEach(i => i.classList.remove('active'));
+  document.querySelectorAll('.config-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+  document.getElementById('topbarSub').textContent = el.textContent.trim();
+}
+
+// ═══════════════════════════════════════════════
+// SAVE BAR
+// ═══════════════════════════════════════════════
+function markDirty() {
+  isDirty = true;
+  document.getElementById('saveBar').classList.add('show');
+}
+function saveChanges() {
+  isDirty = false;
+  document.getElementById('saveBar').classList.remove('show');
+  showToast('Configurações salvas com sucesso!');
+}
+function discardChanges() {
+  isDirty = false;
+  document.getElementById('saveBar').classList.remove('show');
+  showToast('Alterações descartadas.');
+}
+
+// ═══════════════════════════════════════════════
+// CORES
+// ═══════════════════════════════════════════════
+let corSel = '#00c896';
+function buildColorSwatches() {
+  const wrap = document.getElementById('colorSwatches');
+  wrap.innerHTML = CORES.map(c =>
+    `<div class="color-swatch ${c.hex===corSel?'sel':''}" style="background:${c.hex}" title="${c.label}" onclick="pickCor('${c.hex}',this)"></div>`
+  ).join('');
+}
+function pickCor(hex, el) {
+  corSel = hex;
+  document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('sel'));
+  el.classList.add('sel');
+  markDirty();
+  showToast('Cor de destaque alterada! Salve para aplicar.');
+}
+
+// ═══════════════════════════════════════════════
+// PREVIEW
+// ═══════════════════════════════════════════════
+function updatePreview() {
+  const nome = document.getElementById('nomeSystem').value || 'Sistemy ERP';
+  const partes = nome.split(' ');
+  const first = partes.slice(0,-1).join(' ') || nome;
+  const last  = partes.length > 1 ? partes[partes.length-1] : '';
+  document.getElementById('previewName').innerHTML = `${first}<span style="color:var(--accent)">${last}</span>`;
+  document.getElementById('previewIcon').textContent = nome[0]?.toUpperCase() || 'S';
+}
+
+// ═══════════════════════════════════════════════
+// LOGO
+// ═══════════════════════════════════════════════
+function previewLogo(input) {
+  const file = input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const preview = document.getElementById('logoPreview');
+    preview.innerHTML = `<img src="${e.target.result}" alt="Logo">`;
+    markDirty();
+  };
+  reader.readAsDataURL(file);
+}
+
+// ═══════════════════════════════════════════════
+// PERMISSÕES
+// ═══════════════════════════════════════════════
+function buildPermTable() {
+  const body = document.getElementById('permTable');
+  body.innerHTML = PERMISSOES.map(p => `
+    <tr>
+      <td><div class="perm-module">${p.modulo}</div><div class="perm-sub">${p.sub}</div></td>
+      <td><input class="perm-check" type="checkbox" ${p.admin?'checked':''} onchange="markDirty()"></td>
+      <td><input class="perm-check" type="checkbox" ${p.gerente?'checked':''} onchange="markDirty()"></td>
+      <td><input class="perm-check" type="checkbox" ${p.vendedor?'checked':''} onchange="markDirty()"></td>
+      <td><input class="perm-check" type="checkbox" ${p.caixa?'checked':''} onchange="markDirty()"></td>
+    </tr>`
+  ).join('');
+}
+
+// ═══════════════════════════════════════════════
+// USUÁRIOS
+// ═══════════════════════════════════════════════
+const AVATAR_COLORS = [
+  ['#00c896','#021c14'],['#0077ff','#e8f0ff'],['#a855f7','#f3e8ff'],
+  ['#ff6b35','#fff0ea'],['#ec4899','#fce7f3'],['#14b8a6','#e0f7f5'],
+];
+function avatarColor(name) {
+  return AVATAR_COLORS[(name.charCodeAt(0)||0) % AVATAR_COLORS.length];
+}
+function initials(name) {
+  const w = name.trim().split(' ');
+  return (w[0][0]+(w[1]?.[0]||'')).toUpperCase();
+}
+const perfilLabels = { admin:'Administrador', gerente:'Gerente', vendedor:'Vendedor', caixa:'Caixa' };
+
+function loadUsers() {
+  const session = NexoAuth.getSession();
+  try {
+    const raw = localStorage.getItem('nexoerp.users');
+    const all = raw ? JSON.parse(raw) : [];
+    usuarios = all.map(u => ({
+      id: u.id,
+      nome: u.name || u.username,
+      email: u.email,
+      perfil: u.role==='Administrador'?'admin':'vendedor',
+      role: u.role || 'Vendedor',
+    }));
+  } catch(e) {
+    usuarios = [{ id:'demo', nome: session?.user?.name||'Admin', email: session?.user?.email||'admin@sistemy.com', perfil:'admin', role:'Administrador' }];
+  }
+}
+
+function renderUsers() {
+  const list = document.getElementById('userList');
+  if(!usuarios.length) {
+    list.innerHTML = `<div style="color:var(--muted);text-align:center;padding:24px">Nenhum usuário cadastrado.</div>`;
+    return;
+  }
+  list.innerHTML = usuarios.map(u => {
+    const [bg,fg] = avatarColor(u.nome);
+    const perfilClass = u.perfil==='admin'?'admin':u.perfil==='gerente'?'admin':u.perfil==='vendedor'?'vendedor':'caixa';
+    return `<div class="user-card">
+      <div class="uc-avatar" style="background:${bg};color:${fg}">${initials(u.nome)}</div>
+      <div class="uc-info">
+        <div class="uc-name">${u.nome}</div>
+        <div class="uc-email">${u.email}</div>
+      </div>
+      <span class="uc-role ${perfilClass}">${perfilLabels[u.perfil]||u.role}</span>
+      <div class="uc-actions">
+        <div class="uc-btn" title="Editar" onclick="editUser('${u.id}')"><i class="bi bi-pencil"></i></div>
+        <div class="uc-btn danger" title="Remover" onclick="removeUser('${u.id}')"><i class="bi bi-trash3"></i></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openUserModal(id=null) {
+  editingUserId = id;
+  document.getElementById('userModalTitle').textContent = id ? 'Editar Usuário' : 'Novo Usuário';
+  document.getElementById('u-nome').value  = '';
+  document.getElementById('u-email').value = '';
+  document.getElementById('u-senha').value = '';
+  document.getElementById('u-perfil').value = 'vendedor';
+  if(id) {
+    const u = usuarios.find(x=>x.id===id);
+    if(u) { document.getElementById('u-nome').value=u.nome; document.getElementById('u-email').value=u.email; document.getElementById('u-perfil').value=u.perfil; }
+  }
+  document.getElementById('userModalOverlay').classList.add('open');
+}
+function closeUserModal() { document.getElementById('userModalOverlay').classList.remove('open'); }
+function handleUserOverlay(e) { if(e.target===document.getElementById('userModalOverlay')) closeUserModal(); }
+
+function saveUser() {
+  const nome  = document.getElementById('u-nome').value.trim();
+  const email = document.getElementById('u-email').value.trim();
+  const perfil= document.getElementById('u-perfil').value;
+  if(!nome||!email) { showToast('Preencha nome e e-mail!'); return; }
+  if(editingUserId) {
+    const u = usuarios.find(x=>x.id===editingUserId);
+    if(u) { u.nome=nome; u.email=email; u.perfil=perfil; }
+  } else {
+    usuarios.push({ id:`u-${Date.now()}`, nome, email, perfil, role: perfilLabels[perfil] });
+  }
+  closeUserModal(); renderUsers(); markDirty();
+  showToast(editingUserId ? 'Usuário atualizado!' : 'Usuário criado com sucesso!');
+}
+function editUser(id) { openUserModal(id); }
+function removeUser(id) {
+  if(!confirm('Remover este usuário?')) return;
+  usuarios = usuarios.filter(u=>u.id!==id);
+  renderUsers(); markDirty();
+  showToast('Usuário removido.');
+}
+
+// ═══════════════════════════════════════════════
+// CEP
+// ═══════════════════════════════════════════════
+function maskCEP(el) {
+  let v=el.value.replace(/\D/g,'').substring(0,8);
+  if(v.length>5) v=v.slice(0,5)+'-'+v.slice(5);
+  el.value=v;
+}
+async function buscaCEP(el) {
+  const cep = el.value.replace(/\D/g,'');
+  if(cep.length!==8) return;
+  try {
+    const r = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+    const d = await r.json();
+    if(!d.erro) {
+      document.getElementById('f-logradouro').value = d.logradouro||'';
+      document.getElementById('f-bairro').value     = d.bairro||'';
+      document.getElementById('f-cidade').value     = d.localidade||'';
+      const st = document.getElementById('f-estado');
+      for(let o of st.options) if(o.value===d.uf){o.selected=true;break;}
+      markDirty();
+    }
+  } catch(e) {}
+}
+function maskCNPJ(el) {
+  let v=el.value.replace(/\D/g,'').substring(0,14);
+  if(v.length>12) v=v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5,8)+'/'+v.slice(8,12)+'-'+v.slice(12);
+  else if(v.length>8) v=v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5,8)+'/'+v.slice(8);
+  else if(v.length>5) v=v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5);
+  else if(v.length>2) v=v.slice(0,2)+'.'+v.slice(2);
+  el.value=v;
+}
+function maskPhone(el) {
+  let v=el.value.replace(/\D/g,'').substring(0,11);
+  if(v.length>6) v=`(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+  else if(v.length>2) v=`(${v.slice(0,2)}) ${v.slice(2)}`;
+  el.value=v;
+}
+
+// ═══════════════════════════════════════════════
+// DANGER ZONE
+// ═══════════════════════════════════════════════
+function confirmDanger(acao) {
+  const msgs = {
+    cancelar: 'Tem certeza que deseja cancelar sua assinatura? Sua conta será desativada ao fim do período.',
+    limpar:   'ATENÇÃO: Esta ação vai apagar TODOS os dados permanentemente. Tem certeza?',
+    excluir:  'ATENÇÃO MÁXIMA: Sua conta será excluída sem possibilidade de recuperação. Confirma?',
+  };
+  if(confirm(msgs[acao])) showToast('Ação registrada. Nossa equipe entrará em contato.');
+}
+
+// ═══════════════════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════════════════
+let sidebarCollapsed = true;
+function toggleSidebar() {
+  sidebarCollapsed = !sidebarCollapsed;
+  document.getElementById('sidebar').classList.toggle('collapsed', sidebarCollapsed);
+  document.getElementById('mainContent').classList.toggle('collapsed', sidebarCollapsed);
+  document.getElementById('toggleIcon').className = sidebarCollapsed?'bi bi-chevron-right':'bi bi-chevron-left';
+}
+
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show'); clearTimeout(t._t);
+  t._t=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+init();
+</script>
+</body>
+</html>
