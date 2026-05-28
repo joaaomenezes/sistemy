@@ -920,6 +920,7 @@ function renderKanban() {
 }
 
 function cardHTML(p) {
+  const canEnviar  = p.status==='orcamento';
   const canApprove = p.status==='pendente';
   const canFaturar = p.status==='aprovado';
   return `<div class="pedido-card" onclick="openDetail('${p.id}')">
@@ -934,6 +935,7 @@ function cardHTML(p) {
       <span class="pc-cond">${p.condicaoLabel}</span>
     </div>
     <div class="pc-actions" onclick="event.stopPropagation()">
+      ${canEnviar ?`<button class="pc-btn approve" onclick="enviarPendente('${p.id}')"><i class="bi bi-send"></i> Enviar</button>`:''}
       ${canApprove?`<button class="pc-btn approve" onclick="aprovar('${p.id}')"><i class="bi bi-check2"></i> Aprovar</button>`:''}
       ${canFaturar?`<button class="pc-btn approve" onclick="faturar('${p.id}')"><i class="bi bi-receipt"></i> Faturar</button>`:''}
       <button class="pc-btn" onclick="openDetail('${p.id}')"><i class="bi bi-eye"></i> Ver</button>
@@ -956,6 +958,7 @@ function renderList() {
     <td style="color:var(--muted);font-size:12px">${p.vendedor}</td>
     <td><div class="action-cell" onclick="event.stopPropagation()">
       <div class="act-btn" onclick="openDetail('${p.id}')"><i class="bi bi-eye"></i></div>
+      ${p.status==='orcamento'?`<div class="act-btn ok" onclick="enviarPendente('${p.id}')"><i class="bi bi-send"></i></div>`:''}
       ${p.status==='pendente'?`<div class="act-btn ok" onclick="aprovar('${p.id}')"><i class="bi bi-check2"></i></div>`:''}
       ${p.status==='aprovado'?`<div class="act-btn ok" onclick="faturar('${p.id}')"><i class="bi bi-receipt"></i></div>`:''}
       <div class="act-btn danger" onclick="cancelar('${p.id}')"><i class="bi bi-x"></i></div>
@@ -1010,6 +1013,7 @@ function openDetail(id) {
 
   // ações disponíveis por status
   const acts = [];
+  if(p.status==='orcamento')  acts.push(`<button class="dp-btn blue" onclick="enviarPendente('${p.id}')"><i class="bi bi-send"></i> Enviar para aprovação</button>`);
   if(p.status==='pendente')  acts.push(`<button class="dp-btn primary" onclick="aprovar('${p.id}')"><i class="bi bi-check2"></i> Aprovar</button>`);
   if(p.status==='aprovado')  acts.push(`<button class="dp-btn purple" onclick="faturar('${p.id}')"><i class="bi bi-receipt"></i> Faturar</button>`);
   if(p.status==='faturado')  acts.push(`<button class="dp-btn primary" onclick="concluir('${p.id}')"><i class="bi bi-check2-circle"></i> Concluir</button>`);
@@ -1026,6 +1030,12 @@ function closeDetail() { document.getElementById('detailPanel').classList.remove
 // ═══════════════════════════════════════════════
 // AÇÕES DE STATUS
 // ═══════════════════════════════════════════════
+function enviarPendente(id) {
+  const p = pedidos.find(x=>x.id===id); if(!p) return;
+  p.status = 'pendente'; salvar(); renderAll();
+  if(currentPedidoId===id) openDetail(id);
+  showToast(`Pedido ${id} enviado para aprovação!`);
+}
 function aprovar(id) {
   const p = pedidos.find(x=>x.id===id); if(!p) return;
   p.status = 'aprovado'; salvar(); renderAll();
