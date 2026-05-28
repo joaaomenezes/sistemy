@@ -52,6 +52,7 @@ CREATE TABLE clientes (
   estado             CHAR(2),
   complemento        VARCHAR(100),
   limite_credito     DECIMAL(10,2) DEFAULT 0,
+  vendedor_id INTEGER REFERENCES usuarios(id)
   observacoes        TEXT,
   ativo              BOOLEAN DEFAULT TRUE,
   criado_em          TIMESTAMP DEFAULT NOW(),
