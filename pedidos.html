@@ -106,7 +106,7 @@
     .search-input:focus-within { border-color: var(--accent); }
     .search-input input { background: none; border: none; outline: none; color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 13px; width: 100%; }
     .search-input input::placeholder { color: var(--muted); }
-    .select-filter { padding: 8px 12px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 12px; outline: none; cursor: pointer; -webkit-appearance: none; }
+    .select-filter { padding: 8px 12px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 12px; outline: none; cursor: pointer; appearance: none; -webkit-appearance: none; }
     .select-filter option { background: var(--card); }
     .toolbar-right { margin-left: auto; display: flex; gap: 8px; }
 
@@ -205,7 +205,7 @@
     input.field, select.field, textarea.field { width: 100%; padding: 10px 12px 10px 35px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 13px; outline: none; transition: border-color .2s; }
     input.field.ni, select.field.ni { padding-left: 12px; }
     textarea.field { padding-left: 12px; resize: vertical; min-height: 72px; }
-    select.field { cursor: pointer; -webkit-appearance: none; }
+    select.field { cursor: pointer; appearance: none; -webkit-appearance: none; }
     select.field option { background: var(--card); }
     input.field:focus, select.field:focus, textarea.field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,200,150,.08); }
     input.field::placeholder, textarea.field::placeholder { color: var(--muted); }
@@ -224,7 +224,7 @@
     .item-remove { color: var(--muted); cursor: pointer; font-size: 14px; padding: 4px; transition: color .15s; }
     .item-remove:hover { color: var(--danger); }
     .add-item-row { display: flex; gap: 10px; align-items: center; }
-    .add-item-sel { flex: 1; padding: 9px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 13px; outline: none; cursor: pointer; -webkit-appearance: none; }
+    .add-item-sel { flex: 1; padding: 9px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 13px; outline: none; cursor: pointer; appearance: none; -webkit-appearance: none; }
     .add-item-sel option { background: var(--card); }
     .add-item-sel:focus { border-color: var(--accent); }
     .btn-add-item { padding: 9px 16px; border-radius: 9px; background: rgba(0,200,150,.1); border: 1px solid rgba(0,200,150,.25); color: var(--accent); font-family: 'DM Sans',sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all .15s; white-space: nowrap; }
