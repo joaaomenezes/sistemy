@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NexoERP — PDV</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <title>Sistemy — PDV</title>
+
   <link
     href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
     rel="stylesheet">
@@ -2114,7 +2114,8 @@
     <div class="nav-section">
       <div class="nav-section-label">Sistema</div>
       <a class="nav-item" href="#"><i class="bi bi-briefcase-fill"></i><span class="nav-label">Parceiros</span></a>
-      <a class="nav-item" href="#"><i class="bi bi-gear-fill"></i><span class="nav-label">Configurações</span></a>
+      <a class="nav-item" href="configuracoes.html"><i class="bi bi-gear-fill"></i><span
+          class="nav-label">Configurações</span></a>
     </div>
 
     <div class="sidebar-stats">
@@ -2133,7 +2134,7 @@
         <div class="u-role">Operador de caixa</div>
       </div>
     </div>
-        <a class="nav-item" onclick="NexoAuth.confirmLogout()" style="cursor:pointer;color:var(--danger)">
+    <a class="nav-item" onclick="NexoAuth.confirmLogout()" style="cursor:pointer;color:var(--danger)">
       <i class="bi bi-box-arrow-left"></i><span class="nav-label">Sair</span>
     </a>
   </aside>
@@ -2355,6 +2356,7 @@
   <!-- TOAST -->
   <div class="toast" id="toast"><i class="bi bi-check-circle-fill"></i><span id="toastMsg">—</span></div>
 
+  <script src="utils.js"></script>
   <script src="auth.js"></script>
   <script>
     NexoAuth.requireAuth();
@@ -2860,8 +2862,6 @@
     // ═══════════════════════════════════════════════
     // SIDEBAR — hover automático via CSS, sem JS
     // ═══════════════════════════════════════════════
-    function toggleSidebar() { /* hover only — controlado por CSS :hover */ }
-
     // ═══════════════════════════════════════════════
     // CART TOGGLE
     // ═══════════════════════════════════════════════
@@ -2886,14 +2886,6 @@
     // ═══════════════════════════════════════════════
     // HELPERS
     // ═══════════════════════════════════════════════
-    function fmt(v) { return (v || 0).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      document.getElementById('toastMsg').textContent = msg;
-      t.classList.add('show'); clearTimeout(t._t);
-      t._t = setTimeout(() => t.classList.remove('show'), 2200);
-    }
-
     NexoAuth.renderCurrentUser();
     init();
   </script>

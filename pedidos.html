@@ -1,956 +1,2018 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistemy — Pedidos de Venda</title>
+  <link rel="stylesheet" href="global.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
-    :root {
-      --bg:      #0a0d12;
-      --surface: #10151e;
-      --card:    #141b27;
-      --border:  #1e2a3a;
-      --accent:  #00c896;
-      --accent2: #0077ff;
-      --warn:    #ff6b35;
-      --danger:  #ff4757;
-      --purple:  #a855f7;
-      --text:    #e8edf5;
-      --muted:   #6b7f96;
-      --sidebar: 240px;
-      --sidebar-c: 68px;
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; display: flex; min-height: 100vh; overflow-x: hidden; }
-
-    /* ══ SIDEBAR ══ */
-    .sidebar { width: var(--sidebar); min-height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; transition: width .28s cubic-bezier(.4,0,.2,1); overflow: hidden; }
-    .sidebar.collapsed { width: var(--sidebar-c); }
-    .sidebar.collapsed:hover { width: var(--sidebar); }
-    .sidebar-brand { display: flex; align-items: center; gap: 12px; padding: 20px 18px; border-bottom: 1px solid var(--border); white-space: nowrap; }
-    .brand-icon { width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0; background: linear-gradient(135deg, var(--accent), #008a60); display: flex; align-items: center; justify-content: center; font-family: 'Syne',sans-serif; font-weight: 800; font-size: 13px; color: #021c14; }
-    .brand-text { font-family: 'Syne',sans-serif; font-size: 18px; font-weight: 800; letter-spacing: -.5px; opacity: 1; transition: opacity .2s; white-space: nowrap; }
-    .brand-text span { color: var(--accent); }
-    .sidebar.collapsed:not(:hover) .brand-text { opacity: 0; }
-    .sidebar-toggle { position: absolute; top: 22px; right: -12px; width: 24px; height: 24px; border-radius: 50%; background: var(--card); border: 1px solid var(--border); color: var(--muted); font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; transition: color .2s, border-color .2s; }
-    .sidebar-toggle:hover { color: var(--text); border-color: var(--accent); }
-    .sidebar-section { padding: 10px 12px; }
-    .sidebar-section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); padding: 8px 6px 4px; white-space: nowrap; transition: opacity .2s; }
-    .sidebar.collapsed:not(:hover) .sidebar-section-label { opacity: 0; }
-    .nav-item { display: flex; align-items: center; gap: 12px; padding: 9px 10px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 13.5px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: background .18s, color .18s; margin-bottom: 2px; }
-    .nav-item i { font-size: 17px; flex-shrink: 0; }
-    .nav-item:hover { background: var(--card); color: var(--text); }
-    .nav-item.active { background: rgba(0,200,150,.1); color: var(--accent); }
-    .nav-item .badge { margin-left: auto; flex-shrink: 0; background: var(--accent2); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 100px; }
-    .nav-label { transition: opacity .2s; white-space: nowrap; }
-    .sidebar.collapsed:not(:hover) .nav-label { opacity: 0; }
-    .sidebar.collapsed:not(:hover) .badge { opacity: 0; }
-    .sidebar-footer { margin-top: auto; padding: 12px; border-top: 1px solid var(--border); }
-    .user-row { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; transition: background .18s; }
-    .user-row:hover { background: var(--card); }
-    .user-avatar { width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0; background: linear-gradient(135deg,#2d5298,#1a3a7a); display: flex; align-items: center; justify-content: center; font-family: 'Syne',sans-serif; font-weight: 700; font-size: 12px; color: #fff; }
-    .user-info { overflow: hidden; transition: opacity .2s; display: flex; flex-direction: column; }
-    .sidebar.collapsed:not(:hover) .user-info { opacity: 0; }
-    .user-name { font-weight: 600; font-size: 13px; white-space: nowrap; }
-    .user-role { color: var(--muted); font-size: 11px; }
-
-    /* ══ MAIN ══ */
-    .main { margin-left: var(--sidebar); flex: 1; display: flex; flex-direction: column; min-height: 100vh; transition: margin-left .28s cubic-bezier(.4,0,.2,1); }
-    .main.collapsed { margin-left: var(--sidebar-c); }
-    .topbar { height: 64px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; position: sticky; top: 0; z-index: 50; }
-    .topbar-left { display: flex; align-items: center; gap: 12px; }
-    .page-title { font-family: 'Syne',sans-serif; font-size: 18px; font-weight: 700; letter-spacing: -.5px; }
-    .topbar-right { display: flex; align-items: center; gap: 12px; }
-    .icon-btn { width: 36px; height: 36px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); color: var(--muted); font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: color .18s, border-color .18s; }
-    .icon-btn:hover { color: var(--text); border-color: var(--accent); }
-
-    /* ══ CONTENT ══ */
-    .content { padding: 28px; flex: 1; }
-    .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
-    .page-header h1 { font-family: 'Syne',sans-serif; font-size: 26px; font-weight: 800; letter-spacing: -1px; }
-    .page-header p { color: var(--muted); margin-top: 4px; font-size: 13px; }
-    .header-actions { display: flex; gap: 10px; }
-    .btn-sm { padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; font-family: 'DM Sans',sans-serif; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap; border: none; transition: opacity .18s; text-decoration: none; }
-    .btn-primary { background: var(--accent); color: #021c14; }
-    .btn-primary:hover { opacity: .88; }
-    .btn-ghost { background: none; border: 1px solid var(--border) !important; color: var(--text); }
-    .btn-ghost:hover { border-color: var(--muted) !important; }
-
     /* KPIs */
-    .kpi-strip { display: grid; grid-template-columns: repeat(5,1fr); gap: 14px; margin-bottom: 24px; }
-    .kpi-mini { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; display: flex; align-items: center; gap: 14px; transition: border-color .25s; }
-    .kpi-mini:hover { border-color: rgba(0,200,150,.2); }
-    .kpi-mini-icon { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-    .kpi-mini-icon.g { background: rgba(0,200,150,.1); color: var(--accent); }
-    .kpi-mini-icon.b { background: rgba(0,119,255,.1); color: var(--accent2); }
-    .kpi-mini-icon.o { background: rgba(255,107,53,.1); color: var(--warn); }
-    .kpi-mini-icon.r { background: rgba(255,71,87,.1); color: var(--danger); }
-    .kpi-mini-icon.p { background: rgba(168,85,247,.1); color: var(--purple); }
-    .kpi-mini-val { font-family: 'Syne',sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -1px; }
-    .kpi-mini-lbl { color: var(--muted); font-size: 11px; margin-top: 2px; }
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-mini {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: border-color .25s;
+    }
+
+    .kpi-mini:hover {
+      border-color: rgba(0, 200, 150, .2);
+    }
+
+    .kpi-mini-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .kpi-mini-icon.g {
+      background: rgba(0, 200, 150, .1);
+      color: var(--accent);
+    }
+
+    .kpi-mini-icon.b {
+      background: rgba(0, 119, 255, .1);
+      color: var(--accent2);
+    }
+
+    .kpi-mini-icon.o {
+      background: rgba(255, 107, 53, .1);
+      color: var(--warn);
+    }
+
+    .kpi-mini-icon.r {
+      background: rgba(255, 71, 87, .1);
+      color: var(--danger);
+    }
+
+    .kpi-mini-icon.p {
+      background: rgba(168, 85, 247, .1);
+      color: var(--purple);
+    }
+
+    .kpi-mini-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .kpi-mini-lbl {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 2px;
+    }
 
     /* Tabs de status */
-    .status-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-    .status-tab { padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--card); color: var(--muted); display: flex; align-items: center; gap: 6px; transition: all .18s; white-space: nowrap; }
-    .status-tab:hover { color: var(--text); border-color: var(--muted); }
-    .status-tab.active { background: rgba(0,200,150,.08); border-color: var(--accent); color: var(--accent); }
-    .status-tab .tab-count { background: var(--border); color: var(--muted); font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 100px; transition: all .18s; }
-    .status-tab.active .tab-count { background: var(--accent); color: #021c14; }
+    .status-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .status-tab {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all .18s;
+      white-space: nowrap;
+    }
+
+    .status-tab:hover {
+      color: var(--text);
+      border-color: var(--muted);
+    }
+
+    .status-tab.active {
+      background: rgba(0, 200, 150, .08);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .status-tab .tab-count {
+      background: var(--border);
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 100px;
+      transition: all .18s;
+    }
+
+    .status-tab.active .tab-count {
+      background: var(--accent);
+      color: #021c14;
+    }
 
     /* Toolbar */
-    .toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
-    .search-input { flex: 1; min-width: 220px; max-width: 360px; display: flex; align-items: center; gap: 8px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 9px 14px; transition: border-color .2s; }
-    .search-input:focus-within { border-color: var(--accent); }
-    .search-input input { background: none; border: none; outline: none; color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 13px; width: 100%; }
-    .search-input input::placeholder { color: var(--muted); }
-    .select-filter { padding: 8px 12px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 12px; outline: none; cursor: pointer; appearance: none; -webkit-appearance: none; }
-    .select-filter option { background: var(--card); }
-    .toolbar-right { margin-left: auto; display: flex; gap: 8px; }
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 220px;
+      max-width: 360px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 14px;
+      transition: border-color .2s;
+    }
+
+    .search-input:focus-within {
+      border-color: var(--accent);
+    }
+
+    .search-input input {
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      width: 100%;
+    }
+
+    .search-input input::placeholder {
+      color: var(--muted);
+    }
+
+    .select-filter {
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .select-filter option {
+      background: var(--card);
+    }
+
+    .toolbar-right {
+      margin-left: auto;
+      display: flex;
+      gap: 8px;
+    }
 
     /* Kanban */
-    .kanban-wrap { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
-    .kanban-col { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
-    .kanban-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .kanban-title { font-family: 'Syne',sans-serif; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-    .kanban-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .kanban-count { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 100px; background: var(--border); color: var(--muted); }
-    .kanban-body { padding: 10px; display: flex; flex-direction: column; gap: 8px; min-height: 200px; }
+    .kanban-wrap {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .kanban-col {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .kanban-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .kanban-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .kanban-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .kanban-count {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 100px;
+      background: var(--border);
+      color: var(--muted);
+    }
+
+    .kanban-body {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 200px;
+    }
 
     /* Pedido card */
-    .pedido-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; cursor: pointer; transition: border-color .2s, transform .15s, box-shadow .2s; }
-    .pedido-card:hover { border-color: rgba(0,200,150,.3); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
-    .pc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-    .pc-id { font-family: 'Syne',sans-serif; font-size: 13px; font-weight: 700; }
-    .pc-date { font-size: 10px; color: var(--muted); }
-    .pc-cliente { font-size: 12px; font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
-    .pc-cliente i { color: var(--muted); font-size: 12px; }
-    .pc-items { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
-    .pc-footer { display: flex; justify-content: space-between; align-items: center; }
-    .pc-total { font-family: 'Syne',sans-serif; font-size: 15px; font-weight: 800; color: var(--accent); }
-    .pc-cond { font-size: 10px; color: var(--muted); background: var(--surface); border: 1px solid var(--border); padding: 2px 7px; border-radius: 100px; }
-    .pc-actions { display: flex; gap: 5px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
-    .pc-btn { flex: 1; padding: 6px; border-radius: 7px; border: 1px solid var(--border); background: none; color: var(--muted); font-size: 11px; font-weight: 600; font-family: 'DM Sans',sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: all .15s; }
-    .pc-btn:hover { color: var(--text); border-color: var(--muted); }
-    .pc-btn.approve { background: rgba(0,200,150,.08); border-color: var(--accent); color: var(--accent); }
-    .pc-btn.approve:hover { background: rgba(0,200,150,.15); }
+    .pedido-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      cursor: pointer;
+      transition: border-color .2s, transform .15s, box-shadow .2s;
+    }
+
+    .pedido-card:hover {
+      border-color: rgba(0, 200, 150, .3);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .3);
+    }
+
+    .pc-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .pc-id {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .pc-date {
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .pc-cliente {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pc-cliente i {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .pc-items {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .pc-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pc-total {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .pc-cond {
+      font-size: 10px;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 2px 7px;
+      border-radius: 100px;
+    }
+
+    .pc-actions {
+      display: flex;
+      gap: 5px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .pc-btn {
+      flex: 1;
+      padding: 6px;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all .15s;
+    }
+
+    .pc-btn:hover {
+      color: var(--text);
+      border-color: var(--muted);
+    }
+
+    .pc-btn.approve {
+      background: rgba(0, 200, 150, .08);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .pc-btn.approve:hover {
+      background: rgba(0, 200, 150, .15);
+    }
 
     /* View toggle */
-    .view-btn { width: 34px; height: 34px; border-radius: 7px; background: var(--card); border: 1px solid var(--border); color: var(--muted); font-size: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .18s; }
-    .view-btn.active { background: rgba(0,200,150,.08); border-color: var(--accent); color: var(--accent); }
+    .view-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 7px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all .18s;
+    }
+
+    .view-btn.active {
+      background: rgba(0, 200, 150, .08);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
 
     /* Table view */
-    .table-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; display: none; }
-    .table-card.show { display: block; }
-    .kanban-wrap.hide { display: none; }
-    .table-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; }
-    thead th { padding: 13px 16px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); background: var(--surface); border-bottom: 1px solid var(--border); white-space: nowrap; cursor: pointer; }
-    thead th:hover { color: var(--text); }
-    tbody td { padding: 12px 16px; border-bottom: 1px solid rgba(30,42,58,.7); vertical-align: middle; font-size: 13px; }
-    tbody tr:last-child td { border-bottom: none; }
-    tbody tr { transition: background .15s; cursor: pointer; }
-    tbody tr:hover td { background: rgba(255,255,255,.025); }
-    .table-footer { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; }
+    .table-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      display: none;
+    }
+
+    .table-card.show {
+      display: block;
+    }
+
+    .kanban-wrap.hide {
+      display: none;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      padding: 13px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    thead th:hover {
+      color: var(--text);
+    }
+
+    tbody td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(30, 42, 58, .7);
+      vertical-align: middle;
+      font-size: 13px;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr {
+      transition: background .15s;
+      cursor: pointer;
+    }
+
+    tbody tr:hover td {
+      background: rgba(255, 255, 255, .025);
+    }
+
+    .table-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+    }
 
     /* Status pills */
-    .status-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 100px; font-size: 11px; font-weight: 600; white-space: nowrap; }
-    .status-pill::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; }
-    .status-pill.orcamento  { background: rgba(107,127,150,.1); color: var(--muted); }
-    .status-pill.pendente   { background: rgba(255,107,53,.1);  color: var(--warn); }
-    .status-pill.aprovado   { background: rgba(0,119,255,.1);   color: var(--accent2); }
-    .status-pill.faturado   { background: rgba(168,85,247,.1);  color: var(--purple); }
-    .status-pill.concluido  { background: rgba(0,200,150,.1);   color: var(--accent); }
-    .status-pill.cancelado  { background: rgba(255,71,87,.1);   color: var(--danger); }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
 
-    .action-cell { display: flex; gap: 5px; opacity: 0; transition: opacity .15s; }
-    tbody tr:hover .action-cell { opacity: 1; }
-    .act-btn { width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .15s; }
-    .act-btn:hover { color: var(--text); border-color: var(--muted); }
-    .act-btn.ok:hover { color: var(--accent); border-color: var(--accent); }
-    .act-btn.danger:hover { color: var(--danger); border-color: var(--danger); }
+    .status-pill::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .status-pill.orcamento {
+      background: rgba(107, 127, 150, .1);
+      color: var(--muted);
+    }
+
+    .status-pill.pendente {
+      background: rgba(255, 107, 53, .1);
+      color: var(--warn);
+    }
+
+    .status-pill.aprovado {
+      background: rgba(0, 119, 255, .1);
+      color: var(--accent2);
+    }
+
+    .status-pill.faturado {
+      background: rgba(168, 85, 247, .1);
+      color: var(--purple);
+    }
+
+    .status-pill.concluido {
+      background: rgba(0, 200, 150, .1);
+      color: var(--accent);
+    }
+
+    .status-pill.cancelado {
+      background: rgba(255, 71, 87, .1);
+      color: var(--danger);
+    }
+
+    .action-cell {
+      display: flex;
+      gap: 5px;
+      opacity: 0;
+      transition: opacity .15s;
+    }
+
+    tbody tr:hover .action-cell {
+      opacity: 1;
+    }
+
+    .act-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .act-btn:hover {
+      color: var(--text);
+      border-color: var(--muted);
+    }
+
+    .act-btn.ok:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .act-btn.danger:hover {
+      color: var(--danger);
+      border-color: var(--danger);
+    }
 
     /* ══ MODAL NOVO PEDIDO ══ */
-    .modal-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,.7); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .25s; }
-    .modal-overlay.open { opacity: 1; pointer-events: all; }
-    .modal { background: var(--card); border: 1px solid var(--border); border-radius: 18px; width: 100%; max-width: 780px; max-height: 92vh; display: flex; flex-direction: column; transform: translateY(20px) scale(.97); transition: transform .3s cubic-bezier(.34,1.2,.64,1); overflow: hidden; }
-    .modal-overlay.open .modal { transform: none; }
-    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 26px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-    .modal-header h2 { font-family: 'Syne',sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -.5px; }
-    .modal-close { width: 30px; height: 30px; border-radius: 7px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .15s; }
-    .modal-close:hover { color: var(--text); border-color: var(--muted); }
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0, 0, 0, .7);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 780px;
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(20px) scale(.97);
+      transition: transform .3s cubic-bezier(.34, 1.2, .64, 1);
+      overflow: hidden;
+    }
+
+    .modal-overlay.open .modal {
+      transform: none;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 26px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .modal-header h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+    }
+
+    .modal-close {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .modal-close:hover {
+      color: var(--text);
+      border-color: var(--muted);
+    }
 
     /* tabs do modal */
-    .modal-tabs { display: flex; border-bottom: 1px solid var(--border); padding: 0 26px; flex-shrink: 0; }
-    .m-tab { padding: 12px 16px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .18s, border-color .18s; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-    .m-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-    .m-panel { display: none; }
-    .m-panel.active { display: block; animation: fadeIn .2s ease; }
-    @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+    .modal-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      padding: 0 26px;
+      flex-shrink: 0;
+    }
 
-    .modal-body { flex: 1; overflow-y: auto; padding: 24px 26px; }
-    .modal-footer { padding: 16px 26px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-    .mf-info { color: var(--muted); font-size: 12px; }
+    .m-tab {
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color .18s, border-color .18s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .m-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .m-panel {
+      display: none;
+    }
+
+    .m-panel.active {
+      display: block;
+      animation: fadeIn .2s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 26px;
+      scrollbar-width: thin;
+      scrollbar-color: #1e2a3a transparent;
+    }
+
+    .modal-footer {
+      padding: 16px 26px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .mf-info {
+      color: var(--muted);
+      font-size: 12px;
+    }
 
     /* form */
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .form-grid.g3 { grid-template-columns: 1fr 1fr 1fr; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 4px; }
-    .form-group.full { grid-column: 1/-1; }
-    label.lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
-    .inp-wrap { position: relative; display: flex; align-items: center; }
-    .inp-wrap i.pre { position: absolute; left: 12px; color: var(--muted); font-size: 14px; pointer-events: none; }
-    input.field, select.field, textarea.field { width: 100%; padding: 10px 12px 10px 35px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 13px; outline: none; transition: border-color .2s; }
-    input.field.ni, select.field.ni { padding-left: 12px; }
-    textarea.field { padding-left: 12px; resize: vertical; min-height: 72px; }
-    select.field { cursor: pointer; appearance: none; -webkit-appearance: none; }
-    select.field option { background: var(--card); }
-    input.field:focus, select.field:focus, textarea.field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,200,150,.08); }
-    input.field::placeholder, textarea.field::placeholder { color: var(--muted); }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .form-grid.g3 {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .form-group.full {
+      grid-column: 1/-1;
+    }
+
+    label.lbl {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+    }
+
+    .inp-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .inp-wrap i.pre {
+      position: absolute;
+      left: 12px;
+      color: var(--muted);
+      font-size: 14px;
+      pointer-events: none;
+    }
+
+    input.field,
+    select.field,
+    textarea.field {
+      width: 100%;
+      padding: 10px 12px 10px 35px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    input.field.ni,
+    select.field.ni {
+      padding-left: 12px;
+    }
+
+    textarea.field {
+      padding-left: 12px;
+      resize: vertical;
+      min-height: 72px;
+    }
+
+    select.field {
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    select.field option {
+      background: var(--card);
+    }
+
+    input.field:focus,
+    select.field:focus,
+    textarea.field:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 200, 150, .08);
+    }
+
+    input.field::placeholder,
+    textarea.field::placeholder {
+      color: var(--muted);
+    }
 
     /* seção */
-    .form-section { margin-bottom: 24px; }
-    .form-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .form-section {
+      margin-bottom: 24px;
+    }
+
+    .form-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
 
     /* itens do pedido */
-    .itens-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
-    .itens-table th { font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); padding: 6px 10px; text-align: left; border-bottom: 1px solid var(--border); }
-    .itens-table td { padding: 8px 10px; border-bottom: 1px solid rgba(30,42,58,.5); font-size: 13px; }
-    .itens-table tr:last-child td { border-bottom: none; }
-    .item-qty-inp { width: 60px; padding: 5px 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 12px; text-align: center; outline: none; }
-    .item-qty-inp:focus { border-color: var(--accent); }
-    .item-remove { color: var(--muted); cursor: pointer; font-size: 14px; padding: 4px; transition: color .15s; }
-    .item-remove:hover { color: var(--danger); }
-    .add-item-row { display: flex; gap: 10px; align-items: center; }
-    .add-item-sel { flex: 1; padding: 9px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 13px; outline: none; cursor: pointer; appearance: none; -webkit-appearance: none; }
-    .add-item-sel option { background: var(--card); }
-    .add-item-sel:focus { border-color: var(--accent); }
-    .btn-add-item { padding: 9px 16px; border-radius: 9px; background: rgba(0,200,150,.1); border: 1px solid rgba(0,200,150,.25); color: var(--accent); font-family: 'DM Sans',sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all .15s; white-space: nowrap; }
-    .btn-add-item:hover { background: rgba(0,200,150,.18); }
+    .itens-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 14px;
+    }
+
+    .itens-table th {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+      padding: 6px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .itens-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(30, 42, 58, .5);
+      font-size: 13px;
+    }
+
+    .itens-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .item-qty-inp {
+      width: 60px;
+      padding: 5px 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      text-align: center;
+      outline: none;
+    }
+
+    .item-qty-inp:focus {
+      border-color: var(--accent);
+    }
+
+    .item-remove {
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 4px;
+      transition: color .15s;
+    }
+
+    .item-remove:hover {
+      color: var(--danger);
+    }
+
+    .add-item-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .add-item-sel {
+      flex: 1;
+      padding: 9px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .add-item-sel option {
+      background: var(--card);
+    }
+
+    .add-item-sel:focus {
+      border-color: var(--accent);
+    }
+
+    .btn-add-item {
+      padding: 9px 16px;
+      border-radius: 9px;
+      background: rgba(0, 200, 150, .1);
+      border: 1px solid rgba(0, 200, 150, .25);
+      color: var(--accent);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+
+    .btn-add-item:hover {
+      background: rgba(0, 200, 150, .18);
+    }
 
     /* resumo do pedido */
-    .resumo-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
-    .resumo-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
-    .resumo-row .label { color: var(--muted); }
-    .resumo-divider { border: none; border-top: 1px solid var(--border); margin: 8px 0; }
-    .resumo-total { display: flex; justify-content: space-between; font-size: 17px; font-weight: 800; font-family: 'Syne',sans-serif; padding: 4px 0; }
-    .resumo-total .val { color: var(--accent); }
+    .resumo-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .resumo-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 4px 0;
+    }
+
+    .resumo-row .label {
+      color: var(--muted);
+    }
+
+    .resumo-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 8px 0;
+    }
+
+    .resumo-total {
+      display: flex;
+      justify-content: space-between;
+      font-size: 17px;
+      font-weight: 800;
+      font-family: 'Syne', sans-serif;
+      padding: 4px 0;
+    }
+
+    .resumo-total .val {
+      color: var(--accent);
+    }
 
     /* parcelas */
-    .parcelas-list { display: flex; flex-direction: column; gap: 8px; }
-    .parcela-item { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 10px 14px; }
-    .parcela-num { width: 28px; height: 28px; border-radius: 50%; background: rgba(0,200,150,.1); border: 1px solid rgba(0,200,150,.2); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: var(--accent); flex-shrink: 0; }
-    .parcela-info { flex: 1; }
-    .parcela-val { font-family: 'Syne',sans-serif; font-weight: 800; font-size: 14px; }
-    .parcela-data { color: var(--muted); font-size: 11px; margin-top: 2px; }
-    .parcela-status { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 100px; background: rgba(107,127,150,.1); color: var(--muted); }
+    .parcelas-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .parcela-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 10px 14px;
+    }
+
+    .parcela-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(0, 200, 150, .1);
+      border: 1px solid rgba(0, 200, 150, .2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .parcela-info {
+      flex: 1;
+    }
+
+    .parcela-val {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .parcela-data {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
+    .parcela-status {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 100px;
+      background: rgba(107, 127, 150, .1);
+      color: var(--muted);
+    }
 
     /* btns modal */
-    .btn-cancel-m { padding: 10px 20px; border-radius: 9px; border: 1px solid var(--border); background: none; color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
-    .btn-save-m { padding: 10px 22px; border-radius: 9px; border: none; background: var(--accent); color: #021c14; font-family: 'DM Sans',sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 7px; }
-    .btn-save-m:hover { opacity: .88; }
+    .btn-cancel-m {
+      padding: 10px 20px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-save-m {
+      padding: 10px 22px;
+      border-radius: 9px;
+      border: none;
+      background: var(--accent);
+      color: #021c14;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .btn-save-m:hover {
+      opacity: .88;
+    }
 
     /* detail panel */
-    .detail-panel { position: fixed; top: 0; right: -500px; bottom: 0; width: 480px; background: var(--card); border-left: 1px solid var(--border); z-index: 200; display: flex; flex-direction: column; transition: right .3s cubic-bezier(.4,0,.2,1); }
-    .detail-panel.open { right: 0; }
-    .dp-header { padding: 20px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-    .dp-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-    .dp-id { font-family: 'Syne',sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -1px; }
-    .dp-close { width: 30px; height: 30px; border-radius: 7px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    .dp-close:hover { color: var(--text); }
-    .dp-total { font-family: 'Syne',sans-serif; font-size: 28px; font-weight: 800; color: var(--accent); margin-top: 8px; }
-    .dp-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
-    .dp-section { margin-bottom: 22px; }
-    .dp-section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 12px; font-weight: 700; }
-    .dp-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(30,42,58,.5); font-size: 13px; }
-    .dp-row:last-child { border-bottom: none; }
-    .dp-label { color: var(--muted); }
-    .item-row { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid rgba(30,42,58,.4); }
-    .item-row:last-child { border-bottom: none; }
-    .item-emoji { width: 34px; height: 34px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
-    .item-info { flex: 1; }
-    .item-name { font-weight: 600; font-size: 13px; }
-    .item-qty { color: var(--muted); font-size: 11px; }
-    .item-total { font-family: 'Syne',sans-serif; font-weight: 800; font-size: 13px; color: var(--accent); }
-    .dp-actions { display: flex; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap; }
-    .dp-btn { flex: 1; padding: 10px; border-radius: 9px; font-size: 12px; font-weight: 600; font-family: 'DM Sans',sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; transition: opacity .15s; min-width: 80px; }
-    .dp-btn.primary { background: var(--accent); color: #021c14; border: none; }
-    .dp-btn.blue    { background: rgba(0,119,255,.12); border: 1px solid rgba(0,119,255,.3); color: var(--accent2); }
-    .dp-btn.purple  { background: rgba(168,85,247,.12); border: 1px solid rgba(168,85,247,.3); color: var(--purple); }
-    .dp-btn.ghost   { background: none; border: 1px solid var(--border); color: var(--text); }
-    .dp-btn.danger  { background: rgba(255,71,87,.1); border: 1px solid rgba(255,71,87,.3); color: var(--danger); }
-    .dp-btn:hover { opacity: .85; }
-    .dp-btn:disabled { opacity: .3; pointer-events: none; }
+    .detail-panel {
+      position: fixed;
+      top: 0;
+      right: -500px;
+      bottom: 0;
+      width: 480px;
+      background: var(--card);
+      border-left: 1px solid var(--border);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      transition: right .3s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    .detail-panel.open {
+      right: 0;
+    }
+
+    .dp-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .dp-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .dp-id {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .dp-close {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .dp-close:hover {
+      color: var(--text);
+    }
+
+    .dp-total {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--accent);
+      margin-top: 8px;
+    }
+
+    .dp-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px;
+    }
+
+    .dp-section {
+      margin-bottom: 22px;
+    }
+
+    .dp-section-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    .dp-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(30, 42, 58, .5);
+      font-size: 13px;
+    }
+
+    .dp-row:last-child {
+      border-bottom: none;
+    }
+
+    .dp-label {
+      color: var(--muted);
+    }
+
+    .item-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(30, 42, 58, .4);
+    }
+
+    .item-row:last-child {
+      border-bottom: none;
+    }
+
+    .item-emoji {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .item-info {
+      flex: 1;
+    }
+
+    .item-name {
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .item-qty {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .item-total {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    .dp-actions {
+      display: flex;
+      gap: 8px;
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+
+    .dp-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: opacity .15s;
+      min-width: 80px;
+    }
+
+    .dp-btn.primary {
+      background: var(--accent);
+      color: #021c14;
+      border: none;
+    }
+
+    .dp-btn.blue {
+      background: rgba(0, 119, 255, .12);
+      border: 1px solid rgba(0, 119, 255, .3);
+      color: var(--accent2);
+    }
+
+    .dp-btn.purple {
+      background: rgba(168, 85, 247, .12);
+      border: 1px solid rgba(168, 85, 247, .3);
+      color: var(--purple);
+    }
+
+    .dp-btn.ghost {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .dp-btn.danger {
+      background: rgba(255, 71, 87, .1);
+      border: 1px solid rgba(255, 71, 87, .3);
+      color: var(--danger);
+    }
+
+    .dp-btn:hover {
+      opacity: .85;
+    }
+
+    .dp-btn:disabled {
+      opacity: .3;
+      pointer-events: none;
+    }
 
     /* toast */
-    .toast { position: fixed; bottom: 28px; right: 28px; z-index: 2000; background: var(--card); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; gap: 12px; font-size: 13px; box-shadow: 0 12px 40px rgba(0,0,0,.4); transform: translateY(80px); opacity: 0; transition: transform .4s cubic-bezier(.34,1.2,.64,1), opacity .3s; }
-    .toast.show { transform: none; opacity: 1; }
-    .toast i { font-size: 18px; color: var(--accent); }
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 2000;
+      background: var(--card);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, .4);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: transform .4s cubic-bezier(.34, 1.2, .64, 1), opacity .3s;
+    }
 
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .toast.show {
+      transform: none;
+      opacity: 1;
+    }
 
-    @media(max-width:1200px) { .kanban-wrap { grid-template-columns: repeat(2,1fr); } }
-    @media(max-width:900px) { .kpi-strip { grid-template-columns: repeat(3,1fr); } .sidebar { width: var(--sidebar-c); } .main { margin-left: var(--sidebar-c); } }
+    .toast i {
+      font-size: 18px;
+      color: var(--accent);
+    }
+
+    @media(max-width:1200px) {
+      .kanban-wrap {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media(max-width:900px) {
+      .kpi-strip {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
   </style>
 </head>
+
 <body>
 
-<!-- SIDEBAR -->
-<aside class="sidebar collapsed" id="sidebar">
-  <div class="sidebar-brand">
-    <div class="brand-icon">N</div>
-    <span class="brand-text">Nexo<span>ERP</span></span>
-  </div>
-  <div class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle">
-    <i class="bi bi-chevron-right" id="toggleIcon"></i>
-  </div>
-  <div class="sidebar-section">
-    <div class="sidebar-section-label">Principal</div>
-    <a href="dashboard.html" class="nav-item"><i class="bi bi-grid-1x2-fill"></i><span class="nav-label">Dashboard</span></a>
-    <a href="pdv.html" class="nav-item"><i class="bi bi-display"></i><span class="nav-label">PDV</span></a>
-    <a href="pedidos.html" class="nav-item active"><i class="bi bi-file-earmark-text-fill"></i><span class="nav-label">Pedidos de Venda</span></a>
-    <a href="vendas.html" class="nav-item"><i class="bi bi-cart4"></i><span class="nav-label">Vendas</span></a>
-    <a href="clientes.html" class="nav-item"><i class="bi bi-people-fill"></i><span class="nav-label">Clientes</span></a>
-    <a href="produtos.html" class="nav-item"><i class="bi bi-box-seam-fill"></i><span class="nav-label">Produtos</span></a>
-    <a href="estoque.html" class="nav-item"><i class="bi bi-stack"></i><span class="nav-label">Estoque</span></a>
-  </div>
-  <div class="sidebar-section">
-    <div class="sidebar-section-label">Financeiro</div>
-    <a href="#" class="nav-item"><i class="bi bi-graph-up-arrow"></i><span class="nav-label">Relatórios</span></a>
-    <a href="#" class="nav-item"><i class="bi bi-credit-card-2-back-fill"></i><span class="nav-label">Financeiro</span></a>
-    <a href="#" class="nav-item"><i class="bi bi-receipt-cutoff"></i><span class="nav-label">Fiscal / NF-e</span></a>
-  </div>
-  <div class="sidebar-section">
-    <div class="sidebar-section-label">Sistema</div>
-    <a href="#" class="nav-item"><i class="bi bi-briefcase-fill"></i><span class="nav-label">Parceiros</span></a>
-    <a href="configuracoes.html" class="nav-item"><i class="bi bi-gear-fill"></i><span class="nav-label">Configurações</span></a>
-  </div>
-  <div class="sidebar-footer">
-    <div class="user-row">
-      <div class="user-avatar">JD</div>
-      <div class="user-info">
-        <div class="user-name">João Desenvolvedor</div>
-        <div class="user-role">Administrador</div>
-      </div>
-      <i class="bi bi-three-dots-vertical" style="color:var(--muted);margin-left:auto;font-size:15px;flex-shrink:0"></i>
+  <!-- SIDEBAR -->
+  <aside class="sidebar collapsed" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">N</div>
+      <span class="brand-text">Nexo<span>ERP</span></span>
     </div>
-    <a class="nav-item" onclick="NexoAuth.confirmLogout()" style="cursor:pointer;color:var(--danger)">
-      <i class="bi bi-box-arrow-left"></i><span class="nav-label">Sair</span>
-    </a>
-  </div>
-</aside>
-
-<!-- MAIN -->
-<div class="main collapsed" id="mainContent">
-  <div class="topbar">
-    <div class="topbar-left">
-      <span class="page-title">Pedidos de Venda</span>
-      <span style="color:var(--muted);font-size:12px">/</span>
-      <span style="color:var(--muted);font-size:13px">B2B</span>
+    <div class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle">
+      <i class="bi bi-chevron-right" id="toggleIcon"></i>
     </div>
-    <div class="topbar-right">
-      <div class="icon-btn"><i class="bi bi-bell"></i></div>
-      <div class="icon-btn"><i class="bi bi-question-circle"></i></div>
-      <div class="user-avatar">JD</div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Principal</div>
+      <a href="dashboard.html" class="nav-item"><i class="bi bi-grid-1x2-fill"></i><span
+          class="nav-label">Dashboard</span></a>
+      <a href="pdv.html" class="nav-item"><i class="bi bi-display"></i><span class="nav-label">PDV</span></a>
+      <a href="pedidos.html" class="nav-item active"><i class="bi bi-file-earmark-text-fill"></i><span
+          class="nav-label">Pedidos de Venda</span></a>
+      <a href="vendas.html" class="nav-item"><i class="bi bi-cart4"></i><span class="nav-label">Vendas</span></a>
+      <a href="clientes.html" class="nav-item"><i class="bi bi-people-fill"></i><span
+          class="nav-label">Clientes</span></a>
+      <a href="produtos.html" class="nav-item"><i class="bi bi-box-seam-fill"></i><span
+          class="nav-label">Produtos</span></a>
+      <a href="estoque.html" class="nav-item"><i class="bi bi-stack"></i><span class="nav-label">Estoque</span></a>
     </div>
-  </div>
-
-  <div class="content">
-
-    <div class="page-header">
-      <div>
-        <h1>Pedidos de Venda</h1>
-        <p>Gerencie orçamentos, pedidos B2B, duplicatas e faturamento.</p>
-      </div>
-      <div class="header-actions">
-        <button class="btn-sm btn-ghost" onclick="exportar()"><i class="bi bi-download"></i> Exportar</button>
-        <button class="btn-sm btn-primary" onclick="openModal()"><i class="bi bi-plus-lg"></i> Novo Pedido</button>
-      </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Financeiro</div>
+      <a href="#" class="nav-item"><i class="bi bi-graph-up-arrow"></i><span class="nav-label">Relatórios</span></a>
+      <a href="#" class="nav-item"><i class="bi bi-credit-card-2-back-fill"></i><span
+          class="nav-label">Financeiro</span></a>
+      <a href="#" class="nav-item"><i class="bi bi-receipt-cutoff"></i><span class="nav-label">Fiscal / NF-e</span></a>
     </div>
-
-    <!-- KPIs -->
-    <div class="kpi-strip">
-      <div class="kpi-mini"><div class="kpi-mini-icon b"><i class="bi bi-file-earmark-text"></i></div><div><div class="kpi-mini-val" id="kpi-total">0</div><div class="kpi-mini-lbl">Total de pedidos</div></div></div>
-      <div class="kpi-mini"><div class="kpi-mini-icon o"><i class="bi bi-hourglass-split"></i></div><div><div class="kpi-mini-val" id="kpi-pendentes">0</div><div class="kpi-mini-lbl">Aguardando aprovação</div></div></div>
-      <div class="kpi-mini"><div class="kpi-mini-icon g"><i class="bi bi-currency-dollar"></i></div><div><div class="kpi-mini-val" id="kpi-faturamento">R$ 0</div><div class="kpi-mini-lbl">Faturamento do mês</div></div></div>
-      <div class="kpi-mini"><div class="kpi-mini-icon p"><i class="bi bi-receipt"></i></div><div><div class="kpi-mini-val" id="kpi-faturados">0</div><div class="kpi-mini-lbl">Faturados</div></div></div>
-      <div class="kpi-mini"><div class="kpi-mini-icon r"><i class="bi bi-clock-history"></i></div><div><div class="kpi-mini-val" id="kpi-areceber">R$ 0</div><div class="kpi-mini-lbl">A receber</div></div></div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Sistema</div>
+      <a href="#" class="nav-item"><i class="bi bi-briefcase-fill"></i><span class="nav-label">Parceiros</span></a>
+      <a href="configuracoes.html" class="nav-item"><i class="bi bi-gear-fill"></i><span
+          class="nav-label">Configurações</span></a>
     </div>
-
-    <!-- Status tabs -->
-    <div class="status-tabs">
-      <div class="status-tab active" onclick="setStatusTab(this,'todos')">Todos <span class="tab-count" id="tc-todos">0</span></div>
-      <div class="status-tab" onclick="setStatusTab(this,'orcamento')">Orçamento <span class="tab-count" id="tc-orcamento">0</span></div>
-      <div class="status-tab" onclick="setStatusTab(this,'pendente')">Pendente <span class="tab-count" id="tc-pendente">0</span></div>
-      <div class="status-tab" onclick="setStatusTab(this,'aprovado')">Aprovado <span class="tab-count" id="tc-aprovado">0</span></div>
-      <div class="status-tab" onclick="setStatusTab(this,'faturado')">Faturado <span class="tab-count" id="tc-faturado">0</span></div>
-      <div class="status-tab" onclick="setStatusTab(this,'concluido')">Concluído <span class="tab-count" id="tc-concluido">0</span></div>
-      <div class="status-tab" onclick="setStatusTab(this,'cancelado')">Cancelado <span class="tab-count" id="tc-cancelado">0</span></div>
-    </div>
-
-    <!-- Toolbar -->
-    <div class="toolbar">
-      <div class="search-input">
-        <i class="bi bi-search" style="color:var(--muted)"></i>
-        <input type="text" id="searchInput" placeholder="Buscar por nº, cliente, valor..." oninput="renderView()">
-      </div>
-      <select class="select-filter" id="clienteFilter" onchange="renderView()">
-        <option value="">Todos os clientes</option>
-      </select>
-      <select class="select-filter" id="condicaoFilter" onchange="renderView()">
-        <option value="">Todas as condições</option>
-        <option>À vista</option>
-        <option>7 dias</option>
-        <option>14 dias</option>
-        <option>30 dias</option>
-        <option>30/60 dias</option>
-        <option>30/60/90 dias</option>
-      </select>
-      <div class="toolbar-right">
-        <div class="view-btn active" id="vbtn-kanban" onclick="setView('kanban')" title="Kanban"><i class="bi bi-kanban"></i></div>
-        <div class="view-btn" id="vbtn-list" onclick="setView('list')" title="Lista"><i class="bi bi-list-ul"></i></div>
-      </div>
-    </div>
-
-    <!-- KANBAN VIEW -->
-    <div class="kanban-wrap" id="kanbanView">
-      <div class="kanban-col">
-        <div class="kanban-header">
-          <div class="kanban-title"><div class="kanban-dot" style="background:var(--muted)"></div>Orçamento</div>
-          <span class="kanban-count" id="kc-orcamento">0</span>
+    <div class="sidebar-footer">
+      <div class="user-row">
+        <div class="user-avatar">JD</div>
+        <div class="user-info">
+          <div class="user-name">João Desenvolvedor</div>
+          <div class="user-role">Administrador</div>
         </div>
-        <div class="kanban-body" id="kb-orcamento"></div>
+        <i class="bi bi-three-dots-vertical"
+          style="color:var(--muted);margin-left:auto;font-size:15px;flex-shrink:0"></i>
       </div>
-      <div class="kanban-col">
-        <div class="kanban-header">
-          <div class="kanban-title"><div class="kanban-dot" style="background:var(--warn)"></div>Pendente</div>
-          <span class="kanban-count" id="kc-pendente">0</span>
+      <a class="nav-item" onclick="NexoAuth.confirmLogout()" style="cursor:pointer;color:var(--danger)">
+        <i class="bi bi-box-arrow-left"></i><span class="nav-label">Sair</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main collapsed" id="mainContent">
+    <div class="topbar">
+      <div class="topbar-left">
+        <span class="page-title">Pedidos de Venda</span>
+        <span style="color:var(--muted);font-size:12px">/</span>
+        <span style="color:var(--muted);font-size:13px">B2B</span>
+      </div>
+      <div class="topbar-right">
+        <div class="icon-btn"><i class="bi bi-bell"></i></div>
+        <div class="icon-btn"><i class="bi bi-question-circle"></i></div>
+        <div class="user-avatar">JD</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div class="page-header">
+        <div>
+          <h1>Pedidos de Venda</h1>
+          <p>Gerencie orçamentos, pedidos B2B, duplicatas e faturamento.</p>
         </div>
-        <div class="kanban-body" id="kb-pendente"></div>
-      </div>
-      <div class="kanban-col">
-        <div class="kanban-header">
-          <div class="kanban-title"><div class="kanban-dot" style="background:var(--accent2)"></div>Aprovado</div>
-          <span class="kanban-count" id="kc-aprovado">0</span>
+        <div class="header-actions">
+          <button class="btn-sm btn-ghost-sm" onclick="exportar()"><i class="bi bi-download"></i> Exportar</button>
+          <button class="btn-sm btn-primary-sm" onclick="openModal()"><i class="bi bi-plus-lg"></i> Novo Pedido</button>
         </div>
-        <div class="kanban-body" id="kb-aprovado"></div>
       </div>
-      <div class="kanban-col">
-        <div class="kanban-header">
-          <div class="kanban-title"><div class="kanban-dot" style="background:var(--purple)"></div>Faturado</div>
-          <span class="kanban-count" id="kc-faturado">0</span>
-        </div>
-        <div class="kanban-body" id="kb-faturado"></div>
-      </div>
-    </div>
 
-    <!-- LIST VIEW -->
-    <div class="table-card" id="listView">
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Nº Pedido</th>
-              <th>Cliente</th>
-              <th>Itens</th>
-              <th>Condição</th>
-              <th>Total</th>
-              <th>Status</th>
-              <th>Data</th>
-              <th>Vendedor</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="listBody"></tbody>
-        </table>
-      </div>
-      <div class="table-footer">
-        <span id="listInfo">—</span>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- DETAIL PANEL -->
-<div class="detail-panel" id="detailPanel">
-  <div class="dp-header">
-    <div class="dp-top">
-      <div>
-        <div class="dp-id" id="dp-id">#PV0000</div>
-        <div style="color:var(--muted);font-size:12px;margin-top:3px" id="dp-data">—</div>
-      </div>
-      <div class="dp-close" onclick="closeDetail()"><i class="bi bi-x-lg"></i></div>
-    </div>
-    <div id="dp-meta" style="margin-bottom:6px"></div>
-    <div class="dp-total" id="dp-total">R$ 0,00</div>
-  </div>
-  <div class="dp-body">
-    <div class="dp-section">
-      <div class="dp-section-title">Informações</div>
-      <div id="dp-info"></div>
-    </div>
-    <div class="dp-section">
-      <div class="dp-section-title">Itens do pedido</div>
-      <div id="dp-itens"></div>
-    </div>
-    <div class="dp-section">
-      <div class="dp-section-title">Condição de pagamento</div>
-      <div id="dp-parcelas"></div>
-    </div>
-  </div>
-  <div class="dp-actions" id="dp-actions"></div>
-</div>
-
-<!-- MODAL NOVO PEDIDO -->
-<div class="modal-overlay" id="modalOverlay" onclick="handleOverlay(event)">
-  <div class="modal">
-    <div class="modal-header">
-      <div>
-        <h2 id="modalTitle">Novo Pedido de Venda</h2>
-        <div style="color:var(--muted);font-size:12px;margin-top:2px">Preencha os dados do pedido B2B</div>
-      </div>
-      <div class="modal-close" onclick="closeModal()"><i class="bi bi-x-lg"></i></div>
-    </div>
-
-    <div class="modal-tabs">
-      <div class="m-tab active" onclick="switchTab(this,'t-dados')"><i class="bi bi-person"></i> Dados</div>
-      <div class="m-tab" onclick="switchTab(this,'t-itens')"><i class="bi bi-box-seam"></i> Itens</div>
-      <div class="m-tab" onclick="switchTab(this,'t-pagamento')"><i class="bi bi-credit-card"></i> Pagamento</div>
-      <div class="m-tab" onclick="switchTab(this,'t-obs')"><i class="bi bi-chat-text"></i> Observações</div>
-    </div>
-
-    <div class="modal-body">
-
-      <!-- TAB DADOS -->
-      <div class="m-panel active" id="t-dados">
-        <div class="form-section">
-          <div class="form-section-title">Cliente e vendedor</div>
-          <div class="form-grid">
-            <div class="form-group full">
-              <label class="lbl">Cliente *</label>
-              <div class="inp-wrap"><i class="bi bi-building pre"></i>
-                <select class="field" id="f-cliente">
-                  <option value="">Selecione o cliente...</option>
-                  <option>Posto Panorama Ltda.</option>
-                  <option>Farmácia São José</option>
-                  <option>Distribuidora Alfa ME</option>
-                  <option>Auto Peças SP Ltda.</option>
-                  <option>Construfácil EIRELI</option>
-                  <option>Mercado Central</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="lbl">Vendedor</label>
-              <div class="inp-wrap"><i class="bi bi-person-badge pre"></i>
-                <select class="field" id="f-vendedor">
-                  <option>Lucas Andrade</option>
-                  <option>Maria Ferreira</option>
-                  <option>Carlos Souza</option>
-                  <option>João Desenvolvedor</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="lbl">Data do pedido</label>
-              <div class="inp-wrap"><i class="bi bi-calendar pre"></i>
-                <input class="field" type="date" id="f-data">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="lbl">Validade do orçamento</label>
-              <div class="inp-wrap"><i class="bi bi-calendar-x pre"></i>
-                <input class="field" type="date" id="f-validade">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="lbl">Previsão de entrega</label>
-              <div class="inp-wrap"><i class="bi bi-truck pre"></i>
-                <input class="field" type="date" id="f-entrega">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="lbl">Status inicial</label>
-              <div class="inp-wrap"><i class="bi bi-flag pre"></i>
-                <select class="field" id="f-status">
-                  <option value="orcamento">Orçamento</option>
-                  <option value="pendente">Pendente (aguarda aprovação)</option>
-                </select>
-              </div>
-            </div>
+      <!-- KPIs -->
+      <div class="kpi-strip">
+        <div class="kpi-mini">
+          <div class="kpi-mini-icon b"><i class="bi bi-file-earmark-text"></i></div>
+          <div>
+            <div class="kpi-mini-val" id="kpi-total">0</div>
+            <div class="kpi-mini-lbl">Total de pedidos</div>
           </div>
         </div>
-
-        <div class="form-section">
-          <div class="form-section-title">Endereço de entrega</div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="lbl">CEP</label>
-              <div class="inp-wrap"><i class="bi bi-geo-alt pre"></i>
-                <input class="field" type="text" id="f-cep" placeholder="00000-000">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="lbl">Cidade / UF</label>
-              <div class="inp-wrap"><i class="bi bi-building-fill pre"></i>
-                <input class="field" type="text" id="f-cidade" placeholder="São Paulo, SP">
-              </div>
-            </div>
-            <div class="form-group full">
-              <label class="lbl">Endereço completo</label>
-              <div class="inp-wrap"><i class="bi bi-signpost pre"></i>
-                <input class="field" type="text" id="f-endereco" placeholder="Rua, número, complemento...">
-              </div>
-            </div>
+        <div class="kpi-mini">
+          <div class="kpi-mini-icon o"><i class="bi bi-hourglass-split"></i></div>
+          <div>
+            <div class="kpi-mini-val" id="kpi-pendentes">0</div>
+            <div class="kpi-mini-lbl">Aguardando aprovação</div>
+          </div>
+        </div>
+        <div class="kpi-mini">
+          <div class="kpi-mini-icon g"><i class="bi bi-currency-dollar"></i></div>
+          <div>
+            <div class="kpi-mini-val" id="kpi-faturamento">R$ 0</div>
+            <div class="kpi-mini-lbl">Faturamento do mês</div>
+          </div>
+        </div>
+        <div class="kpi-mini">
+          <div class="kpi-mini-icon p"><i class="bi bi-receipt"></i></div>
+          <div>
+            <div class="kpi-mini-val" id="kpi-faturados">0</div>
+            <div class="kpi-mini-lbl">Faturados</div>
+          </div>
+        </div>
+        <div class="kpi-mini">
+          <div class="kpi-mini-icon r"><i class="bi bi-clock-history"></i></div>
+          <div>
+            <div class="kpi-mini-val" id="kpi-areceber">R$ 0</div>
+            <div class="kpi-mini-lbl">A receber</div>
           </div>
         </div>
       </div>
 
-      <!-- TAB ITENS -->
-      <div class="m-panel" id="t-itens">
-        <div class="form-section">
-          <div class="form-section-title">Adicionar produtos</div>
-          <div class="add-item-row" style="margin-bottom:16px">
-            <select class="add-item-sel" id="itemSelect">
-              <option value="">Selecione um produto...</option>
-            </select>
-            <button class="btn-add-item" onclick="addItem()"><i class="bi bi-plus-lg"></i> Adicionar</button>
+      <!-- Status tabs -->
+      <div class="status-tabs">
+        <div class="status-tab active" onclick="setStatusTab(this,'todos')">Todos <span class="tab-count"
+            id="tc-todos">0</span></div>
+        <div class="status-tab" onclick="setStatusTab(this,'orcamento')">Orçamento <span class="tab-count"
+            id="tc-orcamento">0</span></div>
+        <div class="status-tab" onclick="setStatusTab(this,'pendente')">Pendente <span class="tab-count"
+            id="tc-pendente">0</span></div>
+        <div class="status-tab" onclick="setStatusTab(this,'aprovado')">Aprovado <span class="tab-count"
+            id="tc-aprovado">0</span></div>
+        <div class="status-tab" onclick="setStatusTab(this,'faturado')">Faturado <span class="tab-count"
+            id="tc-faturado">0</span></div>
+        <div class="status-tab" onclick="setStatusTab(this,'concluido')">Concluído <span class="tab-count"
+            id="tc-concluido">0</span></div>
+        <div class="status-tab" onclick="setStatusTab(this,'cancelado')">Cancelado <span class="tab-count"
+            id="tc-cancelado">0</span></div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="search-input">
+          <i class="bi bi-search" style="color:var(--muted)"></i>
+          <input type="text" id="searchInput" placeholder="Buscar por nº, cliente, valor..." oninput="renderView()">
+        </div>
+        <select class="select-filter" id="clienteFilter" onchange="renderView()">
+          <option value="">Todos os clientes</option>
+        </select>
+        <select class="select-filter" id="condicaoFilter" onchange="renderView()">
+          <option value="">Todas as condições</option>
+          <option>À vista</option>
+          <option>7 dias</option>
+          <option>14 dias</option>
+          <option>30 dias</option>
+          <option>30/60 dias</option>
+          <option>30/60/90 dias</option>
+        </select>
+        <div class="toolbar-right">
+          <div class="view-btn active" id="vbtn-kanban" onclick="setView('kanban')" title="Kanban"><i
+              class="bi bi-kanban"></i></div>
+          <div class="view-btn" id="vbtn-list" onclick="setView('list')" title="Lista"><i class="bi bi-list-ul"></i>
           </div>
-          <table class="itens-table">
+        </div>
+      </div>
+
+      <!-- KANBAN VIEW -->
+      <div class="kanban-wrap" id="kanbanView">
+        <div class="kanban-col">
+          <div class="kanban-header">
+            <div class="kanban-title">
+              <div class="kanban-dot" style="background:var(--muted)"></div>Orçamento
+            </div>
+            <span class="kanban-count" id="kc-orcamento">0</span>
+          </div>
+          <div class="kanban-body" id="kb-orcamento"></div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-header">
+            <div class="kanban-title">
+              <div class="kanban-dot" style="background:var(--warn)"></div>Pendente
+            </div>
+            <span class="kanban-count" id="kc-pendente">0</span>
+          </div>
+          <div class="kanban-body" id="kb-pendente"></div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-header">
+            <div class="kanban-title">
+              <div class="kanban-dot" style="background:var(--accent2)"></div>Aprovado
+            </div>
+            <span class="kanban-count" id="kc-aprovado">0</span>
+          </div>
+          <div class="kanban-body" id="kb-aprovado"></div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-header">
+            <div class="kanban-title">
+              <div class="kanban-dot" style="background:var(--purple)"></div>Faturado
+            </div>
+            <span class="kanban-count" id="kc-faturado">0</span>
+          </div>
+          <div class="kanban-body" id="kb-faturado"></div>
+        </div>
+      </div>
+
+      <!-- LIST VIEW -->
+      <div class="table-card" id="listView">
+        <div class="table-wrap">
+          <table>
             <thead>
               <tr>
-                <th>Produto</th>
-                <th>Qtd</th>
-                <th>Preço unit.</th>
-                <th>Desconto %</th>
-                <th>Subtotal</th>
+                <th>Nº Pedido</th>
+                <th>Cliente</th>
+                <th>Itens</th>
+                <th>Condição</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Data</th>
+                <th>Vendedor</th>
                 <th></th>
               </tr>
             </thead>
-            <tbody id="itensBody"></tbody>
+            <tbody id="listBody"></tbody>
           </table>
-          <div style="color:var(--muted);font-size:12px;text-align:center;padding:20px" id="itensEmpty">Nenhum item adicionado ainda.</div>
         </div>
-
-        <div class="resumo-box">
-          <div class="resumo-row"><span class="label">Subtotal</span><span id="r-subtotal">R$ 0,00</span></div>
-          <div class="resumo-row"><span class="label">Desconto geral (%)</span>
-            <input type="number" id="f-desconto-geral" min="0" max="100" value="0" style="width:60px;padding:3px 6px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;text-align:right;outline:none" oninput="calcResumo()">
-          </div>
-          <div class="resumo-row"><span class="label">Desconto R$</span><span id="r-desconto" style="color:var(--warn)">— R$ 0,00</span></div>
-          <hr class="resumo-divider">
-          <div class="resumo-total"><span>Total do pedido</span><span class="val" id="r-total">R$ 0,00</span></div>
+        <div class="table-footer">
+          <span id="listInfo">—</span>
         </div>
       </div>
 
-      <!-- TAB PAGAMENTO -->
-      <div class="m-panel" id="t-pagamento">
-        <div class="form-section">
-          <div class="form-section-title">Condição de pagamento</div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="lbl">Condição</label>
-              <div class="inp-wrap"><i class="bi bi-calendar-check pre"></i>
-                <select class="field" id="f-condicao" onchange="gerarParcelas()">
-                  <option value="avista">À vista</option>
-                  <option value="7">7 dias</option>
-                  <option value="14">14 dias</option>
-                  <option value="30">30 dias</option>
-                  <option value="30-60">30/60 dias</option>
-                  <option value="30-60-90">30/60/90 dias</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="lbl">Forma de pagamento</label>
-              <div class="inp-wrap"><i class="bi bi-credit-card pre"></i>
-                <select class="field" id="f-forma">
-                  <option>Boleto bancário</option>
-                  <option>Duplicata</option>
-                  <option>Transferência / PIX</option>
-                  <option>Cheque</option>
-                  <option>Cartão de crédito</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="lbl">Banco emissor</label>
-              <div class="inp-wrap"><i class="bi bi-bank pre"></i>
-                <select class="field" id="f-banco">
-                  <option>Itaú</option>
-                  <option>Bradesco</option>
-                  <option>Banco do Brasil</option>
-                  <option>Caixa Econômica</option>
-                  <option>Santander</option>
-                  <option>Nubank</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="lbl">Juros ao mês (%)</label>
-              <div class="inp-wrap"><i class="bi bi-percent pre"></i>
-                <input class="field" type="number" id="f-juros" value="0" min="0" step="0.1" placeholder="0">
-              </div>
-            </div>
-          </div>
-        </div>
+    </div>
+  </div>
 
-        <div class="form-section">
-          <div class="form-section-title">Parcelas geradas</div>
-          <div class="parcelas-list" id="parcelasList">
-            <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Selecione a condição de pagamento para gerar as parcelas.</div>
-          </div>
+  <!-- DETAIL PANEL -->
+  <div class="detail-panel" id="detailPanel">
+    <div class="dp-header">
+      <div class="dp-top">
+        <div>
+          <div class="dp-id" id="dp-id">#PV0000</div>
+          <div style="color:var(--muted);font-size:12px;margin-top:3px" id="dp-data">—</div>
         </div>
+        <div class="dp-close" onclick="closeDetail()"><i class="bi bi-x-lg"></i></div>
+      </div>
+      <div id="dp-meta" style="margin-bottom:6px"></div>
+      <div class="dp-total" id="dp-total">R$ 0,00</div>
+    </div>
+    <div class="dp-body">
+      <div class="dp-section">
+        <div class="dp-section-title">Informações</div>
+        <div id="dp-info"></div>
+      </div>
+      <div class="dp-section">
+        <div class="dp-section-title">Itens do pedido</div>
+        <div id="dp-itens"></div>
+      </div>
+      <div class="dp-section">
+        <div class="dp-section-title">Condição de pagamento</div>
+        <div id="dp-parcelas"></div>
+      </div>
+    </div>
+    <div class="dp-actions" id="dp-actions"></div>
+  </div>
+
+  <!-- MODAL NOVO PEDIDO -->
+  <div class="modal-overlay" id="modalOverlay" onclick="handleOverlay(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <h2 id="modalTitle">Novo Pedido de Venda</h2>
+          <div style="color:var(--muted);font-size:12px;margin-top:2px">Preencha os dados do pedido B2B</div>
+        </div>
+        <div class="modal-close" onclick="closeModal()"><i class="bi bi-x-lg"></i></div>
       </div>
 
-      <!-- TAB OBS -->
-      <div class="m-panel" id="t-obs">
-        <div class="form-section">
-          <div class="form-section-title">Observações e informações adicionais</div>
-          <div class="form-group" style="margin-bottom:16px">
-            <label class="lbl">Observações internas</label>
-            <textarea class="field" id="f-obs-interna" placeholder="Notas internas — não aparecem para o cliente..."></textarea>
+      <div class="modal-tabs">
+        <div class="m-tab active" onclick="switchTab(this,'t-dados')"><i class="bi bi-person"></i> Dados</div>
+        <div class="m-tab" onclick="switchTab(this,'t-itens')"><i class="bi bi-box-seam"></i> Itens</div>
+        <div class="m-tab" onclick="switchTab(this,'t-pagamento')"><i class="bi bi-credit-card"></i> Pagamento</div>
+        <div class="m-tab" onclick="switchTab(this,'t-obs')"><i class="bi bi-chat-text"></i> Observações</div>
+      </div>
+
+      <div class="modal-body">
+
+        <!-- TAB DADOS -->
+        <div class="m-panel active" id="t-dados">
+          <div class="form-section">
+            <div class="form-section-title">Cliente e vendedor</div>
+            <div class="form-grid">
+              <div class="form-group full">
+                <label class="lbl">Cliente *</label>
+                <div class="inp-wrap"><i class="bi bi-building pre"></i>
+                  <select class="field" id="f-cliente">
+                    <option value="">Selecione o cliente...</option>
+                    <option>Posto Panorama Ltda.</option>
+                    <option>Farmácia São José</option>
+                    <option>Distribuidora Alfa ME</option>
+                    <option>Auto Peças SP Ltda.</option>
+                    <option>Construfácil EIRELI</option>
+                    <option>Mercado Central</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="lbl">Vendedor</label>
+                <div class="inp-wrap"><i class="bi bi-person-badge pre"></i>
+                  <select class="field" id="f-vendedor">
+                    <option>Lucas Andrade</option>
+                    <option>Maria Ferreira</option>
+                    <option>Carlos Souza</option>
+                    <option>João Desenvolvedor</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="lbl">Data do pedido</label>
+                <div class="inp-wrap"><i class="bi bi-calendar pre"></i>
+                  <input class="field" type="date" id="f-data">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="lbl">Validade do orçamento</label>
+                <div class="inp-wrap"><i class="bi bi-calendar-x pre"></i>
+                  <input class="field" type="date" id="f-validade">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="lbl">Previsão de entrega</label>
+                <div class="inp-wrap"><i class="bi bi-truck pre"></i>
+                  <input class="field" type="date" id="f-entrega">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="lbl">Status inicial</label>
+                <div class="inp-wrap"><i class="bi bi-flag pre"></i>
+                  <select class="field" id="f-status">
+                    <option value="orcamento">Orçamento</option>
+                    <option value="pendente">Pendente (aguarda aprovação)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="form-group" style="margin-bottom:16px">
-            <label class="lbl">Observações para o cliente</label>
-            <textarea class="field" id="f-obs-cliente" placeholder="Aparecem no pedido e na NF-e..."></textarea>
-          </div>
-          <div class="form-group">
-            <label class="lbl">Referência / Pedido do cliente</label>
-            <div class="inp-wrap"><i class="bi bi-hash pre"></i>
-              <input class="field" type="text" id="f-ref" placeholder="Ex: PO-2026-001">
+
+          <div class="form-section">
+            <div class="form-section-title">Endereço de entrega</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="lbl">CEP</label>
+                <div class="inp-wrap"><i class="bi bi-geo-alt pre"></i>
+                  <input class="field" type="text" id="f-cep" placeholder="00000-000">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="lbl">Cidade / UF</label>
+                <div class="inp-wrap"><i class="bi bi-building-fill pre"></i>
+                  <input class="field" type="text" id="f-cidade" placeholder="São Paulo, SP">
+                </div>
+              </div>
+              <div class="form-group full">
+                <label class="lbl">Endereço completo</label>
+                <div class="inp-wrap"><i class="bi bi-signpost pre"></i>
+                  <input class="field" type="text" id="f-endereco" placeholder="Rua, número, complemento...">
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-    </div><!-- /modal-body -->
+        <!-- TAB ITENS -->
+        <div class="m-panel" id="t-itens">
+          <div class="form-section">
+            <div class="form-section-title">Adicionar produtos</div>
+            <div class="add-item-row" style="margin-bottom:16px">
+              <select class="add-item-sel" id="itemSelect">
+                <option value="">Selecione um produto...</option>
+              </select>
+              <button class="btn-add-item" onclick="addItem()"><i class="bi bi-plus-lg"></i> Adicionar</button>
+            </div>
+            <table class="itens-table">
+              <thead>
+                <tr>
+                  <th>Produto</th>
+                  <th>Qtd</th>
+                  <th>Preço unit.</th>
+                  <th>Desconto %</th>
+                  <th>Subtotal</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="itensBody"></tbody>
+            </table>
+            <div style="color:var(--muted);font-size:12px;text-align:center;padding:20px" id="itensEmpty">Nenhum item
+              adicionado ainda.</div>
+          </div>
 
-    <div class="modal-footer">
-      <div class="mf-info">* Campos obrigatórios</div>
-      <div style="display:flex;gap:10px">
-        <button class="btn-cancel-m" onclick="closeModal()">Cancelar</button>
-        <button class="btn-save-m" onclick="savePedido()"><i class="bi bi-check2"></i> Salvar pedido</button>
+          <div class="resumo-box">
+            <div class="resumo-row"><span class="label">Subtotal</span><span id="r-subtotal">R$ 0,00</span></div>
+            <div class="resumo-row"><span class="label">Desconto geral (%)</span>
+              <input type="number" id="f-desconto-geral" min="0" max="100" value="0"
+                style="width:60px;padding:3px 6px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;text-align:right;outline:none"
+                oninput="calcResumo()">
+            </div>
+            <div class="resumo-row"><span class="label">Desconto R$</span><span id="r-desconto"
+                style="color:var(--warn)">— R$ 0,00</span></div>
+            <hr class="resumo-divider">
+            <div class="resumo-total"><span>Total do pedido</span><span class="val" id="r-total">R$ 0,00</span></div>
+          </div>
+        </div>
+
+        <!-- TAB PAGAMENTO -->
+        <div class="m-panel" id="t-pagamento">
+          <div class="form-section">
+            <div class="form-section-title">Condição de pagamento</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="lbl">Condição</label>
+                <div class="inp-wrap"><i class="bi bi-calendar-check pre"></i>
+                  <select class="field" id="f-condicao" onchange="gerarParcelas()">
+                    <option value="avista">À vista</option>
+                    <option value="7">7 dias</option>
+                    <option value="14">14 dias</option>
+                    <option value="30">30 dias</option>
+                    <option value="30-60">30/60 dias</option>
+                    <option value="30-60-90">30/60/90 dias</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="lbl">Forma de pagamento</label>
+                <div class="inp-wrap"><i class="bi bi-credit-card pre"></i>
+                  <select class="field" id="f-forma">
+                    <option>Boleto bancário</option>
+                    <option>Duplicata</option>
+                    <option>Transferência / PIX</option>
+                    <option>Cheque</option>
+                    <option>Cartão de crédito</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="lbl">Banco emissor</label>
+                <div class="inp-wrap"><i class="bi bi-bank pre"></i>
+                  <select class="field" id="f-banco">
+                    <option>Itaú</option>
+                    <option>Bradesco</option>
+                    <option>Banco do Brasil</option>
+                    <option>Caixa Econômica</option>
+                    <option>Santander</option>
+                    <option>Nubank</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="lbl">Juros ao mês (%)</label>
+                <div class="inp-wrap"><i class="bi bi-percent pre"></i>
+                  <input class="field" type="number" id="f-juros" value="0" min="0" step="0.1" placeholder="0">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">Parcelas geradas</div>
+            <div class="parcelas-list" id="parcelasList">
+              <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Selecione a condição de
+                pagamento para gerar as parcelas.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB OBS -->
+        <div class="m-panel" id="t-obs">
+          <div class="form-section">
+            <div class="form-section-title">Observações e informações adicionais</div>
+            <div class="form-group" style="margin-bottom:16px">
+              <label class="lbl">Observações internas</label>
+              <textarea class="field" id="f-obs-interna"
+                placeholder="Notas internas — não aparecem para o cliente..."></textarea>
+            </div>
+            <div class="form-group" style="margin-bottom:16px">
+              <label class="lbl">Observações para o cliente</label>
+              <textarea class="field" id="f-obs-cliente" placeholder="Aparecem no pedido e na NF-e..."></textarea>
+            </div>
+            <div class="form-group">
+              <label class="lbl">Referência / Pedido do cliente</label>
+              <div class="inp-wrap"><i class="bi bi-hash pre"></i>
+                <input class="field" type="text" id="f-ref" placeholder="Ex: PO-2026-001">
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /modal-body -->
+
+      <div class="modal-footer">
+        <div class="mf-info">* Campos obrigatórios</div>
+        <div style="display:flex;gap:10px">
+          <button class="btn-cancel-m" onclick="closeModal()">Cancelar</button>
+          <button class="btn-save-m" onclick="savePedido()"><i class="bi bi-check2"></i> Salvar pedido</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"><i class="bi bi-check-circle-fill"></i><span id="toastMsg">—</span></div>
+  <!-- TOAST -->
+  <div class="toast" id="toast"><i class="bi bi-check-circle-fill"></i><span id="toastMsg">—</span></div>
 
-<script src="auth.js"></script>
-<script>
-NexoAuth.requireAuth();
+  <script src="utils.js"></script>
+  <script src="auth.js"></script>
+  <script>
+    NexoAuth.requireAuth();
 
-// ═══════════════════════════════════════════════
-// CONSTANTS
-// ═══════════════════════════════════════════════
-const PEDIDOS_KEY  = 'nexoerp.pedidos';
-const VENDAS_KEY   = 'nexoerp.vendas';
+    // ═══════════════════════════════════════════════
+    // CONSTANTS
+    // ═══════════════════════════════════════════════
+    const PEDIDOS_KEY = 'nexoerp.pedidos';
+    const VENDAS_KEY = 'nexoerp.vendas';
 
-const PRODUTOS_MOCK = [
-  { id:1,  nome:'Arroz Integral 1kg',      emoji:'🍎', preco:8.90   },
-  { id:2,  nome:'Detergente Neutro 500ml', emoji:'🧹', preco:3.50   },
-  { id:3,  nome:'Parafuso Sextavado 8mm',  emoji:'🔩', preco:24.90  },
-  { id:4,  nome:'Smartphone Samsung A15',  emoji:'📱', preco:1299.00 },
-  { id:5,  nome:'Ibuprofeno 600mg cx30',   emoji:'💊', preco:18.90  },
-  { id:6,  nome:'Notebook Dell Inspiron',  emoji:'💻', preco:3499.00 },
-  { id:7,  nome:'Água Mineral 500ml',      emoji:'💧', preco:2.50   },
-  { id:8,  nome:'Café Torrado 500g',       emoji:'☕', preco:14.50  },
-  { id:9,  nome:'Shampoo 400ml',           emoji:'🧴', preco:12.90  },
-  { id:10, nome:'Refrigerante 2L',         emoji:'🥤', preco:8.90   },
-];
+    const PRODUTOS_MOCK = [
+      { id: 1, nome: 'Arroz Integral 1kg', emoji: '🍎', preco: 8.90 },
+      { id: 2, nome: 'Detergente Neutro 500ml', emoji: '🧹', preco: 3.50 },
+      { id: 3, nome: 'Parafuso Sextavado 8mm', emoji: '🔩', preco: 24.90 },
+      { id: 4, nome: 'Smartphone Samsung A15', emoji: '📱', preco: 1299.00 },
+      { id: 5, nome: 'Ibuprofeno 600mg cx30', emoji: '💊', preco: 18.90 },
+      { id: 6, nome: 'Notebook Dell Inspiron', emoji: '💻', preco: 3499.00 },
+      { id: 7, nome: 'Água Mineral 500ml', emoji: '💧', preco: 2.50 },
+      { id: 8, nome: 'Café Torrado 500g', emoji: '☕', preco: 14.50 },
+      { id: 9, nome: 'Shampoo 400ml', emoji: '🧴', preco: 12.90 },
+      { id: 10, nome: 'Refrigerante 2L', emoji: '🥤', preco: 8.90 },
+    ];
 
-const CLIENTES = [
-  'Posto Panorama Ltda.','Farmácia São José','Distribuidora Alfa ME',
-  'Auto Peças SP Ltda.','Construfácil EIRELI','Mercado Central',
-];
+    const CLIENTES = [
+      'Posto Panorama Ltda.', 'Farmácia São José', 'Distribuidora Alfa ME',
+      'Auto Peças SP Ltda.', 'Construfácil EIRELI', 'Mercado Central',
+    ];
 
-const STATUS_LABELS = {
-  orcamento:'Orçamento', pendente:'Pendente', aprovado:'Aprovado',
-  faturado:'Faturado', concluido:'Concluído', cancelado:'Cancelado',
-};
+    const STATUS_LABELS = {
+      orcamento: 'Orçamento', pendente: 'Pendente', aprovado: 'Aprovado',
+      faturado: 'Faturado', concluido: 'Concluído', cancelado: 'Cancelado',
+    };
 
-// ═══════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════
-let pedidos = [];
-let currentStatus = 'todos';
-let viewMode = 'kanban';
-let currentPedidoId = null;
-let itensPedido = [];
+    // ═══════════════════════════════════════════════
+    // STATE
+    // ═══════════════════════════════════════════════
+    let pedidos = [];
+    let currentStatus = 'todos';
+    let viewMode = 'kanban';
+    let currentPedidoId = null;
+    let itensPedido = [];
 
-// ═══════════════════════════════════════════════
-// STORAGE
-// ═══════════════════════════════════════════════
-function salvar() {
-  try { localStorage.setItem(PEDIDOS_KEY, JSON.stringify(pedidos)); } catch(e) {}
-}
-function carregar() {
-  try {
-    const raw = localStorage.getItem(PEDIDOS_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch(e) { return null; }
-}
-function seedPedidos() {
-  const hoje = new Date();
-  const seed = [];
-  const statuses = ['orcamento','pendente','aprovado','aprovado','faturado','concluido'];
-  const conds    = ['avista','30','30-60','30-60-90','7','14'];
-  const condLabels = { avista:'À vista','7':'7 dias','14':'14 dias','30':'30 dias','30-60':'30/60 dias','30-60-90':'30/60/90 dias' };
-  const formas   = ['Boleto bancário','Duplicata','Transferência / PIX'];
-  const vendedores = ['Lucas Andrade','Maria Ferreira','Carlos Souza'];
+    // ═══════════════════════════════════════════════
+    // STORAGE
+    // ═══════════════════════════════════════════════
+    function salvar() {
+      try { localStorage.setItem(PEDIDOS_KEY, JSON.stringify(pedidos)); } catch (e) { }
+    }
+    function carregar() {
+      try {
+        const raw = localStorage.getItem(PEDIDOS_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) { return null; }
+    }
+    function seedPedidos() {
+      const hoje = new Date();
+      const seed = [];
+      const statuses = ['orcamento', 'pendente', 'aprovado', 'aprovado', 'faturado', 'concluido'];
+      const conds = ['avista', '30', '30-60', '30-60-90', '7', '14'];
+      const condLabels = { avista: 'À vista', '7': '7 dias', '14': '14 dias', '30': '30 dias', '30-60': '30/60 dias', '30-60-90': '30/60/90 dias' };
+      const formas = ['Boleto bancário', 'Duplicata', 'Transferência / PIX'];
+      const vendedores = ['Lucas Andrade', 'Maria Ferreira', 'Carlos Souza'];
 
-  for (let i = 0; i < 12; i++) {
-    const d = new Date(hoje); d.setDate(d.getDate() - i * 2);
-    const itens = PRODUTOS_MOCK.slice(0,Math.floor(Math.random()*3)+1).map(p => ({
-      ...p, qty: Math.floor(Math.random()*10)+1, descItem: 0,
-      subtotal: p.preco * (Math.floor(Math.random()*10)+1)
-    }));
-    const subtotal = itens.reduce((s,x) => s+x.subtotal, 0);
-    const st = statuses[i % statuses.length];
-    const cond = conds[i % conds.length];
-    seed.push({
-      id: `#PV${String(1000+i).padStart(4,'0')}`,
-      num: 1000+i,
-      cliente: CLIENTES[i % CLIENTES.length],
-      vendedor: vendedores[i % vendedores.length],
-      status: st,
-      itens, subtotal,
-      desconto: 0, total: subtotal,
-      condicao: cond,
-      condicaoLabel: condLabels[cond],
-      forma: formas[i % formas.length],
-      dataISO: d.toISOString(),
-      dataStr: d.toLocaleDateString('pt-BR'),
-      entrega: '',
-      obsCliente: '', obsInterna: '', ref: '',
-      parcelas: gerarParcelasCalc(subtotal, cond, d),
-    });
-  }
-  return seed;
-}
+      for (let i = 0; i < 12; i++) {
+        const d = new Date(hoje); d.setDate(d.getDate() - i * 2);
+        const itens = PRODUTOS_MOCK.slice(0, Math.floor(Math.random() * 3) + 1).map(p => ({
+          ...p, qty: Math.floor(Math.random() * 10) + 1, descItem: 0,
+          subtotal: p.preco * (Math.floor(Math.random() * 10) + 1)
+        }));
+        const subtotal = itens.reduce((s, x) => s + x.subtotal, 0);
+        const st = statuses[i % statuses.length];
+        const cond = conds[i % conds.length];
+        seed.push({
+          id: `#PV${String(1000 + i).padStart(4, '0')}`,
+          num: 1000 + i,
+          cliente: CLIENTES[i % CLIENTES.length],
+          vendedor: vendedores[i % vendedores.length],
+          status: st,
+          itens, subtotal,
+          desconto: 0, total: subtotal,
+          condicao: cond,
+          condicaoLabel: condLabels[cond],
+          forma: formas[i % formas.length],
+          dataISO: d.toISOString(),
+          dataStr: d.toLocaleDateString('pt-BR'),
+          entrega: '',
+          obsCliente: '', obsInterna: '', ref: '',
+          parcelas: gerarParcelasCalc(subtotal, cond, d),
+        });
+      }
+      return seed;
+    }
 
-// ═══════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════
-function init() {
-  pedidos = carregar() || seedPedidos();
-  salvar();
-  populateSelects();
-  renderAll();
-  // datas padrão no modal
-  const hoje = new Date().toISOString().slice(0,10);
-  const validade = new Date(Date.now()+15*864e5).toISOString().slice(0,10);
-  document.getElementById('f-data').value     = hoje;
-  document.getElementById('f-validade').value = validade;
-  NexoAuth.renderCurrentUser();
-}
+    // ═══════════════════════════════════════════════
+    // INIT
+    // ═══════════════════════════════════════════════
+    function init() {
+      pedidos = carregar() || seedPedidos();
+      salvar();
+      populateSelects();
+      renderAll();
+      // datas padrão no modal
+      const hoje = new Date().toISOString().slice(0, 10);
+      const validade = new Date(Date.now() + 15 * 864e5).toISOString().slice(0, 10);
+      document.getElementById('f-data').value = hoje;
+      document.getElementById('f-validade').value = validade;
+      NexoAuth.renderCurrentUser();
+    }
 
-function populateSelects() {
-  // cliente filter
-  const cf = document.getElementById('clienteFilter');
-  CLIENTES.forEach(c => { const o=document.createElement('option'); o.textContent=c; cf.appendChild(o); });
-  // item select no modal
-  const is = document.getElementById('itemSelect');
-  PRODUTOS_MOCK.forEach(p => { const o=document.createElement('option'); o.value=p.id; o.textContent=`${p.emoji} ${p.nome} — R$ ${fmt(p.preco)}`; is.appendChild(o); });
-}
+    function populateSelects() {
+      // cliente filter
+      const cf = document.getElementById('clienteFilter');
+      CLIENTES.forEach(c => { const o = document.createElement('option'); o.textContent = c; cf.appendChild(o); });
+      // item select no modal
+      const is = document.getElementById('itemSelect');
+      PRODUTOS_MOCK.forEach(p => { const o = document.createElement('option'); o.value = p.id; o.textContent = `${p.emoji} ${p.nome} — R$ ${fmt(p.preco)}`; is.appendChild(o); });
+    }
 
-// ═══════════════════════════════════════════════
-// RENDER
-// ═══════════════════════════════════════════════
-function getFiltered() {
-  const q = (document.getElementById('searchInput').value||'').toLowerCase();
-  const cl = document.getElementById('clienteFilter').value;
-  const co = document.getElementById('condicaoFilter').value;
-  return pedidos.filter(p => {
-    const matchQ  = !q || p.id.toLowerCase().includes(q) || p.cliente.toLowerCase().includes(q);
-    const matchS  = currentStatus==='todos' || p.status===currentStatus;
-    const matchCl = !cl || p.cliente===cl;
-    const matchCo = !co || p.condicaoLabel===co;
-    return matchQ && matchS && matchCl && matchCo;
-  });
-}
+    // ═══════════════════════════════════════════════
+    // RENDER
+    // ═══════════════════════════════════════════════
+    function getFiltered() {
+      const q = (document.getElementById('searchInput').value || '').toLowerCase();
+      const cl = document.getElementById('clienteFilter').value;
+      const co = document.getElementById('condicaoFilter').value;
+      return pedidos.filter(p => {
+        const matchQ = !q || p.id.toLowerCase().includes(q) || p.cliente.toLowerCase().includes(q);
+        const matchS = currentStatus === 'todos' || p.status === currentStatus;
+        const matchCl = !cl || p.cliente === cl;
+        const matchCo = !co || p.condicaoLabel === co;
+        return matchQ && matchS && matchCl && matchCo;
+      });
+    }
 
-function renderAll() {
-  updateKPIs();
-  updateTabCounts();
-  if(viewMode==='kanban') renderKanban();
-  else renderList();
-}
-function renderView() { renderAll(); }
+    function renderAll() {
+      updateKPIs();
+      updateTabCounts();
+      if (viewMode === 'kanban') renderKanban();
+      else renderList();
+    }
+    function renderView() { renderAll(); }
 
-function updateKPIs() {
-  const total = pedidos.length;
-  const pend  = pedidos.filter(p=>p.status==='pendente').length;
-  const fat   = pedidos.filter(p=>['faturado','concluido'].includes(p.status)).reduce((s,p)=>s+p.total,0);
-  const fatQ  = pedidos.filter(p=>p.status==='faturado').length;
-  const aRec  = pedidos.filter(p=>p.status==='aprovado').reduce((s,p)=>s+p.total,0);
-  document.getElementById('kpi-total').textContent      = total;
-  document.getElementById('kpi-pendentes').textContent  = pend;
-  document.getElementById('kpi-faturamento').textContent= 'R$ '+fmt(fat);
-  document.getElementById('kpi-faturados').textContent  = fatQ;
-  document.getElementById('kpi-areceber').textContent   = 'R$ '+fmt(aRec);
-}
+    function updateKPIs() {
+      const total = pedidos.length;
+      const pend = pedidos.filter(p => p.status === 'pendente').length;
+      const fat = pedidos.filter(p => ['faturado', 'concluido'].includes(p.status)).reduce((s, p) => s + p.total, 0);
+      const fatQ = pedidos.filter(p => p.status === 'faturado').length;
+      const aRec = pedidos.filter(p => p.status === 'aprovado').reduce((s, p) => s + p.total, 0);
+      document.getElementById('kpi-total').textContent = total;
+      document.getElementById('kpi-pendentes').textContent = pend;
+      document.getElementById('kpi-faturamento').textContent = 'R$ ' + fmt(fat);
+      document.getElementById('kpi-faturados').textContent = fatQ;
+      document.getElementById('kpi-areceber').textContent = 'R$ ' + fmt(aRec);
+    }
 
-function updateTabCounts() {
-  const counts = { orcamento:0,pendente:0,aprovado:0,faturado:0,concluido:0,cancelado:0 };
-  pedidos.forEach(p => { if(counts[p.status]!==undefined) counts[p.status]++; });
-  document.getElementById('tc-todos').textContent = pedidos.length;
-  Object.entries(counts).forEach(([k,v]) => {
-    const el = document.getElementById(`tc-${k}`);
-    if(el) el.textContent = v;
-  });
-}
+    function updateTabCounts() {
+      const counts = { orcamento: 0, pendente: 0, aprovado: 0, faturado: 0, concluido: 0, cancelado: 0 };
+      pedidos.forEach(p => { if (counts[p.status] !== undefined) counts[p.status]++; });
+      document.getElementById('tc-todos').textContent = pedidos.length;
+      Object.entries(counts).forEach(([k, v]) => {
+        const el = document.getElementById(`tc-${k}`);
+        if (el) el.textContent = v;
+      });
+    }
 
-function renderKanban() {
-  const filtered = getFiltered();
-  const cols = ['orcamento','pendente','aprovado','faturado'];
-  cols.forEach(st => {
-    const body  = document.getElementById(`kb-${st}`);
-    const count = document.getElementById(`kc-${st}`);
-    const items = filtered.filter(p=>p.status===st);
-    count.textContent = items.length;
-    body.innerHTML = items.length ? items.map(p => cardHTML(p)).join('') :
-      `<div style="color:var(--muted);font-size:12px;text-align:center;padding:24px 0">Nenhum pedido</div>`;
-  });
-}
+    function renderKanban() {
+      const filtered = getFiltered();
+      const cols = ['orcamento', 'pendente', 'aprovado', 'faturado'];
+      cols.forEach(st => {
+        const body = document.getElementById(`kb-${st}`);
+        const count = document.getElementById(`kc-${st}`);
+        const items = filtered.filter(p => p.status === st);
+        count.textContent = items.length;
+        body.innerHTML = items.length ? items.map(p => cardHTML(p)).join('') :
+          `<div style="color:var(--muted);font-size:12px;text-align:center;padding:24px 0">Nenhum pedido</div>`;
+      });
+    }
 
-function cardHTML(p) {
-  const canEnviar  = p.status==='orcamento';
-  const canApprove = p.status==='pendente';
-  const canFaturar = p.status==='aprovado';
-  return `<div class="pedido-card" onclick="openDetail('${p.id}')">
+    function cardHTML(p) {
+      const canEnviar = p.status === 'orcamento';
+      const canApprove = p.status === 'pendente';
+      const canFaturar = p.status === 'aprovado';
+      return `<div class="pedido-card" onclick="openDetail('${p.id}')">
     <div class="pc-top">
       <div class="pc-id">${p.id}</div>
       <div class="pc-date">${p.dataStr}</div>
     </div>
     <div class="pc-cliente"><i class="bi bi-building"></i>${p.cliente}</div>
-    <div class="pc-items">${p.itens.length} ${p.itens.length===1?'item':'itens'} · ${p.vendedor}</div>
+    <div class="pc-items">${p.itens.length} ${p.itens.length === 1 ? 'item' : 'itens'} · ${p.vendedor}</div>
     <div class="pc-footer">
       <div class="pc-total">R$ ${fmt(p.total)}</div>
       <span class="pc-cond">${p.condicaoLabel}</span>
     </div>
     <div class="pc-actions" onclick="event.stopPropagation()">
-      ${canEnviar ?`<button class="pc-btn approve" onclick="enviarPendente('${p.id}')"><i class="bi bi-send"></i> Enviar</button>`:''}
-      ${canApprove?`<button class="pc-btn approve" onclick="aprovar('${p.id}')"><i class="bi bi-check2"></i> Aprovar</button>`:''}
-      ${canFaturar?`<button class="pc-btn approve" onclick="faturar('${p.id}')"><i class="bi bi-receipt"></i> Faturar</button>`:''}
+      ${canEnviar ? `<button class="pc-btn approve" onclick="enviarPendente('${p.id}')"><i class="bi bi-send"></i> Enviar</button>` : ''}
+      ${canApprove ? `<button class="pc-btn approve" onclick="aprovar('${p.id}')"><i class="bi bi-check2"></i> Aprovar</button>` : ''}
+      ${canFaturar ? `<button class="pc-btn approve" onclick="faturar('${p.id}')"><i class="bi bi-receipt"></i> Faturar</button>` : ''}
       <button class="pc-btn" onclick="openDetail('${p.id}')"><i class="bi bi-eye"></i> Ver</button>
       <button class="pc-btn" onclick="cancelar('${p.id}')"><i class="bi bi-x"></i></button>
     </div>
   </div>`;
-}
+    }
 
-function renderList() {
-  const filtered = getFiltered();
-  const body = document.getElementById('listBody');
-  body.innerHTML = filtered.map(p => `<tr onclick="openDetail('${p.id}')">
+    function renderList() {
+      const filtered = getFiltered();
+      const body = document.getElementById('listBody');
+      body.innerHTML = filtered.map(p => `<tr onclick="openDetail('${p.id}')">
     <td><span style="font-family:'Syne',sans-serif;font-weight:700">${p.id}</span><br><span style="color:var(--muted);font-size:11px">${p.dataStr}</span></td>
     <td style="font-weight:500">${p.cliente}</td>
     <td style="color:var(--muted)">${p.itens.length} itens</td>
@@ -961,325 +2023,307 @@ function renderList() {
     <td style="color:var(--muted);font-size:12px">${p.vendedor}</td>
     <td><div class="action-cell" onclick="event.stopPropagation()">
       <div class="act-btn" onclick="openDetail('${p.id}')"><i class="bi bi-eye"></i></div>
-      ${p.status==='orcamento'?`<div class="act-btn ok" onclick="enviarPendente('${p.id}')"><i class="bi bi-send"></i></div>`:''}
-      ${p.status==='pendente'?`<div class="act-btn ok" onclick="aprovar('${p.id}')"><i class="bi bi-check2"></i></div>`:''}
-      ${p.status==='aprovado'?`<div class="act-btn ok" onclick="faturar('${p.id}')"><i class="bi bi-receipt"></i></div>`:''}
+      ${p.status === 'orcamento' ? `<div class="act-btn ok" onclick="enviarPendente('${p.id}')"><i class="bi bi-send"></i></div>` : ''}
+      ${p.status === 'pendente' ? `<div class="act-btn ok" onclick="aprovar('${p.id}')"><i class="bi bi-check2"></i></div>` : ''}
+      ${p.status === 'aprovado' ? `<div class="act-btn ok" onclick="faturar('${p.id}')"><i class="bi bi-receipt"></i></div>` : ''}
       <div class="act-btn danger" onclick="cancelar('${p.id}')"><i class="bi bi-x"></i></div>
     </div></td>
   </tr>`).join('');
-  document.getElementById('listInfo').textContent = `${filtered.length} pedido${filtered.length!==1?'s':''}`;
-}
+      document.getElementById('listInfo').textContent = `${filtered.length} pedido${filtered.length !== 1 ? 's' : ''}`;
+    }
 
-// ═══════════════════════════════════════════════
-// DETAIL PANEL
-// ═══════════════════════════════════════════════
-function openDetail(id) {
-  const p = pedidos.find(x=>x.id===id);
-  if(!p) return;
-  currentPedidoId = id;
-  document.getElementById('dp-id').textContent   = p.id;
-  document.getElementById('dp-data').textContent = `${p.dataStr} · ${p.vendedor}`;
-  document.getElementById('dp-meta').innerHTML   = `<span class="status-pill ${p.status}">${STATUS_LABELS[p.status]}</span>`;
-  document.getElementById('dp-total').textContent= `R$ ${fmt(p.total)}`;
+    // ═══════════════════════════════════════════════
+    // DETAIL PANEL
+    // ═══════════════════════════════════════════════
+    function openDetail(id) {
+      const p = pedidos.find(x => x.id === id);
+      if (!p) return;
+      currentPedidoId = id;
+      document.getElementById('dp-id').textContent = p.id;
+      document.getElementById('dp-data').textContent = `${p.dataStr} · ${p.vendedor}`;
+      document.getElementById('dp-meta').innerHTML = `<span class="status-pill ${p.status}">${STATUS_LABELS[p.status]}</span>`;
+      document.getElementById('dp-total').textContent = `R$ ${fmt(p.total)}`;
 
-  document.getElementById('dp-info').innerHTML = [
-    ['Cliente',    p.cliente],
-    ['Vendedor',   p.vendedor],
-    ['Condição',   p.condicaoLabel],
-    ['Forma',      p.forma||'—'],
-    ['Referência', p.ref||'—'],
-    ['Entrega',    p.entrega||'—'],
-    p.obsCliente?['Obs. cliente',p.obsCliente]:null,
-  ].filter(Boolean).map(([l,v])=>
-    `<div class="dp-row"><span class="dp-label">${l}</span><span>${v}</span></div>`
-  ).join('');
+      document.getElementById('dp-info').innerHTML = [
+        ['Cliente', p.cliente],
+        ['Vendedor', p.vendedor],
+        ['Condição', p.condicaoLabel],
+        ['Forma', p.forma || '—'],
+        ['Referência', p.ref || '—'],
+        ['Entrega', p.entrega || '—'],
+        p.obsCliente ? ['Obs. cliente', p.obsCliente] : null,
+      ].filter(Boolean).map(([l, v]) =>
+        `<div class="dp-row"><span class="dp-label">${l}</span><span>${v}</span></div>`
+      ).join('');
 
-  document.getElementById('dp-itens').innerHTML = p.itens.map(item=>
-    `<div class="item-row">
+      document.getElementById('dp-itens').innerHTML = p.itens.map(item =>
+        `<div class="item-row">
       <div class="item-emoji">${item.emoji}</div>
       <div class="item-info"><div class="item-name">${item.nome}</div><div class="item-qty">${item.qty}x · R$ ${fmt(item.preco)}</div></div>
       <div class="item-total">R$ ${fmt(item.subtotal)}</div>
     </div>`
-  ).join('');
+      ).join('');
 
-  document.getElementById('dp-parcelas').innerHTML = p.parcelas && p.parcelas.length
-    ? `<div class="parcelas-list">${p.parcelas.map((pc,i)=>`
+      document.getElementById('dp-parcelas').innerHTML = p.parcelas && p.parcelas.length
+        ? `<div class="parcelas-list">${p.parcelas.map((pc, i) => `
         <div class="parcela-item">
-          <div class="parcela-num">${i+1}</div>
+          <div class="parcela-num">${i + 1}</div>
           <div class="parcela-info">
             <div class="parcela-val">R$ ${fmt(pc.valor)}</div>
             <div class="parcela-data">Vencimento: ${pc.data}</div>
           </div>
-          <span class="parcela-status">${pc.status||'A vencer'}</span>
+          <span class="parcela-status">${pc.status || 'A vencer'}</span>
         </div>`).join('')}</div>`
-    : `<div style="color:var(--muted);font-size:13px">—</div>`;
+        : `<div style="color:var(--muted);font-size:13px">—</div>`;
 
-  // ações disponíveis por status
-  const acts = [];
-  if(p.status==='orcamento')  acts.push(`<button class="dp-btn blue" onclick="enviarPendente('${p.id}')"><i class="bi bi-send"></i> Enviar para aprovação</button>`);
-  if(p.status==='pendente')  acts.push(`<button class="dp-btn primary" onclick="aprovar('${p.id}')"><i class="bi bi-check2"></i> Aprovar</button>`);
-  if(p.status==='aprovado')  acts.push(`<button class="dp-btn purple" onclick="faturar('${p.id}')"><i class="bi bi-receipt"></i> Faturar</button>`);
-  if(p.status==='faturado')  acts.push(`<button class="dp-btn primary" onclick="concluir('${p.id}')"><i class="bi bi-check2-circle"></i> Concluir</button>`);
-  acts.push(`<button class="dp-btn blue" onclick="showToast('Imprimindo...')"><i class="bi bi-printer"></i> Imprimir</button>`);
-  acts.push(`<button class="dp-btn ghost" onclick="closeDetail()"><i class="bi bi-x"></i> Fechar</button>`);
-  if(!['concluido','cancelado'].includes(p.status))
-    acts.push(`<button class="dp-btn danger" onclick="cancelar('${p.id}')"><i class="bi bi-x-circle"></i> Cancelar</button>`);
-  document.getElementById('dp-actions').innerHTML = acts.join('');
+      // ações disponíveis por status
+      const acts = [];
+      if (p.status === 'orcamento') acts.push(`<button class="dp-btn blue" onclick="enviarPendente('${p.id}')"><i class="bi bi-send"></i> Enviar para aprovação</button>`);
+      if (p.status === 'pendente') acts.push(`<button class="dp-btn primary" onclick="aprovar('${p.id}')"><i class="bi bi-check2"></i> Aprovar</button>`);
+      if (p.status === 'aprovado') acts.push(`<button class="dp-btn purple" onclick="faturar('${p.id}')"><i class="bi bi-receipt"></i> Faturar</button>`);
+      if (p.status === 'faturado') acts.push(`<button class="dp-btn primary" onclick="concluir('${p.id}')"><i class="bi bi-check2-circle"></i> Concluir</button>`);
+      acts.push(`<button class="dp-btn blue" onclick="showToast('Imprimindo...')"><i class="bi bi-printer"></i> Imprimir</button>`);
+      acts.push(`<button class="dp-btn ghost" onclick="closeDetail()"><i class="bi bi-x"></i> Fechar</button>`);
+      if (!['concluido', 'cancelado'].includes(p.status))
+        acts.push(`<button class="dp-btn danger" onclick="cancelar('${p.id}')"><i class="bi bi-x-circle"></i> Cancelar</button>`);
+      document.getElementById('dp-actions').innerHTML = acts.join('');
 
-  document.getElementById('detailPanel').classList.add('open');
-}
-function closeDetail() { document.getElementById('detailPanel').classList.remove('open'); currentPedidoId=null; }
+      document.getElementById('detailPanel').classList.add('open');
+    }
+    function closeDetail() { document.getElementById('detailPanel').classList.remove('open'); currentPedidoId = null; }
 
-// ═══════════════════════════════════════════════
-// AÇÕES DE STATUS
-// ═══════════════════════════════════════════════
-function enviarPendente(id) {
-  const p = pedidos.find(x=>x.id===id); if(!p) return;
-  p.status = 'pendente'; salvar(); renderAll();
-  if(currentPedidoId===id) openDetail(id);
-  showToast(`Pedido ${id} enviado para aprovação!`);
-}
-function aprovar(id) {
-  const p = pedidos.find(x=>x.id===id); if(!p) return;
-  p.status = 'aprovado'; salvar(); renderAll();
-  if(currentPedidoId===id) openDetail(id);
-  showToast(`Pedido ${id} aprovado!`);
-}
-function faturar(id) {
-  const p = pedidos.find(x=>x.id===id); if(!p) return;
-  p.status = 'faturado'; salvar();
-  // registra em vendas
-  registrarVenda(p);
-  renderAll();
-  if(currentPedidoId===id) openDetail(id);
-  showToast(`Pedido ${id} faturado e lançado em Vendas!`);
-}
-function concluir(id) {
-  const p = pedidos.find(x=>x.id===id); if(!p) return;
-  p.status = 'concluido'; salvar(); renderAll();
-  if(currentPedidoId===id) openDetail(id);
-  showToast(`Pedido ${id} concluído!`);
-}
-function cancelar(id) {
-  if(!confirm('Cancelar este pedido?')) return;
-  const p = pedidos.find(x=>x.id===id); if(!p) return;
-  p.status = 'cancelado'; salvar(); renderAll();
-  closeDetail();
-  showToast('Pedido cancelado.');
-}
+    // ═══════════════════════════════════════════════
+    // AÇÕES DE STATUS
+    // ═══════════════════════════════════════════════
+    function enviarPendente(id) {
+      const p = pedidos.find(x => x.id === id); if (!p) return;
+      p.status = 'pendente'; salvar(); renderAll();
+      if (currentPedidoId === id) openDetail(id);
+      showToast(`Pedido ${id} enviado para aprovação!`);
+    }
+    function aprovar(id) {
+      const p = pedidos.find(x => x.id === id); if (!p) return;
+      p.status = 'aprovado'; salvar(); renderAll();
+      if (currentPedidoId === id) openDetail(id);
+      showToast(`Pedido ${id} aprovado!`);
+    }
+    function faturar(id) {
+      const p = pedidos.find(x => x.id === id); if (!p) return;
+      p.status = 'faturado'; salvar();
+      // registra em vendas
+      registrarVenda(p);
+      renderAll();
+      if (currentPedidoId === id) openDetail(id);
+      showToast(`Pedido ${id} faturado e lançado em Vendas!`);
+    }
+    function concluir(id) {
+      const p = pedidos.find(x => x.id === id); if (!p) return;
+      p.status = 'concluido'; salvar(); renderAll();
+      if (currentPedidoId === id) openDetail(id);
+      showToast(`Pedido ${id} concluído!`);
+    }
+    function cancelar(id) {
+      if (!confirm('Cancelar este pedido?')) return;
+      const p = pedidos.find(x => x.id === id); if (!p) return;
+      p.status = 'cancelado'; salvar(); renderAll();
+      closeDetail();
+      showToast('Pedido cancelado.');
+    }
 
-// ═══════════════════════════════════════════════
-// INTEGRAÇÃO COM VENDAS
-// ═══════════════════════════════════════════════
-function registrarVenda(p) {
-  try {
-    const raw = localStorage.getItem(VENDAS_KEY);
-    const vendas = raw ? JSON.parse(raw) : [];
-    const now = new Date();
-    vendas.unshift({
-      id: `#V${String(5000 + Math.floor(Math.random()*999)).padStart(4,'0')}`,
-      pedidoRef: p.id,
-      cliente: p.cliente,
-      operador: p.vendedor,
-      metodo: p.forma || 'Boleto bancário',
-      itens: p.itens,
-      subtotal: p.subtotal,
-      desconto: p.desconto || 0,
-      total: p.total,
-      status: 'concluida',
-      dataISO: now.toISOString(),
-      dataStr: now.toLocaleDateString('pt-BR'),
-      horaStr: now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
-      tipo: 'b2b',
-      estornoMotivo: '',
-    });
-    localStorage.setItem(VENDAS_KEY, JSON.stringify(vendas));
-  } catch(e) {}
-}
+    // ═══════════════════════════════════════════════
+    // INTEGRAÇÃO COM VENDAS
+    // ═══════════════════════════════════════════════
+    function registrarVenda(p) {
+      try {
+        const raw = localStorage.getItem(VENDAS_KEY);
+        const vendas = raw ? JSON.parse(raw) : [];
+        const now = new Date();
+        vendas.unshift({
+          id: `#V${String(5000 + Math.floor(Math.random() * 999)).padStart(4, '0')}`,
+          pedidoRef: p.id,
+          cliente: p.cliente,
+          operador: p.vendedor,
+          metodo: p.forma || 'Boleto bancário',
+          itens: p.itens,
+          subtotal: p.subtotal,
+          desconto: p.desconto || 0,
+          total: p.total,
+          status: 'concluida',
+          dataISO: now.toISOString(),
+          dataStr: now.toLocaleDateString('pt-BR'),
+          horaStr: now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+          tipo: 'b2b',
+          estornoMotivo: '',
+        });
+        localStorage.setItem(VENDAS_KEY, JSON.stringify(vendas));
+      } catch (e) { }
+    }
 
-// ═══════════════════════════════════════════════
-// MODAL NOVO PEDIDO
-// ═══════════════════════════════════════════════
-function openModal() {
-  itensPedido = [];
-  document.getElementById('modalTitle').textContent = 'Novo Pedido de Venda';
-  document.getElementById('f-cliente').value = '';
-  document.getElementById('f-desconto-geral').value = 0;
-  document.getElementById('f-obs-interna').value = '';
-  document.getElementById('f-obs-cliente').value  = '';
-  document.getElementById('f-ref').value = '';
-  const hoje    = new Date().toISOString().slice(0,10);
-  const validade= new Date(Date.now()+15*864e5).toISOString().slice(0,10);
-  document.getElementById('f-data').value     = hoje;
-  document.getElementById('f-validade').value = validade;
-  document.getElementById('f-entrega').value  = '';
-  renderItens();
-  switchTab(document.querySelector('.m-tab'), 't-dados');
-  document.getElementById('modalOverlay').classList.add('open');
-}
-function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
-function handleOverlay(e) { if(e.target===document.getElementById('modalOverlay')) closeModal(); }
+    // ═══════════════════════════════════════════════
+    // MODAL NOVO PEDIDO
+    // ═══════════════════════════════════════════════
+    function openModal() {
+      itensPedido = [];
+      document.getElementById('modalTitle').textContent = 'Novo Pedido de Venda';
+      document.getElementById('f-cliente').value = '';
+      document.getElementById('f-desconto-geral').value = 0;
+      document.getElementById('f-obs-interna').value = '';
+      document.getElementById('f-obs-cliente').value = '';
+      document.getElementById('f-ref').value = '';
+      const hoje = new Date().toISOString().slice(0, 10);
+      const validade = new Date(Date.now() + 15 * 864e5).toISOString().slice(0, 10);
+      document.getElementById('f-data').value = hoje;
+      document.getElementById('f-validade').value = validade;
+      document.getElementById('f-entrega').value = '';
+      renderItens();
+      switchTab(document.querySelector('.m-tab'), 't-dados');
+      document.getElementById('modalOverlay').classList.add('open');
+    }
+    function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+    function handleOverlay(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
 
-function switchTab(el, panelId) {
-  document.querySelectorAll('.m-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.m-panel').forEach(p=>p.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById(panelId).classList.add('active');
-  if(panelId==='t-pagamento') gerarParcelas();
-}
+    function switchTab(el, panelId) {
+      document.querySelectorAll('.m-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.m-panel').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById(panelId).classList.add('active');
+      if (panelId === 't-pagamento') gerarParcelas();
+    }
 
-// itens
-function addItem() {
-  const sel = document.getElementById('itemSelect');
-  const id = parseInt(sel.value); if(!id) return;
-  const prod = PRODUTOS_MOCK.find(p=>p.id===id);
-  if(!prod) return;
-  const existing = itensPedido.find(x=>x.id===id);
-  if(existing) { existing.qty++; existing.subtotal=existing.preco*existing.qty; }
-  else itensPedido.push({...prod, qty:1, descItem:0, subtotal:prod.preco});
-  renderItens(); calcResumo();
-}
-function removeItem(id) { itensPedido = itensPedido.filter(x=>x.id!==id); renderItens(); calcResumo(); }
-function updateQty(id, val) {
-  const item = itensPedido.find(x=>x.id===id); if(!item) return;
-  item.qty = Math.max(1, parseInt(val)||1);
-  item.subtotal = item.preco * item.qty * (1 - (item.descItem||0)/100);
-  calcResumo();
-}
-function renderItens() {
-  const body  = document.getElementById('itensBody');
-  const empty = document.getElementById('itensEmpty');
-  if(!itensPedido.length) { body.innerHTML=''; empty.style.display='block'; return; }
-  empty.style.display='none';
-  body.innerHTML = itensPedido.map(item=>`<tr>
+    // itens
+    function addItem() {
+      const sel = document.getElementById('itemSelect');
+      const id = parseInt(sel.value); if (!id) return;
+      const prod = PRODUTOS_MOCK.find(p => p.id === id);
+      if (!prod) return;
+      const existing = itensPedido.find(x => x.id === id);
+      if (existing) { existing.qty++; existing.subtotal = existing.preco * existing.qty; }
+      else itensPedido.push({ ...prod, qty: 1, descItem: 0, subtotal: prod.preco });
+      renderItens(); calcResumo();
+    }
+    function removeItem(id) { itensPedido = itensPedido.filter(x => x.id !== id); renderItens(); calcResumo(); }
+    function updateQty(id, val) {
+      const item = itensPedido.find(x => x.id === id); if (!item) return;
+      item.qty = Math.max(1, parseInt(val) || 1);
+      item.subtotal = item.preco * item.qty * (1 - (item.descItem || 0) / 100);
+      calcResumo();
+    }
+    function renderItens() {
+      const body = document.getElementById('itensBody');
+      const empty = document.getElementById('itensEmpty');
+      if (!itensPedido.length) { body.innerHTML = ''; empty.style.display = 'block'; return; }
+      empty.style.display = 'none';
+      body.innerHTML = itensPedido.map(item => `<tr>
     <td>${item.emoji} ${item.nome}</td>
     <td><input class="item-qty-inp" type="number" value="${item.qty}" min="1" onchange="updateQty(${item.id},this.value)"></td>
     <td>R$ ${fmt(item.preco)}</td>
-    <td><input class="item-qty-inp" type="number" value="${item.descItem||0}" min="0" max="100" onchange="itensPedido.find(x=>x.id==${item.id}).descItem=+this.value;updateQty(${item.id},${item.qty})"></td>
+    <td><input class="item-qty-inp" type="number" value="${item.descItem || 0}" min="0" max="100" onchange="itensPedido.find(x=>x.id==${item.id}).descItem=+this.value;updateQty(${item.id},${item.qty})"></td>
     <td style="font-weight:700;color:var(--accent)">R$ ${fmt(item.subtotal)}</td>
     <td><span class="item-remove" onclick="removeItem(${item.id})"><i class="bi bi-x"></i></span></td>
   </tr>`).join('');
-}
-function calcResumo() {
-  const sub  = itensPedido.reduce((s,x)=>s+x.subtotal,0);
-  const disc = sub * ((parseFloat(document.getElementById('f-desconto-geral').value)||0)/100);
-  const tot  = sub - disc;
-  document.getElementById('r-subtotal').textContent = 'R$ '+fmt(sub);
-  document.getElementById('r-desconto').textContent = '— R$ '+fmt(disc);
-  document.getElementById('r-total').textContent    = 'R$ '+fmt(tot);
-}
+    }
+    function calcResumo() {
+      const sub = itensPedido.reduce((s, x) => s + x.subtotal, 0);
+      const disc = sub * ((parseFloat(document.getElementById('f-desconto-geral').value) || 0) / 100);
+      const tot = sub - disc;
+      document.getElementById('r-subtotal').textContent = 'R$ ' + fmt(sub);
+      document.getElementById('r-desconto').textContent = '— R$ ' + fmt(disc);
+      document.getElementById('r-total').textContent = 'R$ ' + fmt(tot);
+    }
 
-// parcelas
-function gerarParcelasCalc(total, cond, baseDate) {
-  const d = baseDate instanceof Date ? new Date(baseDate) : new Date();
-  const parcelas = [];
-  if(cond==='avista') {
-    const dt = new Date(d); dt.setDate(dt.getDate()+1);
-    parcelas.push({ valor:total, data:dt.toLocaleDateString('pt-BR'), status:'A vencer' });
-  } else {
-    const dias = cond.split('-').map(Number);
-    const val  = total/dias.length;
-    dias.forEach(d2 => {
-      const dt = new Date(d); dt.setDate(dt.getDate()+d2);
-      parcelas.push({ valor:val, data:dt.toLocaleDateString('pt-BR'), status:'A vencer' });
-    });
-  }
-  return parcelas;
-}
-function gerarParcelas() {
-  const sub  = itensPedido.reduce((s,x)=>s+x.subtotal,0);
-  const disc = sub*((parseFloat(document.getElementById('f-desconto-geral').value)||0)/100);
-  const tot  = sub-disc;
-  const cond = document.getElementById('f-condicao').value;
-  const parcelas = gerarParcelasCalc(tot, cond, new Date());
-  const wrap = document.getElementById('parcelasList');
-  if(!parcelas.length) { wrap.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Selecione a condição.</div>'; return; }
-  wrap.innerHTML = `<div class="parcelas-list">${parcelas.map((pc,i)=>`
+    // parcelas
+    function gerarParcelasCalc(total, cond, baseDate) {
+      const d = baseDate instanceof Date ? new Date(baseDate) : new Date();
+      const parcelas = [];
+      if (cond === 'avista') {
+        const dt = new Date(d); dt.setDate(dt.getDate() + 1);
+        parcelas.push({ valor: total, data: dt.toLocaleDateString('pt-BR'), status: 'A vencer' });
+      } else {
+        const dias = cond.split('-').map(Number);
+        const val = total / dias.length;
+        dias.forEach(d2 => {
+          const dt = new Date(d); dt.setDate(dt.getDate() + d2);
+          parcelas.push({ valor: val, data: dt.toLocaleDateString('pt-BR'), status: 'A vencer' });
+        });
+      }
+      return parcelas;
+    }
+    function gerarParcelas() {
+      const sub = itensPedido.reduce((s, x) => s + x.subtotal, 0);
+      const disc = sub * ((parseFloat(document.getElementById('f-desconto-geral').value) || 0) / 100);
+      const tot = sub - disc;
+      const cond = document.getElementById('f-condicao').value;
+      const parcelas = gerarParcelasCalc(tot, cond, new Date());
+      const wrap = document.getElementById('parcelasList');
+      if (!parcelas.length) { wrap.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Selecione a condição.</div>'; return; }
+      wrap.innerHTML = `<div class="parcelas-list">${parcelas.map((pc, i) => `
     <div class="parcela-item">
-      <div class="parcela-num">${i+1}</div>
+      <div class="parcela-num">${i + 1}</div>
       <div class="parcela-info">
         <div class="parcela-val">R$ ${fmt(pc.valor)}</div>
         <div class="parcela-data">Vencimento: ${pc.data}</div>
       </div>
       <span class="parcela-status">A vencer</span>
     </div>`).join('')}</div>`;
-}
+    }
 
-function savePedido() {
-  const cliente = document.getElementById('f-cliente').value;
-  if(!cliente) { showToast('Selecione um cliente!'); switchTab(document.querySelector('.m-tab'),'t-dados'); return; }
-  if(!itensPedido.length) { showToast('Adicione pelo menos um item!'); switchTab(document.querySelectorAll('.m-tab')[1],'t-itens'); return; }
+    function savePedido() {
+      const cliente = document.getElementById('f-cliente').value;
+      if (!cliente) { showToast('Selecione um cliente!'); switchTab(document.querySelector('.m-tab'), 't-dados'); return; }
+      if (!itensPedido.length) { showToast('Adicione pelo menos um item!'); switchTab(document.querySelectorAll('.m-tab')[1], 't-itens'); return; }
 
-  const sub  = itensPedido.reduce((s,x)=>s+x.subtotal,0);
-  const disc = sub*((parseFloat(document.getElementById('f-desconto-geral').value)||0)/100);
-  const tot  = sub-disc;
-  const cond = document.getElementById('f-condicao').value;
-  const condLabels = { avista:'À vista','7':'7 dias','14':'14 dias','30':'30 dias','30-60':'30/60 dias','30-60-90':'30/60/90 dias' };
-  const now  = new Date();
+      const sub = itensPedido.reduce((s, x) => s + x.subtotal, 0);
+      const disc = sub * ((parseFloat(document.getElementById('f-desconto-geral').value) || 0) / 100);
+      const tot = sub - disc;
+      const cond = document.getElementById('f-condicao').value;
+      const condLabels = { avista: 'À vista', '7': '7 dias', '14': '14 dias', '30': '30 dias', '30-60': '30/60 dias', '30-60-90': '30/60/90 dias' };
+      const now = new Date();
 
-  const pedido = {
-    id: `#PV${String(1000+pedidos.length+1).padStart(4,'0')}`,
-    num: 1000+pedidos.length+1,
-    cliente, vendedor: document.getElementById('f-vendedor').value,
-    status: document.getElementById('f-status').value,
-    itens: [...itensPedido], subtotal: sub, desconto: disc, total: tot,
-    condicao: cond, condicaoLabel: condLabels[cond],
-    forma: document.getElementById('f-forma').value,
-    dataISO: now.toISOString(), dataStr: now.toLocaleDateString('pt-BR'),
-    entrega: document.getElementById('f-entrega').value,
-    obsCliente: document.getElementById('f-obs-cliente').value,
-    obsInterna: document.getElementById('f-obs-interna').value,
-    ref: document.getElementById('f-ref').value,
-    parcelas: gerarParcelasCalc(tot, cond, now),
-  };
+      const pedido = {
+        id: `#PV${String(1000 + pedidos.length + 1).padStart(4, '0')}`,
+        num: 1000 + pedidos.length + 1,
+        cliente, vendedor: document.getElementById('f-vendedor').value,
+        status: document.getElementById('f-status').value,
+        itens: [...itensPedido], subtotal: sub, desconto: disc, total: tot,
+        condicao: cond, condicaoLabel: condLabels[cond],
+        forma: document.getElementById('f-forma').value,
+        dataISO: now.toISOString(), dataStr: now.toLocaleDateString('pt-BR'),
+        entrega: document.getElementById('f-entrega').value,
+        obsCliente: document.getElementById('f-obs-cliente').value,
+        obsInterna: document.getElementById('f-obs-interna').value,
+        ref: document.getElementById('f-ref').value,
+        parcelas: gerarParcelasCalc(tot, cond, now),
+      };
 
-  pedidos.unshift(pedido);
-  salvar(); closeModal(); renderAll();
-  showToast(`Pedido ${pedido.id} criado com sucesso!`);
-}
+      pedidos.unshift(pedido);
+      salvar(); closeModal(); renderAll();
+      showToast(`Pedido ${pedido.id} criado com sucesso!`);
+    }
 
-// ═══════════════════════════════════════════════
-// UI HELPERS
-// ═══════════════════════════════════════════════
-function setStatusTab(el, status) {
-  document.querySelectorAll('.status-tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  currentStatus = status;
-  renderAll();
-}
-function setView(mode) {
-  viewMode = mode;
-  document.getElementById('vbtn-kanban').classList.toggle('active', mode==='kanban');
-  document.getElementById('vbtn-list').classList.toggle('active', mode==='list');
-  document.getElementById('kanbanView').classList.toggle('hide', mode!=='kanban');
-  document.getElementById('listView').classList.toggle('show', mode==='list');
-  renderAll();
-}
-function exportar() { showToast('Exportando pedidos...'); }
+    // ═══════════════════════════════════════════════
+    // UI HELPERS
+    // ═══════════════════════════════════════════════
+    function setStatusTab(el, status) {
+      document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      currentStatus = status;
+      renderAll();
+    }
+    function setView(mode) {
+      viewMode = mode;
+      document.getElementById('vbtn-kanban').classList.toggle('active', mode === 'kanban');
+      document.getElementById('vbtn-list').classList.toggle('active', mode === 'list');
+      document.getElementById('kanbanView').classList.toggle('hide', mode !== 'kanban');
+      document.getElementById('listView').classList.toggle('show', mode === 'list');
+      renderAll();
+    }
+    function exportar() { showToast('Exportando pedidos...'); }
 
-// ═══════════════════════════════════════════════
-// SIDEBAR
-// ═══════════════════════════════════════════════
-let sidebarCollapsed = true;
-function toggleSidebar() {
-  sidebarCollapsed = !sidebarCollapsed;
-  document.getElementById('sidebar').classList.toggle('collapsed', sidebarCollapsed);
-  document.getElementById('mainContent').classList.toggle('collapsed', sidebarCollapsed);
-  document.getElementById('toggleIcon').className = sidebarCollapsed?'bi bi-chevron-right':'bi bi-chevron-left';
-}
-
-// ═══════════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════════
-function fmt(v) { return (v||0).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
-function showToast(msg) {
-  const t=document.getElementById('toast');
-  document.getElementById('toastMsg').textContent=msg;
-  t.classList.add('show'); clearTimeout(t._t);
-  t._t=setTimeout(()=>t.classList.remove('show'),3000);
-}
-
-init();
-</script>
+    // ═══════════════════════════════════════════════
+    // HELPERS
+    // ═══════════════════════════════════════════════
+    init();
+  </script>
 </body>
+
 </html>
