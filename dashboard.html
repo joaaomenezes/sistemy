@@ -103,15 +103,7 @@
     tbody tr:hover td { background: rgba(255,255,255,.02); }
     .td-name { font-weight: 600; }
     .td-sub  { color: var(--muted); font-size: 11px; margin-top: 2px; }
-    .status-pill {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 3px 9px; border-radius: 100px; font-size: 11px; font-weight: 600;
-    }
-    .status-pill.ok   { background: rgba(0,200,150,.1); color: var(--accent); }
-    .status-pill.pend { background: rgba(255,107,53,.1); color: var(--warn); }
-    .status-pill.canc { background: rgba(255,71,87,.1); color: var(--danger); }
-    .status-pill::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; }
-
+    
     /* activity feed */
     .activity-list { display: flex; flex-direction: column; gap: 0; }
     .activity-item {
