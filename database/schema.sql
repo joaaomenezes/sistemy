@@ -58,7 +58,47 @@ CREATE TABLE clientes (
   atualizado_em      TIMESTAMP DEFAULT NOW()
 );
 
+-- Categorias de produto
+CREATE TABLE categorias (
+  id         SERIAL PRIMARY KEY,
+  empresa_id INTEGER REFERENCES empresas(id),
+  nome       VARCHAR(100) NOT NULL,
+  ativo      BOOLEAN DEFAULT TRUE
+);
 
+-- Produtos
+CREATE TABLE produtos (
+  id                SERIAL PRIMARY KEY,
+  empresa_id        INTEGER REFERENCES empresas(id) NOT NULL,
+  categoria_id      INTEGER REFERENCES categorias(id),
+  sku               VARCHAR(50) UNIQUE,
+  codigo_barras     VARCHAR(50),
+  nome              VARCHAR(150) NOT NULL,
+  marca             VARCHAR(100),
+  descricao         TEXT,
+  unidade           VARCHAR(20) NOT NULL,
+  preco_custo       NUMERIC(10,2) NOT NULL DEFAULT 0,
+  preco_venda       NUMERIC(10,2) NOT NULL DEFAULT 0,
+  preco_minimo      NUMERIC(10,2) DEFAULT 0,
+  margem_lucro      NUMERIC(5,2) DEFAULT 0,
+  desconto_maximo   NUMERIC(5,2) DEFAULT 0,
+  ncm               VARCHAR(20),
+  cest              VARCHAR(20),
+  cfop              VARCHAR(10),
+  cst_csosn         VARCHAR(10),
+  aliquota_icms     NUMERIC(5,2) DEFAULT 0,
+  pis_cofins        NUMERIC(5,2) DEFAULT 0,
+  estoque           NUMERIC(10,3) NOT NULL DEFAULT 0,
+  estoque_minimo    NUMERIC(10,3) DEFAULT 0,
+  estoque_maximo    NUMERIC(10,3) DEFAULT 0,
+  localizacao       VARCHAR(100),
+  posicao_prateleira VARCHAR(50),
+  fornecedor        VARCHAR(150),
+  prazo_reposicao   INTEGER DEFAULT 0,
+  ativo             BOOLEAN NOT NULL DEFAULT TRUE,
+  criado_em         TIMESTAMP DEFAULT NOW(),
+  atualizado_em     TIMESTAMP DEFAULT NOW()
+);
 
 
 
