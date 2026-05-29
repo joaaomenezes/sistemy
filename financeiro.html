@@ -714,10 +714,174 @@
 
     <!-- Relatórios -->
     <div class="fin-panel" id="panel-relatorios">
-      <div class="empty-state show" style="margin-top:40px">
-        <i class="bi bi-graph-up-arrow"></i>
-        <h3>Relatórios Gerenciais</h3>
-        <p>Relatórios financeiros e análises em desenvolvimento.</p>
+      <div style="margin-top:20px">
+
+        <!-- Header -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div>
+            <h2 style="font-family:var(--font-h);font-size:20px;font-weight:800;letter-spacing:-1px;color:var(--text);margin:0">Relatórios Financeiros</h2>
+            <p style="color:var(--muted);font-size:12px;margin:4px 0 0">Gere e exporte relatórios do módulo financeiro.</p>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <div style="display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:7px 12px;cursor:pointer">
+              <i class="bi bi-calendar3" style="color:var(--muted);font-size:13px"></i>
+              <span style="font-size:12px;color:var(--text)">01/05/2025 – 31/05/2025</span>
+              <i class="bi bi-chevron-down" style="color:var(--muted);font-size:11px"></i>
+            </div>
+            <button class="btn-sm btn-ghost-sm" onclick="showToast('Agendamento em desenvolvimento')"><i class="bi bi-clock"></i> Agendar</button>
+          </div>
+        </div>
+
+        <!-- Filtros categoria -->
+        <div style="display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap">
+          <button onclick="relFilterCat(this,'todos')" style="padding:6px 14px;border-radius:8px;border:1px solid var(--accent);background:rgba(0,200,150,.08);color:var(--accent);font-size:12px;font-weight:600;font-family:var(--font-b);cursor:pointer" class="rcat">Todos</button>
+          <button onclick="relFilterCat(this,'pagar')" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--muted);font-size:12px;font-weight:600;font-family:var(--font-b);cursor:pointer" class="rcat">Contas a Pagar</button>
+          <button onclick="relFilterCat(this,'receber')" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--muted);font-size:12px;font-weight:600;font-family:var(--font-b);cursor:pointer" class="rcat">Contas a Receber</button>
+          <button onclick="relFilterCat(this,'fluxo')" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--muted);font-size:12px;font-weight:600;font-family:var(--font-b);cursor:pointer" class="rcat">Fluxo de Caixa</button>
+          <button onclick="relFilterCat(this,'bancario')" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--muted);font-size:12px;font-weight:600;font-family:var(--font-b);cursor:pointer" class="rcat">Bancário</button>
+          <button onclick="relFilterCat(this,'gerencial')" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--muted);font-size:12px;font-weight:600;font-family:var(--font-b);cursor:pointer" class="rcat">Gerenciais</button>
+        </div>
+
+        <!-- Relatórios disponíveis -->
+        <p style="font-family:var(--font-h);font-size:14px;font-weight:700;color:var(--text);margin:0 0 14px">Relatórios Disponíveis</p>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px" id="relGrid">
+
+          <div class="rcard" data-cat="fluxo">
+            <div style="width:38px;height:38px;border-radius:10px;background:rgba(0,200,150,.1);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0"><i class="bi bi-bar-chart-line"></i></div>
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:5px">Fluxo de Caixa</div>
+              <div style="color:var(--muted);font-size:11px;line-height:1.5;margin-bottom:12px">Entradas, saídas e saldo do fluxo de caixa no período.</div>
+              <button class="rbtn" onclick="gerarRel('Fluxo de Caixa')"><i class="bi bi-file-earmark-text"></i> Gerar Relatório</button>
+            </div>
+          </div>
+
+          <div class="rcard" data-cat="pagar">
+            <div style="width:38px;height:38px;border-radius:10px;background:rgba(255,71,87,.1);color:var(--danger);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0"><i class="bi bi-arrow-up-circle"></i></div>
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:5px">Contas a Pagar</div>
+              <div style="color:var(--muted);font-size:11px;line-height:1.5;margin-bottom:12px">Listagem de contas por período, status ou fornecedor.</div>
+              <button class="rbtn" onclick="gerarRel('Contas a Pagar')"><i class="bi bi-file-earmark-text"></i> Gerar Relatório</button>
+            </div>
+          </div>
+
+          <div class="rcard" data-cat="receber">
+            <div style="width:38px;height:38px;border-radius:10px;background:rgba(0,119,255,.1);color:var(--accent2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0"><i class="bi bi-arrow-down-circle"></i></div>
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:5px">Contas a Receber</div>
+              <div style="color:var(--muted);font-size:11px;line-height:1.5;margin-bottom:12px">Listagem de contas por período, status ou cliente.</div>
+              <button class="rbtn" onclick="gerarRel('Contas a Receber')"><i class="bi bi-file-earmark-text"></i> Gerar Relatório</button>
+            </div>
+          </div>
+
+          <div class="rcard" data-cat="bancario">
+            <div style="width:38px;height:38px;border-radius:10px;background:rgba(168,85,247,.1);color:#a855f7;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0"><i class="bi bi-bank"></i></div>
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:5px">Extrato Bancário</div>
+              <div style="color:var(--muted);font-size:11px;line-height:1.5;margin-bottom:12px">Movimentações bancárias no período selecionado.</div>
+              <button class="rbtn" onclick="gerarRel('Extrato Bancário')"><i class="bi bi-file-earmark-text"></i> Gerar Relatório</button>
+            </div>
+          </div>
+
+          <div class="rcard" data-cat="gerencial">
+            <div style="width:38px;height:38px;border-radius:10px;background:rgba(255,107,53,.1);color:var(--warn);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0"><i class="bi bi-pie-chart"></i></div>
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:5px">DRE</div>
+              <div style="color:var(--muted);font-size:11px;line-height:1.5;margin-bottom:12px">Receitas, despesas e resultado do exercício.</div>
+              <button class="rbtn" onclick="gerarRel('DRE')"><i class="bi bi-file-earmark-text"></i> Gerar Relatório</button>
+            </div>
+          </div>
+
+          <div class="rcard" data-cat="gerencial">
+            <div style="width:38px;height:38px;border-radius:10px;background:rgba(0,200,150,.1);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0"><i class="bi bi-graph-up-arrow"></i></div>
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:5px">Resumo Financeiro</div>
+              <div style="color:var(--muted);font-size:11px;line-height:1.5;margin-bottom:12px">Resumo geral das principais movimentações financeiras.</div>
+              <button class="rbtn" onclick="gerarRel('Resumo Financeiro')"><i class="bi bi-file-earmark-text"></i> Gerar Relatório</button>
+            </div>
+          </div>
+
+          <div class="rcard" data-cat="gerencial">
+            <div style="width:38px;height:38px;border-radius:10px;background:rgba(0,119,255,.1);color:var(--accent2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0"><i class="bi bi-diagram-3"></i></div>
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:5px">Centro de Custo</div>
+              <div style="color:var(--muted);font-size:11px;line-height:1.5;margin-bottom:12px">Receitas e despesas agrupadas por centro de custo.</div>
+              <button class="rbtn" onclick="gerarRel('Centro de Custo')"><i class="bi bi-file-earmark-text"></i> Gerar Relatório</button>
+            </div>
+          </div>
+
+          <div class="rcard" data-cat="outros">
+            <div style="width:38px;height:38px;border-radius:10px;background:rgba(107,127,150,.1);color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0"><i class="bi bi-three-dots"></i></div>
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:5px">Outros Relatórios</div>
+              <div style="color:var(--muted);font-size:11px;line-height:1.5;margin-bottom:12px">Acesse todos os relatórios disponíveis no sistema.</div>
+              <button class="rbtn" onclick="showToast('Em desenvolvimento')"><i class="bi bi-eye"></i> Ver Todos</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Relatórios gerados -->
+        <p style="font-family:var(--font-h);font-size:14px;font-weight:700;color:var(--text);margin:0 0 14px">Relatórios Gerados</p>
+        <div class="table-card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nome do Relatório</th>
+                  <th>Categoria</th>
+                  <th>Período</th>
+                  <th>Gerado por</th>
+                  <th>Data</th>
+                  <th>Formato</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="relTable">
+                <tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:7px;background:rgba(0,200,150,.1);display:flex;align-items:center;justify-content:center"><i class="bi bi-bar-chart-line" style="color:var(--accent);font-size:12px"></i></div><span style="font-weight:500">Fluxo de Caixa</span></div></td><td><span class="status-pill ativo">Financeiro</span></td><td style="color:var(--muted)">01/05 – 31/05/2025</td><td>Administrador</td><td style="color:var(--muted)">31/05 08:45</td><td><span style="padding:2px 8px;border-radius:4px;background:rgba(255,71,87,.1);color:var(--danger);font-size:10px;font-weight:700">PDF</span></td><td><div class="action-cell"><div class="act-btn"><i class="bi bi-download"></i></div><div class="act-btn"><i class="bi bi-envelope"></i></div><div class="act-btn danger"><i class="bi bi-trash3"></i></div></div></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:7px;background:rgba(255,71,87,.1);display:flex;align-items:center;justify-content:center"><i class="bi bi-arrow-up-circle" style="color:var(--danger);font-size:12px"></i></div><span style="font-weight:500">Contas a Pagar</span></div></td><td><span class="status-pill pendente">Contas a Pagar</span></td><td style="color:var(--muted)">01/05 – 31/05/2025</td><td>Administrador</td><td style="color:var(--muted)">31/05 08:30</td><td><span style="padding:2px 8px;border-radius:4px;background:rgba(0,200,150,.1);color:var(--accent);font-size:10px;font-weight:700">Excel</span></td><td><div class="action-cell"><div class="act-btn"><i class="bi bi-download"></i></div><div class="act-btn"><i class="bi bi-envelope"></i></div><div class="act-btn danger"><i class="bi bi-trash3"></i></div></div></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:7px;background:rgba(0,119,255,.1);display:flex;align-items:center;justify-content:center"><i class="bi bi-arrow-down-circle" style="color:var(--accent2);font-size:12px"></i></div><span style="font-weight:500">Contas a Receber</span></div></td><td><span class="status-pill aprovado">Contas a Receber</span></td><td style="color:var(--muted)">01/05 – 31/05/2025</td><td>Administrador</td><td style="color:var(--muted)">31/05 08:15</td><td><span style="padding:2px 8px;border-radius:4px;background:rgba(255,71,87,.1);color:var(--danger);font-size:10px;font-weight:700">PDF</span></td><td><div class="action-cell"><div class="act-btn"><i class="bi bi-download"></i></div><div class="act-btn"><i class="bi bi-envelope"></i></div><div class="act-btn danger"><i class="bi bi-trash3"></i></div></div></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:7px;background:rgba(168,85,247,.1);display:flex;align-items:center;justify-content:center"><i class="bi bi-bank" style="color:#a855f7;font-size:12px"></i></div><span style="font-weight:500">Extrato Bancário</span></div></td><td><span class="status-pill faturado">Bancário</span></td><td style="color:var(--muted)">01/05 – 31/05/2025</td><td>Administrador</td><td style="color:var(--muted)">31/05 07:50</td><td><span style="padding:2px 8px;border-radius:4px;background:rgba(255,71,87,.1);color:var(--danger);font-size:10px;font-weight:700">PDF</span></td><td><div class="action-cell"><div class="act-btn"><i class="bi bi-download"></i></div><div class="act-btn"><i class="bi bi-envelope"></i></div><div class="act-btn danger"><i class="bi bi-trash3"></i></div></div></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:7px;background:rgba(255,107,53,.1);display:flex;align-items:center;justify-content:center"><i class="bi bi-pie-chart" style="color:var(--warn);font-size:12px"></i></div><span style="font-weight:500">DRE – Maio/2025</span></div></td><td><span class="status-pill concluido">Gerencial</span></td><td style="color:var(--muted)">01/05 – 31/05/2025</td><td>Administrador</td><td style="color:var(--muted)">31/05 07:30</td><td><span style="padding:2px 8px;border-radius:4px;background:rgba(0,200,150,.1);color:var(--accent);font-size:10px;font-weight:700">Excel</span></td><td><div class="action-cell"><div class="act-btn"><i class="bi bi-download"></i></div><div class="act-btn"><i class="bi bi-envelope"></i></div><div class="act-btn danger"><i class="bi bi-trash3"></i></div></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <span>Mostrando 1 a 5 de 5 relatórios</span>
+            <div class="pagination">
+              <button class="pg-btn active">1</button>
+              <button class="pg-btn">2</button>
+              <button class="pg-btn"><i class="bi bi-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CSS e JS inline para não afetar outros painéis -->
+        <style>
+          .rcard { background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;gap:12px;align-items:flex-start;transition:border-color .2s,transform .2s; }
+          .rcard:hover { border-color:rgba(0,200,150,.25);transform:translateY(-2px); }
+          .rcard.rhidden { display:none; }
+          .rbtn { display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:7px;border:1px solid var(--border);background:none;color:var(--muted);font-size:11px;font-weight:600;font-family:var(--font-b);cursor:pointer;transition:all .15s; }
+          .rbtn:hover { border-color:var(--accent);color:var(--accent);background:rgba(0,200,150,.06); }
+        </style>
+        <script>
+          function relFilterCat(el, cat) {
+            document.querySelectorAll('.rcat').forEach(b => {
+              b.style.background = 'none';
+              b.style.borderColor = 'var(--border)';
+              b.style.color = 'var(--muted)';
+            });
+            el.style.background = 'rgba(0,200,150,.08)';
+            el.style.borderColor = 'var(--accent)';
+            el.style.color = 'var(--accent)';
+            document.querySelectorAll('.rcard').forEach(c => {
+              c.classList.toggle('rhidden', cat !== 'todos' && !c.dataset.cat.includes(cat));
+            });
+          }
+          function gerarRel(nome) {
+            showToast('📄 ' + nome + ' gerado com sucesso!');
+          }
+        </script>
+
       </div>
     </div>
 
