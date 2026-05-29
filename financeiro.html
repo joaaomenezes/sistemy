@@ -612,6 +612,189 @@
         grid-template-columns: repeat(3, 1fr);
       }
     }
+
+    /* ── Modal Gerar Relatório ── */
+    .rel-chip {
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--sub);
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--font-b);
+      cursor: pointer;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+
+    .rel-chip:hover {
+      border-color: var(--border-h);
+      color: var(--text);
+    }
+
+    .rel-chip.active {
+      background: rgba(0, 208, 132, .1);
+      border-color: rgba(0, 208, 132, .35);
+      color: var(--accent);
+    }
+
+    .rel-format-opt {
+      cursor: pointer;
+    }
+
+    .rel-format-opt input {
+      display: none;
+    }
+
+    .rel-format-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 14px 22px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .02);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--sub);
+      transition: all .15s;
+      cursor: pointer;
+      min-width: 90px;
+    }
+
+    .rel-format-card:hover {
+      border-color: var(--border-h);
+      color: var(--text);
+    }
+
+    .rel-format-card.active {
+      border-color: var(--accent);
+      background: rgba(0, 208, 132, .07);
+      color: var(--text);
+    }
+
+    .rel-filtro-select {
+      width: 100%;
+      padding: 9px 12px;
+      background: rgba(255, 255, 255, .03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: var(--font-b);
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+      transition: border-color .2s;
+    }
+
+    .rel-filtro-select:focus {
+      border-color: var(--accent);
+    }
+
+    .rel-filtro-select option {
+      background: var(--card);
+    }
+
+    #relCustomPeriod.visible {
+      display: grid !important;
+    }
+
+    /* ── Relatórios — cards e botões ── */
+    .rcard {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      transition: border-color .2s, transform .2s;
+    }
+
+    .rcard:hover {
+      border-color: rgba(0, 208, 132, .25);
+      transform: translateY(-2px);
+    }
+
+    .rcard.rhidden {
+      display: none;
+    }
+
+    .rbtn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--font-b);
+      cursor: pointer;
+      transition: all .15px;
+    }
+
+    .rbtn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(0, 208, 132, .06);
+    }
+
+    /* ── Date picker do financeiro ── */
+    .fin-dp-opt {
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      color: var(--muted);
+      cursor: pointer;
+      font-family: var(--font-b);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background .1s, color .1s;
+    }
+
+    .fin-dp-opt:hover {
+      background: rgba(255, 255, 255, .05);
+      color: var(--text);
+    }
+
+    .fin-dp-opt.active {
+      color: var(--accent);
+    }
+
+    .fin-dp-opt.active::after {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .fin-dp-input {
+      width: 100%;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 12px;
+      padding: 5px 9px;
+      outline: none;
+      color-scheme: dark;
+      font-family: var(--font-b);
+      transition: border-color .15s;
+      display: block;
+    }
+
+    .fin-dp-input:focus {
+      border-color: var(--accent);
+    }
   </style>
 </head>
 
@@ -792,14 +975,37 @@
         </div>
       </div>
 
-      <!-- DATA RANGE -->
+      <!-- DATA RANGE — funcional -->
       <div style="display:flex;justify-content:flex-end;margin:8px 0 4px">
-        <div
-          style="display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;transition:border-color .2s"
-          onmouseenter="this.style.borderColor='var(--accent)'" onmouseleave="this.style.borderColor='var(--border)'">
-          <i class="bi bi-calendar3" style="color:var(--muted);font-size:13px"></i>
-          <span style="font-size:12px;color:var(--text);white-space:nowrap">01/05/2025 – 31/05/2025</span>
-          <i class="bi bi-chevron-down" style="color:var(--muted);font-size:11px"></i>
+        <div style="position:relative">
+          <div id="finDpBtn"
+            style="display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;transition:border-color .2s;user-select:none"
+            onclick="toggleFinDp()" onmouseenter="this.style.borderColor='var(--accent)'"
+            onmouseleave="this.style.borderColor='var(--border)'">
+            <i class="bi bi-calendar3" style="color:var(--muted);font-size:13px"></i>
+            <span id="finDpLabel" style="font-size:12px;color:var(--text);white-space:nowrap">01/05/2026 –
+              31/05/2026</span>
+            <i class="bi bi-chevron-down" style="color:var(--muted);font-size:11px"></i>
+          </div>
+          <div id="finDpDrop"
+            style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:#0f1929;border:1px solid var(--border-h, rgba(255,255,255,.09));border-radius:14px;padding:6px;min-width:210px;z-index:300;box-shadow:0 20px 50px rgba(0,0,0,.55)">
+            <div class="fin-dp-opt active" onclick="finSelPeriod(this,'today')">Hoje</div>
+            <div class="fin-dp-opt" onclick="finSelPeriod(this,'week')">Esta semana</div>
+            <div class="fin-dp-opt" onclick="finSelPeriod(this,'month')">Este mês</div>
+            <div class="fin-dp-opt" onclick="finSelPeriod(this,'quarter')">Último trimestre</div>
+            <div class="fin-dp-opt" onclick="finSelPeriod(this,'year')">Este ano</div>
+            <div style="height:1px;background:var(--border);margin:5px 0"></div>
+            <div style="padding:8px 12px 4px">
+              <div
+                style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px">
+                Período personalizado</div>
+              <input type="date" id="finDpStart" class="fin-dp-input" oninput="finUpdateCustomLabel()">
+              <input type="date" id="finDpEnd" class="fin-dp-input" style="margin-top:5px"
+                oninput="finUpdateCustomLabel()">
+              <button onclick="finApplyCustom()"
+                style="display:block;width:100%;margin-top:7px;padding:6px;border-radius:8px;border:none;background:rgba(0,208,132,.12);color:var(--accent);font-size:11.5px;font-weight:700;font-family:var(--font-b);cursor:pointer">Aplicar</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1399,7 +1605,7 @@
                   <th style="width:7%;text-align:center">Ações</th>
                 </tr>
               </thead>
-              <tbody id="relTable">
+              <tbody id="relTbody">
                 <tr>
                   <td>
                     <div style="display:flex;align-items:center;gap:10px">
@@ -1565,17 +1771,6 @@
             document.getElementById('relCount').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
           }
 
-          function relBuscar(q) {
-            const rows = document.querySelectorAll('#relTable tr');
-            let vis = 0;
-            rows.forEach(r => {
-              const show = !q || r.textContent.toLowerCase().includes(q.toLowerCase());
-              r.style.display = show ? '' : 'none';
-              if (show) vis++;
-            });
-            document.getElementById('relCount').textContent = `Mostrando ${vis} relatório(s)`;
-          }
-
           function relFilterCat(el, cat) {
             document.querySelectorAll('.rcat').forEach(b => {
               b.style.background = 'none';
@@ -1590,59 +1785,6 @@
             });
           }
 
-          function gerarRel(nome) {
-            showToast('📄 ' + nome + ' gerado com sucesso!');
-          }
-        </script>
-        <!-- CSS e JS inline para não afetar outros painéis -->
-        <style>
-          .rcard {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-            transition: border-color .2s, transform .2s;
-          }
-
-          .rcard:hover {
-            border-color: rgba(0, 200, 150, .25);
-            transform: translateY(-2px);
-          }
-
-          .rcard.rhidden {
-            display: none;
-          }
-
-          .rbtn {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding: 6px 12px;
-            border-radius: 7px;
-            border: 1px solid var(--border);
-            background: none;
-            color: var(--muted);
-            font-size: 11px;
-            font-weight: 600;
-            font-family: var(--font-b);
-            cursor: pointer;
-            transition: all .15s;
-          }
-
-          .rbtn:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: rgba(0, 200, 150, .06);
-          }
-        </style>
-        <script>
-
-          function gerarRel(nome) {
-            showToast('📄 ' + nome + ' gerado com sucesso!');
-          }
         </script>
 
       </div>
@@ -1657,6 +1799,91 @@
       </div>
     </div>
   </div><!-- /main -->
+
+
+  <!-- MODAL GERAR RELATÓRIO -->
+  <div class="modal-overlay" id="relModalOverlay" onclick="handleRelOverlay(event)">
+    <div class="modal" style="max-width:540px">
+      <div class="modal-header">
+        <div>
+          <h2 id="relModalTitle">Gerar Relatório</h2>
+          <div class="modal-sub" id="relModalSub">Configure os parâmetros do relatório</div>
+        </div>
+        <div class="modal-close" onclick="closeRelModal()"><i class="bi bi-x-lg"></i></div>
+      </div>
+      <div class="modal-body" style="padding:22px">
+
+        <!-- Período -->
+        <div class="form-section">
+          <div class="form-section-title">Período</div>
+          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap" id="relPeriodChips">
+            <button class="rel-chip active" onclick="setRelPeriod(this,'today')">Hoje</button>
+            <button class="rel-chip" onclick="setRelPeriod(this,'week')">Esta semana</button>
+            <button class="rel-chip" onclick="setRelPeriod(this,'month')">Este mês</button>
+            <button class="rel-chip" onclick="setRelPeriod(this,'quarter')">Trimestre</button>
+            <button class="rel-chip" onclick="setRelPeriod(this,'year')">Este ano</button>
+            <button class="rel-chip" onclick="setRelPeriod(this,'custom')">Personalizado</button>
+          </div>
+          <div id="relCustomPeriod" style="display:none;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="form-group">
+              <label style="font-size:11px;color:var(--sub);font-weight:600">Data inicial</label>
+              <div class="inp-wrap">
+                <i class="bi bi-calendar3 pre"></i>
+                <input type="date" class="field" id="relDataInicio">
+              </div>
+            </div>
+            <div class="form-group">
+              <label style="font-size:11px;color:var(--sub);font-weight:600">Data final</label>
+              <div class="inp-wrap">
+                <i class="bi bi-calendar3 pre"></i>
+                <input type="date" class="field" id="relDataFim">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filtros dinâmicos por tipo -->
+        <div class="form-section" id="relFiltrosExtra">
+          <!-- preenchido dinamicamente por JS -->
+        </div>
+
+        <!-- Formato de saída -->
+        <div class="form-section" style="margin-bottom:0">
+          <div class="form-section-title">Formato de saída</div>
+          <div style="display:flex;gap:10px">
+            <label class="rel-format-opt" id="fmtPDF">
+              <input type="radio" name="relFormato" value="PDF" checked onchange="setFmt(this)">
+              <div class="rel-format-card active">
+                <i class="bi bi-file-earmark-pdf" style="color:#FF4D6D;font-size:20px"></i>
+                <span>PDF</span>
+              </div>
+            </label>
+            <label class="rel-format-opt" id="fmtXLSX">
+              <input type="radio" name="relFormato" value="Excel" onchange="setFmt(this)">
+              <div class="rel-format-card">
+                <i class="bi bi-file-earmark-excel" style="color:#00D084;font-size:20px"></i>
+                <span>Excel</span>
+              </div>
+            </label>
+            <label class="rel-format-opt" id="fmtCSV">
+              <input type="radio" name="relFormato" value="CSV" onchange="setFmt(this)">
+              <div class="rel-format-card">
+                <i class="bi bi-filetype-csv" style="color:#2F80FF;font-size:20px"></i>
+                <span>CSV</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel-m" onclick="closeRelModal()">Cancelar</button>
+        <button class="btn-save-m" onclick="confirmarGerarRel()">
+          <i class="bi bi-file-earmark-text"></i> Gerar Relatório
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL LANÇAMENTO -->
   <div class="modal-overlay" id="modalOverlay" onclick="handleOverlay(event)">
@@ -2128,11 +2355,318 @@
     // ═══════════════════════════════════════════════
     // INIT
     // ═══════════════════════════════════════════════
+
+    // ═══════════════════════════════════════════════
+    // MODAL GERAR RELATÓRIO
+    // ═══════════════════════════════════════════════
+
+    const REL_CONFIG = {
+      'Fluxo de Caixa': {
+        filtros: [
+          { label: 'Conta bancária', id: 'relConta', opts: ['Todas as contas', 'Conta Corrente Principal', 'Conta Poupança', 'Caixa Físico'] },
+          { label: 'Tipo de movimentação', id: 'relTipoFluxo', opts: ['Todas', 'Somente entradas', 'Somente saídas'] }
+        ]
+      },
+      'Contas a Pagar': {
+        filtros: [
+          { label: 'Status', id: 'relStatus', opts: ['Todos', 'Em aberto', 'Vencido', 'Pago', 'Cancelado'] },
+          { label: 'Fornecedor', id: 'relFornecedor', opts: ['Todos os fornecedores', 'Fornecedor A', 'Fornecedor B', 'Fornecedor C'] }
+        ]
+      },
+      'Contas a Receber': {
+        filtros: [
+          { label: 'Status', id: 'relStatus', opts: ['Todos', 'Em aberto', 'Vencido', 'Recebido', 'Cancelado'] },
+          { label: 'Cliente', id: 'relCliente', opts: ['Todos os clientes', 'Cliente A', 'Cliente B', 'Cliente C'] }
+        ]
+      },
+      'Extrato Bancário': {
+        filtros: [
+          { label: 'Conta bancária', id: 'relConta', opts: ['Todas as contas', 'Conta Corrente Principal', 'Conta Poupança', 'Caixa Físico'] }
+        ]
+      },
+      'DRE': {
+        filtros: [
+          { label: 'Competência', id: 'relComp', opts: ['Mensal', 'Trimestral', 'Semestral', 'Anual'] },
+          { label: 'Centro de custo', id: 'relCC', opts: ['Todos', 'Administrativo', 'Comercial', 'Operacional'] }
+        ]
+      },
+      'Resumo Financeiro': {
+        filtros: [
+          { label: 'Agrupar por', id: 'relAgrup', opts: ['Mês', 'Semana', 'Categoria', 'Centro de custo'] }
+        ]
+      },
+      'Centro de Custo': {
+        filtros: [
+          { label: 'Centro de custo', id: 'relCC', opts: ['Todos', 'Administrativo', 'Comercial', 'Operacional'] }
+        ]
+      }
+    };
+
+    let _relNomeAtual = '';
+    let _relPeriodoAtual = 'month';
+
+    function gerarRel(nome) {
+      _relNomeAtual = nome;
+      _relPeriodoAtual = 'month';
+
+      // title
+      document.getElementById('relModalTitle').textContent = 'Gerar — ' + nome;
+      document.getElementById('relModalSub').textContent = 'Configure os parâmetros antes de gerar';
+
+      // reset period chips
+      document.querySelectorAll('.rel-chip').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.rel-chip')[2].classList.add('active'); // "Este mês"
+      document.getElementById('relCustomPeriod').style.display = 'none';
+      document.getElementById('relCustomPeriod').classList.remove('visible');
+
+      // set default dates
+      const hoje = new Date();
+      const primDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+      document.getElementById('relDataInicio').value = primDia.toISOString().split('T')[0];
+      document.getElementById('relDataFim').value = hoje.toISOString().split('T')[0];
+
+      // dynamic filters
+      const cfg = REL_CONFIG[nome];
+      const el = document.getElementById('relFiltrosExtra');
+      if (cfg && cfg.filtros.length) {
+        let html = '<div class="form-section-title">' + (cfg.filtros.length > 1 ? 'Filtros' : 'Filtro') + '</div>';
+        html += '<div class="form-grid' + (cfg.filtros.length === 1 ? ' g1' : '') + '">';
+        cfg.filtros.forEach(f => {
+          html += '<div class="form-group">';
+          html += '<label style="font-size:11px;color:var(--sub);font-weight:600">' + f.label + '</label>';
+          html += '<select class="rel-filtro-select" id="' + f.id + '">';
+          f.opts.forEach(o => html += '<option>' + o + '</option>');
+          html += '</select></div>';
+        });
+        html += '</div>';
+        el.innerHTML = html;
+        el.style.display = 'block';
+      } else {
+        el.innerHTML = '';
+        el.style.display = 'none';
+      }
+
+      // reset formato
+      document.querySelectorAll('.rel-format-card').forEach(c => c.classList.remove('active'));
+      document.querySelector('.rel-format-card').classList.add('active');
+      document.querySelector('input[name="relFormato"][value="PDF"]').checked = true;
+
+      document.getElementById('relModalOverlay').classList.add('open');
+    }
+
+    function closeRelModal() {
+      document.getElementById('relModalOverlay').classList.remove('open');
+    }
+
+    function handleRelOverlay(e) {
+      if (e.target === document.getElementById('relModalOverlay')) closeRelModal();
+    }
+
+    function setRelPeriod(el, tipo) {
+      document.querySelectorAll('.rel-chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      _relPeriodoAtual = tipo;
+      const cp = document.getElementById('relCustomPeriod');
+      if (tipo === 'custom') {
+        cp.style.display = 'grid';
+      } else {
+        cp.style.display = 'none';
+        // auto fill dates
+        const hoje = new Date();
+        let inicio = new Date(hoje);
+        if (tipo === 'today') { inicio = new Date(hoje); }
+        if (tipo === 'week') { inicio.setDate(hoje.getDate() - hoje.getDay()); }
+        if (tipo === 'month') { inicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1); }
+        if (tipo === 'quarter') { const q = Math.floor(hoje.getMonth() / 3); inicio = new Date(hoje.getFullYear(), q * 3, 1); }
+        if (tipo === 'year') { inicio = new Date(hoje.getFullYear(), 0, 1); }
+        document.getElementById('relDataInicio').value = inicio.toISOString().split('T')[0];
+        document.getElementById('relDataFim').value = hoje.toISOString().split('T')[0];
+      }
+    }
+
+    function setFmt(input) {
+      document.querySelectorAll('.rel-format-card').forEach(c => c.classList.remove('active'));
+      input.closest('.rel-format-opt').querySelector('.rel-format-card').classList.add('active');
+    }
+
+    function confirmarGerarRel() {
+      const nome = _relNomeAtual;
+      const fmt = document.querySelector('input[name="relFormato"]:checked').value;
+      const inicio = document.getElementById('relDataInicio').value;
+      const fim = document.getElementById('relDataFim').value;
+
+      // Período label
+      const labels = { today: 'Hoje', week: 'Esta semana', month: 'Este mês', quarter: 'Trimestre', year: 'Este ano', custom: 'Personalizado' };
+      const periodoLabel = _relPeriodoAtual === 'custom'
+        ? formatDate(inicio) + ' – ' + formatDate(fim)
+        : labels[_relPeriodoAtual] || 'Este mês';
+
+      // Add row to table
+      addRelGerado(nome, periodoLabel, fmt);
+      closeRelModal();
+      showToast('📄 ' + nome + ' gerado em ' + fmt + ' com sucesso!');
+    }
+
+    function formatDate(iso) {
+      if (!iso) return '—';
+      const [y, m, d] = iso.split('-');
+      return d + '/' + m + '/' + y;
+    }
+
+    // ─── Tabela de relatórios gerados ───
+    let relGerados = [
+      { nome: 'Fluxo de Caixa', cat: 'Caixa', periodo: 'Mai 2026', por: 'Admin', data: '29/05/2026', fmt: 'PDF' },
+      { nome: 'DRE', cat: 'Gerencial', periodo: 'Abr 2026', por: 'Admin', data: '30/04/2026', fmt: 'Excel' },
+      { nome: 'Contas a Pagar', cat: 'Pagar', periodo: 'Mar 2026', por: 'Admin', data: '31/03/2026', fmt: 'PDF' },
+      { nome: 'Resumo Fin.', cat: 'Gerencial', periodo: 'T1 2026', por: 'Admin', data: '01/04/2026', fmt: 'CSV' },
+      { nome: 'Extrato Banc.', cat: 'Bancário', periodo: 'Mai 2026', por: 'Admin', data: '28/05/2026', fmt: 'PDF' },
+    ];
+
+    function addRelGerado(nome, periodo, fmt) {
+      const hoje = new Date();
+      const data = String(hoje.getDate()).padStart(2, '0') + '/' +
+        String(hoje.getMonth() + 1).padStart(2, '0') + '/' + hoje.getFullYear();
+      const user = document.querySelector('.user-name')?.textContent || 'Admin';
+      const cat = {
+        'Fluxo de Caixa': 'Caixa', 'Contas a Pagar': 'Pagar', 'Contas a Receber': 'Receber',
+        'Extrato Bancário': 'Bancário', 'DRE': 'Gerencial', 'Resumo Financeiro': 'Gerencial',
+        'Centro de Custo': 'Gerencial'
+      }[nome] || 'Geral';
+      relGerados.unshift({ nome, cat, periodo, por: user, data, fmt });
+      renderRelTable();
+    }
+
+    function fmtIcon(fmt) {
+      if (fmt === 'PDF') return '<i class="bi bi-file-earmark-pdf" style="color:#FF4D6D"></i>';
+      if (fmt === 'Excel') return '<i class="bi bi-file-earmark-excel" style="color:#00D084"></i>';
+      if (fmt === 'CSV') return '<i class="bi bi-filetype-csv" style="color:#2F80FF"></i>';
+      return fmt;
+    }
+
+    function renderRelTable(filtro) {
+      const tbody = document.getElementById('relTbody');
+      if (!tbody) return;
+      const q = (filtro || '').toLowerCase();
+      const rows = relGerados.filter(r =>
+        !q || r.nome.toLowerCase().includes(q) || r.cat.toLowerCase().includes(q) || r.periodo.toLowerCase().includes(q)
+      );
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--sub);padding:28px">Nenhum relatório encontrado</td></tr>';
+        return;
+      }
+      tbody.innerHTML = rows.map((r, i) => `
+        <tr>
+          <td><span style="font-weight:600">${r.nome}</span></td>
+          <td><span class="status-pill orcamento">${r.cat}</span></td>
+          <td style="color:var(--sub)">${r.periodo}</td>
+          <td style="color:var(--sub)">${r.por}</td>
+          <td style="color:var(--sub)">${r.data}</td>
+          <td>${fmtIcon(r.fmt)} <span style="font-size:11px;color:var(--sub)">${r.fmt}</span></td>
+          <td>
+            <div class="action-cell" style="opacity:1;justify-content:center">
+              <button class="act-btn ok" title="Baixar" onclick="showToast('⬇️ Baixando ${r.nome}…')"><i class="bi bi-download"></i></button>
+              <button class="act-btn danger" title="Excluir" onclick="excluirRel(${i})"><i class="bi bi-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function excluirRel(idx) {
+      relGerados.splice(idx, 1);
+      renderRelTable();
+      showToast('Relatório removido.');
+    }
+
+    function relBuscar(q) { renderRelTable(q); }
+
     NexoAuth.renderCurrentUser();
+    renderRelTable();
     renderKPIs();
     renderChart();
     renderDonut();
     renderTabelas();
+
+    // ─── Date picker global do financeiro ───
+    (function initFinDp() {
+      const hoje = new Date();
+      const ini = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+      document.getElementById('finDpStart').value = ini.toISOString().split('T')[0];
+      document.getElementById('finDpEnd').value = hoje.toISOString().split('T')[0];
+      // marca "Este mês" como active
+      const opts = document.querySelectorAll('.fin-dp-opt');
+      opts.forEach(o => o.classList.remove('active'));
+      opts[2] && opts[2].classList.add('active');
+      _finUpdateLabel(ini, hoje);
+    })();
+
+    function toggleFinDp() {
+      const dd = document.getElementById('finDpDrop');
+      dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+    }
+
+    document.addEventListener('click', function (e) {
+      const btn = document.getElementById('finDpBtn');
+      const dd = document.getElementById('finDpDrop');
+      if (btn && dd && !btn.contains(e.target) && !dd.contains(e.target)) {
+        dd.style.display = 'none';
+      }
+    });
+
+    function finSelPeriod(el, tipo) {
+      document.querySelectorAll('.fin-dp-opt').forEach(o => o.classList.remove('active'));
+      el.classList.add('active');
+      const hoje = new Date();
+      let ini = new Date(hoje);
+      if (tipo === 'today') { ini = new Date(hoje); }
+      if (tipo === 'week') { ini = new Date(hoje); ini.setDate(hoje.getDate() - hoje.getDay()); }
+      if (tipo === 'month') { ini = new Date(hoje.getFullYear(), hoje.getMonth(), 1); }
+      if (tipo === 'quarter') { const q = Math.floor(hoje.getMonth() / 3); ini = new Date(hoje.getFullYear(), q * 3, 1); }
+      if (tipo === 'year') { ini = new Date(hoje.getFullYear(), 0, 1); }
+      document.getElementById('finDpStart').value = ini.toISOString().split('T')[0];
+      document.getElementById('finDpEnd').value = hoje.toISOString().split('T')[0];
+      _finUpdateLabel(ini, hoje);
+      document.getElementById('finDpDrop').style.display = 'none';
+    }
+
+    function finUpdateCustomLabel() {
+      const s = document.getElementById('finDpStart').value;
+      const e = document.getElementById('finDpEnd').value;
+      if (s && e) {
+        document.querySelectorAll('.fin-dp-opt').forEach(o => o.classList.remove('active'));
+        _finUpdateLabelStr(_finFmt(s) + ' – ' + _finFmt(e));
+      }
+    }
+
+    function finApplyCustom() {
+      const s = document.getElementById('finDpStart').value;
+      const e = document.getElementById('finDpEnd').value;
+      if (!s || !e) { showToast('Selecione as duas datas.'); return; }
+      document.querySelectorAll('.fin-dp-opt').forEach(o => o.classList.remove('active'));
+      _finUpdateLabelStr(_finFmt(s) + ' – ' + _finFmt(e));
+      document.getElementById('finDpDrop').style.display = 'none';
+      showToast('Período atualizado: ' + _finFmt(s) + ' – ' + _finFmt(e));
+    }
+
+    function _finUpdateLabel(ini, fim) {
+      _finUpdateLabelStr(_finFmtD(ini) + ' – ' + _finFmtD(fim));
+    }
+
+    function _finUpdateLabelStr(str) {
+      document.getElementById('finDpLabel').textContent = str;
+    }
+
+    function _finFmt(iso) {
+      const [y, m, d] = iso.split('-');
+      return d + '/' + m + '/' + y;
+    }
+
+    function _finFmtD(date) {
+      return String(date.getDate()).padStart(2, '0') + '/' +
+        String(date.getMonth() + 1).padStart(2, '0') + '/' +
+        date.getFullYear();
+    }
+
   </script>
 </body>
 
