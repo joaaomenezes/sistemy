@@ -1,714 +1,1029 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistemy — Clientes</title>
   <link rel="stylesheet" href="global.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
-    .filter-group { display: flex; gap: 8px; }
-    
+    .filter-group {
+      display: flex;
+      gap: 8px;
+    }
+
     .view-btn {
-      width: 34px; height: 34px; border-radius: 7px;
-      background: var(--card); border: 1px solid var(--border);
-      color: var(--muted); font-size: 15px;
-      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      width: 34px;
+      height: 34px;
+      border-radius: 7px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
       transition: all .18s;
     }
-    .view-btn.active { background: rgba(0,200,150,.08); border-color: var(--accent); color: var(--accent); }
 
-    table { width: 100%; border-collapse: collapse; }
+    .view-btn.active {
+      background: rgba(0, 200, 150, .08);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
     thead th {
-      padding: 13px 16px; text-align: left; font-size: 11px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: .5px; color: var(--muted);
-      background: var(--surface); border-bottom: 1px solid var(--border);
-      white-space: nowrap; cursor: pointer; user-select: none;
+      padding: 13px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
     }
-    thead th:hover { color: var(--text); }
-    thead th .sort-icon { margin-left: 4px; opacity: .4; }
-    thead th.sorted .sort-icon { opacity: 1; color: var(--accent); }
-    tbody td { padding: 13px 16px; border-bottom: 1px solid rgba(30,42,58,.7); vertical-align: middle; }
-    tbody tr:last-child td { border-bottom: none; }
-    tbody tr { transition: background .15s; cursor: pointer; }
-    tbody tr:hover td { background: rgba(255,255,255,.025); }
 
-    .client-cell { display: flex; align-items: center; gap: 12px; }
+    thead th:hover {
+      color: var(--text);
+    }
+
+    thead th .sort-icon {
+      margin-left: 4px;
+      opacity: .4;
+    }
+
+    thead th.sorted .sort-icon {
+      opacity: 1;
+      color: var(--accent);
+    }
+
+    tbody td {
+      padding: 13px 16px;
+      border-bottom: 1px solid rgba(30, 42, 58, .7);
+      vertical-align: middle;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr {
+      transition: background .15s;
+      cursor: pointer;
+    }
+
+    tbody tr:hover td {
+      background: rgba(255, 255, 255, .025);
+    }
+
+    .client-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
     .client-avatar {
-      width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Syne',sans-serif; font-weight: 800; font-size: 13px;
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 13px;
     }
-    .client-name { font-weight: 600; font-size: 13px; }
-    .client-doc { color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+    .client-name {
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .client-doc {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
     .client-type {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 3px 8px; border-radius: 100px; font-size: 11px; font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
     }
-    .client-type.pf { background: rgba(0,119,255,.1); color: var(--accent2); }
-    .client-type.pj { background: rgba(0,200,150,.1); color: var(--accent); }
-    .client-type.mei { background: rgba(255,107,53,.1); color: var(--warn); }
 
-    tbody tr:hover 
-    
-    .act-btn.del:hover { color: var(--danger); border-color: var(--danger); background: rgba(255,71,87,.06); }
+    .client-type.pf {
+      background: rgba(0, 119, 255, .1);
+      color: var(--accent2);
+    }
 
-    .empty-icon { font-size: 48px; color: var(--border); margin-bottom: 16px; }
-    
-    .modal-overlay.open 
+    .client-type.pj {
+      background: rgba(0, 200, 150, .1);
+      color: var(--accent);
+    }
+
+    .client-type.mei {
+      background: rgba(255, 107, 53, .1);
+      color: var(--warn);
+    }
+
+    tbody tr:hover .act-btn.del:hover {
+      color: var(--danger);
+      border-color: var(--danger);
+      background: rgba(255, 71, 87, .06);
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      color: var(--border);
+      margin-bottom: 16px;
+    }
+
+    .modal-overlay.open
 
     /* wizard tabs */
     .wizard-tabs {
-      display: flex; gap: 0; padding: 0 28px;
-      border-bottom: 1px solid var(--border); flex-shrink: 0;
+      display: flex;
+      gap: 0;
+      padding: 0 28px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
       overflow-x: auto;
     }
+
     .wizard-tab {
-      display: flex; align-items: center; gap: 8px;
-      padding: 14px 20px; font-size: 13px; font-weight: 600;
-      color: var(--muted); cursor: pointer; white-space: nowrap;
-      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
       transition: color .18s, border-color .18s;
     }
-    .wizard-tab i { font-size: 15px; }
-    .wizard-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-    .wizard-tab.done { color: var(--text); }
-    .wizard-tab.done .tab-num { background: var(--accent); color: #021c14; }
+
+    .wizard-tab i {
+      font-size: 15px;
+    }
+
+    .wizard-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .wizard-tab.done {
+      color: var(--text);
+    }
+
+    .wizard-tab.done .tab-num {
+      background: var(--accent);
+      color: #021c14;
+    }
+
     .tab-num {
-      width: 20px; height: 20px; border-radius: 50%;
-      background: var(--border); color: var(--muted);
-      font-size: 10px; font-weight: 800;
-      display: flex; align-items: center; justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--border);
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       transition: all .2s;
     }
-    .wizard-tab.active .tab-num { background: var(--accent); color: #021c14; }
 
-    .form-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
-    .form-grid.col-full { grid-template-columns: 1fr; }
-    
-    label.lbl {
-      font-size: 11px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .5px; color: var(--muted);
+    .wizard-tab.active .tab-num {
+      background: var(--accent);
+      color: #021c14;
     }
-    
-    .inp-wrap .suf { position: absolute; right: 12px; color: var(--muted); font-size: 12px; font-weight: 600; pointer-events: none; }
-    
-    input.field.err { border-color: var(--danger); }
-    
-    .field-err { font-size: 11px; color: var(--danger); display: none; }
-    .field-err.show { display: block; }
+
+    .form-grid.cols3 {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .form-grid.col-full {
+      grid-template-columns: 1fr;
+    }
+
+    label.lbl {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+    }
+
+    .inp-wrap .suf {
+      position: absolute;
+      right: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      pointer-events: none;
+    }
+
+    input.field.err {
+      border-color: var(--danger);
+    }
+
+    .field-err {
+      font-size: 11px;
+      color: var(--danger);
+      display: none;
+    }
+
+    .field-err.show {
+      display: block;
+    }
 
     /* radio group */
-    .radio-group { display: flex; gap: 10px; }
-    .radio-opt {
-      flex: 1; padding: 10px 12px; border-radius: 9px;
-      background: var(--surface); border: 1px solid var(--border);
-      color: var(--muted); font-size: 13px; font-weight: 600; cursor: pointer;
-      display: flex; align-items: center; gap: 8px; transition: all .18s;
+    .radio-group {
+      display: flex;
+      gap: 10px;
     }
-    .radio-opt i { font-size: 16px; }
-    .radio-opt.sel { border-color: var(--accent); background: rgba(0,200,150,.07); color: var(--accent); }
+
+    .radio-opt {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 9px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all .18s;
+    }
+
+    .radio-opt i {
+      font-size: 16px;
+    }
+
+    .radio-opt.sel {
+      border-color: var(--accent);
+      background: rgba(0, 200, 150, .07);
+      color: var(--accent);
+    }
 
     /* CEP loader */
-    .cep-row { display: grid; grid-template-columns: 160px 1fr; gap: 14px; }
+    .cep-row {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 14px;
+    }
 
-    .mf-left { color: var(--muted); font-size: 12px; }
-    .mf-right { display: flex; gap: 10px; }
+    .mf-left {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .mf-right {
+      display: flex;
+      gap: 10px;
+    }
+
     /* modal clientes — 4 passos */
-    .modal { max-width: 720px; max-height: 90vh; }
-    .modal-footer { justify-content: space-between; align-items: center; padding: 18px 28px; }
-    .mf-left { color: var(--muted); font-size: 12px; }
-      padding: 10px 20px; border-radius: 9px; border: 1px solid var(--border);
-      background: none; color: var(--text); font-family: 'DM Sans',sans-serif;
-      font-size: 14px; font-weight: 600; cursor: pointer;
-      display: flex; align-items: center; gap: 6px; transition: border-color .18s;
+    .modal {
+      max-width: 720px;
+      max-height: 90vh;
     }
-    .btn-modal-back:hover { border-color: var(--muted); }
+
+    .modal-footer {
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 28px;
+    }
+
+    .mf-left {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    padding: 10px 20px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--text);
+    font-family: 'DM Sans',
+    sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: border-color .18s;
+    }
+
+    .btn-modal-back:hover {
+      border-color: var(--muted);
+    }
+
     .btn-modal-next {
-      padding: 10px 24px; border-radius: 9px; border: none;
-      background: var(--accent); color: #021c14; font-family: 'DM Sans',sans-serif;
-      font-size: 14px; font-weight: 700; cursor: pointer;
-      display: flex; align-items: center; gap: 6px; transition: opacity .18s;
+      padding: 10px 24px;
+      border-radius: 9px;
+      border: none;
+      background: var(--accent);
+      color: #021c14;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity .18s;
     }
-    .btn-modal-next:hover { opacity: .88; }
+
+    .btn-modal-next:hover {
+      opacity: .88;
+    }
 
     .dp-avatar {
-      width: 52px; height: 52px; border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Syne',sans-serif; font-weight: 800; font-size: 20px;
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
     }
-    .dp-name { font-family: 'Syne',sans-serif; font-size: 17px; font-weight: 800; letter-spacing: -.3px; }
-    .dp-doc { color: var(--muted); font-size: 12px; margin-top: 2px; }
-    
+
+    .dp-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -.3px;
+    }
+
+    .dp-doc {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
     /* scrollbar */
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
 
     @media(max-width:900px) {
-      
-      .form-grid.cols3 { grid-template-columns: 1fr 1fr; }
+
+      .form-grid.cols3 {
+        grid-template-columns: 1fr 1fr;
+      }
     }
   </style>
 </head>
+
 <body>
 
-<!-- SIDEBAR -->
-<aside class="sidebar collapsed" id="sidebar">
-  <div class="sidebar-brand">
-    <div class="brand-icon">N</div>
-    <span class="brand-text">Nexo<span>ERP</span></span>
-  </div>
-  <div class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle">
-    <i class="bi bi-chevron-right" id="toggleIcon"></i>
-  </div>
+  <!-- SIDEBAR -->
+  <aside class="sidebar collapsed" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">N</div>
+      <span class="brand-text">Nexo<span>ERP</span></span>
+    </div>
+    <div class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle">
+      <i class="bi bi-chevron-right" id="toggleIcon"></i>
+    </div>
 
-  <div class="sidebar-section">
-    <div class="sidebar-section-label">Principal</div>
-      <a href="dashboard.html" class="nav-item"><i class="bi bi-grid-1x2-fill"></i><span class="nav-label">Dashboard</span></a>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Principal</div>
+      <a href="dashboard.html" class="nav-item"><i class="bi bi-grid-1x2-fill"></i><span
+          class="nav-label">Dashboard</span></a>
       <a href="pdv.html" class="nav-item"><i class="bi bi-display"></i><span class="nav-label">PDV</span></a>
-    <a href="pedidos.html" class="nav-item"><i class="bi bi-file-earmark-text-fill"></i><span class="nav-label">Pedidos de Venda</span></a>
-      <a href="vendas.html" class="nav-item"><i class="bi bi-cart4"></i><span class="nav-label">Vendas</span><span class="badge">12</span></a>
-      <a href="clientes.html" class="nav-item active"><i class="bi bi-people-fill"></i><span class="nav-label">Clientes</span></a>
-      <a href="produtos.html" class="nav-item"><i class="bi bi-box-seam-fill"></i><span class="nav-label">Produtos</span></a>
+      <a href="pedidos.html" class="nav-item"><i class="bi bi-file-earmark-text-fill"></i><span
+          class="nav-label">Pedidos de Venda</span></a>
+      <a href="vendas.html" class="nav-item"><i class="bi bi-cart4"></i><span class="nav-label">Vendas</span><span
+          class="badge">12</span></a>
+      <a href="clientes.html" class="nav-item active"><i class="bi bi-people-fill"></i><span
+          class="nav-label">Clientes</span></a>
+      <a href="produtos.html" class="nav-item"><i class="bi bi-box-seam-fill"></i><span
+          class="nav-label">Produtos</span></a>
       <a href="estoque.html" class="nav-item"><i class="bi bi-stack"></i><span class="nav-label">Estoque</span></a>
-  </div>
+    </div>
 
-  <div class="sidebar-section">
-    <div class="sidebar-section-label">Financeiro</div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Financeiro</div>
       <a href="#" class="nav-item"><i class="bi bi-graph-up-arrow"></i><span class="nav-label">Relatórios</span></a>
-      <a href="#" class="nav-item"><i class="bi bi-credit-card-2-back-fill"></i><span class="nav-label">Financeiro</span></a>
+      <a href="financeiro.html" class="nav-item"><i class="bi bi-credit-card-2-back-fill"></i><span
+          class="nav-label">Financeiro</span></a>
       <a href="#" class="nav-item"><i class="bi bi-receipt-cutoff"></i><span class="nav-label">Fiscal / NF-e</span></a>
-  </div>
+    </div>
 
-  <div class="sidebar-section">
-    <div class="sidebar-section-label">Sistema</div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Sistema</div>
       <a href="#" class="nav-item"><i class="bi bi-briefcase-fill"></i><span class="nav-label">Parceiros</span></a>
-      <a href="configuracoes.html" class="nav-item"><i class="bi bi-gear-fill"></i><span class="nav-label">Configurações</span></a>
-  </div>
+      <a href="configuracoes.html" class="nav-item"><i class="bi bi-gear-fill"></i><span
+          class="nav-label">Configurações</span></a>
+    </div>
 
-  <div class="sidebar-footer">
-    <div class="user-row">
-      <div class="user-avatar">JD</div>
-      <div class="user-info">
-        <div class="user-name">João Desenvolvedor</div>
-        <div class="user-role">Administrador</div>
+    <div class="sidebar-footer">
+      <div class="user-row">
+        <div class="user-avatar">JD</div>
+        <div class="user-info">
+          <div class="user-name">João Desenvolvedor</div>
+          <div class="user-role">Administrador</div>
+        </div>
+        <i class="bi bi-three-dots-vertical"
+          style="color:var(--muted);margin-left:auto;font-size:15px;flex-shrink:0"></i>
       </div>
-      <i class="bi bi-three-dots-vertical" style="color:var(--muted);margin-left:auto;font-size:15px;flex-shrink:0"></i>
+      <a class="nav-item" onclick="NexoAuth.confirmLogout()" style="cursor:pointer;color:var(--danger)">
+        <i class="bi bi-box-arrow-left"></i><span class="nav-label">Sair</span>
+      </a>
     </div>
-        <a class="nav-item" onclick="NexoAuth.confirmLogout()" style="cursor:pointer;color:var(--danger)">
-      <i class="bi bi-box-arrow-left"></i><span class="nav-label">Sair</span>
-    </a>
-  </div>
-</aside>
+  </aside>
 
-<!-- MAIN -->
-<div class="main collapsed" id="mainContent">
-  <div class="topbar">
-    <div class="topbar-left">
-      <span class="page-title">Clientes</span>
-      <span class="breadcrumb-sep">/</span>
-      <span class="breadcrumb-cur">Lista</span>
-    </div>
-    <div class="topbar-right">
-      <div class="icon-btn"><i class="bi bi-bell"></i><div class="dot"></div></div>
-      <div class="icon-btn"><i class="bi bi-question-circle"></i></div>
-      <div class="user-avatar">JD</div>
-    </div>
-  </div>
-
-  <div class="content">
-    <!-- Header -->
-    <div class="page-header">
-      <div>
-        <h1>Clientes</h1>
-        <p>Gerencie seu cadastro de clientes, histórico e relacionamento.</p>
+  <!-- MAIN -->
+  <div class="main collapsed" id="mainContent">
+    <div class="topbar">
+      <div class="topbar-left">
+        <span class="page-title">Clientes</span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-cur">Lista</span>
       </div>
-      <div class="header-actions">
-        <button class="btn-sm btn-ghost-sm"><i class="bi bi-download"></i> Exportar</button>
-        <button class="btn-sm btn-primary-sm" onclick="openModal()"><i class="bi bi-plus-lg"></i> Novo Cliente</button>
+      <div class="topbar-right">
+        <div class="icon-btn"><i class="bi bi-bell"></i>
+          <div class="dot"></div>
+        </div>
+        <div class="icon-btn"><i class="bi bi-question-circle"></i></div>
+        <div class="user-avatar">JD</div>
       </div>
     </div>
 
-    <!-- KPIs -->
-    <div class="kpi-strip">
-      <div class="kpi-mini">
-        <div class="kpi-mini-icon g"><i class="bi bi-people-fill"></i></div>
-        <div><div class="kpi-mini-val" id="kpi-total">0</div><div class="kpi-mini-lbl">Total de clientes</div></div>
-      </div>
-      <div class="kpi-mini">
-        <div class="kpi-mini-icon b"><i class="bi bi-person-check-fill"></i></div>
-        <div><div class="kpi-mini-val" id="kpi-ativos">0</div><div class="kpi-mini-lbl">Ativos</div></div>
-      </div>
-      <div class="kpi-mini">
-        <div class="kpi-mini-icon o"><i class="bi bi-person-plus-fill"></i></div>
-        <div><div class="kpi-mini-val" id="kpi-mes">0</div><div class="kpi-mini-lbl">Novos este mês</div></div>
-      </div>
-      <div class="kpi-mini">
-        <div class="kpi-mini-icon r"><i class="bi bi-person-x-fill"></i></div>
-        <div><div class="kpi-mini-val" id="kpi-inativos">0</div><div class="kpi-mini-lbl">Inativos</div></div>
-      </div>
-    </div>
-
-    <!-- Toolbar -->
-    <div class="toolbar">
-      <div class="search-input">
-        <i class="bi bi-search"></i>
-        <input type="text" id="searchInput" placeholder="Buscar por nome, CPF/CNPJ, e-mail..." oninput="filterTable()">
-      </div>
-      <div class="filter-group">
-        <button class="filter-btn active" onclick="setFilter(this,'todos')">Todos</button>
-        <button class="filter-btn" onclick="setFilter(this,'ativo')">Ativos</button>
-        <button class="filter-btn" onclick="setFilter(this,'inativo')">Inativos</button>
-        <button class="filter-btn" onclick="setFilter(this,'pj')"><i class="bi bi-building"></i> PJ</button>
-        <button class="filter-btn" onclick="setFilter(this,'pf')"><i class="bi bi-person"></i> PF</button>
-      </div>
-      <div class="toolbar-right">
-        <div class="view-btn active" title="Tabela"><i class="bi bi-list-ul"></i></div>
-      </div>
-    </div>
-
-    <!-- Table -->
-    <div class="table-card">
-      <div class="table-wrap">
-        <table id="clientTable">
-          <thead>
-            <tr>
-              <th onclick="sortTable('nome')">Cliente <span class="sort-icon">↕</span></th>
-              <th>Tipo</th>
-              <th onclick="sortTable('cidade')">Cidade <span class="sort-icon">↕</span></th>
-              <th>Telefone</th>
-              <th onclick="sortTable('compras')">Compras <span class="sort-icon">↕</span></th>
-              <th>Status</th>
-              <th>Cadastro</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-        <div class="empty-state" id="emptyState">
-          <div class="empty-icon"><i class="bi bi-people"></i></div>
-          <h3>Nenhum cliente encontrado</h3>
-          <p>Tente ajustar os filtros ou cadastre um novo cliente.</p>
+    <div class="content">
+      <!-- Header -->
+      <div class="page-header">
+        <div>
+          <h1>Clientes</h1>
+          <p>Gerencie seu cadastro de clientes, histórico e relacionamento.</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn-sm btn-ghost-sm"><i class="bi bi-download"></i> Exportar</button>
+          <button class="btn-sm btn-primary-sm" onclick="openModal()"><i class="bi bi-plus-lg"></i> Novo
+            Cliente</button>
         </div>
       </div>
-      <div class="table-footer">
-        <span id="tableInfo">Mostrando 0 clientes</span>
-        <div class="pagination" id="pagination"></div>
-      </div>
-    </div>
-  </div>
-</div>
 
-<!-- MODAL CADASTRO -->
-<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
-  <div class="modal" id="modalBox">
-    <div class="modal-header">
-      <div>
-        <h2 id="modalTitle">Novo Cliente</h2>
-        <div style="color:var(--muted);font-size:12px;margin-top:3px" id="modalSub">Preencha os dados do cliente</div>
-      </div>
-      <div class="modal-close" onclick="closeModal()"><i class="bi bi-x-lg"></i></div>
-    </div>
-
-    <!-- Wizard tabs -->
-    <div class="wizard-tabs">
-      <div class="wizard-tab active" id="tab-1">
-        <div class="tab-num">1</div> Dados Principais
-      </div>
-      <div class="wizard-tab" id="tab-2">
-        <div class="tab-num">2</div> Endereço
-      </div>
-      <div class="wizard-tab" id="tab-3">
-        <div class="tab-num">3</div> Contato & Financeiro
-      </div>
-      <div class="wizard-tab" id="tab-4">
-        <div class="tab-num">4</div> Observações
-      </div>
-    </div>
-
-    <div class="modal-body" id="modalBody">
-
-      <!-- STEP 1: Dados Principais -->
-      <div id="mstep-1">
-        <div class="form-section">
-          <div class="form-section-title">Tipo de pessoa</div>
-          <div class="radio-group">
-            <div class="radio-opt sel" onclick="selectTipo(this,'pf')" id="tipo-pf">
-              <i class="bi bi-person-fill"></i> Pessoa Física
-            </div>
-            <div class="radio-opt" onclick="selectTipo(this,'pj')" id="tipo-pj">
-              <i class="bi bi-building"></i> Pessoa Jurídica
-            </div>
-            <div class="radio-opt" onclick="selectTipo(this,'mei')" id="tipo-mei">
-              <i class="bi bi-briefcase-fill"></i> MEI
-            </div>
+      <!-- KPIs -->
+      <div class="kpi-strip">
+        <div class="kpi-mini">
+          <div class="kpi-mini-icon g"><i class="bi bi-people-fill"></i></div>
+          <div>
+            <div class="kpi-mini-val" id="kpi-total">0</div>
+            <div class="kpi-mini-lbl">Total de clientes</div>
           </div>
         </div>
-
-        <div class="form-section">
-          <div class="form-section-title" id="dados-title">Dados Pessoais</div>
-          <div class="form-grid">
-            <div class="form-group full">
-              <label class="lbl">Nome completo / Razão Social *</label>
-              <div class="inp-wrap"><i class="bi bi-person pre"></i>
-                <input class="field" type="text" id="f-nome" placeholder="Ex: João da Silva">
-              </div>
-              <span class="field-err" id="e-nome">Campo obrigatório.</span>
-            </div>
-            <div class="form-group" id="grp-cpf">
-              <label class="lbl" id="lbl-doc">CPF *</label>
-              <div class="inp-wrap"><i class="bi bi-card-text pre"></i>
-                <input class="field" type="text" id="f-cpf" placeholder="000.000.000-00" oninput="maskCPF(this)">
-              </div>
-              <span class="field-err" id="e-cpf">Informe o CPF.</span>
-            </div>
-            <div class="form-group" id="grp-rg">
-              <label class="lbl" id="lbl-rg">RG / IE</label>
-              <div class="inp-wrap"><i class="bi bi-credit-card pre"></i>
-                <input class="field" type="text" id="f-rg" placeholder="00.000.000-0">
-              </div>
-            </div>
-            <div class="form-group" id="grp-nasc">
-              <label class="lbl">Data de Nascimento</label>
-              <div class="inp-wrap"><i class="bi bi-calendar pre"></i>
-                <input class="field" type="text" id="f-nasc" placeholder="DD/MM/AAAA" oninput="maskDate(this)">
-              </div>
-            </div>
-            <div class="form-group" id="grp-genero">
-              <label class="lbl">Gênero</label>
-              <div class="inp-wrap"><i class="bi bi-gender-ambiguous pre"></i>
-                <select class="field" id="f-genero">
-                  <option value="">Selecione...</option>
-                  <option>Masculino</option>
-                  <option>Feminino</option>
-                  <option>Outro</option>
-                  <option>Prefiro não informar</option>
-                </select>
-              </div>
-            </div>
+        <div class="kpi-mini">
+          <div class="kpi-mini-icon b"><i class="bi bi-person-check-fill"></i></div>
+          <div>
+            <div class="kpi-mini-val" id="kpi-ativos">0</div>
+            <div class="kpi-mini-lbl">Ativos</div>
           </div>
         </div>
-
-        <div class="form-section">
-          <div class="form-section-title">Contato principal</div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="lbl">Telefone / WhatsApp *</label>
-              <div class="inp-wrap"><i class="bi bi-whatsapp pre"></i>
-                <input class="field" type="tel" id="f-tel" placeholder="(11) 99999-9999" oninput="maskPhone(this)">
-              </div>
-              <span class="field-err" id="e-tel">Informe o telefone.</span>
-            </div>
-            <div class="form-group">
-              <label class="lbl">E-mail</label>
-              <div class="inp-wrap"><i class="bi bi-envelope pre"></i>
-                <input class="field" type="email" id="f-email" placeholder="cliente@email.com">
-              </div>
-            </div>
+        <div class="kpi-mini">
+          <div class="kpi-mini-icon o"><i class="bi bi-person-plus-fill"></i></div>
+          <div>
+            <div class="kpi-mini-val" id="kpi-mes">0</div>
+            <div class="kpi-mini-lbl">Novos este mês</div>
+          </div>
+        </div>
+        <div class="kpi-mini">
+          <div class="kpi-mini-icon r"><i class="bi bi-person-x-fill"></i></div>
+          <div>
+            <div class="kpi-mini-val" id="kpi-inativos">0</div>
+            <div class="kpi-mini-lbl">Inativos</div>
           </div>
         </div>
       </div>
 
-      <!-- STEP 2: Endereço -->
-      <div id="mstep-2" style="display:none">
-        <div class="form-section">
-          <div class="form-section-title">Endereço</div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="lbl">CEP</label>
-              <div class="inp-wrap">
-                <i class="bi bi-geo-alt pre"></i>
-                <input class="field" type="text" id="f-cep" placeholder="00000-000" oninput="maskCEP(this)" onblur="buscaCEP()">
-                <span class="suf" id="cep-loading" style="display:none"><i class="bi bi-arrow-repeat" style="animation:spin .6s linear infinite"></i></span>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="lbl">Logradouro</label>
-              <div class="inp-wrap"><i class="bi bi-signpost pre"></i>
-                <input class="field" type="text" id="f-logradouro" placeholder="Rua, Av, Travessa...">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="lbl">Número</label>
-              <div class="inp-wrap"><i class="bi bi-hash pre"></i>
-                <input class="field" type="text" id="f-numero" placeholder="123">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="lbl">Complemento</label>
-              <div class="inp-wrap"><i class="bi bi-building pre"></i>
-                <input class="field" type="text" id="f-complemento" placeholder="Apto, Sala, Bloco...">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="lbl">Bairro</label>
-              <div class="inp-wrap"><i class="bi bi-map pre"></i>
-                <input class="field" type="text" id="f-bairro" placeholder="Centro">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="lbl">Cidade</label>
-              <div class="inp-wrap"><i class="bi bi-building-fill pre"></i>
-                <input class="field" type="text" id="f-cidade" placeholder="São Paulo">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="lbl">Estado</label>
-              <div class="inp-wrap"><i class="bi bi-geo pre"></i>
-                <select class="field" id="f-estado">
-                  <option value="">UF</option>
-                  <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
-                  <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
-                  <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
-                  <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
-                  <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
-                  <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
-                  <option selected>SP</option><option>SE</option><option>TO</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="lbl">País</label>
-              <div class="inp-wrap"><i class="bi bi-globe pre"></i>
-                <input class="field" type="text" id="f-pais" value="Brasil">
-              </div>
-            </div>
-          </div>
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="search-input">
+          <i class="bi bi-search"></i>
+          <input type="text" id="searchInput" placeholder="Buscar por nome, CPF/CNPJ, e-mail..."
+            oninput="filterTable()">
+        </div>
+        <div class="filter-group">
+          <button class="filter-btn active" onclick="setFilter(this,'todos')">Todos</button>
+          <button class="filter-btn" onclick="setFilter(this,'ativo')">Ativos</button>
+          <button class="filter-btn" onclick="setFilter(this,'inativo')">Inativos</button>
+          <button class="filter-btn" onclick="setFilter(this,'pj')"><i class="bi bi-building"></i> PJ</button>
+          <button class="filter-btn" onclick="setFilter(this,'pf')"><i class="bi bi-person"></i> PF</button>
+        </div>
+        <div class="toolbar-right">
+          <div class="view-btn active" title="Tabela"><i class="bi bi-list-ul"></i></div>
         </div>
       </div>
 
-      <!-- STEP 3: Contato & Financeiro -->
-      <div id="mstep-3" style="display:none">
-        <div class="form-section">
-          <div class="form-section-title">Contatos adicionais</div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="lbl">Telefone secundário</label>
-              <div class="inp-wrap"><i class="bi bi-telephone pre"></i>
-                <input class="field" type="tel" id="f-tel2" placeholder="(11) 3333-4444" oninput="maskPhone(this)">
+      <!-- Table -->
+      <div class="table-card">
+        <div class="table-wrap">
+          <table id="clientTable">
+            <thead>
+              <tr>
+                <th onclick="sortTable('nome')">Cliente <span class="sort-icon">↕</span></th>
+                <th>Tipo</th>
+                <th onclick="sortTable('cidade')">Cidade <span class="sort-icon">↕</span></th>
+                <th>Telefone</th>
+                <th onclick="sortTable('compras')">Compras <span class="sort-icon">↕</span></th>
+                <th>Status</th>
+                <th>Cadastro</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+          <div class="empty-state" id="emptyState">
+            <div class="empty-icon"><i class="bi bi-people"></i></div>
+            <h3>Nenhum cliente encontrado</h3>
+            <p>Tente ajustar os filtros ou cadastre um novo cliente.</p>
+          </div>
+        </div>
+        <div class="table-footer">
+          <span id="tableInfo">Mostrando 0 clientes</span>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CADASTRO -->
+  <div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+    <div class="modal" id="modalBox">
+      <div class="modal-header">
+        <div>
+          <h2 id="modalTitle">Novo Cliente</h2>
+          <div style="color:var(--muted);font-size:12px;margin-top:3px" id="modalSub">Preencha os dados do cliente</div>
+        </div>
+        <div class="modal-close" onclick="closeModal()"><i class="bi bi-x-lg"></i></div>
+      </div>
+
+      <!-- Wizard tabs -->
+      <div class="wizard-tabs">
+        <div class="wizard-tab active" id="tab-1">
+          <div class="tab-num">1</div> Dados Principais
+        </div>
+        <div class="wizard-tab" id="tab-2">
+          <div class="tab-num">2</div> Endereço
+        </div>
+        <div class="wizard-tab" id="tab-3">
+          <div class="tab-num">3</div> Contato & Financeiro
+        </div>
+        <div class="wizard-tab" id="tab-4">
+          <div class="tab-num">4</div> Observações
+        </div>
+      </div>
+
+      <div class="modal-body" id="modalBody">
+
+        <!-- STEP 1: Dados Principais -->
+        <div id="mstep-1">
+          <div class="form-section">
+            <div class="form-section-title">Tipo de pessoa</div>
+            <div class="radio-group">
+              <div class="radio-opt sel" onclick="selectTipo(this,'pf')" id="tipo-pf">
+                <i class="bi bi-person-fill"></i> Pessoa Física
+              </div>
+              <div class="radio-opt" onclick="selectTipo(this,'pj')" id="tipo-pj">
+                <i class="bi bi-building"></i> Pessoa Jurídica
+              </div>
+              <div class="radio-opt" onclick="selectTipo(this,'mei')" id="tipo-mei">
+                <i class="bi bi-briefcase-fill"></i> MEI
               </div>
             </div>
-            <div class="form-group">
-              <label class="lbl">Site / Instagram</label>
-              <div class="inp-wrap"><i class="bi bi-link-45deg pre"></i>
-                <input class="field" type="text" id="f-site" placeholder="@empresa ou site.com.br">
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title" id="dados-title">Dados Pessoais</div>
+            <div class="form-grid">
+              <div class="form-group full">
+                <label class="lbl">Nome completo / Razão Social *</label>
+                <div class="inp-wrap"><i class="bi bi-person pre"></i>
+                  <input class="field" type="text" id="f-nome" placeholder="Ex: João da Silva">
+                </div>
+                <span class="field-err" id="e-nome">Campo obrigatório.</span>
+              </div>
+              <div class="form-group" id="grp-cpf">
+                <label class="lbl" id="lbl-doc">CPF *</label>
+                <div class="inp-wrap"><i class="bi bi-card-text pre"></i>
+                  <input class="field" type="text" id="f-cpf" placeholder="000.000.000-00" oninput="maskCPF(this)">
+                </div>
+                <span class="field-err" id="e-cpf">Informe o CPF.</span>
+              </div>
+              <div class="form-group" id="grp-rg">
+                <label class="lbl" id="lbl-rg">RG / IE</label>
+                <div class="inp-wrap"><i class="bi bi-credit-card pre"></i>
+                  <input class="field" type="text" id="f-rg" placeholder="00.000.000-0">
+                </div>
+              </div>
+              <div class="form-group" id="grp-nasc">
+                <label class="lbl">Data de Nascimento</label>
+                <div class="inp-wrap"><i class="bi bi-calendar pre"></i>
+                  <input class="field" type="text" id="f-nasc" placeholder="DD/MM/AAAA" oninput="maskDate(this)">
+                </div>
+              </div>
+              <div class="form-group" id="grp-genero">
+                <label class="lbl">Gênero</label>
+                <div class="inp-wrap"><i class="bi bi-gender-ambiguous pre"></i>
+                  <select class="field" id="f-genero">
+                    <option value="">Selecione...</option>
+                    <option>Masculino</option>
+                    <option>Feminino</option>
+                    <option>Outro</option>
+                    <option>Prefiro não informar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">Contato principal</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="lbl">Telefone / WhatsApp *</label>
+                <div class="inp-wrap"><i class="bi bi-whatsapp pre"></i>
+                  <input class="field" type="tel" id="f-tel" placeholder="(11) 99999-9999" oninput="maskPhone(this)">
+                </div>
+                <span class="field-err" id="e-tel">Informe o telefone.</span>
+              </div>
+              <div class="form-group">
+                <label class="lbl">E-mail</label>
+                <div class="inp-wrap"><i class="bi bi-envelope pre"></i>
+                  <input class="field" type="email" id="f-email" placeholder="cliente@email.com">
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="form-section">
-          <div class="form-section-title">Dados financeiros</div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="lbl">Limite de crédito (R$)</label>
-              <div class="inp-wrap"><i class="bi bi-currency-dollar pre"></i>
-                <input class="field" type="text" id="f-limite" placeholder="0,00" oninput="maskCurrency(this)">
+        <!-- STEP 2: Endereço -->
+        <div id="mstep-2" style="display:none">
+          <div class="form-section">
+            <div class="form-section-title">Endereço</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="lbl">CEP</label>
+                <div class="inp-wrap">
+                  <i class="bi bi-geo-alt pre"></i>
+                  <input class="field" type="text" id="f-cep" placeholder="00000-000" oninput="maskCEP(this)"
+                    onblur="buscaCEP()">
+                  <span class="suf" id="cep-loading" style="display:none"><i class="bi bi-arrow-repeat"
+                      style="animation:spin .6s linear infinite"></i></span>
+                </div>
               </div>
-            </div>
-            <div class="form-group">
-              <label class="lbl">Condição de pagamento</label>
-              <div class="inp-wrap"><i class="bi bi-calendar-check pre"></i>
-                <select class="field" id="f-condicao">
-                  <option value="">Selecione...</option>
-                  <option>À vista</option>
-                  <option>7 dias</option>
-                  <option>14 dias</option>
-                  <option>30 dias</option>
-                  <option>30/60 dias</option>
-                  <option>30/60/90 dias</option>
-                </select>
+              <div class="form-group">
+                <label class="lbl">Logradouro</label>
+                <div class="inp-wrap"><i class="bi bi-signpost pre"></i>
+                  <input class="field" type="text" id="f-logradouro" placeholder="Rua, Av, Travessa...">
+                </div>
               </div>
-            </div>
-            <div class="form-group">
-              <label class="lbl">Desconto padrão (%)</label>
-              <div class="inp-wrap"><i class="bi bi-percent pre"></i>
-                <input class="field" type="text" id="f-desconto" placeholder="0">
+              <div class="form-group">
+                <label class="lbl">Número</label>
+                <div class="inp-wrap"><i class="bi bi-hash pre"></i>
+                  <input class="field" type="text" id="f-numero" placeholder="123">
+                </div>
               </div>
-            </div>
-            <div class="form-group">
-              <label class="lbl">Vendedor responsável</label>
-              <div class="inp-wrap"><i class="bi bi-person-badge pre"></i>
-                <select class="field" id="f-vendedor">
-                  <option value="">Sem vendedor</option>
-                  <option>Lucas Andrade</option>
-                  <option>Maria Ferreira</option>
-                  <option>Carlos Souza</option>
-                </select>
+              <div class="form-group">
+                <label class="lbl">Complemento</label>
+                <div class="inp-wrap"><i class="bi bi-building pre"></i>
+                  <input class="field" type="text" id="f-complemento" placeholder="Apto, Sala, Bloco...">
+                </div>
               </div>
-            </div>
-            <div class="form-group">
-              <label class="lbl">Grupo / Categoria</label>
-              <div class="inp-wrap"><i class="bi bi-tag pre"></i>
-                <select class="field" id="f-grupo">
-                  <option value="">Sem grupo</option>
-                  <option>Varejo</option>
-                  <option>Atacado</option>
-                  <option>Parceiro</option>
-                  <option>VIP</option>
-                </select>
+              <div class="form-group">
+                <label class="lbl">Bairro</label>
+                <div class="inp-wrap"><i class="bi bi-map pre"></i>
+                  <input class="field" type="text" id="f-bairro" placeholder="Centro">
+                </div>
               </div>
-            </div>
-            <div class="form-group">
-              <label class="lbl">Status</label>
-              <div class="inp-wrap"><i class="bi bi-toggle-on pre"></i>
-                <select class="field" id="f-status">
-                  <option value="ativo">Ativo</option>
-                  <option value="inativo">Inativo</option>
-                  <option value="bloq">Bloqueado</option>
-                </select>
+              <div class="form-group">
+                <label class="lbl">Cidade</label>
+                <div class="inp-wrap"><i class="bi bi-building-fill pre"></i>
+                  <input class="field" type="text" id="f-cidade" placeholder="São Paulo">
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- STEP 4: Observações -->
-      <div id="mstep-4" style="display:none">
-        <div class="form-section">
-          <div class="form-section-title">Observações e informações adicionais</div>
-          <div class="form-grid col-full">
-            <div class="form-group full">
-              <label class="lbl">Observação geral</label>
-              <textarea class="field" id="f-obs" placeholder="Informações relevantes sobre o cliente, preferências, histórico..."></textarea>
-            </div>
-            <div class="form-group full">
-              <label class="lbl">Como nos conheceu?</label>
-              <div class="inp-wrap"><i class="bi bi-megaphone pre"></i>
-                <select class="field" id="f-origem">
-                  <option value="">Selecione...</option>
-                  <option>Indicação</option>
-                  <option>Google</option>
-                  <option>Instagram</option>
-                  <option>Facebook</option>
-                  <option>WhatsApp</option>
-                  <option>Site</option>
-                  <option>Evento</option>
-                  <option>Outro</option>
-                </select>
+              <div class="form-group">
+                <label class="lbl">Estado</label>
+                <div class="inp-wrap"><i class="bi bi-geo pre"></i>
+                  <select class="field" id="f-estado">
+                    <option value="">UF</option>
+                    <option>AC</option>
+                    <option>AL</option>
+                    <option>AP</option>
+                    <option>AM</option>
+                    <option>BA</option>
+                    <option>CE</option>
+                    <option>DF</option>
+                    <option>ES</option>
+                    <option>GO</option>
+                    <option>MA</option>
+                    <option>MT</option>
+                    <option>MS</option>
+                    <option>MG</option>
+                    <option>PA</option>
+                    <option>PB</option>
+                    <option>PR</option>
+                    <option>PE</option>
+                    <option>PI</option>
+                    <option>RJ</option>
+                    <option>RN</option>
+                    <option>RS</option>
+                    <option>RO</option>
+                    <option>RR</option>
+                    <option>SC</option>
+                    <option selected>SP</option>
+                    <option>SE</option>
+                    <option>TO</option>
+                  </select>
+                </div>
               </div>
-            </div>
-            <div class="form-group full">
-              <label class="lbl">Tags</label>
-              <div class="inp-wrap"><i class="bi bi-tags pre"></i>
-                <input class="field" type="text" id="f-tags" placeholder="Ex: vip, atacado, fidelizado (separado por vírgula)">
+              <div class="form-group">
+                <label class="lbl">País</label>
+                <div class="inp-wrap"><i class="bi bi-globe pre"></i>
+                  <input class="field" type="text" id="f-pais" value="Brasil">
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- STEP 3: Contato & Financeiro -->
+        <div id="mstep-3" style="display:none">
+          <div class="form-section">
+            <div class="form-section-title">Contatos adicionais</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="lbl">Telefone secundário</label>
+                <div class="inp-wrap"><i class="bi bi-telephone pre"></i>
+                  <input class="field" type="tel" id="f-tel2" placeholder="(11) 3333-4444" oninput="maskPhone(this)">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="lbl">Site / Instagram</label>
+                <div class="inp-wrap"><i class="bi bi-link-45deg pre"></i>
+                  <input class="field" type="text" id="f-site" placeholder="@empresa ou site.com.br">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">Dados financeiros</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="lbl">Limite de crédito (R$)</label>
+                <div class="inp-wrap"><i class="bi bi-currency-dollar pre"></i>
+                  <input class="field" type="text" id="f-limite" placeholder="0,00" oninput="maskCurrency(this)">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="lbl">Condição de pagamento</label>
+                <div class="inp-wrap"><i class="bi bi-calendar-check pre"></i>
+                  <select class="field" id="f-condicao">
+                    <option value="">Selecione...</option>
+                    <option>À vista</option>
+                    <option>7 dias</option>
+                    <option>14 dias</option>
+                    <option>30 dias</option>
+                    <option>30/60 dias</option>
+                    <option>30/60/90 dias</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="lbl">Desconto padrão (%)</label>
+                <div class="inp-wrap"><i class="bi bi-percent pre"></i>
+                  <input class="field" type="text" id="f-desconto" placeholder="0">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="lbl">Vendedor responsável</label>
+                <div class="inp-wrap"><i class="bi bi-person-badge pre"></i>
+                  <select class="field" id="f-vendedor">
+                    <option value="">Sem vendedor</option>
+                    <option>Lucas Andrade</option>
+                    <option>Maria Ferreira</option>
+                    <option>Carlos Souza</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="lbl">Grupo / Categoria</label>
+                <div class="inp-wrap"><i class="bi bi-tag pre"></i>
+                  <select class="field" id="f-grupo">
+                    <option value="">Sem grupo</option>
+                    <option>Varejo</option>
+                    <option>Atacado</option>
+                    <option>Parceiro</option>
+                    <option>VIP</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="lbl">Status</label>
+                <div class="inp-wrap"><i class="bi bi-toggle-on pre"></i>
+                  <select class="field" id="f-status">
+                    <option value="ativo">Ativo</option>
+                    <option value="inativo">Inativo</option>
+                    <option value="bloq">Bloqueado</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4: Observações -->
+        <div id="mstep-4" style="display:none">
+          <div class="form-section">
+            <div class="form-section-title">Observações e informações adicionais</div>
+            <div class="form-grid col-full">
+              <div class="form-group full">
+                <label class="lbl">Observação geral</label>
+                <textarea class="field" id="f-obs"
+                  placeholder="Informações relevantes sobre o cliente, preferências, histórico..."></textarea>
+              </div>
+              <div class="form-group full">
+                <label class="lbl">Como nos conheceu?</label>
+                <div class="inp-wrap"><i class="bi bi-megaphone pre"></i>
+                  <select class="field" id="f-origem">
+                    <option value="">Selecione...</option>
+                    <option>Indicação</option>
+                    <option>Google</option>
+                    <option>Instagram</option>
+                    <option>Facebook</option>
+                    <option>WhatsApp</option>
+                    <option>Site</option>
+                    <option>Evento</option>
+                    <option>Outro</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group full">
+                <label class="lbl">Tags</label>
+                <div class="inp-wrap"><i class="bi bi-tags pre"></i>
+                  <input class="field" type="text" id="f-tags"
+                    placeholder="Ex: vip, atacado, fidelizado (separado por vírgula)">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /modal-body -->
+
+      <div class="modal-footer">
+        <div class="mf-left" id="mf-step-info">Passo 1 de 4</div>
+        <div class="mf-right">
+          <button class="btn-modal-back" id="btnBack" onclick="wizardBack()" style="display:none">
+            <i class="bi bi-arrow-left"></i> Voltar
+          </button>
+          <button class="btn-modal-next" id="btnNext" onclick="wizardNext()">
+            Próximo <i class="bi bi-arrow-right"></i>
+          </button>
+        </div>
       </div>
+    </div>
+  </div>
 
-    </div><!-- /modal-body -->
-
-    <div class="modal-footer">
-      <div class="mf-left" id="mf-step-info">Passo 1 de 4</div>
-      <div class="mf-right">
-        <button class="btn-modal-back" id="btnBack" onclick="wizardBack()" style="display:none">
-          <i class="bi bi-arrow-left"></i> Voltar
-        </button>
-        <button class="btn-modal-next" id="btnNext" onclick="wizardNext()">
-          Próximo <i class="bi bi-arrow-right"></i>
-        </button>
+  <!-- DETAIL PANEL -->
+  <div class="detail-panel" id="detailPanel">
+    <div class="dp-header">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="dp-avatar" id="dp-avatar"></div>
+        <div>
+          <div class="dp-name" id="dp-name"></div>
+          <div class="dp-doc" id="dp-doc"></div>
+        </div>
+      </div>
+      <div class="modal-close" onclick="closeDetail()"><i class="bi bi-x-lg"></i></div>
+    </div>
+    <div class="dp-body">
+      <div class="dp-section">
+        <div class="dp-section-title">Informações</div>
+        <div id="dp-info"></div>
+      </div>
+      <div class="dp-section">
+        <div class="dp-section-title">Endereço</div>
+        <div id="dp-addr"></div>
+      </div>
+      <div class="dp-section">
+        <div class="dp-section-title">Financeiro</div>
+        <div id="dp-fin"></div>
       </div>
     </div>
+    <div class="dp-actions">
+      <button class="dp-btn primary" onclick="editClient()"><i class="bi bi-pencil"></i> Editar</button>
+      <button class="dp-btn ghost" onclick="closeDetail()"><i class="bi bi-x"></i> Fechar</button>
+    </div>
   </div>
-</div>
 
-<!-- DETAIL PANEL -->
-<div class="detail-panel" id="detailPanel">
-  <div class="dp-header">
-    <div style="display:flex;align-items:center;gap:14px">
-      <div class="dp-avatar" id="dp-avatar"></div>
-      <div>
-        <div class="dp-name" id="dp-name"></div>
-        <div class="dp-doc" id="dp-doc"></div>
-      </div>
-    </div>
-    <div class="modal-close" onclick="closeDetail()"><i class="bi bi-x-lg"></i></div>
+  <!-- TOAST -->
+  <div class="toast" id="toast">
+    <i class="bi bi-check-circle-fill"></i>
+    <span id="toastMsg">Cliente cadastrado com sucesso!</span>
   </div>
-  <div class="dp-body">
-    <div class="dp-section">
-      <div class="dp-section-title">Informações</div>
-      <div id="dp-info"></div>
-    </div>
-    <div class="dp-section">
-      <div class="dp-section-title">Endereço</div>
-      <div id="dp-addr"></div>
-    </div>
-    <div class="dp-section">
-      <div class="dp-section-title">Financeiro</div>
-      <div id="dp-fin"></div>
-    </div>
-  </div>
-  <div class="dp-actions">
-    <button class="dp-btn primary" onclick="editClient()"><i class="bi bi-pencil"></i> Editar</button>
-    <button class="dp-btn ghost" onclick="closeDetail()"><i class="bi bi-x"></i> Fechar</button>
-  </div>
-</div>
 
-<!-- TOAST -->
-<div class="toast" id="toast">
-  <i class="bi bi-check-circle-fill"></i>
-  <span id="toastMsg">Cliente cadastrado com sucesso!</span>
-</div>
-
-<style>
-@keyframes spin { to { transform: rotate(360deg); } }
-</style>
+  <style>
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
 
   <script src="utils.js"></script>
   <script src="auth.js"></script>
-<script>
-NexoAuth.requireAuth();
+  <script>
+    NexoAuth.requireAuth();
 
-// ─── DATA ───────────────────────────────────────────────
-const COLORS = [
-  ['#00c896','#021c14'],['#0077ff','#e8f0ff'],['#ff6b35','#fff0ea'],
-  ['#a855f7','#f3e8ff'],['#ec4899','#fce7f3'],['#14b8a6','#e0f7f5']
-];
-function colorFor(name) {
-  const idx = (name.charCodeAt(0) + (name.charCodeAt(1)||0)) % COLORS.length;
-  return COLORS[idx];
-}
-let clients = [
-  { id:1, nome:'Posto Panorama Ltda.',  tipo:'pj', doc:'12.345.678/0001-90', tel:'(17) 99115-4091', email:'financeiro@postopanorama.com.br', cidade:'São José do Rio Preto', estado:'SP', status:'ativo',  compras:47, limite:'R$ 50.000', condicao:'30 dias',    vendedor:'Lucas Andrade',  cadastro:'10/01/2026' },
-  { id:2, nome:'Farmácia São José',      tipo:'pj', doc:'98.765.432/0001-10', tel:'(11) 3456-7890',  email:'compras@farmaciasaojose.com.br',  cidade:'São Paulo',             estado:'SP', status:'ativo',  compras:31, limite:'R$ 20.000', condicao:'14 dias',    vendedor:'Maria Ferreira', cadastro:'15/01/2026' },
-  { id:3, nome:'João Pedro Almeida',     tipo:'pf', doc:'123.456.789-00',     tel:'(11) 97777-8888',  email:'joao.almeida@gmail.com',          cidade:'Campinas',              estado:'SP', status:'ativo',  compras:8,  limite:'R$ 2.000',  condicao:'À vista',    vendedor:'Carlos Souza',   cadastro:'20/01/2026' },
-  { id:4, nome:'Distribuidora Alfa ME',  tipo:'mei',doc:'45.678.901/0001-23', tel:'(14) 99988-7766',  email:'alfa@distribuidora.com.br',       cidade:'Bauru',                 estado:'SP', status:'ativo',  compras:22, limite:'R$ 15.000', condicao:'30/60 dias', vendedor:'Lucas Andrade',  cadastro:'02/02/2026' },
-  { id:5, nome:'Maria Clara Souza',      tipo:'pf', doc:'987.654.321-00',     tel:'(19) 98765-4321',  email:'mariaclara@hotmail.com',          cidade:'Piracicaba',            estado:'SP', status:'inativo',compras:3,  limite:'R$ 1.000',  condicao:'À vista',    vendedor:'',               cadastro:'10/02/2026' },
-  { id:6, nome:'Auto Peças SP Ltda.',    tipo:'pj', doc:'55.443.221/0001-55', tel:'(11) 2233-4455',  email:'compras@autopecas.com.br',        cidade:'São Paulo',             estado:'SP', status:'ativo',  compras:64, limite:'R$ 80.000', condicao:'30/60/90 dias', vendedor:'Maria Ferreira',cadastro:'14/02/2026' },
-  { id:7, nome:'Carlos Roberto Lima',    tipo:'pf', doc:'456.789.012-33',     tel:'(16) 99123-4567',  email:'carlos.lima@email.com',           cidade:'Ribeirão Preto',        estado:'SP', status:'bloq',   compras:1,  limite:'R$ 500',    condicao:'À vista',    vendedor:'Carlos Souza',   cadastro:'01/03/2026' },
-  { id:8, nome:'Construfácil EIRELI',    tipo:'pj', doc:'77.889.001/0001-44', tel:'(18) 3344-5566',  email:'obras@construfacil.com.br',       cidade:'Presidente Prudente',   estado:'SP', status:'ativo',  compras:18, limite:'R$ 30.000', condicao:'30 dias',    vendedor:'Lucas Andrade',  cadastro:'05/03/2026' },
-];
+    // ─── DATA ───────────────────────────────────────────────
+    const COLORS = [
+      ['#00c896', '#021c14'], ['#0077ff', '#e8f0ff'], ['#ff6b35', '#fff0ea'],
+      ['#a855f7', '#f3e8ff'], ['#ec4899', '#fce7f3'], ['#14b8a6', '#e0f7f5']
+    ];
+    function colorFor(name) {
+      const idx = (name.charCodeAt(0) + (name.charCodeAt(1) || 0)) % COLORS.length;
+      return COLORS[idx];
+    }
+    let clients = [
+      { id: 1, nome: 'Posto Panorama Ltda.', tipo: 'pj', doc: '12.345.678/0001-90', tel: '(17) 99115-4091', email: 'financeiro@postopanorama.com.br', cidade: 'São José do Rio Preto', estado: 'SP', status: 'ativo', compras: 47, limite: 'R$ 50.000', condicao: '30 dias', vendedor: 'Lucas Andrade', cadastro: '10/01/2026' },
+      { id: 2, nome: 'Farmácia São José', tipo: 'pj', doc: '98.765.432/0001-10', tel: '(11) 3456-7890', email: 'compras@farmaciasaojose.com.br', cidade: 'São Paulo', estado: 'SP', status: 'ativo', compras: 31, limite: 'R$ 20.000', condicao: '14 dias', vendedor: 'Maria Ferreira', cadastro: '15/01/2026' },
+      { id: 3, nome: 'João Pedro Almeida', tipo: 'pf', doc: '123.456.789-00', tel: '(11) 97777-8888', email: 'joao.almeida@gmail.com', cidade: 'Campinas', estado: 'SP', status: 'ativo', compras: 8, limite: 'R$ 2.000', condicao: 'À vista', vendedor: 'Carlos Souza', cadastro: '20/01/2026' },
+      { id: 4, nome: 'Distribuidora Alfa ME', tipo: 'mei', doc: '45.678.901/0001-23', tel: '(14) 99988-7766', email: 'alfa@distribuidora.com.br', cidade: 'Bauru', estado: 'SP', status: 'ativo', compras: 22, limite: 'R$ 15.000', condicao: '30/60 dias', vendedor: 'Lucas Andrade', cadastro: '02/02/2026' },
+      { id: 5, nome: 'Maria Clara Souza', tipo: 'pf', doc: '987.654.321-00', tel: '(19) 98765-4321', email: 'mariaclara@hotmail.com', cidade: 'Piracicaba', estado: 'SP', status: 'inativo', compras: 3, limite: 'R$ 1.000', condicao: 'À vista', vendedor: '', cadastro: '10/02/2026' },
+      { id: 6, nome: 'Auto Peças SP Ltda.', tipo: 'pj', doc: '55.443.221/0001-55', tel: '(11) 2233-4455', email: 'compras@autopecas.com.br', cidade: 'São Paulo', estado: 'SP', status: 'ativo', compras: 64, limite: 'R$ 80.000', condicao: '30/60/90 dias', vendedor: 'Maria Ferreira', cadastro: '14/02/2026' },
+      { id: 7, nome: 'Carlos Roberto Lima', tipo: 'pf', doc: '456.789.012-33', tel: '(16) 99123-4567', email: 'carlos.lima@email.com', cidade: 'Ribeirão Preto', estado: 'SP', status: 'bloq', compras: 1, limite: 'R$ 500', condicao: 'À vista', vendedor: 'Carlos Souza', cadastro: '01/03/2026' },
+      { id: 8, nome: 'Construfácil EIRELI', tipo: 'pj', doc: '77.889.001/0001-44', tel: '(18) 3344-5566', email: 'obras@construfacil.com.br', cidade: 'Presidente Prudente', estado: 'SP', status: 'ativo', compras: 18, limite: 'R$ 30.000', condicao: '30 dias', vendedor: 'Lucas Andrade', cadastro: '05/03/2026' },
+    ];
 
-let filtered = [...clients];
-let currentFilter = 'todos';
-let currentPage = 1;
-const perPage = 6;
-let editingId = null;
-let currentDetailId = null;
+    let filtered = [...clients];
+    let currentFilter = 'todos';
+    let currentPage = 1;
+    const perPage = 6;
+    let editingId = null;
+    let currentDetailId = null;
 
-// ─── RENDER TABLE ────────────────────────────────────────
-function renderTable() {
-  const body = document.getElementById('tableBody');
-  const empty = document.getElementById('emptyState');
-  const total = filtered.length;
-  const start = (currentPage-1)*perPage;
-  const slice = filtered.slice(start, start+perPage);
+    // ─── RENDER TABLE ────────────────────────────────────────
+    function renderTable() {
+      const body = document.getElementById('tableBody');
+      const empty = document.getElementById('emptyState');
+      const total = filtered.length;
+      const start = (currentPage - 1) * perPage;
+      const slice = filtered.slice(start, start + perPage);
 
-  if (!total) { body.innerHTML=''; empty.classList.add('show'); }
-  else empty.classList.remove('show');
+      if (!total) { body.innerHTML = ''; empty.classList.add('show'); }
+      else empty.classList.remove('show');
 
-  body.innerHTML = slice.map(c => {
-    const [bg,fg] = colorFor(c.nome);
-    const typeLabel = c.tipo==='pf'?'Pessoa Física':c.tipo==='pj'?'Pessoa Jurídica':'MEI';
-    const statusLabel = c.status==='ativo'?'Ativo':c.status==='inativo'?'Inativo':'Bloqueado';
-    const statusClass = c.status==='ativo'?'ativo':c.status==='inativo'?'inativo':'bloq';
-    return `<tr onclick="openDetail(${c.id})">
+      body.innerHTML = slice.map(c => {
+        const [bg, fg] = colorFor(c.nome);
+        const typeLabel = c.tipo === 'pf' ? 'Pessoa Física' : c.tipo === 'pj' ? 'Pessoa Jurídica' : 'MEI';
+        const statusLabel = c.status === 'ativo' ? 'Ativo' : c.status === 'inativo' ? 'Inativo' : 'Bloqueado';
+        const statusClass = c.status === 'ativo' ? 'ativo' : c.status === 'inativo' ? 'inativo' : 'bloq';
+        return `<tr onclick="openDetail(${c.id})">
       <td><div class="client-cell">
         <div class="client-avatar" style="background:${bg};color:${fg}">${initials(c.nome)}</div>
         <div><div class="client-name">${c.nome}</div><div class="client-doc">${c.doc}</div></div>
@@ -724,318 +1039,319 @@ function renderTable() {
         <div class="act-btn del" title="Excluir" onclick="deleteClient(${c.id})"><i class="bi bi-trash3"></i></div>
       </div></td>
     </tr>`;
-  }).join('');
+      }).join('');
 
-  document.getElementById('tableInfo').textContent =
-    `Mostrando ${Math.min(start+1,total)}–${Math.min(start+perPage,total)} de ${total} clientes`;
-  renderPagination(total);
-  updateKPIs();
-}
-
-function renderPagination(total) {
-  const pages = Math.ceil(total/perPage);
-  const pg = document.getElementById('pagination');
-  if (pages <= 1) { pg.innerHTML=''; return; }
-  let html = `<button class="pg-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}><i class="bi bi-chevron-left"></i></button>`;
-  for (let i=1;i<=pages;i++) html += `<button class="pg-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
-  html += `<button class="pg-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}><i class="bi bi-chevron-right"></i></button>`;
-  pg.innerHTML = html;
-}
-function goPage(p) {
-  const pages = Math.ceil(filtered.length/perPage);
-  if (p<1||p>pages) return;
-  currentPage=p; renderTable();
-}
-
-function updateKPIs() {
-  document.getElementById('kpi-total').textContent = clients.length;
-  document.getElementById('kpi-ativos').textContent = clients.filter(c=>c.status==='ativo').length;
-  document.getElementById('kpi-inativos').textContent = clients.filter(c=>c.status==='inativo'||c.status==='bloq').length;
-  document.getElementById('kpi-mes').textContent = clients.filter(c=>c.cadastro.includes('/03/2026')||c.cadastro.includes('/04/2026')||c.cadastro.includes('/05/2026')).length;
-}
-
-// ─── FILTER / SEARCH ─────────────────────────────────────
-function setFilter(el, val) {
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-  currentFilter = val;
-  currentPage = 1;
-  applyFilters();
-}
-function filterTable() { currentPage=1; applyFilters(); }
-function applyFilters() {
-  const q = document.getElementById('searchInput').value.toLowerCase();
-  filtered = clients.filter(c => {
-    const matchQ = !q || c.nome.toLowerCase().includes(q) || c.doc.includes(q) || c.email.toLowerCase().includes(q);
-    const matchF = currentFilter==='todos' || c.status===currentFilter || c.tipo===currentFilter;
-    return matchQ && matchF;
-  });
-  renderTable();
-}
-
-// ─── SORT ────────────────────────────────────────────────
-let sortDir = 1;
-function sortTable(key) {
-  filtered.sort((a,b) => {
-    const av = typeof a[key]==='number' ? a[key] : a[key].toLowerCase();
-    const bv = typeof b[key]==='number' ? b[key] : b[key].toLowerCase();
-    return av>bv ? sortDir : av<bv ? -sortDir : 0;
-  });
-  sortDir *= -1; renderTable();
-}
-
-// ─── MODAL ───────────────────────────────────────────────
-let wizardStep = 1;
-let tipoSel = 'pf';
-
-function openModal(reset=true) {
-  editingId = null;
-  document.getElementById('modalTitle').textContent = 'Novo Cliente';
-  document.getElementById('modalSub').textContent = 'Preencha os dados do cliente';
-  if (reset) { resetForm(); wizardGoTo(1); }
-  document.getElementById('modalOverlay').classList.add('open');
-}
-function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
-function handleOverlayClick(e) { if(e.target===document.getElementById('modalOverlay')) closeModal(); }
-
-function resetForm() {
-  ['f-nome','f-cpf','f-rg','f-nasc','f-tel','f-email','f-cep','f-logradouro',
-   'f-numero','f-complemento','f-bairro','f-cidade','f-pais','f-tel2','f-site',
-   'f-limite','f-desconto','f-obs','f-tags'].forEach(id => {
-    const el=document.getElementById(id); if(el) el.value='';
-  });
-  ['f-genero','f-estado','f-condicao','f-vendedor','f-grupo','f-status','f-origem'].forEach(id=>{
-    const el=document.getElementById(id); if(el) el.selectedIndex=0;
-  });
-  document.getElementById('f-pais').value='Brasil';
-  selectTipo(document.getElementById('tipo-pf'),'pf');
-}
-
-function wizardGoTo(step) {
-  wizardStep = step;
-  for(let i=1;i<=4;i++){
-    document.getElementById(`mstep-${i}`).style.display = i===step?'block':'none';
-    const tab = document.getElementById(`tab-${i}`);
-    tab.classList.remove('active','done');
-    if(i<step) tab.classList.add('done');
-    if(i===step) tab.classList.add('active');
-    if(i<step) tab.querySelector('.tab-num').innerHTML='<i class="bi bi-check2"></i>';
-    else tab.querySelector('.tab-num').textContent=i;
-  }
-  document.getElementById('mf-step-info').textContent = `Passo ${step} de 4`;
-  document.getElementById('btnBack').style.display = step>1?'flex':'none';
-  document.getElementById('btnNext').innerHTML = step<4
-    ? 'Próximo <i class="bi bi-arrow-right"></i>'
-    : '<i class="bi bi-check2"></i> Salvar cliente';
-  document.getElementById('modalBody').scrollTop=0;
-}
-
-function wizardNext() {
-  if(wizardStep===1 && !validateStep1()) return;
-  if(wizardStep<4) { wizardGoTo(wizardStep+1); return; }
-  saveClient();
-}
-function wizardBack() { if(wizardStep>1) wizardGoTo(wizardStep-1); }
-
-function validateStep1() {
-  let ok=true;
-  const nome=document.getElementById('f-nome');
-  const tel=document.getElementById('f-tel');
-  const cpf=document.getElementById('f-cpf');
-  const eNome=document.getElementById('e-nome');
-  const eTel=document.getElementById('e-tel');
-  const eCpf=document.getElementById('e-cpf');
-  if(!nome.value.trim()){nome.classList.add('err');eNome.classList.add('show');ok=false;}
-  else{nome.classList.remove('err');eNome.classList.remove('show');}
-  if(!tel.value.trim()){tel.classList.add('err');eTel.classList.add('show');ok=false;}
-  else{tel.classList.remove('err');eTel.classList.remove('show');}
-  if(!cpf.value.trim()){cpf.classList.add('err');eCpf.classList.add('show');ok=false;}
-  else{cpf.classList.remove('err');eCpf.classList.remove('show');}
-  return ok;
-}
-
-function saveClient() {
-  const newClient = {
-    id: editingId || Date.now(),
-    nome: document.getElementById('f-nome').value.trim(),
-    tipo: tipoSel,
-    doc:  document.getElementById('f-cpf').value.trim(),
-    tel:  document.getElementById('f-tel').value.trim(),
-    email:document.getElementById('f-email').value.trim(),
-    cidade: document.getElementById('f-cidade').value.trim() || '—',
-    estado: document.getElementById('f-estado').value || 'SP',
-    status: document.getElementById('f-status').value || 'ativo',
-    compras: 0,
-    limite: document.getElementById('f-limite').value || 'R$ 0,00',
-    condicao: document.getElementById('f-condicao').value || 'À vista',
-    vendedor: document.getElementById('f-vendedor').value || '',
-    cadastro: new Date().toLocaleDateString('pt-BR'),
-    logradouro: document.getElementById('f-logradouro').value,
-    numero: document.getElementById('f-numero').value,
-    bairro: document.getElementById('f-bairro').value,
-    cep: document.getElementById('f-cep').value,
-    obs: document.getElementById('f-obs').value,
-    grupo: document.getElementById('f-grupo').value,
-    origem: document.getElementById('f-origem').value,
-  };
-
-  if(editingId) {
-    const idx = clients.findIndex(c=>c.id===editingId);
-    if(idx>=0) { newClient.compras=clients[idx].compras; clients[idx]=newClient; }
-  } else {
-    clients.unshift(newClient);
-  }
-
-  closeModal();
-  applyFilters();
-  showToast(editingId ? 'Cliente atualizado com sucesso!' : 'Cliente cadastrado com sucesso!');
-}
-
-// ─── EDIT / DELETE ───────────────────────────────────────
-function openEdit(id) {
-  const c = clients.find(cl=>cl.id===id);
-  if(!c) return;
-  editingId = id;
-  document.getElementById('modalTitle').textContent = 'Editar Cliente';
-  document.getElementById('modalSub').textContent = c.nome;
-  resetForm();
-  document.getElementById('f-nome').value = c.nome;
-  document.getElementById('f-cpf').value  = c.doc;
-  document.getElementById('f-tel').value  = c.tel;
-  document.getElementById('f-email').value= c.email;
-  document.getElementById('f-cidade').value=c.cidade;
-  document.getElementById('f-logradouro').value=c.logradouro||'';
-  document.getElementById('f-numero').value=c.numero||'';
-  document.getElementById('f-bairro').value=c.bairro||'';
-  document.getElementById('f-cep').value=c.cep||'';
-  document.getElementById('f-obs').value=c.obs||'';
-  setSelectVal('f-estado', c.estado);
-  setSelectVal('f-status', c.status);
-  setSelectVal('f-condicao', c.condicao);
-  setSelectVal('f-vendedor', c.vendedor);
-  setSelectVal('f-grupo', c.grupo);
-  // tipo
-  const tipoEl = document.getElementById(`tipo-${c.tipo}`);
-  if(tipoEl) selectTipo(tipoEl, c.tipo);
-  wizardGoTo(1);
-  document.getElementById('modalOverlay').classList.add('open');
-}
-function setSelectVal(id, val) {
-  const el=document.getElementById(id); if(!el||!val) return;
-  for(let o of el.options) if(o.value===val||o.text===val){o.selected=true;break;}
-}
-
-function deleteClient(id) {
-  if(!confirm('Tem certeza que deseja excluir este cliente?')) return;
-  clients = clients.filter(c=>c.id!==id);
-  if(currentDetailId===id) closeDetail();
-  applyFilters();
-  showToast('Cliente removido.');
-}
-
-// ─── DETAIL PANEL ────────────────────────────────────────
-function openDetail(id) {
-  const c = clients.find(cl=>cl.id===id);
-  if(!c) return;
-  currentDetailId = id;
-  const [bg,fg] = colorFor(c.nome);
-  document.getElementById('dp-avatar').style.cssText=`background:${bg};color:${fg}`;
-  document.getElementById('dp-avatar').textContent = initials(c.nome);
-  document.getElementById('dp-name').textContent = c.nome;
-  document.getElementById('dp-doc').textContent = c.doc;
-
-  const typeLabel = c.tipo==='pf'?'Pessoa Física':c.tipo==='pj'?'Pessoa Jurídica':'MEI';
-  const statusLabel = c.status==='ativo'?'Ativo':c.status==='inativo'?'Inativo':'Bloqueado';
-
-  document.getElementById('dp-info').innerHTML = [
-    ['Tipo', typeLabel], ['Telefone', c.tel], ['E-mail', c.email||'—'],
-    ['Vendedor', c.vendedor||'—'], ['Grupo', c.grupo||'—'], ['Status', statusLabel],
-    ['Cadastro', c.cadastro], ['Compras', c.compras+' pedidos']
-  ].map(([l,v])=>`<div class="dp-row"><span class="dp-label">${l}</span><span class="dp-val">${v}</span></div>`).join('');
-
-  const addr = [c.logradouro,c.numero,c.bairro,c.cidade,c.estado,c.cep].filter(Boolean).join(', ') || '—';
-  document.getElementById('dp-addr').innerHTML = `<div class="dp-row"><span class="dp-label">Endereço</span><span class="dp-val" style="max-width:200px;text-align:right">${addr}</span></div>`;
-
-  document.getElementById('dp-fin').innerHTML = [
-    ['Limite', c.limite||'—'], ['Condição', c.condicao||'—']
-  ].map(([l,v])=>`<div class="dp-row"><span class="dp-label">${l}</span><span class="dp-val">${v}</span></div>`).join('');
-
-  document.getElementById('detailPanel').classList.add('open');
-}
-function closeDetail() {
-  document.getElementById('detailPanel').classList.remove('open');
-  currentDetailId = null;
-}
-function editClient() { if(currentDetailId) { closeDetail(); openEdit(currentDetailId); } }
-
-// ─── TIPO PESSOA ─────────────────────────────────────────
-function selectTipo(el, tipo) {
-  tipoSel = tipo;
-  document.querySelectorAll('.radio-opt').forEach(o=>o.classList.remove('sel'));
-  el.classList.add('sel');
-  const isPJ = tipo==='pj';
-  document.getElementById('dados-title').textContent = isPJ ? 'Dados da Empresa' : 'Dados Pessoais';
-  document.getElementById('lbl-doc').textContent = isPJ ? 'CNPJ *' : 'CPF *';
-  document.getElementById('lbl-rg').textContent = isPJ ? 'Inscrição Estadual' : 'RG';
-  document.getElementById('f-cpf').placeholder = isPJ ? '00.000.000/0001-00' : '000.000.000-00';
-  document.getElementById('grp-nasc').style.display = isPJ ? 'none' : '';
-  document.getElementById('grp-genero').style.display = isPJ ? 'none' : '';
-}
-
-// ─── MASKS ───────────────────────────────────────────────
-function maskCPF(el) {
-  let v = el.value.replace(/\D/g,'');
-  if(tipoSel==='pj'||tipoSel==='mei') {
-    v=v.substring(0,14);
-    if(v.length>12) v=v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5,8)+'/'+v.slice(8,12)+'-'+v.slice(12);
-    else if(v.length>8) v=v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5,8)+'/'+v.slice(8);
-    else if(v.length>5) v=v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5);
-    else if(v.length>2) v=v.slice(0,2)+'.'+v.slice(2);
-  } else {
-    v=v.substring(0,11);
-    if(v.length>9) v=v.slice(0,3)+'.'+v.slice(3,6)+'.'+v.slice(6,9)+'-'+v.slice(9);
-    else if(v.length>6) v=v.slice(0,3)+'.'+v.slice(3,6)+'.'+v.slice(6);
-    else if(v.length>3) v=v.slice(0,3)+'.'+v.slice(3);
-  }
-  el.value=v;
-}
-function maskDate(el) {
-  let v=el.value.replace(/\D/g,'').substring(0,8);
-  if(v.length>4) v=v.slice(0,2)+'/'+v.slice(2,4)+'/'+v.slice(4);
-  else if(v.length>2) v=v.slice(0,2)+'/'+v.slice(2);
-  el.value=v;
-}
-function maskCurrency(el) {
-  let v=el.value.replace(/\D/g,'');
-  if(!v) { el.value=''; return; }
-  v=(parseInt(v)/100).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
-  el.value=v;
-}
-
-// ─── CEP API (ViaCEP) ────────────────────────────────────
-async function buscaCEP() {
-  const cep = document.getElementById('f-cep').value.replace(/\D/g,'');
-  if(cep.length!==8) return;
-  document.getElementById('cep-loading').style.display='block';
-  try {
-    const r = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-    const d = await r.json();
-    if(!d.erro) {
-      document.getElementById('f-logradouro').value = d.logradouro||'';
-      document.getElementById('f-bairro').value = d.bairro||'';
-      document.getElementById('f-cidade').value = d.localidade||'';
-      setSelectVal('f-estado', d.uf);
-      document.getElementById('f-numero').focus();
+      document.getElementById('tableInfo').textContent =
+        `Mostrando ${Math.min(start + 1, total)}–${Math.min(start + perPage, total)} de ${total} clientes`;
+      renderPagination(total);
+      updateKPIs();
     }
-  } catch(e) {}
-  document.getElementById('cep-loading').style.display='none';
-}
 
-// ─── TOAST ───────────────────────────────────────────────
-// ─── SIDEBAR ─────────────────────────────────────────────
-// ─── INIT ─────────────────────────────────────────────────
-NexoAuth.renderCurrentUser();
-renderTable();
-</script>
+    function renderPagination(total) {
+      const pages = Math.ceil(total / perPage);
+      const pg = document.getElementById('pagination');
+      if (pages <= 1) { pg.innerHTML = ''; return; }
+      let html = `<button class="pg-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}><i class="bi bi-chevron-left"></i></button>`;
+      for (let i = 1; i <= pages; i++) html += `<button class="pg-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+      html += `<button class="pg-btn" onclick="goPage(${currentPage + 1})" ${currentPage === pages ? 'disabled' : ''}><i class="bi bi-chevron-right"></i></button>`;
+      pg.innerHTML = html;
+    }
+    function goPage(p) {
+      const pages = Math.ceil(filtered.length / perPage);
+      if (p < 1 || p > pages) return;
+      currentPage = p; renderTable();
+    }
+
+    function updateKPIs() {
+      document.getElementById('kpi-total').textContent = clients.length;
+      document.getElementById('kpi-ativos').textContent = clients.filter(c => c.status === 'ativo').length;
+      document.getElementById('kpi-inativos').textContent = clients.filter(c => c.status === 'inativo' || c.status === 'bloq').length;
+      document.getElementById('kpi-mes').textContent = clients.filter(c => c.cadastro.includes('/03/2026') || c.cadastro.includes('/04/2026') || c.cadastro.includes('/05/2026')).length;
+    }
+
+    // ─── FILTER / SEARCH ─────────────────────────────────────
+    function setFilter(el, val) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      currentFilter = val;
+      currentPage = 1;
+      applyFilters();
+    }
+    function filterTable() { currentPage = 1; applyFilters(); }
+    function applyFilters() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      filtered = clients.filter(c => {
+        const matchQ = !q || c.nome.toLowerCase().includes(q) || c.doc.includes(q) || c.email.toLowerCase().includes(q);
+        const matchF = currentFilter === 'todos' || c.status === currentFilter || c.tipo === currentFilter;
+        return matchQ && matchF;
+      });
+      renderTable();
+    }
+
+    // ─── SORT ────────────────────────────────────────────────
+    let sortDir = 1;
+    function sortTable(key) {
+      filtered.sort((a, b) => {
+        const av = typeof a[key] === 'number' ? a[key] : a[key].toLowerCase();
+        const bv = typeof b[key] === 'number' ? b[key] : b[key].toLowerCase();
+        return av > bv ? sortDir : av < bv ? -sortDir : 0;
+      });
+      sortDir *= -1; renderTable();
+    }
+
+    // ─── MODAL ───────────────────────────────────────────────
+    let wizardStep = 1;
+    let tipoSel = 'pf';
+
+    function openModal(reset = true) {
+      editingId = null;
+      document.getElementById('modalTitle').textContent = 'Novo Cliente';
+      document.getElementById('modalSub').textContent = 'Preencha os dados do cliente';
+      if (reset) { resetForm(); wizardGoTo(1); }
+      document.getElementById('modalOverlay').classList.add('open');
+    }
+    function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+    function handleOverlayClick(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
+
+    function resetForm() {
+      ['f-nome', 'f-cpf', 'f-rg', 'f-nasc', 'f-tel', 'f-email', 'f-cep', 'f-logradouro',
+        'f-numero', 'f-complemento', 'f-bairro', 'f-cidade', 'f-pais', 'f-tel2', 'f-site',
+        'f-limite', 'f-desconto', 'f-obs', 'f-tags'].forEach(id => {
+          const el = document.getElementById(id); if (el) el.value = '';
+        });
+      ['f-genero', 'f-estado', 'f-condicao', 'f-vendedor', 'f-grupo', 'f-status', 'f-origem'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.selectedIndex = 0;
+      });
+      document.getElementById('f-pais').value = 'Brasil';
+      selectTipo(document.getElementById('tipo-pf'), 'pf');
+    }
+
+    function wizardGoTo(step) {
+      wizardStep = step;
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById(`mstep-${i}`).style.display = i === step ? 'block' : 'none';
+        const tab = document.getElementById(`tab-${i}`);
+        tab.classList.remove('active', 'done');
+        if (i < step) tab.classList.add('done');
+        if (i === step) tab.classList.add('active');
+        if (i < step) tab.querySelector('.tab-num').innerHTML = '<i class="bi bi-check2"></i>';
+        else tab.querySelector('.tab-num').textContent = i;
+      }
+      document.getElementById('mf-step-info').textContent = `Passo ${step} de 4`;
+      document.getElementById('btnBack').style.display = step > 1 ? 'flex' : 'none';
+      document.getElementById('btnNext').innerHTML = step < 4
+        ? 'Próximo <i class="bi bi-arrow-right"></i>'
+        : '<i class="bi bi-check2"></i> Salvar cliente';
+      document.getElementById('modalBody').scrollTop = 0;
+    }
+
+    function wizardNext() {
+      if (wizardStep === 1 && !validateStep1()) return;
+      if (wizardStep < 4) { wizardGoTo(wizardStep + 1); return; }
+      saveClient();
+    }
+    function wizardBack() { if (wizardStep > 1) wizardGoTo(wizardStep - 1); }
+
+    function validateStep1() {
+      let ok = true;
+      const nome = document.getElementById('f-nome');
+      const tel = document.getElementById('f-tel');
+      const cpf = document.getElementById('f-cpf');
+      const eNome = document.getElementById('e-nome');
+      const eTel = document.getElementById('e-tel');
+      const eCpf = document.getElementById('e-cpf');
+      if (!nome.value.trim()) { nome.classList.add('err'); eNome.classList.add('show'); ok = false; }
+      else { nome.classList.remove('err'); eNome.classList.remove('show'); }
+      if (!tel.value.trim()) { tel.classList.add('err'); eTel.classList.add('show'); ok = false; }
+      else { tel.classList.remove('err'); eTel.classList.remove('show'); }
+      if (!cpf.value.trim()) { cpf.classList.add('err'); eCpf.classList.add('show'); ok = false; }
+      else { cpf.classList.remove('err'); eCpf.classList.remove('show'); }
+      return ok;
+    }
+
+    function saveClient() {
+      const newClient = {
+        id: editingId || Date.now(),
+        nome: document.getElementById('f-nome').value.trim(),
+        tipo: tipoSel,
+        doc: document.getElementById('f-cpf').value.trim(),
+        tel: document.getElementById('f-tel').value.trim(),
+        email: document.getElementById('f-email').value.trim(),
+        cidade: document.getElementById('f-cidade').value.trim() || '—',
+        estado: document.getElementById('f-estado').value || 'SP',
+        status: document.getElementById('f-status').value || 'ativo',
+        compras: 0,
+        limite: document.getElementById('f-limite').value || 'R$ 0,00',
+        condicao: document.getElementById('f-condicao').value || 'À vista',
+        vendedor: document.getElementById('f-vendedor').value || '',
+        cadastro: new Date().toLocaleDateString('pt-BR'),
+        logradouro: document.getElementById('f-logradouro').value,
+        numero: document.getElementById('f-numero').value,
+        bairro: document.getElementById('f-bairro').value,
+        cep: document.getElementById('f-cep').value,
+        obs: document.getElementById('f-obs').value,
+        grupo: document.getElementById('f-grupo').value,
+        origem: document.getElementById('f-origem').value,
+      };
+
+      if (editingId) {
+        const idx = clients.findIndex(c => c.id === editingId);
+        if (idx >= 0) { newClient.compras = clients[idx].compras; clients[idx] = newClient; }
+      } else {
+        clients.unshift(newClient);
+      }
+
+      closeModal();
+      applyFilters();
+      showToast(editingId ? 'Cliente atualizado com sucesso!' : 'Cliente cadastrado com sucesso!');
+    }
+
+    // ─── EDIT / DELETE ───────────────────────────────────────
+    function openEdit(id) {
+      const c = clients.find(cl => cl.id === id);
+      if (!c) return;
+      editingId = id;
+      document.getElementById('modalTitle').textContent = 'Editar Cliente';
+      document.getElementById('modalSub').textContent = c.nome;
+      resetForm();
+      document.getElementById('f-nome').value = c.nome;
+      document.getElementById('f-cpf').value = c.doc;
+      document.getElementById('f-tel').value = c.tel;
+      document.getElementById('f-email').value = c.email;
+      document.getElementById('f-cidade').value = c.cidade;
+      document.getElementById('f-logradouro').value = c.logradouro || '';
+      document.getElementById('f-numero').value = c.numero || '';
+      document.getElementById('f-bairro').value = c.bairro || '';
+      document.getElementById('f-cep').value = c.cep || '';
+      document.getElementById('f-obs').value = c.obs || '';
+      setSelectVal('f-estado', c.estado);
+      setSelectVal('f-status', c.status);
+      setSelectVal('f-condicao', c.condicao);
+      setSelectVal('f-vendedor', c.vendedor);
+      setSelectVal('f-grupo', c.grupo);
+      // tipo
+      const tipoEl = document.getElementById(`tipo-${c.tipo}`);
+      if (tipoEl) selectTipo(tipoEl, c.tipo);
+      wizardGoTo(1);
+      document.getElementById('modalOverlay').classList.add('open');
+    }
+    function setSelectVal(id, val) {
+      const el = document.getElementById(id); if (!el || !val) return;
+      for (let o of el.options) if (o.value === val || o.text === val) { o.selected = true; break; }
+    }
+
+    function deleteClient(id) {
+      if (!confirm('Tem certeza que deseja excluir este cliente?')) return;
+      clients = clients.filter(c => c.id !== id);
+      if (currentDetailId === id) closeDetail();
+      applyFilters();
+      showToast('Cliente removido.');
+    }
+
+    // ─── DETAIL PANEL ────────────────────────────────────────
+    function openDetail(id) {
+      const c = clients.find(cl => cl.id === id);
+      if (!c) return;
+      currentDetailId = id;
+      const [bg, fg] = colorFor(c.nome);
+      document.getElementById('dp-avatar').style.cssText = `background:${bg};color:${fg}`;
+      document.getElementById('dp-avatar').textContent = initials(c.nome);
+      document.getElementById('dp-name').textContent = c.nome;
+      document.getElementById('dp-doc').textContent = c.doc;
+
+      const typeLabel = c.tipo === 'pf' ? 'Pessoa Física' : c.tipo === 'pj' ? 'Pessoa Jurídica' : 'MEI';
+      const statusLabel = c.status === 'ativo' ? 'Ativo' : c.status === 'inativo' ? 'Inativo' : 'Bloqueado';
+
+      document.getElementById('dp-info').innerHTML = [
+        ['Tipo', typeLabel], ['Telefone', c.tel], ['E-mail', c.email || '—'],
+        ['Vendedor', c.vendedor || '—'], ['Grupo', c.grupo || '—'], ['Status', statusLabel],
+        ['Cadastro', c.cadastro], ['Compras', c.compras + ' pedidos']
+      ].map(([l, v]) => `<div class="dp-row"><span class="dp-label">${l}</span><span class="dp-val">${v}</span></div>`).join('');
+
+      const addr = [c.logradouro, c.numero, c.bairro, c.cidade, c.estado, c.cep].filter(Boolean).join(', ') || '—';
+      document.getElementById('dp-addr').innerHTML = `<div class="dp-row"><span class="dp-label">Endereço</span><span class="dp-val" style="max-width:200px;text-align:right">${addr}</span></div>`;
+
+      document.getElementById('dp-fin').innerHTML = [
+        ['Limite', c.limite || '—'], ['Condição', c.condicao || '—']
+      ].map(([l, v]) => `<div class="dp-row"><span class="dp-label">${l}</span><span class="dp-val">${v}</span></div>`).join('');
+
+      document.getElementById('detailPanel').classList.add('open');
+    }
+    function closeDetail() {
+      document.getElementById('detailPanel').classList.remove('open');
+      currentDetailId = null;
+    }
+    function editClient() { if (currentDetailId) { closeDetail(); openEdit(currentDetailId); } }
+
+    // ─── TIPO PESSOA ─────────────────────────────────────────
+    function selectTipo(el, tipo) {
+      tipoSel = tipo;
+      document.querySelectorAll('.radio-opt').forEach(o => o.classList.remove('sel'));
+      el.classList.add('sel');
+      const isPJ = tipo === 'pj';
+      document.getElementById('dados-title').textContent = isPJ ? 'Dados da Empresa' : 'Dados Pessoais';
+      document.getElementById('lbl-doc').textContent = isPJ ? 'CNPJ *' : 'CPF *';
+      document.getElementById('lbl-rg').textContent = isPJ ? 'Inscrição Estadual' : 'RG';
+      document.getElementById('f-cpf').placeholder = isPJ ? '00.000.000/0001-00' : '000.000.000-00';
+      document.getElementById('grp-nasc').style.display = isPJ ? 'none' : '';
+      document.getElementById('grp-genero').style.display = isPJ ? 'none' : '';
+    }
+
+    // ─── MASKS ───────────────────────────────────────────────
+    function maskCPF(el) {
+      let v = el.value.replace(/\D/g, '');
+      if (tipoSel === 'pj' || tipoSel === 'mei') {
+        v = v.substring(0, 14);
+        if (v.length > 12) v = v.slice(0, 2) + '.' + v.slice(2, 5) + '.' + v.slice(5, 8) + '/' + v.slice(8, 12) + '-' + v.slice(12);
+        else if (v.length > 8) v = v.slice(0, 2) + '.' + v.slice(2, 5) + '.' + v.slice(5, 8) + '/' + v.slice(8);
+        else if (v.length > 5) v = v.slice(0, 2) + '.' + v.slice(2, 5) + '.' + v.slice(5);
+        else if (v.length > 2) v = v.slice(0, 2) + '.' + v.slice(2);
+      } else {
+        v = v.substring(0, 11);
+        if (v.length > 9) v = v.slice(0, 3) + '.' + v.slice(3, 6) + '.' + v.slice(6, 9) + '-' + v.slice(9);
+        else if (v.length > 6) v = v.slice(0, 3) + '.' + v.slice(3, 6) + '.' + v.slice(6);
+        else if (v.length > 3) v = v.slice(0, 3) + '.' + v.slice(3);
+      }
+      el.value = v;
+    }
+    function maskDate(el) {
+      let v = el.value.replace(/\D/g, '').substring(0, 8);
+      if (v.length > 4) v = v.slice(0, 2) + '/' + v.slice(2, 4) + '/' + v.slice(4);
+      else if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
+      el.value = v;
+    }
+    function maskCurrency(el) {
+      let v = el.value.replace(/\D/g, '');
+      if (!v) { el.value = ''; return; }
+      v = (parseInt(v) / 100).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      el.value = v;
+    }
+
+    // ─── CEP API (ViaCEP) ────────────────────────────────────
+    async function buscaCEP() {
+      const cep = document.getElementById('f-cep').value.replace(/\D/g, '');
+      if (cep.length !== 8) return;
+      document.getElementById('cep-loading').style.display = 'block';
+      try {
+        const r = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const d = await r.json();
+        if (!d.erro) {
+          document.getElementById('f-logradouro').value = d.logradouro || '';
+          document.getElementById('f-bairro').value = d.bairro || '';
+          document.getElementById('f-cidade').value = d.localidade || '';
+          setSelectVal('f-estado', d.uf);
+          document.getElementById('f-numero').focus();
+        }
+      } catch (e) { }
+      document.getElementById('cep-loading').style.display = 'none';
+    }
+
+    // ─── TOAST ───────────────────────────────────────────────
+    // ─── SIDEBAR ─────────────────────────────────────────────
+    // ─── INIT ─────────────────────────────────────────────────
+    NexoAuth.renderCurrentUser();
+    renderTable();
+  </script>
 </body>
+
 </html>

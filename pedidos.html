@@ -313,18 +313,32 @@
       background: rgba(255, 255, 255, .025);
     }
 
-    tbody tr:hover 
-
-    .modal-overlay.open 
+    tbody tr:hover .modal-overlay.open
 
     /* tabs do modal */
     /* modal pedidos — maior por ter 4 abas */
-    .modal { max-width: 780px; max-height: 92vh; }
+    .modal {
+      max-width: 780px;
+      max-height: 92vh;
+    }
+
     /* pedidos tem 5 KPIs */
-    .kpi-strip { grid-template-columns: repeat(5, 1fr); }
+    .kpi-strip {
+      grid-template-columns: repeat(5, 1fr);
+    }
+
     /* footer com espaço entre info e botões */
-    .modal-footer { justify-content: space-between; align-items: center; padding: 16px 26px; }
-    .mf-info { color: var(--muted); font-size: 12px; }
+    .modal-footer {
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 26px;
+    }
+
+    .mf-info {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
     .modal-tabs {
       display: flex;
       border-bottom: 1px solid var(--border);
@@ -671,9 +685,7 @@
       }
     }
 
-    @media(max-width:900px) {
-      
-    }
+    @media(max-width:900px) {}
   </style>
 </head>
 
@@ -705,7 +717,7 @@
     <div class="sidebar-section">
       <div class="sidebar-section-label">Financeiro</div>
       <a href="#" class="nav-item"><i class="bi bi-graph-up-arrow"></i><span class="nav-label">Relatórios</span></a>
-      <a href="#" class="nav-item"><i class="bi bi-credit-card-2-back-fill"></i><span
+      <a href="financeiro.html" class="nav-item"><i class="bi bi-credit-card-2-back-fill"></i><span
           class="nav-label">Financeiro</span></a>
       <a href="#" class="nav-item"><i class="bi bi-receipt-cutoff"></i><span class="nav-label">Fiscal / NF-e</span></a>
     </div>

@@ -1639,19 +1639,7 @@
           }
         </style>
         <script>
-          function relFilterCat(el, cat) {
-            document.querySelectorAll('.rcat').forEach(b => {
-              b.style.background = 'none';
-              b.style.borderColor = 'var(--border)';
-              b.style.color = 'var(--muted)';
-            });
-            el.style.background = 'rgba(0,200,150,.08)';
-            el.style.borderColor = 'var(--accent)';
-            el.style.color = 'var(--accent)';
-            document.querySelectorAll('.rcard').forEach(c => {
-              c.classList.toggle('rhidden', cat !== 'todos' && !c.dataset.cat.includes(cat));
-            });
-          }
+
           function gerarRel(nome) {
             showToast('📄 ' + nome + ' gerado com sucesso!');
           }
