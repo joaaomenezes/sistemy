@@ -2,7 +2,7 @@
     const MENU = [
       { label: 'Dashboard',       href: 'dashboard.html',     icon: 'bi-grid-1x2-fill',            section: 'Principal' },
       { label: 'PDV',             href: 'pdv.html',           icon: 'bi-display',                  section: 'Principal' },
-      { label: 'Pedidos',         href: 'pedidos.html',       icon: 'bi-file-earmark-text-fill',   section: 'Principal' },
+      { label: 'Pedidos de Vendas',         href: 'pedidos.html',       icon: 'bi-file-earmark-text-fill',   section: 'Principal' },
       { label: 'Vendas',          href: 'vendas.html',        icon: 'bi-cart4',                    section: 'Principal', badge: '12' },
       { label: 'Clientes',        href: 'clientes.html',      icon: 'bi-people-fill',              section: 'Principal' },
       { label: 'Produtos',        href: 'produtos.html',      icon: 'bi-box-seam-fill',            section: 'Principal' },

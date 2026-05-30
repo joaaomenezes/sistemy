@@ -161,8 +161,8 @@
       margin: 8px;
       padding: 7px 10px;
       border-radius: 10px;
-      background: rgba(0, 200, 150, .07);
-      border: 1px solid rgba(0, 200, 150, .2);
+      background: rgba(255,71,87,.07);
+      border: 1px solid rgba(255,71,87,.2);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -170,6 +170,11 @@
       overflow: hidden;
       width: calc(100% - 16px);
       white-space: nowrap;
+      transition: background .3s, border-color .3s;
+    }
+    .caixa-status.aberto {
+      background: rgba(0,200,150,.07);
+      border: 1px solid rgba(0,200,150,.2);
     }
 
     .caixa-dot {
@@ -182,6 +187,11 @@
       animation: pulse 2s infinite;
     }
 
+
+    @keyframes slideUp {
+      from { opacity:0; transform:translateX(-50%) translateY(20px); }
+      to   { opacity:1; transform:translateX(-50%) translateY(0); }
+    }
     @keyframes pulse {
 
       0%,
@@ -908,6 +918,123 @@
       color: var(--text);
       font-weight: 500;
     }
+
+
+
+    /* ── Operador logado ── */
+    .operador-badge {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      margin: 4px 8px 8px;
+      padding: 7px 10px;
+      background: rgba(47,128,255,.07);
+      border: 1px solid rgba(47,128,255,.18);
+      border-radius: 10px;
+      overflow: hidden;
+      white-space: nowrap;
+      transition: background .2s;
+    }
+
+    .operador-badge.visible { display: flex; }
+
+    .op-avatar {
+      width: 26px; height: 26px;
+      border-radius: 7px;
+      background: linear-gradient(135deg, #2d5298, #1a3a7a);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-h);
+      font-size: 10px; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+
+    .op-info {
+      overflow: hidden;
+      opacity: 0;
+      max-width: 0;
+      transition: opacity .18s, max-width .18s;
+    }
+
+    .sidebar:hover .op-info {
+      opacity: 1;
+      max-width: 160px;
+    }
+
+    .op-caixa {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: var(--accent2);
+    }
+
+    .op-nome {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ── CPF na Nota ── */
+    .cpf-nota-wrap {
+      display: flex;
+      align-items: center;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      overflow: hidden;
+      transition: border-color .2s;
+      margin-bottom: 2px;
+    }
+    .cpf-nota-wrap:focus-within {
+      border-color: var(--accent);
+    }
+    .cpf-nota-icon {
+      padding: 0 10px;
+      color: var(--muted);
+      font-size: 15px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+    }
+    .cpf-nota-input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 13px;
+      padding: 9px 0;
+      min-width: 0;
+    }
+    .cpf-nota-input::placeholder { color: var(--muted); }
+    .cpf-nota-clear {
+      width: 28px;
+      height: 28px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      margin-right: 4px;
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: 6px;
+      font-size: 13px;
+      transition: color .15s, background .15s;
+    }
+    .cpf-nota-clear:hover { color: var(--danger); background: rgba(255,77,109,.08); }
+    .cpf-nota-clear.visible { display: flex; }
+    .cpf-nota-status {
+      font-size: 11px;
+      padding: 2px 0;
+      display: none;
+    }
+    .cpf-nota-status.ok  { color: var(--accent); display: block; }
+    .cpf-nota-status.err { color: var(--danger);  display: block; }
 
     /* itens */
     .cart-items {
@@ -2264,12 +2391,21 @@
       <span class="brand-text">Nexo<span>ERP</span></span>
     </div>
 
-    <div class="caixa-status">
-      <div class="caixa-dot"></div>
+    <div class="caixa-status" id="caixaStatus">
+      <div class="caixa-dot" id="caixaDot" style="background:var(--danger);box-shadow:0 0 6px var(--danger)"></div>
       <div class="caixa-info">
-        <span class="caixa-label">Caixa aberto</span>
+        <span class="caixa-label" id="caixaLabel">Caixa fechado</span>
         <span style="color:var(--border)">·</span>
         <span class="caixa-time" id="caixaTime">--:--</span>
+      </div>
+    </div>
+
+    <!-- Operador logado — visível só com caixa aberto -->
+    <div class="operador-badge" id="operadorBadge">
+      <div class="op-avatar" id="opAvatar">--</div>
+      <div class="op-info">
+        <div class="op-caixa">Caixa 01</div>
+        <div class="op-nome" id="opNome">—</div>
       </div>
     </div>
 
@@ -2345,7 +2481,7 @@
           <span class="search-shortcut">F3</span>
         </div>
         <div class="topbar-actions">
-          <button class="tb-btn caixa-btn" id="caixaBtn" onclick="openCaixa()"><i class="bi bi-cash-stack"></i> <span id="caixaBtnLabel">Caixa</span></button>
+          <button class="tb-btn caixa-btn fechado" id="caixaBtn" onclick="openCaixa()"><i class="bi bi-cash-stack"></i> <span id="caixaBtnLabel">Abrir Caixa</span></button>
           <button class="tb-btn accent" onclick="toggleAI()"><i class="bi bi-stars"></i> Nexo AI</button>
           <button class="tb-btn" onclick="openDrawer()"><i class="bi bi-clock-history"></i> Vendas</button>
           <button class="tb-btn" onclick="toggleExpress()"><i class="bi bi-lightning-charge-fill"></i> <span
@@ -2404,10 +2540,24 @@
 
       <!-- cliente -->
       <div class="cart-client">
-        <div class="client-selector" onclick="selectClient()">
-          <i class="bi bi-person-circle"></i>
-          <span id="clientLabel">Selecionar cliente (opcional)</span>
-          <i class="bi bi-chevron-right" style="color:var(--muted);font-size:12px"></i>
+        <div>
+          <div class="cpf-nota-wrap">
+            <div class="cpf-nota-icon"><i class="bi bi-person-vcard"></i></div>
+            <input
+              class="cpf-nota-input"
+              id="cpfNotaInput"
+              type="text"
+              inputmode="numeric"
+              maxlength="14"
+              placeholder="CPF na Nota (opcional)"
+              oninput="handleCpfInput(this)"
+              onblur="validateCpf()"
+            >
+            <button class="cpf-nota-clear" id="cpfClearBtn" onclick="clearCpf()" title="Remover CPF">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+          <div class="cpf-nota-status" id="cpfStatus"></div>
         </div>
       </div>
 
@@ -2645,6 +2795,8 @@
       // seed some fake history
       seedHistory();
       updateStats();
+      // restaurar estado do caixa do localStorage
+      initCaixaUI();
     }
 
     function loadOrders() {
@@ -2742,7 +2894,47 @@
     // ═══════════════════════════════════════════════
     // CART
     // ═══════════════════════════════════════════════
-    function addToCart(id) {
+    // ── Alerta caixa fechado ──
+    function showCaixaFechadoAlert() {
+      // Remove alerta anterior se existir
+      const existing = document.getElementById('caixaFechadoAlert');
+      if (existing) existing.remove();
+
+      const el = document.createElement('div');
+      el.id = 'caixaFechadoAlert';
+      el.innerHTML = `
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:38px;height:38px;border-radius:10px;background:rgba(255,71,87,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i class="bi bi-lock-fill" style="color:var(--danger);font-size:16px"></i>
+          </div>
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:2px">Caixa fechado</div>
+            <div style="font-size:12px;color:var(--sub)">Abra o caixa para adicionar produtos.</div>
+          </div>
+          <button onclick="openCaixa();document.getElementById('caixaFechadoAlert').remove()"
+            style="padding:6px 14px;border-radius:8px;border:none;background:var(--accent);color:#021c14;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">
+            Abrir Caixa
+          </button>
+        </div>`;
+      el.style.cssText = `
+        position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+        background:#0f1929;border:1px solid rgba(255,71,87,.3);
+        border-radius:14px;padding:14px 18px;
+        box-shadow:0 20px 50px rgba(0,0,0,.5);
+        z-index:2000;min-width:340px;max-width:420px;
+        animation:slideUp .3s cubic-bezier(.34,1.2,.64,1) both;
+      `;
+      document.body.appendChild(el);
+      setTimeout(() => { if (el.parentNode) el.remove(); }, 4000);
+    }
+
+        function addToCart(id) {
+      // Bloquear se caixa fechado
+      if (!isCaixaAberto()) {
+        showCaixaFechadoAlert();
+        return;
+      }
+
       const p = PRODUCTS.find(x => x.id === id);
       if (!p || p.estoque === 0) return;
 
@@ -2778,8 +2970,7 @@
     function clearCart() {
       if (!cart.length) return;
       cart = [];
-      selectedClient = null;
-      document.getElementById('clientLabel').textContent = 'Selecionar cliente (opcional)';
+      clearCpf();
       document.getElementById('clientLabel').classList.remove('set');
       document.getElementById('discInput').value = '';
       renderCart(); renderProducts();
@@ -2857,13 +3048,62 @@
     // ═══════════════════════════════════════════════
     // CLIENT
     // ═══════════════════════════════════════════════
-    function selectClient() {
-      const name = CLIENTS[Math.floor(Math.random() * CLIENTS.length)];
-      selectedClient = name;
-      document.getElementById('clientLabel').textContent = name;
-      document.getElementById('clientLabel').classList.add('set');
-      showToast(`👤 Cliente: ${name}`);
+    // -- CPF na Nota --
+    let cpfNota = '';
+
+    function handleCpfInput(el) {
+      let v = el.value.replace(/\D/g, '').substring(0, 11);
+      if (v.length > 9)      v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+      else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+      else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+      el.value = v;
+      const digits = v.replace(/\D/g, '');
+      document.getElementById('cpfClearBtn').classList.toggle('visible', digits.length > 0);
+      document.getElementById('cpfStatus').className = 'cpf-nota-status';
+      cpfNota = '';
+      if (digits.length === 11) {
+        if (isValidCpf(digits)) {
+          document.getElementById('cpfStatus').className = 'cpf-nota-status ok';
+          document.getElementById('cpfStatus').textContent = '\u2713 CPF v\u00e1lido';
+          cpfNota = v;
+        } else {
+          document.getElementById('cpfStatus').className = 'cpf-nota-status err';
+          document.getElementById('cpfStatus').textContent = '\u2717 CPF inv\u00e1lido';
+        }
+      }
     }
+
+    function validateCpf() {
+      const digits = document.getElementById('cpfNotaInput').value.replace(/\D/g, '');
+      if (digits.length > 0 && digits.length < 11) {
+        document.getElementById('cpfStatus').className = 'cpf-nota-status err';
+        document.getElementById('cpfStatus').textContent = '\u2717 CPF incompleto';
+      }
+    }
+
+    function clearCpf() {
+      const inp = document.getElementById('cpfNotaInput');
+      if (inp) inp.value = '';
+      const btn = document.getElementById('cpfClearBtn');
+      if (btn) btn.classList.remove('visible');
+      const st = document.getElementById('cpfStatus');
+      if (st) st.className = 'cpf-nota-status';
+      cpfNota = '';
+    }
+
+    function isValidCpf(c) {
+      if (/^(\d)\1{10}$/.test(c)) return false;
+      let s = 0, r;
+      for (let i = 0; i < 9; i++) s += +c[i] * (10 - i);
+      r = (s * 10) % 11; if (r === 10 || r === 11) r = 0;
+      if (r !== +c[9]) return false;
+      s = 0;
+      for (let i = 0; i < 10; i++) s += +c[i] * (11 - i);
+      r = (s * 10) % 11; if (r === 10 || r === 11) r = 0;
+      return r === +c[10];
+    }
+
+    function selectClient() {}
 
     // ═══════════════════════════════════════════════
     // ORDERS / RESERVAS
@@ -2985,7 +3225,7 @@
         desconto,
         troco,
         method: selectedMethod.charAt(0).toUpperCase() + selectedMethod.slice(1),
-        client: selectedClient || 'Venda Balcão',
+        client: cpfNota ? `CPF: ${cpfNota}` : 'Venda Balcão',
         time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
         items: cart.reduce((s, c) => s + c.qty, 0),
         cartSnapshot: cart.map(c => ({ ...c })),
@@ -3131,20 +3371,44 @@
     function isCaixaAberto() { return caixaState && caixaState.aberto; }
 
     function initCaixaUI() {
-      const btn = document.getElementById('caixaBtn');
-      const label = document.getElementById('caixaBtnLabel');
-      const dot = document.querySelector('.caixa-dot');
-      const dotLabel = document.querySelector('.caixa-label');
+      const btn       = document.getElementById('caixaBtn');
+      const label     = document.getElementById('caixaBtnLabel');
+      const dot       = document.getElementById('caixaDot');
+      const dotLabel  = document.getElementById('caixaLabel');
+      const statusBox = document.getElementById('caixaStatus');
+      const timeEl    = document.getElementById('caixaTime');
+
+      const badge  = document.getElementById('operadorBadge');
+      const opNome = document.getElementById('opNome');
+      const opAv   = document.getElementById('opAvatar');
+
       if (isCaixaAberto()) {
+        // Botão
         btn && btn.classList.remove('fechado');
         if (label) label.textContent = 'Caixa';
-        if (dot) dot.style.background = 'var(--accent)';
+        // Sidebar status
+        if (dot) { dot.style.background = 'var(--accent)'; dot.style.boxShadow = '0 0 6px var(--accent)'; }
         if (dotLabel) dotLabel.textContent = 'Caixa aberto';
+        if (statusBox) statusBox.classList.add('aberto');
+        if (timeEl && caixaState.aberturaStr) timeEl.textContent = caixaState.aberturaStr;
+        // Operador
+        const nome = caixaState.operador || 'Operador';
+        if (badge)  badge.classList.add('visible');
+        if (opNome) opNome.textContent = nome;
+        if (opAv)   opAv.textContent = nome.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
       } else {
+        // Botão
         btn && btn.classList.add('fechado');
         if (label) label.textContent = 'Abrir Caixa';
-        if (dot) dot.style.background = 'var(--danger)';
+        // Sidebar status
+        if (dot) { dot.style.background = 'var(--danger)'; dot.style.boxShadow = '0 0 6px var(--danger)'; }
         if (dotLabel) dotLabel.textContent = 'Caixa fechado';
+        if (statusBox) statusBox.classList.remove('aberto');
+        if (timeEl) timeEl.textContent = '--:--';
+        // Operador — ocultar
+        if (badge)  badge.classList.remove('visible');
+        if (opNome) opNome.textContent = '—';
+        if (opAv)   opAv.textContent = '--';
       }
     }
 

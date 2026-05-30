@@ -883,6 +883,200 @@ transition: border-color .15s;
       display: flex; align-items: center; justify-content: center;
       font-size: 14px; flex-shrink: 0;
     }
+
+    /* ══ DRE PANEL ══ */
+
+
+    .fin-dp-wrap { position: relative; display: inline-flex; }
+
+    /* KPIs */
+    .dre-kpis {
+      display: grid; grid-template-columns: repeat(5,1fr);
+      gap: 12px; margin-bottom: 20px;
+    }
+    .dre-kpi {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px 16px;
+      transition: border-color .2s, transform .2s; cursor: default;
+    }
+    .dre-kpi:hover { border-color: var(--border-h,rgba(255,255,255,.09)); transform: translateY(-2px); }
+    .dre-kpi-icon {
+      width: 34px; height: 34px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; margin-bottom: 10px;
+    }
+    .dre-kpi-label { font-size: 11px; color: var(--sub); margin-bottom: 4px; white-space: nowrap; }
+    .dre-kpi-val {
+      font-family: var(--font-h); font-size: 17px; font-weight: 800;
+      letter-spacing: -.5px; color: var(--text); margin-bottom: 6px;
+    }
+    .dre-kpi-delta { font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 3px; }
+    .dre-kpi-delta.up   { color: var(--accent); }
+    .dre-kpi-delta.down { color: var(--danger); }
+
+    /* Grid */
+    .dre-grid { display: grid; grid-template-columns: 1fr 360px; gap: 16px; align-items: start; }
+
+    /* Tabela */
+    .dre-table-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+    }
+    .dre-table-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px 12px; border-bottom: 1px solid var(--border);
+    }
+    .dre-table-head h3 {
+      font-family: var(--font-h); font-size: 14px;
+      font-weight: 700; color: var(--text);
+    }
+    .dre-table-note { font-size: 11px; color: var(--muted); }
+
+    table.dre-tbl { width: 100%; border-collapse: collapse; }
+    table.dre-tbl thead th {
+      padding: 10px 18px; font-size: 10.5px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .6px;
+      color: var(--muted); border-bottom: 1px solid var(--border);
+      text-align: right; white-space: nowrap;
+    }
+    table.dre-tbl thead th:first-child { text-align: left; }
+    table.dre-tbl tbody tr { transition: background .12s; }
+    table.dre-tbl tbody tr:hover td { background: rgba(255,255,255,.02); }
+    table.dre-tbl tbody td {
+      padding: 9px 18px; font-size: 13px;
+      border-bottom: 1px solid rgba(255,255,255,.03);
+      vertical-align: middle; text-align: right; white-space: nowrap;
+    }
+    table.dre-tbl tbody td:first-child { text-align: left; }
+    table.dre-tbl tbody tr:last-child td { border-bottom: none; }
+
+    .dre-row-group td {
+      font-family: var(--font-h); font-size: 12px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: .3px;
+      padding-top: 14px; padding-bottom: 8px;
+      border-top: 1px solid var(--border);
+    }
+    .dre-row-group.first-group td { border-top: none; padding-top: 10px; }
+    .dre-row-total td {
+      font-family: var(--font-h); font-size: 13px; font-weight: 800;
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,.02);
+    }
+    .dre-row-final td {
+      font-family: var(--font-h); font-size: 14px; font-weight: 800;
+      background: rgba(0,208,132,.06); border-top: 2px solid rgba(0,208,132,.25);
+    }
+    .dre-row-sub td:first-child { padding-left: 34px; color: var(--sub); font-size: 12.5px; }
+    .dre-row-sub td { font-size: 12.5px; color: var(--sub); }
+
+    .dre-pos { color: var(--accent); }
+    .dre-neg { color: var(--danger); }
+    .dre-neu { color: var(--text); }
+    .dre-var-up   { color: var(--accent); font-size: 11.5px; font-weight: 600; }
+    .dre-var-down { color: var(--danger);  font-size: 11.5px; font-weight: 600; }
+
+    /* Lateral */
+    .dre-side { display: flex; flex-direction: column; gap: 14px; }
+    .dre-side-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+    }
+    .dre-side-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 13px 16px 11px; border-bottom: 1px solid var(--border);
+    }
+    .dre-side-head h4 {
+      font-family: var(--font-h); font-size: 13px;
+      font-weight: 700; color: var(--text);
+    }
+    .dre-side-body { padding: 14px 16px; }
+
+    .dre-line-chart { width: 100%; display: block; }
+    .dre-line-xlbl { display: flex; justify-content: space-between; padding: 4px 0 0; }
+    .dre-line-xlbl span { font-size: 10px; color: var(--muted); }
+
+    .dre-donut-wrap { display: flex; align-items: center; gap: 16px; }
+    .dre-donut-legend { flex: 1; display: flex; flex-direction: column; gap: 7px; }
+    .dre-leg-row { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--sub); }
+    .dre-leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .dre-leg-pct { margin-left: auto; font-weight: 700; font-size: 12px; color: var(--text); }
+
+    .dre-margin-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .dre-margin-row:last-child { margin-bottom: 0; }
+    .dre-margin-label { font-size: 12px; color: var(--sub); width: 120px; flex-shrink: 0; }
+    .dre-margin-bar-wrap {
+      flex: 1; height: 7px; background: rgba(255,255,255,.05);
+      border-radius: 100px; overflow: hidden;
+    }
+    .dre-margin-bar { height: 100%; border-radius: 100px; transition: width .6s ease; }
+    .dre-margin-pct { font-size: 12px; font-weight: 700; color: var(--text); width: 42px; text-align: right; flex-shrink: 0; }
+
+    .dre-chips { display: flex; gap: 4px; }
+    .dre-chip {
+      font-size: 11px; font-weight: 600; padding: 3px 10px;
+      border-radius: 100px; border: 1px solid var(--border);
+      background: none; color: var(--sub); cursor: pointer; transition: all .15s;
+    }
+    .dre-chip:hover { color: var(--text); border-color: var(--border-h,rgba(255,255,255,.09)); }
+    .dre-chip.on { background: rgba(0,208,132,.1); border-color: rgba(0,208,132,.3); color: var(--accent); }
+
+
+    /* ── DRE spacing — igual ao Relatórios ── */
+    #panel-dre {
+      padding: 0 28px;
+    }
+
+    /* ── DRE date picker fixes ── */
+    #panel-dre .fin-dp-wrap { position: relative; }
+    #panel-dre .fin-dp-drop {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      left: auto;
+      background: #0f1929 !important;
+      z-index: 9999 !important;
+      min-width: 190px;
+    }
+
+    /* Fix KPI cards — ensure styles apply inside fin-panel */
+    #panel-dre .dre-kpi {
+      background: var(--card) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 14px !important;
+      padding: 14px 16px !important;
+    }
+
+    /* Fix grid inside fin-panel */
+    #panel-dre .dre-grid {
+      display: grid !important;
+      grid-template-columns: 1fr 360px !important;
+    }
+
+    #panel-dre .dre-kpis {
+      display: grid !important;
+      grid-template-columns: repeat(5,1fr) !important;
+    }
+
+    /* Fix table card */
+    #panel-dre .dre-table-card {
+      background: var(--card) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 16px !important;
+    }
+
+    /* Fix side cards */
+    #panel-dre .dre-side-card {
+      background: var(--card) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 16px !important;
+    }
+
+
+
+    @media (max-width: 1200px) {
+      .dre-grid { grid-template-columns: 1fr; }
+      .dre-kpis { grid-template-columns: repeat(3,1fr); }
+    }
 </style>
 </head>
 
@@ -1042,7 +1236,7 @@ transition: border-color .15s;
       <!-- Visão Geral -->
       <div class="fin-panel active" id="panel-visao-geral">
 
-        <!-- KPIs -->
+      <!-- KPIs -->
         <div class="kpi-strip" id="kpiStrip">
           <div class="kpi-mini">
             <div class="kpi-mini-icon g"><i class="bi bi-graph-up-arrow"></i></div>
@@ -1820,12 +2014,343 @@ transition: border-color .15s;
 
     <!-- DRE -->
     <div class="fin-panel" id="panel-dre">
-      <div class="empty-state show u-mt-40" >
-        <i class="bi bi-file-earmark-bar-graph"></i>
-        <h3>DRE</h3>
-        <p>Demonstração do Resultado do Exercício em desenvolvimento.</p>
+      <div style="margin-top:14px">
+
+
+      <!-- KPIs —— botão comparar antes dos cards -->
+      <div class="dre-kpis">
+        <div class="dre-kpi">
+          <div class="dre-kpi-icon" style="background:rgba(0,208,132,.1);color:var(--accent)"><i class="bi bi-graph-up-arrow"></i></div>
+          <div class="dre-kpi-label">Receita Líquida</div>
+          <div class="dre-kpi-val">R$ 1.245.750</div>
+          <div class="dre-kpi-delta up"><i class="bi bi-arrow-up-short"></i>15,8% vs período anterior</div>
+        </div>
+        <div class="dre-kpi">
+          <div class="dre-kpi-icon" style="background:rgba(47,128,255,.1);color:var(--accent2)"><i class="bi bi-bar-chart-line-fill"></i></div>
+          <div class="dre-kpi-label">Lucro Bruto</div>
+          <div class="dre-kpi-val">R$ 532.450</div>
+          <div class="dre-kpi-delta up"><i class="bi bi-arrow-up-short"></i>12,3% vs período anterior</div>
+        </div>
+        <div class="dre-kpi">
+          <div class="dre-kpi-icon" style="background:rgba(167,139,250,.1);color:var(--purple, #a78bfa)"><i class="bi bi-percent"></i></div>
+          <div class="dre-kpi-label">Margem Bruta</div>
+          <div class="dre-kpi-val">42,78%</div>
+          <div class="dre-kpi-delta down"><i class="bi bi-arrow-down-short"></i>2,1 p.p. vs período anterior</div>
+        </div>
+        <div class="dre-kpi">
+          <div class="dre-kpi-icon" style="background:rgba(0,208,132,.1);color:var(--accent)"><i class="bi bi-currency-dollar"></i></div>
+          <div class="dre-kpi-label">Lucro Líquido</div>
+          <div class="dre-kpi-val">R$ 198.720</div>
+          <div class="dre-kpi-delta up"><i class="bi bi-arrow-up-short"></i>18,6% vs período anterior</div>
+        </div>
+        <div class="dre-kpi">
+          <div class="dre-kpi-icon" style="background:rgba(255,140,66,.1);color:var(--warn, #ff8c42)"><i class="bi bi-award-fill"></i></div>
+          <div class="dre-kpi-label">Margem Líquida</div>
+          <div class="dre-kpi-val">15,96%</div>
+          <div class="dre-kpi-delta up"><i class="bi bi-arrow-up-short"></i>1,2 p.p. vs período anterior</div>
+        </div>
       </div>
-    </div>
+
+      <!-- GRID PRINCIPAL -->
+      <div class="dre-grid">
+
+        <!-- TABELA DRE -->
+        <div class="dre-table-card">
+          <div class="dre-table-head">
+            <h3>DRE — Demonstrativo</h3>
+            <span class="dre-table-note">Valores expressos em Reais (R$)</span>
+          </div>
+          <table class="dre-tbl">
+            <thead>
+              <tr>
+                <th style="width:45%">Descrição</th>
+                <th>Jan–Mai 2026 (Atual)</th>
+                <th>Jan–Mai 2025 (Anterior)</th>
+                <th>Variação (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- RECEITA BRUTA -->
+              <tr class="dre-row-group first-group">
+                <td colspan="4" style="color:var(--accent)">▸ RECEITA OPERACIONAL BRUTA</td>
+              </tr>
+              <tr class="dre-row-sub">
+                <td>Vendas de Produtos</td>
+                <td class="dre-pos">R$ 1.250.800</td>
+                <td>R$ 1.085.600</td>
+                <td class="dre-var-up">▲ 15,22%</td>
+              </tr>
+              <tr class="dre-row-sub">
+                <td>Vendas de Serviços</td>
+                <td class="dre-pos">R$ 207.700</td>
+                <td>R$ 173.700</td>
+                <td class="dre-var-up">▲ 19,57%</td>
+              </tr>
+              <tr class="dre-row-total">
+                <td>RECEITA BRUTA TOTAL</td>
+                <td class="dre-pos">R$ 1.458.500</td>
+                <td>R$ 1.259.300</td>
+                <td class="dre-var-up">▲ 15,82%</td>
+              </tr>
+
+              <!-- DEDUÇÕES -->
+              <tr class="dre-row-group">
+                <td colspan="4" style="color:var(--danger)">▸ DEDUÇÕES DA RECEITA</td>
+              </tr>
+              <tr class="dre-row-sub">
+                <td>Impostos sobre Vendas</td>
+                <td class="dre-neg">-R$ 165.300</td>
+                <td class="dre-neg">-R$ 146.200</td>
+                <td class="dre-var-down">▼ 13,06%</td>
+              </tr>
+              <tr class="dre-row-sub">
+                <td>Devoluções e Cancelamentos</td>
+                <td class="dre-neg">-R$ 47.450</td>
+                <td class="dre-neg">-R$ 41.700</td>
+                <td class="dre-var-down">▼ 13,79%</td>
+              </tr>
+              <tr class="dre-row-total">
+                <td>RECEITA LÍQUIDA</td>
+                <td class="dre-pos">R$ 1.245.750</td>
+                <td>R$ 1.071.400</td>
+                <td class="dre-var-up">▲ 16,27%</td>
+              </tr>
+
+              <!-- CPV -->
+              <tr class="dre-row-group">
+                <td colspan="4" style="color:var(--danger)">▸ CUSTO DOS PRODUTOS/SERVIÇOS</td>
+              </tr>
+              <tr class="dre-row-sub">
+                <td>Custo de Mercadorias Vendidas</td>
+                <td class="dre-neg">-R$ 580.400</td>
+                <td class="dre-neg">-R$ 490.100</td>
+                <td class="dre-var-down">▼ 18,43%</td>
+              </tr>
+              <tr class="dre-row-sub">
+                <td>Custo de Serviços Prestados</td>
+                <td class="dre-neg">-R$ 132.900</td>
+                <td class="dre-neg">-R$ 114.700</td>
+                <td class="dre-var-down">▼ 15,87%</td>
+              </tr>
+              <tr class="dre-row-total">
+                <td>LUCRO BRUTO</td>
+                <td class="dre-pos">R$ 532.450</td>
+                <td>R$ 466.600</td>
+                <td class="dre-var-up">▲ 14,12%</td>
+              </tr>
+
+              <!-- DESPESAS OPERACIONAIS -->
+              <tr class="dre-row-group">
+                <td colspan="4" style="color:var(--danger)">▸ DESPESAS OPERACIONAIS</td>
+              </tr>
+              <tr class="dre-row-sub">
+                <td>Despesas com Vendas</td>
+                <td class="dre-neg">-R$ 148.200</td>
+                <td class="dre-neg">-R$ 122.500</td>
+                <td class="dre-var-down">▼ 20,98%</td>
+              </tr>
+              <tr class="dre-row-sub">
+                <td>Despesas Administrativas</td>
+                <td class="dre-neg">-R$ 108.480</td>
+                <td class="dre-neg">-R$ 95.900</td>
+                <td class="dre-var-down">▼ 13,11%</td>
+              </tr>
+              <tr class="dre-row-total">
+                <td>RESULTADO OPERACIONAL (EBIT)</td>
+                <td class="dre-pos">R$ 275.770</td>
+                <td>R$ 248.200</td>
+                <td class="dre-var-up">▲ 11,10%</td>
+              </tr>
+
+              <!-- RESULTADO FINANCEIRO -->
+              <tr class="dre-row-group">
+                <td colspan="4" style="color:var(--accent2)">▸ RESULTADO FINANCEIRO</td>
+              </tr>
+              <tr class="dre-row-sub">
+                <td>Receitas Financeiras</td>
+                <td class="dre-pos">R$ 32.600</td>
+                <td>R$ 25.100</td>
+                <td class="dre-var-up">▲ 29,88%</td>
+              </tr>
+              <tr class="dre-row-sub">
+                <td>Despesas Financeiras</td>
+                <td class="dre-neg">-R$ 14.350</td>
+                <td class="dre-neg">-R$ 12.700</td>
+                <td class="dre-var-down">▼ 12,99%</td>
+              </tr>
+              <tr class="dre-row-total">
+                <td>RESULTADO ANTES DOS IMPOSTOS</td>
+                <td class="dre-pos">R$ 294.020</td>
+                <td>R$ 260.600</td>
+                <td class="dre-var-up">▲ 12,82%</td>
+              </tr>
+
+              <!-- IMPOSTOS -->
+              <tr class="dre-row-group">
+                <td colspan="4" style="color:var(--danger)">▸ IMPOSTO DE RENDA E CSLL</td>
+              </tr>
+              <tr class="dre-row-sub">
+                <td>IRPJ (15% + adicional)</td>
+                <td class="dre-neg">-R$ 62.400</td>
+                <td class="dre-neg">-R$ 55.200</td>
+                <td class="dre-var-down">▼ 13,04%</td>
+              </tr>
+              <tr class="dre-row-sub">
+                <td>CSLL (9%)</td>
+                <td class="dre-neg">-R$ 32.900</td>
+                <td class="dre-neg">-R$ 29.400</td>
+                <td class="dre-var-down">▼ 11,90%</td>
+              </tr>
+
+              <!-- RESULTADO FINAL -->
+              <tr class="dre-row-final">
+                <td>💰 LUCRO LÍQUIDO DO EXERCÍCIO</td>
+                <td class="dre-pos">R$ 198.720</td>
+                <td style="color:var(--text)">R$ 176.000</td>
+                <td class="dre-var-up">▲ 12,90%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- PAINEL LATERAL -->
+        <div class="dre-side">
+
+          <!-- Evolução do Lucro Líquido -->
+          <div class="dre-side-card">
+            <div class="dre-side-head">
+              <h4>Evolução do Lucro Líquido</h4>
+              <div class="dre-chips">
+                <button class="dre-chip on" onclick="setDreChip(this)">Mensal</button>
+                <button class="dre-chip" onclick="setDreChip(this)">Trim.</button>
+              </div>
+            </div>
+            <div class="dre-side-body">
+              <svg class="dre-line-chart" viewBox="0 0 320 130" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="dreGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#00D084" stop-opacity=".25"/>
+                    <stop offset="100%" stop-color="#00D084" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <!-- grid -->
+                <line x1="0" y1="110" x2="320" y2="110" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+                <line x1="0" y1="80"  x2="320" y2="80"  stroke="rgba(255,255,255,.04)" stroke-width=".5" stroke-dasharray="4,3"/>
+                <line x1="0" y1="50"  x2="320" y2="50"  stroke="rgba(255,255,255,.04)" stroke-width=".5" stroke-dasharray="4,3"/>
+                <line x1="0" y1="20"  x2="320" y2="20"  stroke="rgba(255,255,255,.04)" stroke-width=".5" stroke-dasharray="4,3"/>
+                <!-- labels -->
+                <text x="0" y="126" fill="rgba(148,163,184,.4)" font-size="8">50k</text>
+                <text x="0" y="96"  fill="rgba(148,163,184,.4)" font-size="8">100k</text>
+                <text x="0" y="66"  fill="rgba(148,163,184,.4)" font-size="8">150k</text>
+                <text x="0" y="36"  fill="rgba(148,163,184,.4)" font-size="8">200k</text>
+                <!-- area fill -->
+                <path d="M32,90 L84,78 L136,72 L188,58 L240,52 L292,18 L292,110 L32,110 Z"
+                      fill="url(#dreGrad)"/>
+                <!-- line -->
+                <polyline points="32,90 84,78 136,72 188,58 240,52 292,18"
+                          fill="none" stroke="#00D084" stroke-width="2.5"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                <!-- dots -->
+                <circle cx="32"  cy="90" r="4" fill="#00D084" stroke="#0B1220" stroke-width="2"/>
+                <circle cx="84"  cy="78" r="4" fill="#00D084" stroke="#0B1220" stroke-width="2"/>
+                <circle cx="136" cy="72" r="4" fill="#00D084" stroke="#0B1220" stroke-width="2"/>
+                <circle cx="188" cy="58" r="4" fill="#00D084" stroke="#0B1220" stroke-width="2"/>
+                <circle cx="240" cy="52" r="4" fill="#00D084" stroke="#0B1220" stroke-width="2"/>
+                <circle cx="292" cy="18" r="5" fill="#00D084" stroke="#0B1220" stroke-width="2"/>
+                <!-- value labels -->
+                <text x="32"  y="84" text-anchor="middle" fill="rgba(148,163,184,.6)" font-size="7.5">120k</text>
+                <text x="84"  y="72" text-anchor="middle" fill="rgba(148,163,184,.6)" font-size="7.5">150k</text>
+                <text x="136" y="66" text-anchor="middle" fill="rgba(148,163,184,.6)" font-size="7.5">150k</text>
+                <text x="188" y="52" text-anchor="middle" fill="rgba(148,163,184,.6)" font-size="7.5">185k</text>
+                <text x="240" y="46" text-anchor="middle" fill="rgba(148,163,184,.6)" font-size="7.5">180k</text>
+                <text x="292" y="12" text-anchor="middle" fill="rgba(0,208,132,.9)"   font-size="7.5" font-weight="700">198k</text>
+              </svg>
+              <div class="dre-line-xlbl">
+                <span>Jan</span><span>Fev</span><span>Mar</span><span>Abr</span><span>Mai</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Composição do Resultado -->
+          <div class="dre-side-card">
+            <div class="dre-side-head">
+              <h4>Composição do Resultado</h4>
+            </div>
+            <div class="dre-side-body">
+              <div class="dre-donut-wrap">
+                <!-- Donut SVG: circ 2π×50 ≈ 314 -->
+                <svg viewBox="0 0 120 120" style="width:110px;height:110px;flex-shrink:0">
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="14"/>
+                  <!-- CPV 57.2% → 179.7 -->
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="#2F80FF" stroke-width="14"
+                    stroke-dasharray="179.7 314" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+                  <!-- Desp Op 20.6% → 64.7 -->
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="#FF8C42" stroke-width="14"
+                    stroke-dasharray="64.7 314" stroke-dashoffset="-179.7" transform="rotate(-90 60 60)"/>
+                  <!-- Impostos 7.6% → 23.9 -->
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="#F5B700" stroke-width="14"
+                    stroke-dasharray="23.9 314" stroke-dashoffset="-244.4" transform="rotate(-90 60 60)"/>
+                  <!-- Res Fin 1.5% → 4.7 -->
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="#A78BFA" stroke-width="14"
+                    stroke-dasharray="4.7 314" stroke-dashoffset="-268.3" transform="rotate(-90 60 60)"/>
+                  <!-- Lucro 15.9% → 49.9 -->
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="#00D084" stroke-width="14"
+                    stroke-dasharray="49.9 314" stroke-dashoffset="-273" transform="rotate(-90 60 60)"/>
+                  <text x="60" y="55" text-anchor="middle" fill="#FFF" font-size="10" font-weight="800" font-family="Syne,sans-serif">R$ 198k</text>
+                  <text x="60" y="68" text-anchor="middle" fill="rgba(148,163,184,.55)" font-size="7.5">Lucro Líquido</text>
+                </svg>
+                <div class="dre-donut-legend">
+                  <div class="dre-leg-row"><div class="dre-leg-dot" style="background:#2F80FF"></div>CPV<span class="dre-leg-pct">57,2%</span></div>
+                  <div class="dre-leg-row"><div class="dre-leg-dot" style="background:#FF8C42"></div>Desp. Op.<span class="dre-leg-pct">20,6%</span></div>
+                  <div class="dre-leg-row"><div class="dre-leg-dot" style="background:#F5B700"></div>Impostos<span class="dre-leg-pct">7,6%</span></div>
+                  <div class="dre-leg-row"><div class="dre-leg-dot" style="background:#A78BFA"></div>Res. Fin.<span class="dre-leg-pct">1,5%</span></div>
+                  <div class="dre-leg-row"><div class="dre-leg-dot" style="background:#00D084"></div>Lucro Líq.<span class="dre-leg-pct">15,9%</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Margens -->
+          <div class="dre-side-card">
+            <div class="dre-side-head">
+              <h4>Margens</h4>
+            </div>
+            <div class="dre-side-body">
+              <div class="dre-margin-row">
+                <div class="dre-margin-label">Margem Bruta</div>
+                <div class="dre-margin-bar-wrap">
+                  <div class="dre-margin-bar" style="width:85.56%;background:var(--accent)"></div>
+                </div>
+                <div class="dre-margin-pct">42,78%</div>
+              </div>
+              <div class="dre-margin-row">
+                <div class="dre-margin-label">Margem Operacional</div>
+                <div class="dre-margin-bar-wrap">
+                  <div class="dre-margin-bar" style="width:44.28%;background:var(--accent2)"></div>
+                </div>
+                <div class="dre-margin-pct">22,14%</div>
+              </div>
+              <div class="dre-margin-row">
+                <div class="dre-margin-label">Margem Líquida</div>
+                <div class="dre-margin-bar-wrap">
+                  <div class="dre-margin-bar" style="width:31.92%;background:#A78BFA"></div>
+                </div>
+                <div class="dre-margin-pct">15,96%</div>
+              </div>
+              <div class="dre-margin-row">
+                <div class="dre-margin-label">Margem EBITDA</div>
+                <div class="dre-margin-bar-wrap">
+                  <div class="dre-margin-bar" style="width:46%;background:var(--warn,#ff8c42)"></div>
+                </div>
+                <div class="dre-margin-pct">23,00%</div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /dre-side -->
+      </div><!-- /dre-grid -->
+      </div><!-- /inner-wrapper -->
+    </div><!-- /panel-dre -->
   </div><!-- /main -->
 
 
@@ -2694,6 +3219,44 @@ transition: border-color .15s;
         String(date.getMonth() + 1).padStart(2, '0') + '/' +
         date.getFullYear();
     }
+
+
+    // ── DRE date picker ──
+    function toggleDreDp() {
+      document.getElementById('dreDpDrop').classList.toggle('open');
+    }
+
+    function dreSel(el, label) {
+      document.querySelectorAll('#dreDpDrop .fin-dp-opt').forEach(o => o.classList.remove('sel'));
+      el.classList.add('sel');
+      document.getElementById('dreDpLabel').textContent = label;
+      document.getElementById('dreDpDrop').classList.remove('open');
+    }
+
+    function dreDpApply() {
+      const s = document.getElementById('dreDpS').value;
+      const e = document.getElementById('dreDpE').value;
+      const fmt = v => v.split('-').reverse().join('/');
+      if (s && e) document.getElementById('dreDpLabel').textContent = fmt(s) + ' – ' + fmt(e);
+      document.getElementById('dreDpDrop').classList.remove('open');
+    }
+
+    function toggleDreComparar() {
+      showToast('📊 Comparação de períodos em breve');
+    }
+
+    function setDreChip(el) {
+      el.closest('.dre-chips').querySelectorAll('.dre-chip').forEach(c => c.classList.remove('on'));
+      el.classList.add('on');
+    }
+
+    document.addEventListener('click', function(ev) {
+      const btn = document.getElementById('dreDpBtn');
+      const dd  = document.getElementById('dreDpDrop');
+      if (btn && dd && !btn.contains(ev.target) && !dd.contains(ev.target)) {
+        dd.classList.remove('open');
+      }
+    });
 
   </script>
 </body>
