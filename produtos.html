@@ -6,11 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistemy — Produtos</title>
   <link rel="stylesheet" href="global.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
-    rel="stylesheet">
-
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
     /* modal produtos — 4 abas */
@@ -126,8 +121,7 @@
     }
 
     .pc-name {
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
+font-weight: 700;
       font-size: 14px;
       letter-spacing: -.3px;
       margin-bottom: 6px;
@@ -149,8 +143,7 @@
     }
 
     .pc-price {
-      font-family: 'Syne', sans-serif;
-      font-size: 17px;
+font-size: 17px;
       font-weight: 800;
       color: var(--accent);
     }
@@ -198,8 +191,7 @@
       align-items: center;
       justify-content: center;
       gap: 5px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 12px;
+font-size: 12px;
       font-weight: 600;
       transition: all .15s;
     }
@@ -579,8 +571,7 @@
       border: 1px solid var(--border);
       background: none;
       color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
+font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       transition: border-color .18s;
@@ -596,8 +587,7 @@
       border: none;
       background: var(--accent);
       color: #021c14;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
+font-size: 14px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
@@ -623,8 +613,7 @@
     }
 
     .dp-prod-name {
-      font-family: 'Syne', sans-serif;
-      font-size: 18px;
+font-size: 18px;
       font-weight: 800;
       letter-spacing: -.3px;
       margin-top: 4px;
@@ -637,8 +626,7 @@
     }
 
     .dp-price-big {
-      font-family: 'Syne', sans-serif;
-      font-size: 28px;
+font-size: 28px;
       font-weight: 800;
       color: var(--accent);
       margin-top: 8px;
@@ -683,61 +671,8 @@
 <body>
 
   <!-- SIDEBAR -->
-  <aside class="sidebar collapsed" id="sidebar">
-    <div class="sidebar-brand">
-      <div class="brand-icon">N</div>
-      <span class="brand-text">Nexo<span>ERP</span></span>
-    </div>
-    <div class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle">
-      <i class="bi bi-chevron-right" id="toggleIcon"></i>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-section-label">Principal</div>
-      <a href="dashboard.html" class="nav-item"><i class="bi bi-grid-1x2-fill"></i><span
-          class="nav-label">Dashboard</span></a>
-      <a href="pdv.html" class="nav-item"><i class="bi bi-display"></i><span class="nav-label">PDV</span></a>
-      <a href="pedidos.html" class="nav-item"><i class="bi bi-file-earmark-text-fill"></i><span
-          class="nav-label">Pedidos de Venda</span></a>
-      <a href="vendas.html" class="nav-item"><i class="bi bi-cart4"></i><span class="nav-label">Vendas</span><span
-          class="badge">12</span></a>
-      <a href="clientes.html" class="nav-item"><i class="bi bi-people-fill"></i><span
-          class="nav-label">Clientes</span></a>
-      <a href="produtos.html" class="nav-item active"><i class="bi bi-box-seam-fill"></i><span
-          class="nav-label">Produtos</span></a>
-      <a href="estoque.html" class="nav-item"><i class="bi bi-stack"></i><span class="nav-label">Estoque</span></a>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-section-label">Financeiro</div>
-      <a href="#" class="nav-item"><i class="bi bi-graph-up-arrow"></i><span class="nav-label">Relatórios</span></a>
-      <a href="financeiro.html" class="nav-item"><i class="bi bi-credit-card-2-back-fill"></i><span
-          class="nav-label">Financeiro</span></a>
-      <a href="#" class="nav-item"><i class="bi bi-receipt-cutoff"></i><span class="nav-label">Fiscal / NF-e</span></a>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-section-label">Sistema</div>
-      <a href="#" class="nav-item"><i class="bi bi-briefcase-fill"></i><span class="nav-label">Parceiros</span></a>
-      <a href="configuracoes.html" class="nav-item"><i class="bi bi-gear-fill"></i><span
-          class="nav-label">Configurações</span></a>
-    </div>
-
-    <div class="sidebar-footer">
-      <div class="user-row">
-        <div class="user-avatar">JD</div>
-        <div class="user-info">
-          <div class="user-name">João Desenvolvedor</div>
-          <div class="user-role">Administrador</div>
-        </div>
-        <i class="bi bi-three-dots-vertical"
-          style="color:var(--muted);margin-left:auto;font-size:15px;flex-shrink:0"></i>
-      </div>
-      <a class="nav-item" onclick="NexoAuth.confirmLogout()" style="cursor:pointer;color:var(--danger)">
-        <i class="bi bi-box-arrow-left"></i><span class="nav-label">Sair</span>
-      </a>
-    </div>
-  </aside>
+<div id="sidebar-root"></div>
+<script src="sidebar.js"></script>
 
   <!-- MAIN -->
   <div class="main collapsed" id="mainContent">
@@ -1421,7 +1356,7 @@
         <div><div class="prod-name">${p.nome}</div><div class="prod-sku">SKU: ${p.sku}</div></div>
       </div></td>
       <td style="color:var(--muted);font-size:12px">${p.cat}</td>
-      <td style="font-family:'Syne',sans-serif;font-weight:800;color:var(--accent)">R$ ${fmtPrice(p.preco)}</td>
+      <td style="font-weight:800;color:var(--accent)">R$ ${fmtPrice(p.preco)}</td>
       <td>
         <div style="display:flex;flex-direction:column;gap:4px">
           <span class="pc-stock ${sc}" style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:100px;font-size:11px;font-weight:600">${sl}</span>

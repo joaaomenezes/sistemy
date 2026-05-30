@@ -6,11 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistemy — Pedidos de Venda</title>
   <link rel="stylesheet" href="global.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
-    rel="stylesheet">
-
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
     .kpi-mini-icon.p {
@@ -91,8 +86,7 @@
     }
 
     .kanban-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 13px;
+font-size: 13px;
       font-weight: 700;
       display: flex;
       align-items: center;
@@ -147,8 +141,7 @@
     }
 
     .pc-id {
-      font-family: 'Syne', sans-serif;
-      font-size: 13px;
+font-size: 13px;
       font-weight: 700;
     }
 
@@ -184,8 +177,7 @@
     }
 
     .pc-total {
-      font-family: 'Syne', sans-serif;
-      font-size: 15px;
+font-size: 15px;
       font-weight: 800;
       color: var(--accent);
     }
@@ -216,8 +208,7 @@
       color: var(--muted);
       font-size: 11px;
       font-weight: 600;
-      font-family: 'DM Sans', sans-serif;
-      cursor: pointer;
+cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -434,8 +425,7 @@
       border: 1px solid var(--border);
       border-radius: 7px;
       color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 12px;
+font-size: 12px;
       text-align: center;
       outline: none;
     }
@@ -469,8 +459,7 @@
       border: 1px solid var(--border);
       border-radius: 9px;
       color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
+font-size: 13px;
       outline: none;
       cursor: pointer;
       appearance: none;
@@ -491,8 +480,7 @@
       background: rgba(0, 200, 150, .1);
       border: 1px solid rgba(0, 200, 150, .25);
       color: var(--accent);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
+font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       display: flex;
@@ -536,8 +524,7 @@
       justify-content: space-between;
       font-size: 17px;
       font-weight: 800;
-      font-family: 'Syne', sans-serif;
-      padding: 4px 0;
+padding: 4px 0;
     }
 
     .resumo-total .val {
@@ -581,8 +568,7 @@
     }
 
     .parcela-val {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
+font-weight: 800;
       font-size: 14px;
     }
 
@@ -602,8 +588,7 @@
     }
 
     .dp-id {
-      font-family: 'Syne', sans-serif;
-      font-size: 22px;
+font-size: 22px;
       font-weight: 800;
       letter-spacing: -1px;
     }
@@ -626,8 +611,7 @@
     }
 
     .dp-total {
-      font-family: 'Syne', sans-serif;
-      font-size: 28px;
+font-size: 28px;
       font-weight: 800;
       color: var(--accent);
       margin-top: 8px;
@@ -673,8 +657,7 @@
     }
 
     .item-total {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
+font-weight: 800;
       font-size: 13px;
       color: var(--accent);
     }
@@ -692,56 +675,8 @@
 <body>
 
   <!-- SIDEBAR -->
-  <aside class="sidebar collapsed" id="sidebar">
-    <div class="sidebar-brand">
-      <div class="brand-icon">N</div>
-      <span class="brand-text">Nexo<span>ERP</span></span>
-    </div>
-    <div class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle">
-      <i class="bi bi-chevron-right" id="toggleIcon"></i>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-section-label">Principal</div>
-      <a href="dashboard.html" class="nav-item"><i class="bi bi-grid-1x2-fill"></i><span
-          class="nav-label">Dashboard</span></a>
-      <a href="pdv.html" class="nav-item"><i class="bi bi-display"></i><span class="nav-label">PDV</span></a>
-      <a href="pedidos.html" class="nav-item active"><i class="bi bi-file-earmark-text-fill"></i><span
-          class="nav-label">Pedidos de Venda</span></a>
-      <a href="vendas.html" class="nav-item"><i class="bi bi-cart4"></i><span class="nav-label">Vendas</span></a>
-      <a href="clientes.html" class="nav-item"><i class="bi bi-people-fill"></i><span
-          class="nav-label">Clientes</span></a>
-      <a href="produtos.html" class="nav-item"><i class="bi bi-box-seam-fill"></i><span
-          class="nav-label">Produtos</span></a>
-      <a href="estoque.html" class="nav-item"><i class="bi bi-stack"></i><span class="nav-label">Estoque</span></a>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-section-label">Financeiro</div>
-      <a href="#" class="nav-item"><i class="bi bi-graph-up-arrow"></i><span class="nav-label">Relatórios</span></a>
-      <a href="financeiro.html" class="nav-item"><i class="bi bi-credit-card-2-back-fill"></i><span
-          class="nav-label">Financeiro</span></a>
-      <a href="#" class="nav-item"><i class="bi bi-receipt-cutoff"></i><span class="nav-label">Fiscal / NF-e</span></a>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-section-label">Sistema</div>
-      <a href="#" class="nav-item"><i class="bi bi-briefcase-fill"></i><span class="nav-label">Parceiros</span></a>
-      <a href="configuracoes.html" class="nav-item"><i class="bi bi-gear-fill"></i><span
-          class="nav-label">Configurações</span></a>
-    </div>
-    <div class="sidebar-footer">
-      <div class="user-row">
-        <div class="user-avatar">JD</div>
-        <div class="user-info">
-          <div class="user-name">João Desenvolvedor</div>
-          <div class="user-role">Administrador</div>
-        </div>
-        <i class="bi bi-three-dots-vertical"
-          style="color:var(--muted);margin-left:auto;font-size:15px;flex-shrink:0"></i>
-      </div>
-      <a class="nav-item" onclick="NexoAuth.confirmLogout()" style="cursor:pointer;color:var(--danger)">
-        <i class="bi bi-box-arrow-left"></i><span class="nav-label">Sair</span>
-      </a>
-    </div>
-  </aside>
+<div id="sidebar-root"></div>
+<script src="sidebar.js"></script>
 
   <!-- MAIN -->
   <div class="main collapsed" id="mainContent">
@@ -1404,11 +1339,11 @@
       const filtered = getFiltered();
       const body = document.getElementById('listBody');
       body.innerHTML = filtered.map(p => `<tr onclick="openDetail('${p.id}')">
-    <td><span style="font-family:'Syne',sans-serif;font-weight:700">${p.id}</span><br><span style="color:var(--muted);font-size:11px">${p.dataStr}</span></td>
+    <td><span style="font-weight:700">${p.id}</span><br><span style="color:var(--muted);font-size:11px">${p.dataStr}</span></td>
     <td style="font-weight:500">${p.cliente}</td>
     <td style="color:var(--muted)">${p.itens.length} itens</td>
     <td style="font-size:12px;color:var(--muted)">${p.condicaoLabel}</td>
-    <td><span style="font-family:'Syne',sans-serif;font-weight:800;color:var(--accent)">R$ ${fmt(p.total)}</span></td>
+    <td><span style="font-weight:800;color:var(--accent)">R$ ${fmt(p.total)}</span></td>
     <td><span class="status-pill ${p.status}">${STATUS_LABELS[p.status]}</span></td>
     <td style="color:var(--muted);font-size:12px">${p.dataStr}</td>
     <td style="color:var(--muted);font-size:12px">${p.vendedor}</td>

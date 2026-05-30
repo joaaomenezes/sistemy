@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
+
+
 /* ═══════════════════════════════════════════════════
    SISTEMY ERP — global.css  (premium update)
    ═══════════════════════════════════════════════════ */
@@ -1317,6 +1320,108 @@ tbody tr:hover .action-cell {
   color: var(--sub);
   font-size: 13px;
 }
+
+
+/* ══════════════════════════════════════════════════
+   FONT CENTRALIZATION — páginas internas
+   ──────────────────────────────────────────────────
+   Syne    (--font-h) → títulos, valores, KPIs, avatares
+   DM Sans (--font-b) → corpo, botões, inputs, labels
+
+   ⚠️  NÃO declarar font-family nas páginas internas.
+       Toda tipografia é controlada aqui.
+   ⚠️  NÃO alterar: cadastro.html, landing.html,
+       login.html e pdv.html — são páginas independentes
+       com tipografia própria.
+
+   MANUTENÇÃO: ao renomear/remover uma classe,
+   atualizar o grupo correspondente abaixo.
+   ══════════════════════════════════════════════════ */
+
+/* ── Headings globais (todas as páginas internas) ── */
+h1, h2, h3, h4, h5, h6 { font-family: var(--font-h); }
+
+/* ── Inputs e botões — herança global ──
+   Cobre todos os <input>, <select>, <textarea>, <button>
+   sem necessidade de declarar por componente. */
+input, select, textarea, button { font-family: var(--font-b); }
+
+/* ── Títulos de seção e cards ──
+   Origem: dashboard.html  → .db-header-left h1, .dcard-title
+   Origem: financeiro.html → .card-title, .mov-title
+   Origem: estoque.html    → .dep-name, .donut-val, .donut-center-val
+   Origem: clientes.html   → .table-header-title
+   Origem: configuracoes.html → .cfg-section-title
+   Origem: pedidos.html    → .kanban-title */
+.card-title, .dcard-title, .db-header-left h1, .cfg-section-title,
+.kanban-title, .table-header-title, .mov-title, .dep-name,
+.donut-val, .donut-center-val { font-family: var(--font-h); }
+
+/* ── Valores e KPIs ──
+   Origem: dashboard.html  → .kpi-val
+   Origem: estoque.html    → .stock-val, .dep-stat-val, .mov-qty
+   Origem: financeiro.html → .resumo-total, .parcela-val, .totais-total
+   Origem: pedidos.html    → .item-total, .totais-total, .qty-big-input */
+.kpi-val, .stock-val, .dep-stat-val, .mov-qty,
+.qty-big-input, .item-total, .totais-total, .resumo-total,
+.parcela-val { font-family: var(--font-h); }
+
+/* ── Tabelas — células de destaque ──
+   Origem: produtos.html   → .pc-name, .pc-price, .pc-id, .pc-total,
+                              .pc-act-btn, .dp-prod-name, .dp-price-big,
+                              .dp-avatar, .dp-name, .dp-id, .dp-total
+   Origem: clientes.html   → .client-avatar, .client-av, .uc-avatar
+   Origem: vendas.html     → .valor-cell, .venda-id
+   Nota: tbody tr:hover .dp-id → regra contextual, não remover */
+.pc-name, .pc-price, .pc-id, .pc-total,
+.dp-prod-name, .dp-price-big, .dp-avatar, .dp-name,
+.dp-id, .dp-total, .client-avatar, .client-av,
+.valor-cell, .venda-id, .item-total,
+tbody tr:hover .dp-id { font-family: var(--font-h); }
+
+/* ── Detail panel / Avatar ──
+   Origem: clientes.html → .uc-avatar */
+.uc-avatar { font-family: var(--font-h); }
+
+/* ── Financeiro — planos e preços ──
+   Origem: financeiro.html → .plan-name, .plan-opt-name, .plan-opt-price */
+.plan-name, .plan-opt-name, .plan-opt-price { font-family: var(--font-h); }
+
+/* ── Botões das páginas internas ──
+   Origem: clientes.html      → .btn-save, .btn-cancel, .btn-modal-next
+   Origem: configuracoes.html → .btn-save-bar, .btn-discard, .btn-upload,
+                                 .btn-add-user, .btn-upgrade, .btn-plan-ghost, .btn-danger
+   Origem: financeiro.html    → .btn-confirm-m, .hbtn
+   Origem: pedidos.html       → .btn-add-item
+   Origem: produtos.html      → .pc-act-btn, .pc-btn
+   Origem: dashboard.html     → .tb-btn */
+.btn-save, .btn-cancel, .btn-modal-next, .btn-save-bar, .btn-discard,
+.btn-upload, .btn-add-user, .btn-upgrade, .btn-plan-ghost, .btn-danger,
+.btn-confirm-m, .btn-add-item, .pc-act-btn, .pc-btn,
+.hbtn, .tb-btn { font-family: var(--font-b); }
+
+/* ── Chips e filtros ──
+   Origem: dashboard.html  → .chip
+   Origem: financeiro.html → .period-btn, .tipo-btn, .rbtn, .rel-chip,
+                              .rel-filtro-select, .fin-dp-opt, .fin-dp-input
+   Origem: estoque.html    → (herda .chip) */
+.chip, .period-btn, .tipo-btn, .rbtn, .rel-chip,
+.rel-filtro-select, .fin-dp-opt, .fin-dp-input { font-family: var(--font-b); }
+
+/* ── Date picker (dashboard + financeiro) ──
+   Origem: dashboard.html  → .dp-btn, .dp-opt, .dp-apply,
+                              .dp-custom input[type="date"]
+   Origem: financeiro.html → .fin-dp-btn (herda via fin-dp-opt acima) */
+.dp-btn, .dp-opt, .dp-apply,
+.dp-custom input[type="date"] { font-family: var(--font-b); }
+
+/* ── Pedidos / Kanban ──
+   Origem: pedidos.html → .add-item-sel, .item-qty-inp */
+.add-item-sel, .item-qty-inp { font-family: var(--font-b); }
+
+/* ── Vendas ──
+   Origem: vendas.html → .date-range input */
+.date-range input { font-family: var(--font-b); }
 
 /* ══ RESPONSIVE ══ */
 @media (max-width: 700px) {

@@ -6,11 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistemy — Clientes</title>
   <link rel="stylesheet" href="global.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
-    rel="stylesheet">
-
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
     .filter-group {
@@ -106,8 +101,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
+font-weight: 800;
       font-size: 13px;
     }
 
@@ -328,13 +322,12 @@
       font-size: 12px;
     }
 
+    .btn-modal-back {
     padding: 10px 20px;
     border-radius: 9px;
     border: 1px solid var(--border);
     background: none;
     color: var(--text);
-    font-family: 'DM Sans',
-    sans-serif;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -354,8 +347,7 @@
       border: none;
       background: var(--accent);
       color: #021c14;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
+font-size: 14px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
@@ -375,14 +367,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
+font-weight: 800;
       font-size: 20px;
     }
 
     .dp-name {
-      font-family: 'Syne', sans-serif;
-      font-size: 17px;
+font-size: 17px;
       font-weight: 800;
       letter-spacing: -.3px;
     }
@@ -420,61 +410,8 @@
 <body>
 
   <!-- SIDEBAR -->
-  <aside class="sidebar collapsed" id="sidebar">
-    <div class="sidebar-brand">
-      <div class="brand-icon">N</div>
-      <span class="brand-text">Nexo<span>ERP</span></span>
-    </div>
-    <div class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle">
-      <i class="bi bi-chevron-right" id="toggleIcon"></i>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-section-label">Principal</div>
-      <a href="dashboard.html" class="nav-item"><i class="bi bi-grid-1x2-fill"></i><span
-          class="nav-label">Dashboard</span></a>
-      <a href="pdv.html" class="nav-item"><i class="bi bi-display"></i><span class="nav-label">PDV</span></a>
-      <a href="pedidos.html" class="nav-item"><i class="bi bi-file-earmark-text-fill"></i><span
-          class="nav-label">Pedidos de Venda</span></a>
-      <a href="vendas.html" class="nav-item"><i class="bi bi-cart4"></i><span class="nav-label">Vendas</span><span
-          class="badge">12</span></a>
-      <a href="clientes.html" class="nav-item active"><i class="bi bi-people-fill"></i><span
-          class="nav-label">Clientes</span></a>
-      <a href="produtos.html" class="nav-item"><i class="bi bi-box-seam-fill"></i><span
-          class="nav-label">Produtos</span></a>
-      <a href="estoque.html" class="nav-item"><i class="bi bi-stack"></i><span class="nav-label">Estoque</span></a>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-section-label">Financeiro</div>
-      <a href="#" class="nav-item"><i class="bi bi-graph-up-arrow"></i><span class="nav-label">Relatórios</span></a>
-      <a href="financeiro.html" class="nav-item"><i class="bi bi-credit-card-2-back-fill"></i><span
-          class="nav-label">Financeiro</span></a>
-      <a href="#" class="nav-item"><i class="bi bi-receipt-cutoff"></i><span class="nav-label">Fiscal / NF-e</span></a>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-section-label">Sistema</div>
-      <a href="#" class="nav-item"><i class="bi bi-briefcase-fill"></i><span class="nav-label">Parceiros</span></a>
-      <a href="configuracoes.html" class="nav-item"><i class="bi bi-gear-fill"></i><span
-          class="nav-label">Configurações</span></a>
-    </div>
-
-    <div class="sidebar-footer">
-      <div class="user-row">
-        <div class="user-avatar">JD</div>
-        <div class="user-info">
-          <div class="user-name">João Desenvolvedor</div>
-          <div class="user-role">Administrador</div>
-        </div>
-        <i class="bi bi-three-dots-vertical"
-          style="color:var(--muted);margin-left:auto;font-size:15px;flex-shrink:0"></i>
-      </div>
-      <a class="nav-item" onclick="NexoAuth.confirmLogout()" style="cursor:pointer;color:var(--danger)">
-        <i class="bi bi-box-arrow-left"></i><span class="nav-label">Sair</span>
-      </a>
-    </div>
-  </aside>
+<div id="sidebar-root"></div>
+<script src="sidebar.js"></script>
 
   <!-- MAIN -->
   <div class="main collapsed" id="mainContent">

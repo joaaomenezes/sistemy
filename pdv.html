@@ -2064,6 +2064,183 @@
       color: var(--muted);
     }
 
+
+    /* ══ MODAL CAIXA ══ */
+    .caixa-overlay {
+      position: fixed; inset: 0; z-index: 1100;
+      background: rgba(0,0,0,.75); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; opacity: 0; pointer-events: none;
+      transition: opacity .25s;
+    }
+    .caixa-overlay.open { opacity: 1; pointer-events: all; }
+
+    .caixa-modal {
+      background: #0f1520; border: 1px solid rgba(255,255,255,.08);
+      border-radius: 20px; width: 100%; max-width: 460px;
+      transform: translateY(20px) scale(.97);
+      transition: transform .3s cubic-bezier(.34,1.2,.64,1);
+      overflow: hidden;
+    }
+    .caixa-overlay.open .caixa-modal { transform: none; }
+
+    .caixa-modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 22px; border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .caixa-modal-header h2 {
+      font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800;
+    }
+    .caixa-modal-body { padding: 22px; }
+    .caixa-modal-footer {
+      padding: 14px 22px; border-top: 1px solid rgba(255,255,255,.06);
+      display: flex; gap: 10px; justify-content: flex-end;
+    }
+
+    .caixa-input-group { margin-bottom: 16px; }
+    .caixa-input-group label {
+      display: block; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .5px;
+      color: var(--muted); margin-bottom: 6px;
+    }
+    .caixa-input {
+      width: 100%; padding: 11px 14px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 10px; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 14px;
+      outline: none; transition: border-color .2s;
+    }
+    .caixa-input:focus { border-color: var(--accent); }
+    .caixa-input.big {
+      font-family: 'Syne', sans-serif; font-size: 24px;
+      font-weight: 700; text-align: center; letter-spacing: -1px;
+    }
+
+    .caixa-tabs { display: flex; gap: 6px; margin-bottom: 18px; }
+    .caixa-tab {
+      flex: 1; padding: 8px; border-radius: 9px; border: none;
+      background: rgba(255,255,255,.04); color: var(--muted);
+      font-size: 12px; font-weight: 600; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: all .15s;
+    }
+    .caixa-tab.active { background: rgba(0,200,150,.12); color: var(--accent); }
+
+    .mov-list { max-height: 200px; overflow-y: auto; }
+    .mov-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.04);
+      font-size: 12.5px;
+    }
+    .mov-item:last-child { border-bottom: none; }
+    .mov-item .mov-tipo { color: var(--muted); font-size: 11px; }
+    .mov-item .mov-valor { font-weight: 700; }
+    .mov-item .mov-valor.s { color: var(--accent); }
+    .mov-item .mov-valor.e { color: var(--danger); }
+    .caixa-resumo {
+      background: rgba(0,200,150,.06); border: 1px solid rgba(0,200,150,.15);
+      border-radius: 12px; padding: 14px 16px; margin-bottom: 16px;
+    }
+    .caixa-resumo-row {
+      display: flex; justify-content: space-between;
+      font-size: 13px; padding: 3px 0;
+    }
+    .caixa-resumo-row.total {
+      font-family: 'Syne', sans-serif; font-size: 18px;
+      font-weight: 800; margin-top: 8px; padding-top: 8px;
+      border-top: 1px solid rgba(0,200,150,.2);
+    }
+    .caixa-resumo-row.total span:last-child { color: var(--accent); }
+
+    /* ══ MODAL CUPOM ══ */
+    .cupom-overlay {
+      position: fixed; inset: 0; z-index: 1100;
+      background: rgba(0,0,0,.75); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; opacity: 0; pointer-events: none;
+      transition: opacity .25s;
+    }
+    .cupom-overlay.open { opacity: 1; pointer-events: all; }
+    .cupom-modal {
+      background: #0f1520; border: 1px solid rgba(255,255,255,.08);
+      border-radius: 20px; width: 100%; max-width: 380px;
+      padding: 24px; text-align: center;
+      transform: translateY(20px) scale(.97);
+      transition: transform .3s cubic-bezier(.34,1.2,.64,1);
+    }
+    .cupom-overlay.open .cupom-modal { transform: none; }
+    .cupom-icon { font-size: 36px; margin-bottom: 12px; }
+    .cupom-modal h3 { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800; margin-bottom: 6px; }
+    .cupom-modal p  { color: var(--muted); font-size: 12.5px; margin-bottom: 18px; }
+    .cupom-input-row { display: flex; gap: 8px; }
+    .cupom-field {
+      flex: 1; padding: 10px 14px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 10px; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 14px;
+      font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+      outline: none; transition: border-color .2s;
+    }
+    .cupom-field:focus { border-color: var(--accent); }
+    .cupom-apply-btn {
+      padding: 10px 16px; border-radius: 10px; border: none;
+      background: var(--accent); color: #021c14;
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: opacity .15s;
+    }
+    .cupom-apply-btn:hover { opacity: .85; }
+    .cupom-result { margin-top: 14px; font-size: 13px; display: none; }
+    .cupom-result.ok { color: var(--accent); display: block; }
+    .cupom-result.err { color: var(--danger); display: block; }
+    .cupom-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(0,200,150,.1); border: 1px solid rgba(0,200,150,.3);
+      color: var(--accent); border-radius: 100px;
+      padding: 3px 10px; font-size: 11px; font-weight: 700;
+      margin-left: 6px; cursor: pointer;
+    }
+
+    /* ══ CUPOM impressão ══ */
+    @media print {
+      body > *:not(#printFrame) { display: none !important; }
+      #printFrame { display: block !important; position: fixed; inset: 0; width: 100%; }
+    }
+    #printFrame {
+      display: none; position: fixed; inset: 0; z-index: 9999;
+      background: white; overflow-y: auto;
+    }
+    .cupom-print {
+      width: 280px; margin: 0 auto; padding: 20px 10px;
+      font-family: 'Courier New', monospace; font-size: 12px; color: #000;
+      line-height: 1.6;
+    }
+    .cupom-print .cp-logo { text-align: center; font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+    .cupom-print .cp-sub  { text-align: center; font-size: 10px; color: #555; margin-bottom: 12px; }
+    .cupom-print .cp-sep  { border-top: 1px dashed #000; margin: 8px 0; }
+    .cupom-print .cp-row  { display: flex; justify-content: space-between; }
+    .cupom-print .cp-row.bold { font-weight: 800; font-size: 13px; }
+    .cupom-print .cp-item-name { flex: 1; }
+    .cupom-print .cp-item-val  { text-align: right; white-space: nowrap; }
+    .cupom-print .cp-center { text-align: center; }
+    .cupom-print .cp-footer { text-align: center; font-size: 10px; color: #777; margin-top: 12px; }
+
+    /* ══ BARCODE indicator ══ */
+    .barcode-indicator {
+      position: fixed; top: 70px; right: 20px; z-index: 500;
+      background: rgba(0,200,150,.12); border: 1px solid rgba(0,200,150,.3);
+      border-radius: 10px; padding: 6px 12px;
+      font-size: 11px; color: var(--accent); font-weight: 700;
+      display: none; align-items: center; gap: 6px;
+      animation: fadeIn .2s ease;
+    }
+    .barcode-indicator.show { display: flex; }
+    @keyframes fadeIn { from { opacity:0; transform: translateY(-4px); } to { opacity:1; transform: none; } }
+
+    /* ══ btn caixa no topbar ══ */
+    .tb-btn.caixa-btn { border-color: rgba(0,200,150,.3); color: var(--accent); }
+    .tb-btn.caixa-btn.fechado { border-color: rgba(255,71,87,.3); color: var(--danger); }
+
     @media(max-width:1100px) {
       .produtos-grid {
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -2168,6 +2345,7 @@
           <span class="search-shortcut">F3</span>
         </div>
         <div class="topbar-actions">
+          <button class="tb-btn caixa-btn" id="caixaBtn" onclick="openCaixa()"><i class="bi bi-cash-stack"></i> <span id="caixaBtnLabel">Caixa</span></button>
           <button class="tb-btn accent" onclick="toggleAI()"><i class="bi bi-stars"></i> Nexo AI</button>
           <button class="tb-btn" onclick="openDrawer()"><i class="bi bi-clock-history"></i> Vendas</button>
           <button class="tb-btn" onclick="toggleExpress()"><i class="bi bi-lightning-charge-fill"></i> <span
@@ -2250,6 +2428,7 @@
             <i class="bi bi-tag"></i>
             <input class="disc-input" type="text" id="discInput" placeholder="Desconto" oninput="updateSummary()">
           </div>
+          <button class="disc-type-btn" id="discCupom" onclick="openCupom()" title="Cupom de desconto"><i class="bi bi-ticket-perforated-fill"></i></button>
           <button class="disc-type-btn active" id="discPct" onclick="setDiscType('%')">%</button>
           <button class="disc-type-btn" id="discVal" onclick="setDiscType('R$')">R$</button>
         </div>
@@ -2365,6 +2544,46 @@
       <span class="ai-title">Nexo AI</span>
     </div>
     <div id="aiSuggestions"></div>
+  </div>
+
+  <!-- BARCODE INDICATOR -->
+  <div class="barcode-indicator" id="barcodeIndicator">
+    <i class="bi bi-upc-scan"></i> <span id="barcodeVal"></span>
+  </div>
+
+  <!-- FRAME IMPRESSÃO -->
+  <div id="printFrame"></div>
+
+  <!-- MODAL CAIXA -->
+  <div class="caixa-overlay" id="caixaOverlay">
+    <div class="caixa-modal">
+      <div class="caixa-modal-header">
+        <h2 id="caixaModalTitle">Abertura de Caixa</h2>
+        <div class="modal-close" onclick="closeCaixa()"><i class="bi bi-x-lg"></i></div>
+      </div>
+      <div class="caixa-modal-body" id="caixaModalBody">
+        <!-- preenchido por JS -->
+      </div>
+      <div class="caixa-modal-footer" id="caixaModalFooter">
+        <!-- preenchido por JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CUPOM -->
+  <div class="cupom-overlay" id="cupomOverlay" onclick="e=>e.target===this&&closeCupom()">
+    <div class="cupom-modal">
+      <div class="cupom-icon">🎫</div>
+      <h3>Cupom de Desconto</h3>
+      <p>Digite o código do cupom para aplicar o desconto</p>
+      <div class="cupom-input-row">
+        <input class="cupom-field" id="cupomField" type="text" placeholder="EX: PROMO10"
+          oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')applyCupom()">
+        <button class="cupom-apply-btn" onclick="applyCupom()">Aplicar</button>
+      </div>
+      <div class="cupom-result" id="cupomResult"></div>
+      <button onclick="closeCupom()" style="margin-top:16px;background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer">Fechar</button>
+    </div>
   </div>
 
   <!-- TOAST -->
@@ -2749,24 +2968,51 @@
 
     function confirmPayment() {
       const total = getTotal();
-      // save to history
+      const subtotal = cart.reduce((s, c) => s + (c.preco * c.qty), 0);
+      const desconto = subtotal - total;
+
+      // troco (apenas dinheiro)
+      let troco = 0;
+      if (selectedMethod === 'dinheiro') {
+        const recebido = parseFloat(document.getElementById('payValueInput').value.replace(/[^0-9.]/g,'')) || 0;
+        troco = Math.max(0, recebido - total);
+      }
+
       const sale = {
         id: `#V${4900 + salesHistory.length + 1}`,
         total: fmt(total),
+        subtotal,
+        desconto,
+        troco,
         method: selectedMethod.charAt(0).toUpperCase() + selectedMethod.slice(1),
         client: selectedClient || 'Venda Balcão',
         time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
         items: cart.reduce((s, c) => s + c.qty, 0),
+        cartSnapshot: cart.map(c => ({ ...c })),
       };
       salesHistory.unshift(sale);
       todayStats.count++;
       todayStats.total += total;
       updateStats();
-      if (activeOrderId) markOrderConverted(activeOrderId);
+      if (typeof activeOrderId !== 'undefined' && activeOrderId) markOrderConverted(activeOrderId);
+
+      // Reset cupom
+      cupomAtivo = null;
+      updateCupomBadge();
 
       closePayModal();
       document.getElementById('successTotal').textContent = `R$ ${fmt(total)}`;
       document.getElementById('successSubtitle').textContent = `${sale.method} · ${sale.client}`;
+
+      // Update success actions with print button
+      const actEl = document.querySelector('.success-actions');
+      if (actEl) {
+        actEl.innerHTML = `
+          <button class="suc-btn ghost" onclick="imprimirCupom(salesHistory[0])"><i class="bi bi-printer"></i> Imprimir</button>
+          <button class="suc-btn primary" onclick="closeSuccess()"><i class="bi bi-plus-lg"></i> Nova Venda</button>
+        `;
+      }
+
       document.getElementById('successOverlay').classList.add('show');
       clearCart();
     }
@@ -2811,7 +3057,7 @@
         <span><i class="bi bi-bag"></i> ${v.items} itens</span>
       </div>
       <div class="venda-actions">
-        <button class="venda-btn"><i class="bi bi-printer"></i> Imprimir</button>
+        <button class="venda-btn" onclick="imprimirCupom(salesHistory.find(x=>x.id==='${v.id}') || salesHistory[0])"><i class="bi bi-printer"></i> Imprimir</button>
         <button class="venda-btn"><i class="bi bi-arrow-counterclockwise"></i> Estornar</button>
         <button class="venda-btn"><i class="bi bi-arrow-repeat"></i> Repetir</button>
       </div>
@@ -2871,6 +3117,268 @@
         if (list.length > 0) { addToCart(list[0].id); document.getElementById('searchInput').value = ''; filterProducts(); }
         return;
       }
+    }
+
+
+    // ═══════════════════════════════════════════════
+    // CAIXA — Abertura, Fechamento, Sangria, Suprimento
+    // ═══════════════════════════════════════════════
+    const CAIXA_KEY = 'nexoerp.pdv.caixa';
+    let caixaState = JSON.parse(localStorage.getItem(CAIXA_KEY) || 'null');
+    let caixaTab = 'sangria';
+
+    function saveCaixa() { localStorage.setItem(CAIXA_KEY, JSON.stringify(caixaState)); }
+    function isCaixaAberto() { return caixaState && caixaState.aberto; }
+
+    function initCaixaUI() {
+      const btn = document.getElementById('caixaBtn');
+      const label = document.getElementById('caixaBtnLabel');
+      const dot = document.querySelector('.caixa-dot');
+      const dotLabel = document.querySelector('.caixa-label');
+      if (isCaixaAberto()) {
+        btn && btn.classList.remove('fechado');
+        if (label) label.textContent = 'Caixa';
+        if (dot) dot.style.background = 'var(--accent)';
+        if (dotLabel) dotLabel.textContent = 'Caixa aberto';
+      } else {
+        btn && btn.classList.add('fechado');
+        if (label) label.textContent = 'Abrir Caixa';
+        if (dot) dot.style.background = 'var(--danger)';
+        if (dotLabel) dotLabel.textContent = 'Caixa fechado';
+      }
+    }
+
+    function openCaixa() {
+      document.getElementById('caixaOverlay').classList.add('open');
+      if (!isCaixaAberto()) renderAberturaCaixa();
+      else { caixaTab = 'sangria'; renderCaixaAberto(); }
+    }
+
+    function closeCaixa() {
+      document.getElementById('caixaOverlay').classList.remove('open');
+    }
+
+    function renderAberturaCaixa() {
+      document.getElementById('caixaModalTitle').textContent = 'Abrir Caixa';
+      document.getElementById('caixaModalBody').innerHTML = `
+        <p style="color:var(--muted);font-size:13px;margin-bottom:18px">Informe o fundo de troco para iniciar o turno.</p>
+        <div class="caixa-input-group">
+          <label>Operador</label>
+          <input class="caixa-input" id="caixaOperador" type="text" value="João Desenvolvedor" placeholder="Nome">
+        </div>
+        <div class="caixa-input-group">
+          <label>Fundo de troco (R$)</label>
+          <input class="caixa-input big" id="caixaFundo" type="number" min="0" step="0.01" placeholder="0,00" value="200">
+        </div>
+        <div class="caixa-input-group">
+          <label>Observação (opcional)</label>
+          <input class="caixa-input" id="caixaObs" type="text" placeholder="Ex: Turno manhã">
+        </div>`;
+      document.getElementById('caixaModalFooter').innerHTML = `
+        <button onclick="closeCaixa()" style="padding:9px 20px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer">Cancelar</button>
+        <button onclick="confirmarAbertura()" style="padding:9px 22px;border-radius:10px;border:none;background:var(--accent);color:#021c14;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer"><i class="bi bi-unlock-fill"></i> Abrir Caixa</button>`;
+    }
+
+    function confirmarAbertura() {
+      const fundo = parseFloat(document.getElementById('caixaFundo').value) || 0;
+      const operador = document.getElementById('caixaOperador').value || 'Operador';
+      const obs = document.getElementById('caixaObs').value;
+      const agora = new Date();
+      caixaState = { aberto:true, operador, fundo, abertura:agora.toISOString(),
+        aberturaStr:agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}), obs, movimentos:[] };
+      saveCaixa(); initCaixaUI(); closeCaixa();
+      showToast('✅ Caixa aberto com R$ ' + fmt(fundo) + ' de fundo');
+    }
+
+    function renderCaixaAberto() {
+      const tab = caixaTab;
+      const movs = caixaState.movimentos || [];
+      const totalSang = movs.filter(m=>m.tipo==='Sangria').reduce((s,m)=>s+m.valor,0);
+      const totalSup  = movs.filter(m=>m.tipo==='Suprimento').reduce((s,m)=>s+m.valor,0);
+      const saldo = caixaState.fundo + totalSup - totalSang + todayStats.total;
+      document.getElementById('caixaModalTitle').textContent = 'Gerenciar Caixa';
+      document.getElementById('caixaModalBody').innerHTML = `
+        <div class="caixa-resumo">
+          <div class="caixa-resumo-row"><span>Fundo inicial</span><span>R$ ${fmt(caixaState.fundo)}</span></div>
+          <div class="caixa-resumo-row"><span>Suprimentos</span><span style="color:var(--accent)">+ R$ ${fmt(totalSup)}</span></div>
+          <div class="caixa-resumo-row"><span>Sangrias</span><span style="color:var(--danger)">− R$ ${fmt(totalSang)}</span></div>
+          <div class="caixa-resumo-row"><span>Vendas</span><span style="color:var(--accent)">+ R$ ${fmt(todayStats.total)}</span></div>
+          <div class="caixa-resumo-row total"><span>Saldo atual</span><span>R$ ${fmt(saldo)}</span></div>
+        </div>
+        <div class="caixa-tabs">
+          <button class="caixa-tab ${tab==='sangria'?'active':''}" onclick="setCaixaTab('sangria')"><i class="bi bi-arrow-up-circle"></i> Sangria</button>
+          <button class="caixa-tab ${tab==='suprimento'?'active':''}" onclick="setCaixaTab('suprimento')"><i class="bi bi-arrow-down-circle"></i> Suprimento</button>
+          <button class="caixa-tab ${tab==='historico'?'active':''}" onclick="setCaixaTab('historico')"><i class="bi bi-list-ul"></i> Histórico</button>
+        </div>
+        ${tab==='historico' ? `<div class="mov-list">${movs.length ? movs.slice().reverse().map(m=>`
+          <div class="mov-item">
+            <div><div style="font-weight:600">${m.tipo}</div><div class="mov-tipo">${m.hora} · ${m.obs||'—'}</div></div>
+            <div class="mov-valor ${m.tipo==='Sangria'?'e':'s'}">${m.tipo==='Sangria'?'−':'+'} R$ ${fmt(m.valor)}</div>
+          </div>`).join('') : '<p style="color:var(--muted);text-align:center;padding:20px 0;font-size:13px">Nenhuma movimentação.</p>'}
+        </div>` : `
+          <div class="caixa-input-group">
+            <label>Valor (R$)</label>
+            <input class="caixa-input big" id="movValor" type="number" min="0.01" step="0.01" placeholder="0,00">
+          </div>
+          <div class="caixa-input-group">
+            <label>Motivo</label>
+            <input class="caixa-input" id="movObs" type="text" placeholder="${tab==='sangria'?'Ex: Recolha parcial':'Ex: Reforço de troco'}">
+          </div>`}`;
+      document.getElementById('caixaModalFooter').innerHTML = tab==='historico' ? `
+        <button onclick="closeCaixa()" style="padding:9px 20px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer">Fechar</button>
+        <button onclick="fecharCaixa()" style="padding:9px 22px;border-radius:10px;border:none;background:var(--danger);color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer"><i class="bi bi-lock-fill"></i> Fechar Caixa</button>` : `
+        <button onclick="closeCaixa()" style="padding:9px 20px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer">Cancelar</button>
+        <button onclick="confirmarMovimento()" style="padding:9px 22px;border-radius:10px;border:none;background:var(--accent);color:#021c14;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Confirmar ${tab==='sangria'?'Sangria':'Suprimento'}</button>`;
+    }
+
+    function setCaixaTab(tab) { caixaTab=tab; renderCaixaAberto(); }
+
+    function confirmarMovimento() {
+      const valor = parseFloat(document.getElementById('movValor').value);
+      if (!valor||valor<=0) { showToast('⚠️ Informe um valor válido'); return; }
+      const obs = document.getElementById('movObs').value;
+      const hora = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      caixaState.movimentos.push({ tipo: caixaTab==='sangria'?'Sangria':'Suprimento', valor, obs, hora });
+      saveCaixa(); caixaTab='historico'; renderCaixaAberto();
+      showToast((caixaTab==='sangria'?'⬆️ Sangria':'⬇️ Suprimento') + ' de R$ '+fmt(valor)+' registrado');
+    }
+
+    function fecharCaixa() {
+      if (!confirm('Confirmar fechamento de caixa?')) return;
+      caixaState.aberto=false; caixaState.fechamento=new Date().toISOString();
+      saveCaixa(); initCaixaUI(); closeCaixa();
+      showToast('🔒 Caixa fechado com sucesso');
+    }
+
+    // ═══════════════════════════════════════════════
+    // CUPOM DE DESCONTO
+    // ═══════════════════════════════════════════════
+    const CUPONS = {
+      'PROMO10':  { tipo:'%',  valor:10,  desc:'10% de desconto' },
+      'PROMO20':  { tipo:'%',  valor:20,  desc:'20% de desconto' },
+      'FRETE':    { tipo:'R$', valor:15,  desc:'R$ 15,00 de desconto' },
+      'BEMVINDO': { tipo:'%',  valor:5,   desc:'5% para novos clientes' },
+      'VIP50':    { tipo:'R$', valor:50,  desc:'R$ 50,00 VIP' },
+      'TESTE':    { tipo:'%',  valor:100, desc:'100% — teste' },
+    };
+    let cupomAtivo = null;
+
+    function openCupom() {
+      document.getElementById('cupomOverlay').classList.add('open');
+      document.getElementById('cupomField').value = cupomAtivo?cupomAtivo.codigo:'';
+      document.getElementById('cupomResult').className='cupom-result';
+      document.getElementById('cupomResult').textContent='';
+      setTimeout(()=>document.getElementById('cupomField').focus(),100);
+    }
+    function closeCupom() { document.getElementById('cupomOverlay').classList.remove('open'); }
+
+    function applyCupom() {
+      const code = document.getElementById('cupomField').value.trim().toUpperCase();
+      const result = document.getElementById('cupomResult');
+      if (!code) { result.className='cupom-result err'; result.textContent='Digite um código.'; return; }
+      const cupom = CUPONS[code];
+      if (!cupom) { result.className='cupom-result err'; result.textContent='❌ Cupom inválido ou expirado.'; return; }
+      cupomAtivo = { codigo:code, ...cupom };
+      document.getElementById('discInput').value = cupom.valor;
+      setDiscType(cupom.tipo);
+      updateSummary();
+      result.className='cupom-result ok';
+      result.textContent='✅ '+cupom.desc+' aplicado!';
+      updateCupomBadge();
+      setTimeout(closeCupom, 1200);
+    }
+
+    function removeCupom() {
+      cupomAtivo=null;
+      document.getElementById('discInput').value='';
+      updateSummary(); updateCupomBadge();
+      showToast('Cupom removido');
+    }
+
+    function updateCupomBadge() {
+      const btn = document.getElementById('discCupom');
+      if (!btn) return;
+      if (cupomAtivo) {
+        btn.style.borderColor='rgba(0,200,150,.4)'; btn.style.color='var(--accent)';
+        btn.title=cupomAtivo.codigo+' — clique para remover'; btn.onclick=removeCupom;
+      } else {
+        btn.style.borderColor=''; btn.style.color=''; btn.title='Cupom de desconto'; btn.onclick=openCupom;
+      }
+    }
+
+    // ═══════════════════════════════════════════════
+    // IMPRESSÃO DE CUPOM
+    // ═══════════════════════════════════════════════
+    function imprimirCupom(sale) {
+      const items = sale.cartSnapshot || [];
+      const dateStr = new Date().toLocaleDateString('pt-BR')+' '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      const itemsHtml = items.map(i=>`
+        <div class="cp-row"><span class="cp-item-name">${i.nome.substring(0,22)}</span><span class="cp-item-val">${i.qty}x R$ ${fmt(i.preco)}</span></div>
+        <div class="cp-row" style="color:#555;font-size:11px"><span></span><span class="cp-item-val">= R$ ${fmt(i.preco*i.qty)}</span></div>
+      `).join('');
+      const html = `<div class="cupom-print">
+        <div class="cp-logo">NEXO ERP</div>
+        <div class="cp-sub">Sistemy · CNPJ 00.000.000/0001-00</div>
+        <div class="cp-sub">${dateStr}</div>
+        <div class="cp-sep"></div>
+        <div style="font-size:10px;color:#555;margin-bottom:6px;text-align:center">CUPOM NÃO FISCAL</div>
+        ${itemsHtml}
+        <div class="cp-sep"></div>
+        <div class="cp-row"><span>Subtotal</span><span>R$ ${fmt(sale.subtotal||0)}</span></div>
+        ${(sale.desconto||0)>0?`<div class="cp-row"><span>Desconto${cupomAtivo?' ('+cupomAtivo.codigo+')':''}</span><span>− R$ ${fmt(sale.desconto)}</span></div>`:''}
+        <div class="cp-row bold"><span>TOTAL</span><span>R$ ${sale.total}</span></div>
+        <div class="cp-sep"></div>
+        <div class="cp-row"><span>Pagamento</span><span>${sale.method}</span></div>
+        ${(sale.troco||0)>0?`<div class="cp-row"><span>Troco</span><span>R$ ${fmt(sale.troco)}</span></div>`:''}
+        <div class="cp-sep"></div>
+        <div class="cp-center" style="font-size:10px">Cliente: ${sale.client}</div>
+        <div class="cp-center" style="font-size:10px">Operador: ${caixaState&&caixaState.operador?caixaState.operador:'Operador'}</div>
+        <div class="cp-sep"></div>
+        <div class="cp-footer">Obrigado pela preferência! 😊</div>
+      </div>`;
+      const frame = document.getElementById('printFrame');
+      const bar = `<div style="position:sticky;top:0;background:#111;padding:10px;display:flex;gap:8px;justify-content:center;z-index:10">
+        <button onclick="fecharImpressao()" style="padding:8px 16px;border-radius:8px;border:1px solid #333;background:none;color:#fff;font-size:13px;cursor:pointer">✕ Fechar</button>
+        <button onclick="window.print()" style="padding:8px 16px;border-radius:8px;border:none;background:#00c896;color:#021c14;font-size:13px;font-weight:700;cursor:pointer">🖨️ Imprimir</button>
+      </div>`;
+      frame.innerHTML = bar + html;
+      frame.style.display='block';
+    }
+    function fecharImpressao() { const f=document.getElementById('printFrame'); f.style.display='none'; f.innerHTML=''; }
+
+    // ═══════════════════════════════════════════════
+    // LEITOR DE CÓDIGO DE BARRAS
+    // ═══════════════════════════════════════════════
+    let barcodeBuffer='', barcodeTimer=null;
+    const BARCODE_TIMEOUT=80;
+
+    document.addEventListener('keypress', function(e) {
+      const tag = document.activeElement.tagName;
+      if (tag==='INPUT'||tag==='TEXTAREA') return;
+      if (document.getElementById('payOverlay').classList.contains('open')) return;
+      if (document.getElementById('caixaOverlay').classList.contains('open')) return;
+      if (e.key==='Enter') {
+        if (barcodeBuffer.length>=3) processBarcode(barcodeBuffer.trim());
+        barcodeBuffer=''; return;
+      }
+      barcodeBuffer += e.key;
+      clearTimeout(barcodeTimer);
+      barcodeTimer = setTimeout(()=>{
+        if (barcodeBuffer.length>0) {
+          document.getElementById('searchInput').value=barcodeBuffer;
+          filterProducts(); document.getElementById('searchInput').focus();
+        }
+        barcodeBuffer='';
+      }, BARCODE_TIMEOUT);
+    });
+
+    function processBarcode(code) {
+      const ind=document.getElementById('barcodeIndicator');
+      document.getElementById('barcodeVal').textContent=code;
+      ind.classList.add('show'); setTimeout(()=>ind.classList.remove('show'),2000);
+      const prod=PRODUCTS.find(p=>p.sku.toLowerCase()===code.toLowerCase()||(p.ean&&p.ean===code));
+      if (prod) { addToCart(prod.id); showToast('📦 '+prod.nome+' — '+code); }
+      else { document.getElementById('searchInput').value=code; filterProducts(); showToast('🔍 Buscando: '+code); }
     }
 
     // ═══════════════════════════════════════════════
