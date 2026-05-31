@@ -12,6 +12,7 @@
       { label: 'Fiscal / NF-e',   href: '#',                  icon: 'bi-receipt-cutoff',           section: 'Financeiro' },
       { label: 'Parceiros',       href: '#',                  icon: 'bi-briefcase-fill',           section: 'Sistema' },
       { label: 'Configurações',   href: 'configuracoes.html', icon: 'bi-gear-fill',                section: 'Sistema' },
+      { label: 'WhatsApp',     href: '#',                  icon: 'bi-whatsapp',                section: 'Integrações' },
     ];
   
     const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';

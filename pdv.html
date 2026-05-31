@@ -510,47 +510,6 @@
       color: var(--accent);
     }
 
-    /* categorias */
-    .cats-row {
-      padding: 10px 16px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      gap: 7px;
-      overflow-x: auto;
-      flex-shrink: 0;
-    }
-
-    .cats-row::-webkit-scrollbar {
-      height: 0;
-    }
-
-    .cat-btn {
-      padding: 6px 14px;
-      border-radius: 100px;
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all .15s;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      flex-shrink: 0;
-    }
-
-    .cat-btn:hover {
-      color: var(--text);
-      border-color: var(--muted);
-    }
-
-    .cat-btn.active {
-      background: rgba(0, 200, 150, .1);
-      border-color: var(--accent);
-      color: var(--accent);
-    }
 
     /* grid produtos */
     .produtos-grid-wrap {
@@ -2683,15 +2642,20 @@
       <!-- atalhos rápidos + toggle view -->
       <div class="shortcuts-bar">
         <span class="sc-label">Atalhos</span>
+        <div class="sc-sep"></div>
         <div class="sc-item"><span class="sc-key">F2</span> Finalizar</div>
         <div class="sc-sep"></div>
         <div class="sc-item"><span class="sc-key">F3</span> Buscar</div>
         <div class="sc-sep"></div>
-        <div class="sc-item"><span class="sc-key">ESC</span> Cancelar</div>
+        <div class="sc-item"><span class="sc-key">F4</span> CPF na nota</div>
+        <div class="sc-sep"></div>
+        <div class="sc-item"><span class="sc-key">F5</span> Vendas</div>
         <div class="sc-sep"></div>
         <div class="sc-item"><span class="sc-key">Enter</span> Adicionar</div>
         <div class="sc-sep"></div>
-        <div class="sc-item"><span class="sc-key">F4</span> CPF na nota</div>
+        <div class="sc-item"><span class="sc-key">ESC</span> Cancelar</div>
+        <div class="sc-sep"></div>
+        <div class="sc-item"><span class="sc-key">DEL</span> Remover item</div>
         <div class="view-toggle">
           <button class="view-btn active" id="btnGrid" onclick="setView('grid')" title="Grade">
             <i class="bi bi-grid-3x3-gap-fill"></i>
@@ -2728,11 +2692,6 @@
         </div>
       </div>
 
-      <!-- Subtotal fixo -->
-      <div class="cart-subtotal-fixed" id="cartSubtotalFixed">
-        <span class="csf-label">Total atual</span>
-        <span class="csf-val" id="csfVal">R$ 0,00</span>
-      </div>
 
       <!-- Tab vertical (visível só quando colapsado) -->
       <div class="cart-collapsed-tab" onclick="toggleCart()">
@@ -3533,6 +3492,7 @@
         actEl.innerHTML = `
           <button class="suc-btn ghost" onclick="imprimirCupom(salesHistory[0])"><i class="bi bi-printer"></i> Imprimir</button>
           <button class="suc-btn primary" onclick="closeSuccess()"><i class="bi bi-plus-lg"></i> Nova Venda</button>
+          
         `;
       }
 
@@ -3619,6 +3579,8 @@
       if (e.key === 'F4') { e.preventDefault(); document.getElementById('cpfNotaInput').focus(); return; }
       // F2 — finalizar
       if (e.key === 'F2') { e.preventDefault(); if (cart.length) openPayModal(); return; }
+      // F5 - Vendas
+      
       // ESC — close modals
       if (e.key === 'Escape') {
         closePayModal(); closeDrawer();
