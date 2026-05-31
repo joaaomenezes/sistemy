@@ -2368,6 +2368,193 @@
     .tb-btn.caixa-btn { border-color: rgba(0,200,150,.3); color: var(--accent); }
     .tb-btn.caixa-btn.fechado { border-color: rgba(255,71,87,.3); color: var(--danger); }
 
+
+    /* ══ ENTREGA 1 ══ */
+
+    /* Operador no topbar */
+    .tb-op-badge {
+      display: none;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 12px;
+      background: rgba(0,200,150,.08);
+      border: 1px solid rgba(0,200,150,.25);
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    .tb-op-badge:hover { opacity: .8; }
+    .tb-op-badge.show { display: flex; }
+    .tb-op-av {
+      width: 22px; height: 22px;
+      border-radius: 6px;
+      background: linear-gradient(135deg,#2d5298,#1a3a7a);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 800; color: #fff; flex-shrink: 0;
+    }
+
+    /* Linha de atalhos rápidos */
+    .shortcuts-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 16px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(11,18,32,.3);
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .sc-label {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-right: 4px;
+      flex-shrink: 0;
+    }
+    .sc-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .sc-key {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--sub, #94a3b8);
+      min-width: 22px;
+    }
+    .sc-sep {
+      width: 1px;
+      height: 12px;
+      background: var(--border);
+      margin: 0 4px;
+      flex-shrink: 0;
+    }
+
+    /* Toggle grade/lista */
+    .view-toggle {
+      display: flex;
+      gap: 3px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+    .view-btn {
+      width: 26px; height: 26px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--muted);
+      font-size: 13px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .view-btn.active {
+      background: rgba(0,200,150,.1);
+      border-color: rgba(0,200,150,.3);
+      color: var(--accent);
+    }
+    .view-btn:hover:not(.active) { color: var(--text); border-color: var(--muted); }
+
+    /* Modo lista */
+    .produtos-grid.list-mode {
+      grid-template-columns: 1fr !important;
+      gap: 5px;
+    }
+    .produtos-grid.list-mode .prod-card {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      border-radius: 9px;
+    }
+    .produtos-grid.list-mode .prod-img {
+      width: 52px;
+      height: 52px;
+      flex-shrink: 0;
+      font-size: 24px;
+      border-radius: 0;
+    }
+    .produtos-grid.list-mode .prod-body {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 12px;
+    }
+    .produtos-grid.list-mode .prod-name {
+      flex: 1;
+      font-size: 13px;
+      -webkit-line-clamp: 1;
+      line-clamp: 1;
+      margin-bottom: 0;
+    }
+    .produtos-grid.list-mode .prod-price {
+      font-size: 14px;
+      white-space: nowrap;
+    }
+    .produtos-grid.list-mode .prod-stock {
+      font-size: 10px;
+      white-space: nowrap;
+      margin-top: 0;
+    }
+    .produtos-grid.list-mode .prod-low-badge,
+    .produtos-grid.list-mode .prod-promo-badge {
+      top: 4px;
+    }
+
+    /* Barra de estoque visual */
+    .prod-stock-bar {
+      width: 100%;
+      height: 3px;
+      background: rgba(255,255,255,.06);
+      border-radius: 100px;
+      margin-top: 5px;
+      overflow: hidden;
+    }
+    .prod-stock-bar-fill {
+      height: 100%;
+      border-radius: 100px;
+      transition: width .3s ease;
+    }
+    .produtos-grid.list-mode .prod-stock-bar { display: none; }
+
+    /* Subtotal fixo no topo do carrinho */
+    .cart-subtotal-fixed {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 16px;
+      background: rgba(0,200,150,.05);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .cart-subtotal-fixed .csf-label {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .cart-subtotal-fixed .csf-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+    .carrinho-area.collapsed .cart-subtotal-fixed { display: none; }
+
     @media(max-width:1100px) {
       .produtos-grid {
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -2482,24 +2669,37 @@
         </div>
         <div class="topbar-actions">
           <button class="tb-btn caixa-btn fechado" id="caixaBtn" onclick="openCaixa()"><i class="bi bi-cash-stack"></i> <span id="caixaBtnLabel">Abrir Caixa</span></button>
+          <div class="tb-op-badge" id="tbOpBadge" onclick="openCaixa()" title="Gerenciar caixa">
+            <div class="tb-op-av" id="tbOpAv">--</div>
+            <span id="tbOpNome">—</span>
+          </div>
           <button class="tb-btn accent" onclick="toggleAI()"><i class="bi bi-stars"></i> Nexo AI</button>
           <button class="tb-btn" onclick="openDrawer()"><i class="bi bi-clock-history"></i> Vendas</button>
-          <button class="tb-btn" onclick="toggleExpress()"><i class="bi bi-lightning-charge-fill"></i> <span
-              id="expressLabel">Express</span></button>
+          
         </div>
+        
       </div>
 
-      <!-- categorias -->
-      <div class="cats-row">
-        <button class="cat-btn active" onclick="setCategory(this,'todos')">🔥 Todos</button>
-        <button class="cat-btn" onclick="setCategory(this,'Alimentos')">🍎 Alimentos</button>
-        <button class="cat-btn" onclick="setCategory(this,'Bebidas')">🥤 Bebidas</button>
-        <button class="cat-btn" onclick="setCategory(this,'Limpeza')">🧹 Limpeza</button>
-        <button class="cat-btn" onclick="setCategory(this,'Higiene')">🧴 Higiene</button>
-        <button class="cat-btn" onclick="setCategory(this,'Eletrônicos')">💻 Eletrônicos</button>
-        <button class="cat-btn" onclick="setCategory(this,'Medicamentos')">💊 Medicamentos</button>
-        <button class="cat-btn" onclick="setCategory(this,'Ferramentas')">🔧 Ferramentas</button>
-        <button class="cat-btn" onclick="setCategory(this,'Promoções')">🏷️ Promoções</button>
+      <!-- atalhos rápidos + toggle view -->
+      <div class="shortcuts-bar">
+        <span class="sc-label">Atalhos</span>
+        <div class="sc-item"><span class="sc-key">F2</span> Finalizar</div>
+        <div class="sc-sep"></div>
+        <div class="sc-item"><span class="sc-key">F3</span> Buscar</div>
+        <div class="sc-sep"></div>
+        <div class="sc-item"><span class="sc-key">ESC</span> Cancelar</div>
+        <div class="sc-sep"></div>
+        <div class="sc-item"><span class="sc-key">Enter</span> Adicionar</div>
+        <div class="sc-sep"></div>
+        <div class="sc-item"><span class="sc-key">F4</span> CPF na nota</div>
+        <div class="view-toggle">
+          <button class="view-btn active" id="btnGrid" onclick="setView('grid')" title="Grade">
+            <i class="bi bi-grid-3x3-gap-fill"></i>
+          </button>
+          <button class="view-btn" id="btnList" onclick="setView('list')" title="Lista">
+            <i class="bi bi-list-ul"></i>
+          </button>
+        </div>
       </div>
 
       <!-- grid -->
@@ -2528,6 +2728,12 @@
         </div>
       </div>
 
+      <!-- Subtotal fixo -->
+      <div class="cart-subtotal-fixed" id="cartSubtotalFixed">
+        <span class="csf-label">Total atual</span>
+        <span class="csf-val" id="csfVal">R$ 0,00</span>
+      </div>
+
       <!-- Tab vertical (visível só quando colapsado) -->
       <div class="cart-collapsed-tab" onclick="toggleCart()">
         <div class="cc-icon"><i class="bi bi-cart3"></i></div>
@@ -2538,7 +2744,7 @@
         </div>
       </div>
 
-      <!-- cliente -->
+      <!-- cpf na nota -->
       <div class="cart-client">
         <div>
           <div class="cpf-nota-wrap">
@@ -2784,6 +2990,81 @@
     // ═══════════════════════════════════════════════
     // INIT
     // ═══════════════════════════════════════════════
+
+    // ═══════════════════════════════════════════════
+    // ENTREGA 1 — novas funcionalidades
+    // ═══════════════════════════════════════════════
+
+    // ── View mode: grade / lista ──
+    let viewMode = 'grid';
+    function setView(mode) {
+      viewMode = mode;
+      const grid = document.getElementById('prodGrid');
+      const btnG = document.getElementById('btnGrid');
+      const btnL = document.getElementById('btnList');
+      if (mode === 'list') {
+        grid.classList.add('list-mode');
+        btnG.classList.remove('active');
+        btnL.classList.add('active');
+      } else {
+        grid.classList.remove('list-mode');
+        btnG.classList.add('active');
+        btnL.classList.remove('active');
+      }
+    }
+
+    // ── Barra de estoque: cor e largura ──
+    function stockBarStyle(estoque) {
+      const max = 200;
+      const pct = Math.min(100, Math.round((estoque / max) * 100));
+      let color = '#00c896'; // verde
+      if (pct <= 5)  color = '#ff4757'; // vermelho
+      else if (pct <= 15) color = '#ff6b35'; // laranja
+      return { pct, color };
+    }
+
+    // ── Busca automática ao digitar (qualquer tecla alfanumérica) ──
+    document.addEventListener('keydown', function(e) {
+      const tag = document.activeElement.tagName;
+      const active = document.activeElement;
+      // Só redireciona se não estiver em input/textarea e nenhum modal aberto
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (document.getElementById('payOverlay').classList.contains('open')) return;
+      if (document.getElementById('caixaOverlay').classList.contains('open')) return;
+      if (document.getElementById('cupomOverlay').classList.contains('open')) return;
+      // Só letras e números
+      if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        const search = document.getElementById('searchInput');
+        search.focus();
+        // Deixa o keydown propagar normalmente para o input
+      }
+    });
+
+    // ── F4 — foco no CPF na nota ──
+    // (adicionado no handleKeys existente via patch abaixo)
+
+    // ── Subtotal fixo sincronizado ──
+    function syncFixedSubtotal() {
+      const el = document.getElementById('csfVal');
+      if (el) el.textContent = `R$ ${fmt(getTotal())}`;
+    }
+
+    // ── Badge operador no topbar ──
+    function updateTopbarOp() {
+      const badge = document.getElementById('tbOpBadge');
+      const av    = document.getElementById('tbOpAv');
+      const nome  = document.getElementById('tbOpNome');
+      if (!badge) return;
+      if (isCaixaAberto()) {
+        const n = (caixaState && caixaState.operador) || 'Operador';
+        badge.classList.add('show');
+        if (av)   av.textContent = n.split(' ').map(x=>x[0]).join('').substring(0,2).toUpperCase();
+        if (nome) nome.textContent = n.split(' ')[0]; // só primeiro nome
+      } else {
+        badge.classList.remove('show');
+      }
+    }
+
     function init() {
       renderProducts();
       updateClock();
@@ -2886,6 +3167,7 @@
         <div class="prod-name">${p.nome}</div>
         <div class="prod-price">R$ ${fmt(p.preco)}</div>
         <div class="prod-stock">${outStock ? '<span style="color:var(--danger)">Sem estoque</span>' : p.estoque + ' un'}</div>
+        ${!outStock ? `<div class="prod-stock-bar"><div class="prod-stock-bar-fill" style="width:${stockBarStyle(p.estoque).pct}%;background:${stockBarStyle(p.estoque).color}"></div></div>` : ''}
       </div>
     </div>`;
       }).join('');
@@ -3027,6 +3309,7 @@
       document.getElementById('sumDiscount').style.color = disc > 0 ? 'var(--warn)' : 'var(--muted)';
       document.getElementById('sumTotal').textContent = `R$ ${fmt(total)}`;
       syncCollapsedTab();
+      syncFixedSubtotal();
     }
 
     function getTotal() {
@@ -3327,21 +3610,13 @@
     }
 
     // ═══════════════════════════════════════════════
-    // EXPRESS MODE
-    // ═══════════════════════════════════════════════
-    function toggleExpress() {
-      expressMode = !expressMode;
-      document.getElementById('expressLabel').textContent = expressMode ? 'Express ON' : 'Express';
-      document.getElementById('searchInput').focus();
-      showToast(expressMode ? '⚡ Modo Express ativado — use o teclado!' : 'Modo Express desativado');
-    }
-
-    // ═══════════════════════════════════════════════
     // KEYBOARD SHORTCUTS
     // ═══════════════════════════════════════════════
     function handleKeys(e) {
       // F3 — focus search
       if (e.key === 'F3') { e.preventDefault(); document.getElementById('searchInput').focus(); return; }
+      // F4 — CPF na nota
+      if (e.key === 'F4') { e.preventDefault(); document.getElementById('cpfNotaInput').focus(); return; }
       // F2 — finalizar
       if (e.key === 'F2') { e.preventDefault(); if (cart.length) openPayModal(); return; }
       // ESC — close modals

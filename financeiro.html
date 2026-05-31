@@ -1026,18 +1026,6 @@ transition: border-color .15s;
       padding: 0 28px;
     }
 
-    /* ── DRE date picker fixes ── */
-    #panel-dre .fin-dp-wrap { position: relative; }
-    #panel-dre .fin-dp-drop {
-      position: absolute;
-      top: calc(100% + 6px);
-      right: 0;
-      left: auto;
-      background: #0f1929 !important;
-      z-index: 9999 !important;
-      min-width: 190px;
-    }
-
     /* Fix KPI cards — ensure styles apply inside fin-panel */
     #panel-dre .dre-kpi {
       background: var(--card) !important;
@@ -3219,44 +3207,6 @@ transition: border-color .15s;
         String(date.getMonth() + 1).padStart(2, '0') + '/' +
         date.getFullYear();
     }
-
-
-    // ── DRE date picker ──
-    function toggleDreDp() {
-      document.getElementById('dreDpDrop').classList.toggle('open');
-    }
-
-    function dreSel(el, label) {
-      document.querySelectorAll('#dreDpDrop .fin-dp-opt').forEach(o => o.classList.remove('sel'));
-      el.classList.add('sel');
-      document.getElementById('dreDpLabel').textContent = label;
-      document.getElementById('dreDpDrop').classList.remove('open');
-    }
-
-    function dreDpApply() {
-      const s = document.getElementById('dreDpS').value;
-      const e = document.getElementById('dreDpE').value;
-      const fmt = v => v.split('-').reverse().join('/');
-      if (s && e) document.getElementById('dreDpLabel').textContent = fmt(s) + ' – ' + fmt(e);
-      document.getElementById('dreDpDrop').classList.remove('open');
-    }
-
-    function toggleDreComparar() {
-      showToast('📊 Comparação de períodos em breve');
-    }
-
-    function setDreChip(el) {
-      el.closest('.dre-chips').querySelectorAll('.dre-chip').forEach(c => c.classList.remove('on'));
-      el.classList.add('on');
-    }
-
-    document.addEventListener('click', function(ev) {
-      const btn = document.getElementById('dreDpBtn');
-      const dd  = document.getElementById('dreDpDrop');
-      if (btn && dd && !btn.contains(ev.target) && !dd.contains(ev.target)) {
-        dd.classList.remove('open');
-      }
-    });
 
   </script>
 </body>
