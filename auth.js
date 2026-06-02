@@ -36,10 +36,13 @@
     return (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase();
   }
 
+  const DEMO_REMOVED_KEY = 'nexoerp.demo_removed';
+
   function ensureDemoUser() {
     const users = readJSON(USERS_KEY, []);
-    const exists = users.some(user => user.id === demoUser.id || normalize(user.email) === demoUser.email);
-    if (!exists) {
+    const demoRemoved = localStorage.getItem(DEMO_REMOVED_KEY) === 'true';
+    const exists = users.some(user => user.id === demoUser.id || normalize(user.email) === normalize(demoUser.email));
+    if (!exists && !demoRemoved) {
       users.unshift(demoUser);
       writeJSON(USERS_KEY, users);
     }

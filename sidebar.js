@@ -6,6 +6,7 @@
       { label: 'Vendas',          href: 'vendas.html',        icon: 'bi-cart4',                    section: 'Principal', badge: '12' },
       { label: 'Clientes',        href: 'clientes.html',      icon: 'bi-people-fill',              section: 'Principal' },
       { label: 'Produtos',        href: 'produtos.html',      icon: 'bi-box-seam-fill',            section: 'Principal' },
+      { label: 'Catálogo',        href: 'catalogo.html',      icon: 'bi-grid-3x3-gap-fill',        section: 'Principal', newTab: true },
       { label: 'Estoque',         href: 'estoque.html',       icon: 'bi-stack',                    section: 'Principal' },
       { label: 'Relatórios',      href: '#',                  icon: 'bi-graph-up-arrow',           section: 'Financeiro' },
       { label: 'Financeiro',      href: 'financeiro.html',    icon: 'bi-credit-card-2-back-fill',  section: 'Financeiro' },
@@ -24,8 +25,9 @@
       const items = MENU.filter(i => i.section === sec).map(item => {
         const active = item.href === currentPage ? 'active' : '';
         const badge  = item.badge ? `<span class="badge">${item.badge}</span>` : '';
+        const target = item.newTab ? ' target="_blank" rel="noopener"' : '';
         return `
-          <a href="${item.href}" class="nav-item ${active}">
+          <a href="${item.href}"${target} class="nav-item ${active}">
             <i class="bi ${item.icon}"></i>
             <span class="nav-label">${item.label}</span>
             ${badge}

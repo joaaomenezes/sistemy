@@ -1608,24 +1608,45 @@ font-size: 12px;
     function closeUserModal() { document.getElementById('userModalOverlay').classList.remove('open'); }
     function handleUserOverlay(e) { if (e.target === document.getElementById('userModalOverlay')) closeUserModal(); }
 
+    function persistUsers() {
+      const raw = JSON.parse(localStorage.getItem('nexoerp.users') || '[]');
+      usuarios.forEach(u => {
+        const idx = raw.findIndex(r => r.id === u.id);
+        if (idx >= 0) {
+          raw[idx].name  = u.nome;
+          raw[idx].email = u.email;
+          raw[idx].role  = u.role || perfilLabels[u.perfil];
+        } else {
+          raw.unshift({ id: u.id, name: u.nome, username: u.email.split('@')[0], email: u.email, password: u._pw || '', role: u.role || perfilLabels[u.perfil], createdAt: new Date().toISOString() });
+        }
+      });
+      const ids = new Set(usuarios.map(u => u.id));
+      const final = raw.filter(r => ids.has(r.id));
+      localStorage.setItem('nexoerp.users', JSON.stringify(final));
+    }
+
     function saveUser() {
-      const nome = document.getElementById('u-nome').value.trim();
+      const nome  = document.getElementById('u-nome').value.trim();
       const email = document.getElementById('u-email').value.trim();
+      const senha = document.getElementById('u-senha').value.trim();
       const perfil = document.getElementById('u-perfil').value;
       if (!nome || !email) { showToast('Preencha nome e e-mail!'); return; }
       if (editingUserId) {
         const u = usuarios.find(x => x.id === editingUserId);
-        if (u) { u.nome = nome; u.email = email; u.perfil = perfil; }
+        if (u) { u.nome = nome; u.email = email; u.perfil = perfil; u.role = perfilLabels[perfil]; }
       } else {
-        usuarios.push({ id: `u-${Date.now()}`, nome, email, perfil, role: perfilLabels[perfil] });
+        usuarios.push({ id: `u-${Date.now()}`, nome, email, perfil, role: perfilLabels[perfil], _pw: senha });
       }
+      persistUsers();
       closeUserModal(); renderUsers(); markDirty();
       showToast(editingUserId ? 'Usuário atualizado!' : 'Usuário criado com sucesso!');
     }
     function editUser(id) { openUserModal(id); }
     function removeUser(id) {
       if (!confirm('Remover este usuário?')) return;
+      if (id === 'demo-admin') localStorage.setItem('nexoerp.demo_removed', 'true');
       usuarios = usuarios.filter(u => u.id !== id);
+      persistUsers();
       renderUsers(); markDirty();
       showToast('Usuário removido.');
     }
