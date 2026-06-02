@@ -917,6 +917,25 @@ font-size: 17px;
   <script>
     NexoAuth.requireAuth();
 
+    // ─── STORAGE ─────────────────────────────────────────────
+    const CLIENTES_KEY = 'nexoerp.clientes';
+
+    function loadClients() {
+      try {
+        const raw = localStorage.getItem(CLIENTES_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (_) {}
+      return [];
+    }
+
+    function saveClients() {
+      try {
+        localStorage.setItem(CLIENTES_KEY, JSON.stringify(clients));
+      } catch (err) {
+        if (err.name === 'QuotaExceededError') showToast('❌ Armazenamento local cheio.', 'error');
+      }
+    }
+
     // ─── DATA ───────────────────────────────────────────────
     const COLORS = [
       ['#00c896', '#021c14'], ['#0077ff', '#e8f0ff'], ['#ff6b35', '#fff0ea'],
@@ -926,17 +945,8 @@ font-size: 17px;
       const idx = (name.charCodeAt(0) + (name.charCodeAt(1) || 0)) % COLORS.length;
       return COLORS[idx];
     }
-    let clients = [
-      { id: 1, nome: 'Posto Panorama Ltda.', tipo: 'pj', doc: '12.345.678/0001-90', tel: '(17) 99115-4091', email: 'financeiro@postopanorama.com.br', cidade: 'São José do Rio Preto', estado: 'SP', status: 'ativo', compras: 47, limite: 'R$ 50.000', condicao: '30 dias', vendedor: 'Lucas Andrade', cadastro: '10/01/2026' },
-      { id: 2, nome: 'Farmácia São José', tipo: 'pj', doc: '98.765.432/0001-10', tel: '(11) 3456-7890', email: 'compras@farmaciasaojose.com.br', cidade: 'São Paulo', estado: 'SP', status: 'ativo', compras: 31, limite: 'R$ 20.000', condicao: '14 dias', vendedor: 'Maria Ferreira', cadastro: '15/01/2026' },
-      { id: 3, nome: 'João Pedro Almeida', tipo: 'pf', doc: '123.456.789-00', tel: '(11) 97777-8888', email: 'joao.almeida@gmail.com', cidade: 'Campinas', estado: 'SP', status: 'ativo', compras: 8, limite: 'R$ 2.000', condicao: 'À vista', vendedor: 'Carlos Souza', cadastro: '20/01/2026' },
-      { id: 4, nome: 'Distribuidora Alfa ME', tipo: 'mei', doc: '45.678.901/0001-23', tel: '(14) 99988-7766', email: 'alfa@distribuidora.com.br', cidade: 'Bauru', estado: 'SP', status: 'ativo', compras: 22, limite: 'R$ 15.000', condicao: '30/60 dias', vendedor: 'Lucas Andrade', cadastro: '02/02/2026' },
-      { id: 5, nome: 'Maria Clara Souza', tipo: 'pf', doc: '987.654.321-00', tel: '(19) 98765-4321', email: 'mariaclara@hotmail.com', cidade: 'Piracicaba', estado: 'SP', status: 'inativo', compras: 3, limite: 'R$ 1.000', condicao: 'À vista', vendedor: '', cadastro: '10/02/2026' },
-      { id: 6, nome: 'Auto Peças SP Ltda.', tipo: 'pj', doc: '55.443.221/0001-55', tel: '(11) 2233-4455', email: 'compras@autopecas.com.br', cidade: 'São Paulo', estado: 'SP', status: 'ativo', compras: 64, limite: 'R$ 80.000', condicao: '30/60/90 dias', vendedor: 'Maria Ferreira', cadastro: '14/02/2026' },
-      { id: 7, nome: 'Carlos Roberto Lima', tipo: 'pf', doc: '456.789.012-33', tel: '(16) 99123-4567', email: 'carlos.lima@email.com', cidade: 'Ribeirão Preto', estado: 'SP', status: 'bloq', compras: 1, limite: 'R$ 500', condicao: 'À vista', vendedor: 'Carlos Souza', cadastro: '01/03/2026' },
-      { id: 8, nome: 'Construfácil EIRELI', tipo: 'pj', doc: '77.889.001/0001-44', tel: '(18) 3344-5566', email: 'obras@construfacil.com.br', cidade: 'Presidente Prudente', estado: 'SP', status: 'ativo', compras: 18, limite: 'R$ 30.000', condicao: '30 dias', vendedor: 'Lucas Andrade', cadastro: '05/03/2026' },
-    ];
 
+    let clients = loadClients();
     let filtered = [...clients];
     let currentFilter = 'todos';
     let currentPage = 1;
@@ -1000,10 +1010,16 @@ font-size: 17px;
     }
 
     function updateKPIs() {
+      const now = new Date();
+      const mesAtual = String(now.getMonth() + 1).padStart(2, '0');
+      const anoAtual = String(now.getFullYear());
       document.getElementById('kpi-total').textContent = clients.length;
       document.getElementById('kpi-ativos').textContent = clients.filter(c => c.status === 'ativo').length;
       document.getElementById('kpi-inativos').textContent = clients.filter(c => c.status === 'inativo' || c.status === 'bloq').length;
-      document.getElementById('kpi-mes').textContent = clients.filter(c => c.cadastro.includes('/03/2026') || c.cadastro.includes('/04/2026') || c.cadastro.includes('/05/2026')).length;
+      document.getElementById('kpi-mes').textContent = clients.filter(c => {
+        const parts = (c.cadastro || '').split('/');
+        return parts[1] === mesAtual && parts[2] === anoAtual;
+      }).length;
     }
 
     // ─── FILTER / SEARCH ─────────────────────────────────────
@@ -1118,7 +1134,7 @@ font-size: 17px;
         estado: document.getElementById('f-estado').value || 'SP',
         status: document.getElementById('f-status').value || 'ativo',
         compras: 0,
-        limite: document.getElementById('f-limite').value || 'R$ 0,00',
+        limite: document.getElementById('f-limite').value.replace(/\D/g, '') || '0',
         condicao: document.getElementById('f-condicao').value || 'À vista',
         vendedor: document.getElementById('f-vendedor').value || '',
         cadastro: new Date().toLocaleDateString('pt-BR'),
@@ -1138,6 +1154,7 @@ font-size: 17px;
         clients.unshift(newClient);
       }
 
+      saveClients();
       closeModal();
       applyFilters();
       showToast(editingId ? 'Cliente atualizado com sucesso!' : 'Cliente cadastrado com sucesso!');
@@ -1161,6 +1178,10 @@ font-size: 17px;
       document.getElementById('f-bairro').value = c.bairro || '';
       document.getElementById('f-cep').value = c.cep || '';
       document.getElementById('f-obs').value = c.obs || '';
+      if (c.limite) {
+        const v = (parseFloat(c.limite) / 100).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        document.getElementById('f-limite').value = v;
+      }
       setSelectVal('f-estado', c.estado);
       setSelectVal('f-status', c.status);
       setSelectVal('f-condicao', c.condicao);
@@ -1180,6 +1201,7 @@ font-size: 17px;
     function deleteClient(id) {
       if (!confirm('Tem certeza que deseja excluir este cliente?')) return;
       clients = clients.filter(c => c.id !== id);
+      saveClients();
       if (currentDetailId === id) closeDetail();
       applyFilters();
       showToast('Cliente removido.');
@@ -1208,9 +1230,10 @@ font-size: 17px;
       const addr = [c.logradouro, c.numero, c.bairro, c.cidade, c.estado, c.cep].filter(Boolean).join(', ') || '—';
       document.getElementById('dp-addr').innerHTML = `<div class="dp-row"><span class="dp-label">Endereço</span><span class="dp-val" style="max-width:200px;text-align:right">${addr}</span></div>`;
 
+      const limiteFormatado = c.limite ? 'R$ ' + fmt(parseFloat(c.limite) || 0) : '—';
       document.getElementById('dp-fin').innerHTML = [
-        ['Limite', c.limite || '—'], ['Condição', c.condicao || '—']
-      ].map(([l, v]) => `<div class="dp-row"><span class="dp-label">${l}</span><span class="dp-val">${v}</span></div>`).join('');
+        ['Limite', limiteFormatado], ['Condição', c.condicao || '—']
+      ].map(([l, v]) => `<div class="dp-row"><span class="dp-label">${escapeHTML(l)}</span><span class="dp-val">${escapeHTML(v)}</span></div>`).join('');
 
       document.getElementById('detailPanel').classList.add('open');
     }

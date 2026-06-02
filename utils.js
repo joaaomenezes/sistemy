@@ -11,15 +11,19 @@ function fmt(v) {
 }
 
 // ── Toast ─────────────────────────────────────────────
-function showToast(msg, type = 'success') {
+function showToast(msg, type) {
+  if (!type) {
+    if (msg.startsWith('❌')) type = 'error';
+    else if (msg.startsWith('⚠️')) type = 'warning';
+    else type = 'success';
+  }
   const t = document.getElementById('toast');
   if (!t) return;
   t.className = `toast ${type}`;
   const icon = t.querySelector('i');
   if (icon) {
-    icon.className = type === 'success'
-      ? 'bi bi-check-circle-fill'
-      : 'bi bi-exclamation-triangle-fill';
+    const icons = { success: 'bi-check-circle-fill', warning: 'bi-exclamation-triangle-fill', error: 'bi-x-circle-fill' };
+    icon.className = `bi ${icons[type] || icons.success}`;
   }
   document.getElementById('toastMsg').textContent = msg;
   t.classList.add('show');
@@ -70,8 +74,16 @@ function maskCPF(el) {
   el.value = v;
 }
 
+// ── Sanitização XSS ──────────────────────────────────
+function escapeHTML(str) {
+  const d = document.createElement('div');
+  d.textContent = String(str == null ? '' : str);
+  return d.innerHTML;
+}
+
 // ── Iniciais (avatares) ───────────────────────────────
 function initials(name) {
-  const w = (name || '').trim().split(' ');
-  return (w[0][0] + (w[1]?.[0] || '')).toUpperCase();
+  const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return 'NX';
+  return (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase();
 }

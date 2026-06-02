@@ -23,7 +23,16 @@
   }
 
   function writeJSON(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (err) {
+      if (err.name === 'QuotaExceededError') {
+        console.error('[NexoERP] localStorage cheio — não foi possível salvar:', key);
+        if (typeof showToast === 'function') showToast('❌ Armazenamento local cheio. Exporte seus dados.', 'error');
+      }
+      return false;
+    }
   }
 
   function normalize(value) {
@@ -154,6 +163,11 @@
     }
   }
 
+  function getGreeting() {
+    const h = new Date().getHours();
+    return h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
+  }
+
   function renderCurrentUser() {
     const session = getSession();
     if (!session) return;
@@ -169,9 +183,10 @@
       el.textContent = initials(user.name);
     });
 
-    const greeting = document.querySelector('.page-header h1, .header-title h1');
-    if (greeting && /^Bom dia,/.test(greeting.textContent.trim())) {
-      greeting.textContent = `Bom dia, ${user.name.split(' ')[0] || user.name}`;
+    const greeting = document.querySelector('.page-header h1, .header-title h1, #greeting-text');
+    if (greeting && /^Bo[ma]\s+(dia|tarde|noite),/.test(greeting.textContent.trim())) {
+      const firstName = user.name.split(' ')[0] || user.name;
+      greeting.textContent = `${getGreeting()}, ${firstName} 👋`;
     }
   }
 

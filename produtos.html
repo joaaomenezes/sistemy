@@ -1201,21 +1201,21 @@ font-size: 28px;
     const COLORS = ['#1e2a3a', '#0d2a1f', '#0d1a2d', '#2a1a0d', '#2a0d1a', '#1a0d2a', '#0d2a2a', '#2a2a0d'];
     const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec4899', '#f59e0b', '#14b8a6', '#6b7f96', '#e8edf5'];
 
-    const PRODUTOS_KEY = 'sistemy.produtos';
-
-    const SAMPLE_PRODUCTS = [
-      { id: 1, nome: 'Arroz Integral 1kg', sku: 'ALI-001', ean: '7891234500001', cat: 'Alimentos', marca: 'TioJoão', unidade: 'un', preco: 8.90, custo: 5.20, estoque: 142, estoqueMin: 20, estoqueMax: 300, status: 'ativo', emoji: '🍎', cor: '#1e2a3a', ncm: '1006.30.21', desc: 'Arroz integral tipo 1, embalagem 1kg.', deposito: 'Depósito Principal', fornecedor: 'Fornecedor A', cadastro: '10/01/2026' },
-      { id: 2, nome: 'Detergente Neutro 500ml', sku: 'LIM-002', ean: '7891234500002', cat: 'Limpeza', marca: 'Ypê', unidade: 'un', preco: 3.50, custo: 1.80, estoque: 87, estoqueMin: 15, estoqueMax: 200, status: 'ativo', emoji: '🧹', cor: '#0d2a1f', ncm: '3402.20.00', desc: 'Detergente neutro para louças.', deposito: 'Depósito Principal', fornecedor: 'Fornecedor B', cadastro: '10/01/2026' },
-      { id: 3, nome: 'Parafuso Sextavado 8mm', sku: 'FER-003', ean: '7891234500003', cat: 'Ferramentas', marca: 'Tramontina', unidade: 'cx', preco: 24.90, custo: 14.00, estoque: 3, estoqueMin: 10, estoqueMax: 100, status: 'ativo', emoji: '🔩', cor: '#0d1a2d', ncm: '7318.15.00', desc: 'Parafuso sextavado zincado 8mm, caixa com 100 unidades.', deposito: 'Depósito Principal', fornecedor: 'Fornecedor C', cadastro: '15/01/2026' },
-      { id: 4, nome: 'Smartphone Samsung A15', sku: 'ELE-004', ean: '7891234500004', cat: 'Eletrônicos', marca: 'Samsung', unidade: 'un', preco: 1299.00, custo: 890.00, estoque: 8, estoqueMin: 3, estoqueMax: 30, status: 'ativo', emoji: '📱', cor: '#0d2a2a', ncm: '8517.12.31', desc: 'Smartphone Android 128GB, tela 6.5", câmera 50MP.', deposito: 'Loja 1', fornecedor: 'Fornecedor A', cadastro: '20/01/2026' },
-      { id: 5, nome: 'Camiseta Polo M', sku: 'VES-005', ean: '7891234500005', cat: 'Vestuário', marca: 'Hering', unidade: 'un', preco: 79.90, custo: 35.00, estoque: 0, estoqueMin: 5, estoqueMax: 50, status: 'ativo', emoji: '👕', cor: '#2a1a0d', ncm: '6105.10.00', desc: 'Camiseta polo masculina manga curta, tamanho M.', deposito: 'Loja 1', fornecedor: 'Fornecedor B', cadastro: '02/02/2026' },
-      { id: 6, nome: 'Ibuprofeno 600mg cx30', sku: 'MED-006', ean: '7891234500006', cat: 'Medicamentos', marca: 'EMS', unidade: 'cx', preco: 18.90, custo: 9.50, estoque: 54, estoqueMin: 10, estoqueMax: 200, status: 'ativo', emoji: '💊', cor: '#2a0d1a', ncm: '3004.90.69', desc: 'Ibuprofeno 600mg, caixa com 30 comprimidos.', deposito: 'Depósito Principal', fornecedor: 'Fornecedor C', cadastro: '10/02/2026' },
-      { id: 7, nome: 'Notebook Dell Inspiron', sku: 'ELE-007', ean: '7891234500007', cat: 'Informática', marca: 'Dell', unidade: 'un', preco: 3499.00, custo: 2600.00, estoque: 2, estoqueMin: 2, estoqueMax: 10, status: 'ativo', emoji: '💻', cor: '#1a0d2a', ncm: '8471.30.12', desc: 'Notebook i5 12ª geração, 8GB RAM, SSD 256GB.', deposito: 'Loja 1', fornecedor: 'Fornecedor A', cadastro: '14/02/2026' },
-      { id: 8, nome: 'Café Torrado 500g', sku: 'ALI-008', ean: '7891234500008', cat: 'Alimentos', marca: 'Pilão', unidade: 'un', preco: 14.50, custo: 8.90, estoque: 0, estoqueMin: 20, estoqueMax: 150, status: 'inativo', emoji: '☕', cor: '#2a2a0d', ncm: '0901.21.00', desc: 'Café torrado e moído tradicional 500g.', deposito: 'Depósito Principal', fornecedor: 'Fornecedor B', cadastro: '01/03/2026' },
-    ];
+    const PRODUTOS_KEY = 'nexoerp.produtos';
+    // migração one-shot: renomeia chave legada
+    (function migrateLegacyKey() {
+      try {
+        const legado = localStorage.getItem('sistemy.produtos');
+        if (legado) { localStorage.setItem('nexoerp.produtos', legado); localStorage.removeItem('sistemy.produtos'); }
+      } catch (_) {}
+    })();
 
     function saveProdutos() {
-      localStorage.setItem(PRODUTOS_KEY, JSON.stringify(products));
+      try {
+        localStorage.setItem(PRODUTOS_KEY, JSON.stringify(products));
+      } catch (err) {
+        if (err.name === 'QuotaExceededError') showToast('❌ Armazenamento local cheio.', 'error');
+      }
     }
 
     let products = (() => {
@@ -1223,8 +1223,7 @@ font-size: 28px;
         const raw = localStorage.getItem(PRODUTOS_KEY);
         if (raw) return JSON.parse(raw);
       } catch (_) {}
-      localStorage.setItem(PRODUTOS_KEY, JSON.stringify(SAMPLE_PRODUCTS));
-      return SAMPLE_PRODUCTS;
+      return [];
     })();
 
     let filtered = [...products];

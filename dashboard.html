@@ -48,7 +48,7 @@
 
     /* ─── OVERRIDE GLOBAL ─── */
     .content {
-      padding: 20px 24px 28px;
+      padding: 16px 20px 24px;
       background: transparent;
       min-height: 100vh;
     }
@@ -112,21 +112,21 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 18px;
+      margin-bottom: 14px;
     }
 
     .db-header-left h1 {
-font-size: 18px;
-      font-weight: 800;
-      letter-spacing: -.4px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -.3px;
       color: var(--text);
       line-height: 1.2;
     }
 
     .db-header-left p {
-      font-size: 12px;
-      color: var(--sub);
-      margin-top: 3px;
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-top: 2px;
     }
 
     .db-header-right {
@@ -322,151 +322,104 @@ cursor: pointer;
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
-      margin-bottom: 14px;
+      gap: 12px;
+      margin-bottom: 12px;
     }
 
     .kpi {
-      height: 100px;
-      padding: 18px;
-      border-radius: 18px;
+      padding: 14px 16px;
+      border-radius: 14px;
       background: rgba(11, 18, 32, .95);
       border: 1px solid var(--border);
+      border-left: 3px solid var(--kpi-accent, var(--border));
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       position: relative;
       overflow: hidden;
       isolation: isolate;
       cursor: default;
       transition: var(--ease);
-      animation: fadeUp .35s ease both;
+      animation: fadeUp .3s ease both;
     }
 
-    .kpi:nth-child(1) {
-      animation-delay: .05s;
-    }
-
-    .kpi:nth-child(2) {
-      animation-delay: .10s;
-    }
-
-    .kpi:nth-child(3) {
-      animation-delay: .15s;
-    }
-
-    .kpi:nth-child(4) {
-      animation-delay: .20s;
-    }
-
-    .kpi::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at top left, var(--glow, transparent) 0%, transparent 60%);
-      opacity: 0;
-      transition: opacity .3s;
-      pointer-events: none;
-    }
+    .kpi:nth-child(1) { animation-delay: .04s; }
+    .kpi:nth-child(2) { animation-delay: .08s; }
+    .kpi:nth-child(3) { animation-delay: .12s; }
+    .kpi:nth-child(4) { animation-delay: .16s; }
 
     .kpi:hover {
-      transform: translateY(-3px);
       border-color: var(--border-h);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, .3);
+      border-left-color: var(--kpi-accent, var(--border-h));
+      background: rgba(14, 22, 40, .98);
     }
 
-    .kpi:hover::before {
-      opacity: 1;
-    }
-
-    .kpi.g {
-      --glow: rgba(0, 208, 132, .18);
-    }
-
-    .kpi.b {
-      --glow: rgba(47, 128, 255, .18);
-    }
-
-    .kpi.o {
-      --glow: rgba(255, 140, 66, .18);
-    }
-
-    .kpi.r {
-      --glow: rgba(255, 77, 109, .18);
-    }
+    .kpi.g { --kpi-accent: var(--green); }
+    .kpi.b { --kpi-accent: var(--blue); }
+    .kpi.o { --kpi-accent: var(--orange); }
+    .kpi.r { --kpi-accent: var(--red); }
 
     .kpi-ico {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
+      font-size: 14px;
       flex-shrink: 0;
     }
 
-    .kpi.g .kpi-ico {
-      background: rgba(0, 208, 132, .12);
-      color: var(--green);
-    }
-
-    .kpi.b .kpi-ico {
-      background: rgba(47, 128, 255, .12);
-      color: var(--blue);
-    }
-
-    .kpi.o .kpi-ico {
-      background: rgba(255, 140, 66, .12);
-      color: var(--orange);
-    }
-
-    .kpi.r .kpi-ico {
-      background: rgba(255, 77, 109, .12);
-      color: var(--red);
-    }
+    .kpi.g .kpi-ico { background: rgba(0, 208, 132, .10); color: var(--green); }
+    .kpi.b .kpi-ico { background: rgba(47, 128, 255, .10); color: var(--blue); }
+    .kpi.o .kpi-ico { background: rgba(255, 140, 66, .10); color: var(--orange); }
+    .kpi.r .kpi-ico { background: rgba(255, 77, 109, .10); color: var(--red); }
 
     .kpi-body {
       flex: 1;
       min-width: 0;
     }
 
-    .kpi-val {
-font-size: 24px;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: -.8px;
-      line-height: 1;
-      margin-bottom: 5px;
-    }
-
     .kpi-lbl {
-      font-size: 13px;
-      color: var(--sub);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+
+    .kpi-val {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -.5px;
+      line-height: 1;
     }
 
     .kpi-badge {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 999px;
+      padding: 3px 8px;
+      border-radius: 6px;
       display: flex;
       align-items: center;
-      gap: 2px;
+      gap: 1px;
       white-space: nowrap;
-      align-self: flex-start;
+      align-self: flex-end;
+      flex-shrink: 0;
     }
 
     .kpi-badge.up {
-      background: rgba(0, 208, 132, .12);
+      background: rgba(0, 208, 132, .10);
       color: var(--green);
     }
 
     .kpi-badge.down {
-      background: rgba(255, 77, 109, .12);
+      background: rgba(255, 77, 109, .10);
       color: var(--red);
     }
 
@@ -475,15 +428,15 @@ font-size: 24px;
     ═══════════════════════════════ */
     .chart-grid {
       display: grid;
-      grid-template-columns: 2.2fr .8fr;
-      gap: 14px;
-      margin-bottom: 14px;
-      animation: fadeUp .4s .22s ease both;
+      grid-template-columns: 1.8fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+      animation: fadeUp .35s .2s ease both;
     }
 
     /* shared card */
     .dcard {
-      border-radius: var(--r-lg);
+      border-radius: 14px;
       background: rgba(11, 18, 32, .95);
       border: 1px solid var(--border);
       overflow: hidden;
@@ -500,31 +453,30 @@ font-size: 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 18px 12px;
+      padding: 12px 16px 10px;
       border-bottom: 1px solid var(--border);
     }
 
     .dcard-title {
-font-size: 13.5px;
+      font-size: 13px;
       font-weight: 700;
       color: var(--text);
     }
 
     .dcard-sub {
-      font-size: 11.5px;
-      color: var(--sub);
-      opacity: .75;
+      font-size: 11px;
+      color: var(--muted);
       margin-top: 1px;
     }
 
     .dcard-body {
-      padding: 14px 18px;
+      padding: 12px 16px;
     }
 
     /* chart card fixed height */
     .chart-main {
-      height: 320px;
-      max-height: 320px;
+      height: 280px;
+      max-height: 280px;
       display: flex;
       flex-direction: column;
     }
@@ -533,7 +485,7 @@ font-size: 13.5px;
       flex: 1;
       display: flex;
       flex-direction: column;
-      padding-bottom: 10px;
+      padding-bottom: 8px;
       overflow: hidden;
     }
 
@@ -621,8 +573,8 @@ transition: var(--ease);
 
     /* donut card */
     .donut-card {
-      height: 320px;
-      max-height: 320px;
+      height: 280px;
+      max-height: 280px;
       display: flex;
       flex-direction: column;
     }
@@ -632,12 +584,13 @@ transition: var(--ease);
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 16px;
+      gap: 14px;
+      padding: 10px 16px;
     }
 
     svg.donut {
-      width: 100px;
-      height: 100px;
+      width: 88px;
+      height: 88px;
       display: block;
       margin: 0 auto;
     }
@@ -645,26 +598,26 @@ transition: var(--ease);
     .dleg {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
     .dleg-row {
       display: flex;
       align-items: center;
-      gap: 9px;
-      font-size: 12.5px;
+      gap: 8px;
+      font-size: 12px;
       color: var(--sub);
     }
 
     .dleg-dot {
-      width: 7px;
-      height: 7px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       flex-shrink: 0;
     }
 
     .dleg-val {
-      font-size: 11.5px;
+      font-size: 11px;
       color: var(--muted);
     }
 
@@ -672,7 +625,7 @@ transition: var(--ease);
       margin-left: auto;
       font-weight: 700;
       color: var(--text);
-      font-size: 13px;
+      font-size: 12px;
     }
 
     /* ═══════════════════════════════
@@ -680,9 +633,9 @@ transition: var(--ease);
     ═══════════════════════════════ */
     .bottom-grid {
       display: grid;
-      grid-template-columns: 1fr 340px;
-      gap: 14px;
-      animation: fadeUp .4s .28s ease both;
+      grid-template-columns: 460px 1fr;
+      gap: 12px;
+      animation: fadeUp .35s .26s ease both;
     }
 
     /* ─── Sales table ─── */
@@ -692,111 +645,95 @@ transition: var(--ease);
     }
 
     .stbl thead th {
-      padding: 10px 18px;
+      padding: 8px 14px;
       text-align: left;
-      font-size: 10.5px;
+      font-size: 10px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .6px;
+      letter-spacing: .5px;
       color: var(--muted);
       border-bottom: 1px solid var(--border);
+      white-space: nowrap;
     }
 
     .stbl tbody tr {
       transition: background .12s;
-      cursor: default;
+      cursor: pointer;
     }
 
     .stbl tbody tr:hover td {
-      background: rgba(255, 255, 255, .02);
+      background: rgba(255, 255, 255, .025);
     }
 
     .stbl tbody td {
-      padding: 12px 18px;
-      font-size: 13.5px;
+      padding: 9px 14px;
+      font-size: 12.5px;
       color: var(--text);
       border-bottom: 1px solid rgba(255, 255, 255, .03);
       vertical-align: middle;
+      white-space: nowrap;
     }
 
-    .stbl tbody tr:last-child td {
-      border-bottom: none;
-    }
+    .stbl tbody tr:last-child td { border-bottom: none; }
 
     .td-name {
       font-weight: 600;
-      font-size: 13.5px;
+      font-size: 12.5px;
+      max-width: 140px;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .td-id {
-      font-size: 11px;
+      font-size: 10px;
       color: var(--muted);
       margin-top: 1px;
     }
 
     .td-amt {
       font-weight: 700;
-      font-size: 13.5px;
+      font-size: 12.5px;
+      font-variant-numeric: tabular-nums;
     }
 
-    .td-amt.pos {
-      color: var(--green);
-    }
-
-    .td-amt.neg {
-      color: var(--red);
-    }
-
-    .td-amt.neu {
-      color: var(--text);
-    }
+    .td-amt.pos { color: var(--green); }
+    .td-amt.neg { color: var(--red); }
+    .td-amt.neu { color: var(--text); }
 
     /* status pills */
     .spill {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      padding: 5px 12px;
-      border-radius: 999px;
-      font-size: 12px;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 5px;
+      font-size: 10.5px;
       font-weight: 600;
       white-space: nowrap;
     }
 
     .spill::before {
       content: '';
-      width: 5px;
-      height: 5px;
+      width: 4px;
+      height: 4px;
       border-radius: 50%;
       background: currentColor;
     }
 
-    .spill.ok {
-      background: rgba(0, 208, 132, .1);
-      color: var(--green);
-    }
-
-    .spill.pend {
-      background: rgba(245, 183, 0, .12);
-      color: var(--yellow);
-    }
-
-    .spill.canc {
-      background: rgba(255, 77, 109, .1);
-      color: var(--red);
-    }
+    .spill.ok   { background: rgba(0, 208, 132, .10); color: var(--green); }
+    .spill.pend { background: rgba(245, 183, 0, .10);  color: var(--yellow); }
+    .spill.canc { background: rgba(255, 77, 109, .10); color: var(--red); }
 
     /* ─── Timeline activity ─── */
     .tl {
       display: flex;
       flex-direction: column;
-      padding: 2px 0;
     }
 
     .tl-item {
       display: flex;
-      gap: 12px;
-      padding: 12px 18px;
+      gap: 10px;
+      padding: 10px 16px;
       position: relative;
       transition: background .12s;
     }
@@ -805,42 +742,38 @@ transition: var(--ease);
       background: rgba(255, 255, 255, .018);
     }
 
-    /* vertical line between items */
     .tl-item:not(:last-child)::after {
       content: '';
       position: absolute;
-      left: 30px;
-      top: 40px;
+      left: 28px;
+      top: 34px;
       bottom: -2px;
       width: 1px;
-      background: rgba(255, 255, 255, .06);
-      z-index: 0;
+      background: rgba(255, 255, 255, .05);
     }
 
     .tl-dot-wrap {
       display: flex;
       align-items: flex-start;
-      padding-top: 4px;
+      padding-top: 3px;
       z-index: 1;
       flex-shrink: 0;
     }
 
     .tl-dot {
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       flex-shrink: 0;
-      box-shadow: 0 0 0 3px rgba(255, 255, 255, .04);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, .05);
     }
 
-    .tl-body {
-      flex: 1;
-    }
+    .tl-body { flex: 1; }
 
     .tl-text {
-      font-size: 13px;
+      font-size: 12.5px;
       color: var(--sub);
-      line-height: 1.5;
+      line-height: 1.45;
     }
 
     .tl-text strong {
@@ -849,16 +782,16 @@ transition: var(--ease);
     }
 
     .tl-time {
-      font-size: 11px;
+      font-size: 10.5px;
       color: var(--muted);
       margin-top: 2px;
     }
 
     /* ─── Link ─── */
     .dlink {
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 600;
-      color: var(--sub);
+      color: var(--muted);
       text-decoration: none;
       display: flex;
       align-items: center;
@@ -866,9 +799,7 @@ transition: var(--ease);
       transition: color .15s;
     }
 
-    .dlink:hover {
-      color: var(--text);
-    }
+    .dlink:hover { color: var(--text); }
 
     /* ═══════════════════════════════
        ANIMATIONS
@@ -888,26 +819,19 @@ transition: var(--ease);
     /* ═══════════════════════════════
        RESPONSIVE
     ═══════════════════════════════ */
-    @media (max-width: 1180px) {
-      .chart-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .bottom-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .chart-main,
-      .donut-card {
-        height: auto;
-        max-height: none;
-      }
+    @media (max-width: 1200px) {
+      .chart-grid  { grid-template-columns: 1fr; }
+      .bottom-grid { grid-template-columns: 1fr; }
+      .chart-main, .donut-card { height: auto; max-height: none; }
     }
 
     @media (max-width: 860px) {
-      .kpi-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .content { padding: 12px 14px 20px; }
+    }
+
+    @media (max-width: 500px) {
+      .kpi-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -947,7 +871,7 @@ transition: var(--ease);
       <!-- PAGE HEADER -->
       <div class="db-header">
         <div class="db-header-left">
-          <h1>Bom dia, João 👋</h1>
+          <h1 id="greeting-text">Bom dia, Usuário 👋</h1>
           <p id="dbDate">—</p>
         </div>
         <div class="db-header-right">
@@ -986,37 +910,37 @@ transition: var(--ease);
         <div class="kpi g">
           <div class="kpi-ico"><i class="bi bi-currency-dollar"></i></div>
           <div class="kpi-body">
-            <div class="kpi-val">R$ 84,2k</div>
+            <div class="kpi-val" id="kpi-faturamento">R$ 0,00</div>
             <div class="kpi-lbl">Faturamento do mês</div>
           </div>
-          <div class="kpi-badge up"><i class="bi bi-arrow-up-short"></i>12,4%</div>
+          <div class="kpi-badge" id="kpi-faturamento-badge"></div>
         </div>
 
         <div class="kpi b">
           <div class="kpi-ico"><i class="bi bi-cart-check-fill"></i></div>
           <div class="kpi-body">
-            <div class="kpi-val">1.247</div>
-            <div class="kpi-lbl">Pedidos no mês</div>
+            <div class="kpi-val" id="kpi-pedidos">0</div>
+            <div class="kpi-lbl">Vendas no mês</div>
           </div>
-          <div class="kpi-badge up"><i class="bi bi-arrow-up-short"></i>8,1%</div>
+          <div class="kpi-badge" id="kpi-pedidos-badge"></div>
         </div>
 
         <div class="kpi o">
           <div class="kpi-ico"><i class="bi bi-person-plus-fill"></i></div>
           <div class="kpi-body">
-            <div class="kpi-val">348</div>
-            <div class="kpi-lbl">Novos clientes</div>
+            <div class="kpi-val" id="kpi-clientes">0</div>
+            <div class="kpi-lbl">Clientes cadastrados</div>
           </div>
-          <div class="kpi-badge up"><i class="bi bi-arrow-up-short"></i>5,3%</div>
+          <div class="kpi-badge" id="kpi-clientes-badge"></div>
         </div>
 
         <div class="kpi r">
           <div class="kpi-ico"><i class="bi bi-box-seam"></i></div>
           <div class="kpi-body">
-            <div class="kpi-val">94%</div>
+            <div class="kpi-val" id="kpi-estoque">0%</div>
             <div class="kpi-lbl">Estoque disponível</div>
           </div>
-          <div class="kpi-badge down"><i class="bi bi-arrow-down-short"></i>2,1%</div>
+          <div class="kpi-badge" id="kpi-estoque-badge"></div>
         </div>
 
       </div>
@@ -1188,52 +1112,8 @@ transition: var(--ease);
                 <th style="text-align:right">Hora</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <div class="td-name">Posto Panorama</div>
-                  <div class="td-id">#V4892</div>
-                </td>
-                <td><span class="td-amt pos">R$ 3.200</span></td>
-                <td><span class="spill ok">Aprovado</span></td>
-                <td style="color:var(--muted);text-align:right">14:32</td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="td-name">Farmácia São José</div>
-                  <div class="td-id">#V4891</div>
-                </td>
-                <td><span class="td-amt pos">R$ 870</span></td>
-                <td><span class="spill ok">Aprovado</span></td>
-                <td style="color:var(--muted);text-align:right">14:15</td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="td-name">Mercado Central</div>
-                  <div class="td-id">#V4890</div>
-                </td>
-                <td><span class="td-amt neu">R$ 5.460</span></td>
-                <td><span class="spill pend">Pendente</span></td>
-                <td style="color:var(--muted);text-align:right">13:58</td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="td-name">Auto Peças SP</div>
-                  <div class="td-id">#V4889</div>
-                </td>
-                <td><span class="td-amt neg">R$ 1.200</span></td>
-                <td><span class="spill canc">Cancelado</span></td>
-                <td style="color:var(--muted);text-align:right">13:20</td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="td-name">Distribuidora Alfa</div>
-                  <div class="td-id">#V4888</div>
-                </td>
-                <td><span class="td-amt pos">R$ 8.900</span></td>
-                <td><span class="spill ok">Aprovado</span></td>
-                <td style="color:var(--muted);text-align:right">12:45</td>
-              </tr>
+            <tbody id="lastSalesTbody">
+              <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px;font-size:12.5px">Nenhuma venda registrada ainda.</td></tr>
             </tbody>
           </table>
         </div>
@@ -1245,54 +1125,9 @@ transition: var(--ease);
               <div class="dcard-title">Atividade Recente</div>
               <div class="dcard-sub">Eventos do sistema</div>
             </div>
-            <a href="#" class="dlink">Ver tudo <i class="bi bi-arrow-right"></i></a>
           </div>
-          <div class="tl" style="flex:1">
-            <div class="tl-item">
-              <div class="tl-dot-wrap">
-                <div class="tl-dot" style="background:var(--green)"></div>
-              </div>
-              <div class="tl-body">
-                <div class="tl-text">NF-e <strong>#78210</strong> emitida para Distribuidora Alfa</div>
-                <div class="tl-time">há 3 min</div>
-              </div>
-            </div>
-            <div class="tl-item">
-              <div class="tl-dot-wrap">
-                <div class="tl-dot" style="background:var(--blue)"></div>
-              </div>
-              <div class="tl-body">
-                <div class="tl-text">Novo cliente <strong>Mercado Central</strong> por Lucas</div>
-                <div class="tl-time">há 18 min</div>
-              </div>
-            </div>
-            <div class="tl-item">
-              <div class="tl-dot-wrap">
-                <div class="tl-dot" style="background:var(--yellow)"></div>
-              </div>
-              <div class="tl-body">
-                <div class="tl-text">Estoque baixo: <strong>Produto #204</strong> — 3 un restantes</div>
-                <div class="tl-time">há 45 min</div>
-              </div>
-            </div>
-            <div class="tl-item">
-              <div class="tl-dot-wrap">
-                <div class="tl-dot" style="background:var(--red)"></div>
-              </div>
-              <div class="tl-body">
-                <div class="tl-text">Fatura de <strong>R$ 4.200</strong> vence em 2 dias</div>
-                <div class="tl-time">há 1h</div>
-              </div>
-            </div>
-            <div class="tl-item">
-              <div class="tl-dot-wrap">
-                <div class="tl-dot" style="background:var(--purple)"></div>
-              </div>
-              <div class="tl-body">
-                <div class="tl-text">Conciliação concluída: <strong>47 lançamentos</strong> confirmados</div>
-                <div class="tl-time">há 2h 30m</div>
-              </div>
-            </div>
+          <div class="tl" style="flex:1" id="activityTimeline">
+            <div style="text-align:center;color:var(--muted);padding:28px;font-size:13px">Nenhuma atividade recente.</div>
           </div>
         </div>
 
@@ -1306,48 +1141,231 @@ transition: var(--ease);
     NexoAuth.requireAuth();
     NexoAuth.renderCurrentUser();
 
-    // Date
+    // ── Data atual ────────────────────────────────────────────
     (function () {
       const d = new Date();
-      const dias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-      const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+      const dias = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+      const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
       document.getElementById('dbDate').textContent =
         `${dias[d.getDay()]}, ${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()} · Operação de hoje`;
       document.getElementById('dbSalesDate').textContent =
-        `Hoje · ${d.getDate()}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+        `Hoje · ${d.getDate()}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
     })();
 
-    // Chart period chips
+    // ── Helpers ───────────────────────────────────────────────
+    function readKey(key) {
+      try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : []; }
+      catch (_) { return []; }
+    }
+
+    function fmtMoeda(v) {
+      if (v >= 1000000) return 'R$ ' + (v / 1000000).toFixed(1).replace('.', ',') + 'M';
+      if (v >= 1000)    return 'R$ ' + (v / 1000).toFixed(1).replace('.', ',') + 'k';
+      return 'R$ ' + fmt(v);
+    }
+
+    function isMesAtual(dateStr) {
+      if (!dateStr) return false;
+      const now = new Date();
+      const mes = String(now.getMonth() + 1).padStart(2, '0');
+      const ano = String(now.getFullYear());
+      // suporta formato dd/mm/yyyy e ISO
+      if (dateStr.includes('T') || dateStr.includes('-')) {
+        const d = new Date(dateStr);
+        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+      }
+      const parts = dateStr.split('/');
+      return parts[1] === mes && parts[2] === ano;
+    }
+
+    function tempoRelativo(dateISO) {
+      const diff = Date.now() - new Date(dateISO).getTime();
+      const min  = Math.floor(diff / 60000);
+      if (min < 1)  return 'agora mesmo';
+      if (min < 60) return `há ${min} min`;
+      const h = Math.floor(min / 60);
+      if (h < 24)   return `há ${h}h`;
+      const d = Math.floor(h / 24);
+      return `há ${d} dia${d > 1 ? 's' : ''}`;
+    }
+
+    // ── Leitura dos dados ─────────────────────────────────────
+    const vendas    = readKey('nexoerp.vendas');
+    const clientes  = readKey('nexoerp.clientes');
+    const produtos  = readKey('nexoerp.produtos');
+    const pedidos   = readKey('nexoerp.pedidos');
+    const financeiro = readKey('nexoerp.financeiro');
+
+    // ── KPI: Faturamento do mês ───────────────────────────────
+    const vendasMes = vendas.filter(v =>
+      v.status === 'concluida' && isMesAtual(v.dataISO || v.dataStr)
+    );
+    const faturamento = vendasMes.reduce((s, v) => s + (v.total || 0), 0);
+
+    document.getElementById('kpi-faturamento').textContent = fmtMoeda(faturamento);
+    document.getElementById('kpi-faturamento-badge').textContent =
+      vendasMes.length > 0 ? `${vendasMes.length} venda${vendasMes.length > 1 ? 's' : ''}` : '—';
+
+    // ── KPI: Vendas no mês ────────────────────────────────────
+    document.getElementById('kpi-pedidos').textContent = vendasMes.length;
+    const pedidosMes = pedidos.filter(p => isMesAtual(p.data || p.dataISO || p.createdAt));
+    document.getElementById('kpi-pedidos-badge').textContent =
+      pedidosMes.length > 0 ? `+ ${pedidosMes.length} pedido${pedidosMes.length > 1 ? 's' : ''}` : '—';
+
+    // ── KPI: Clientes cadastrados ─────────────────────────────
+    document.getElementById('kpi-clientes').textContent = clientes.length;
+    const clientesMes = clientes.filter(c => isMesAtual(c.cadastro));
+    const badgeClientes = document.getElementById('kpi-clientes-badge');
+    if (clientesMes.length > 0) {
+      badgeClientes.classList.add('up');
+      badgeClientes.innerHTML = `<i class="bi bi-arrow-up-short"></i>${clientesMes.length} este mês`;
+    } else {
+      badgeClientes.textContent = '—';
+    }
+
+    // ── KPI: Estoque disponível ───────────────────────────────
+    const prodAtivos = produtos.filter(p => p.status !== 'inativo');
+    const disponiveis = prodAtivos.filter(p => p.estoque > (p.estoqueMin || 0));
+    const pctEstoque = prodAtivos.length > 0
+      ? Math.round((disponiveis.length / prodAtivos.length) * 100)
+      : 0;
+    const zerados = prodAtivos.filter(p => p.estoque === 0).length;
+
+    document.getElementById('kpi-estoque').textContent = prodAtivos.length > 0 ? pctEstoque + '%' : '—';
+    const badgeEstoque = document.getElementById('kpi-estoque-badge');
+    if (zerados > 0) {
+      badgeEstoque.classList.add('down');
+      badgeEstoque.innerHTML = `<i class="bi bi-arrow-down-short"></i>${zerados} zerado${zerados > 1 ? 's' : ''}`;
+    } else if (prodAtivos.length > 0) {
+      badgeEstoque.classList.add('up');
+      badgeEstoque.innerHTML = `<i class="bi bi-arrow-up-short"></i>OK`;
+    } else {
+      badgeEstoque.textContent = '—';
+    }
+
+    // ── Últimas Vendas ────────────────────────────────────────
+    const tbody = document.getElementById('lastSalesTbody');
+    const ultimas = [...vendas]
+      .sort((a, b) => new Date(b.dataISO) - new Date(a.dataISO))
+      .slice(0, 5);
+
+    if (ultimas.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px;font-size:12.5px">Nenhuma venda registrada ainda.</td></tr>`;
+    } else {
+      const statusMap = {
+        concluida: { cls: 'ok',   label: 'Aprovado' },
+        cancelada: { cls: 'canc', label: 'Cancelado' },
+        estornada: { cls: 'canc', label: 'Estornado' },
+        pendente:  { cls: 'pend', label: 'Pendente' },
+      };
+      tbody.innerHTML = ultimas.map(v => {
+        const s = statusMap[v.status] || { cls: 'pend', label: v.status || '—' };
+        const amtCls = v.status === 'cancelada' || v.status === 'estornada' ? 'neg' : 'pos';
+        const clienteNome = typeof v.cliente === 'object'
+          ? v.cliente.nome || '—' : (v.cliente || '—');
+        return `<tr onclick="location.href='vendas.html'" style="cursor:pointer">
+          <td>
+            <div class="td-name">${escapeHTML(clienteNome)}</div>
+            <div class="td-id">${escapeHTML(v.id || '')}</div>
+          </td>
+          <td><span class="td-amt ${amtCls}">R$ ${fmt(v.total || 0)}</span></td>
+          <td><span class="spill ${s.cls}">${s.label}</span></td>
+          <td style="color:var(--muted);text-align:right;font-size:12px">${escapeHTML(v.horaStr || '')}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    // ── Atividade Recente ─────────────────────────────────────
+    const eventos = [];
+
+    // Últimas 3 vendas concluídas
+    vendas
+      .filter(v => v.status === 'concluida' && v.dataISO)
+      .sort((a, b) => new Date(b.dataISO) - new Date(a.dataISO))
+      .slice(0, 3)
+      .forEach(v => {
+        const clienteNome = typeof v.cliente === 'object' ? v.cliente.nome || '—' : (v.cliente || 'Cliente');
+        eventos.push({
+          cor: 'var(--green)',
+          texto: `Venda <strong>${escapeHTML(v.id || '')}</strong> de R$ ${fmt(v.total || 0)} — ${escapeHTML(clienteNome)}`,
+          tempo: v.dataISO,
+        });
+      });
+
+    // Produtos com estoque zerado
+    produtos.filter(p => p.estoque === 0 && p.status !== 'inativo').slice(0, 2).forEach(p => {
+      eventos.push({
+        cor: 'var(--yellow)',
+        texto: `Estoque zerado: <strong>${escapeHTML(p.nome)}</strong>`,
+        tempo: null,
+      });
+    });
+
+    // Clientes recentes
+    clientes
+      .filter(c => c.cadastro)
+      .slice(0, 2)
+      .forEach(c => {
+        eventos.push({
+          cor: 'var(--blue)',
+          texto: `Novo cliente cadastrado: <strong>${escapeHTML(c.nome)}</strong>`,
+          tempo: null,
+        });
+      });
+
+    // Lançamentos financeiros vencendo em breve
+    financeiro
+      .filter(l => l.status === 'pendente' && l.vencimento)
+      .slice(0, 2)
+      .forEach(l => {
+        const dias = Math.ceil((new Date(l.vencimento) - new Date()) / 864e5);
+        if (dias >= 0 && dias <= 7) {
+          eventos.push({
+            cor: 'var(--danger)',
+            texto: `Título de <strong>R$ ${fmt(l.valor || 0)}</strong> vence em ${dias === 0 ? 'hoje' : dias + ' dia' + (dias > 1 ? 's' : '')}`,
+            tempo: null,
+          });
+        }
+      });
+
+    const tl = document.getElementById('activityTimeline');
+    if (eventos.length === 0) {
+      tl.innerHTML = `<div style="text-align:center;color:var(--muted);padding:28px;font-size:13px">Nenhuma atividade recente.</div>`;
+    } else {
+      tl.innerHTML = eventos.map(e => `
+        <div class="tl-item">
+          <div class="tl-dot-wrap"><div class="tl-dot" style="background:${e.cor}"></div></div>
+          <div class="tl-body">
+            <div class="tl-text">${e.texto}</div>
+            ${e.tempo ? `<div class="tl-time">${tempoRelativo(e.tempo)}</div>` : ''}
+          </div>
+        </div>`).join('');
+    }
+
+    // ── Date picker / chips ───────────────────────────────────
     function setChip(el) {
       document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
       el.classList.add('on');
     }
-
-    // Date picker
-    function toggleDp() {
-      document.getElementById('dpDrop').classList.toggle('open');
-    }
-
+    function toggleDp() { document.getElementById('dpDrop').classList.toggle('open'); }
     function selPeriod(el, label) {
       document.querySelectorAll('.dp-opt').forEach(o => o.classList.remove('sel'));
       el.classList.add('sel');
       document.getElementById('dpLabel').textContent = label;
       document.getElementById('dpDrop').classList.remove('open');
     }
-
     function applyDp() {
       const s = document.getElementById('dpS').value;
       const e = document.getElementById('dpE').value;
-      const fmt = v => v.split('-').reverse().join('/');
-      if (s && e) document.getElementById('dpLabel').textContent = `${fmt(s)} – ${fmt(e)}`;
-      else if (s) document.getElementById('dpLabel').textContent = `A partir de ${fmt(s)}`;
+      const fmtD = v => v.split('-').reverse().join('/');
+      if (s && e) document.getElementById('dpLabel').textContent = `${fmtD(s)} – ${fmtD(e)}`;
+      else if (s) document.getElementById('dpLabel').textContent = `A partir de ${fmtD(s)}`;
       document.getElementById('dpDrop').classList.remove('open');
     }
-
     document.addEventListener('click', ev => {
       const btn = document.getElementById('dpBtn');
-      const dd = document.getElementById('dpDrop');
-      if (!btn.contains(ev.target) && !dd.contains(ev.target)) dd.classList.remove('open');
+      const dd  = document.getElementById('dpDrop');
+      if (btn && dd && !btn.contains(ev.target) && !dd.contains(ev.target)) dd.classList.remove('open');
     });
   </script>
 </body>

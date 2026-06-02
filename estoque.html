@@ -1050,27 +1050,47 @@ font-size: 14px;
     NexoAuth.requireAuth();
 
     // ═══════════════════════════════════════════════
+    // STORAGE — lê/grava produtos compartilhados com produtos.html
+    // ═══════════════════════════════════════════════
+    const PRODUTOS_KEY = 'nexoerp.produtos';
+    const MOVS_KEY     = 'nexoerp.movimentacoes';
+
+    function loadProducts() {
+      try {
+        const raw = localStorage.getItem(PRODUTOS_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (_) {}
+      return [];
+    }
+
+    function saveProducts() {
+      try {
+        localStorage.setItem(PRODUTOS_KEY, JSON.stringify(products));
+      } catch (err) {
+        if (err.name === 'QuotaExceededError') showToast('❌ Armazenamento local cheio.', 'error');
+      }
+    }
+
+    function loadMovs() {
+      try {
+        const raw = localStorage.getItem(MOVS_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (_) {}
+      return [];
+    }
+
+    function saveMovs() {
+      try {
+        localStorage.setItem(MOVS_KEY, JSON.stringify(movimentacoes));
+      } catch (_) {}
+    }
+
+    // ═══════════════════════════════════════════════
     // DATA
     // ═══════════════════════════════════════════════
-    let products = [
-      { id: 1, nome: 'Arroz Integral 1kg', sku: 'ALI-001', cat: 'Alimentos', emoji: '🍎', custo: 5.20, estoque: 142, estoqueMin: 20, estoqueMax: 300, deposito: 'Depósito Principal', fornecedor: 'Fornecedor A', ultimaEntrada: '20/05/2026' },
-      { id: 2, nome: 'Detergente Neutro 500ml', sku: 'LIM-002', cat: 'Limpeza', emoji: '🧹', custo: 1.80, estoque: 87, estoqueMin: 15, estoqueMax: 200, deposito: 'Depósito Principal', fornecedor: 'Fornecedor B', ultimaEntrada: '18/05/2026' },
-      { id: 3, nome: 'Parafuso Sextavado 8mm', sku: 'FER-003', cat: 'Ferramentas', emoji: '🔩', custo: 14.00, estoque: 3, estoqueMin: 10, estoqueMax: 100, deposito: 'Depósito Principal', fornecedor: 'Fornecedor C', ultimaEntrada: '10/04/2026' },
-      { id: 4, nome: 'Smartphone Samsung A15', sku: 'ELE-004', cat: 'Eletrônicos', emoji: '📱', custo: 890.00, estoque: 8, estoqueMin: 3, estoqueMax: 30, deposito: 'Loja 1', fornecedor: 'Fornecedor A', ultimaEntrada: '15/05/2026' },
-      { id: 5, nome: 'Camiseta Polo M', sku: 'VES-005', cat: 'Vestuário', emoji: '👕', custo: 35.00, estoque: 0, estoqueMin: 5, estoqueMax: 50, deposito: 'Loja 1', fornecedor: 'Fornecedor B', ultimaEntrada: '02/03/2026' },
-      { id: 6, nome: 'Ibuprofeno 600mg cx30', sku: 'MED-006', cat: 'Medicamentos', emoji: '💊', custo: 9.50, estoque: 54, estoqueMin: 10, estoqueMax: 200, deposito: 'Depósito Principal', fornecedor: 'Fornecedor C', ultimaEntrada: '22/05/2026' },
-      { id: 7, nome: 'Notebook Dell Inspiron', sku: 'ELE-007', cat: 'Eletrônicos', emoji: '💻', custo: 2600.00, estoque: 2, estoqueMin: 2, estoqueMax: 10, deposito: 'Loja 1', fornecedor: 'Fornecedor A', ultimaEntrada: '14/04/2026' },
-      { id: 8, nome: 'Café Torrado 500g', sku: 'ALI-008', cat: 'Alimentos', emoji: '☕', custo: 8.90, estoque: 0, estoqueMin: 20, estoqueMax: 150, deposito: 'Depósito Principal', fornecedor: 'Fornecedor B', ultimaEntrada: '01/03/2026' },
-    ];
+    let products = loadProducts();
 
-    let movimentacoes = [
-      { id: 1, tipo: 'entrada', prodId: 1, produto: 'Arroz Integral 1kg', qty: 50, deposito: 'Depósito Principal', destino: '', motivo: 'Compra de fornecedor', operador: 'João D.', data: '26/05/2026 08:14' },
-      { id: 2, tipo: 'saida', prodId: 2, produto: 'Detergente Neutro 500ml', qty: 10, deposito: 'Depósito Principal', destino: '', motivo: 'Venda PDV', operador: 'João D.', data: '26/05/2026 09:30' },
-      { id: 3, tipo: 'transferencia', prodId: 4, produto: 'Smartphone Samsung A15', qty: 3, deposito: 'Depósito Principal', destino: 'Loja 1', motivo: 'Transferência interna', operador: 'Maria F.', data: '25/05/2026 14:20' },
-      { id: 4, tipo: 'ajuste', prodId: 3, produto: 'Parafuso Sextavado 8mm', qty: -7, deposito: 'Depósito Principal', destino: '', motivo: 'Acerto de inventário', operador: 'João D.', data: '24/05/2026 16:00' },
-      { id: 5, tipo: 'entrada', prodId: 6, produto: 'Ibuprofeno 600mg cx30', qty: 100, deposito: 'Depósito Principal', destino: '', motivo: 'Compra de fornecedor', operador: 'Carlos S.', data: '22/05/2026 10:45' },
-      { id: 6, tipo: 'saida', prodId: 7, produto: 'Notebook Dell Inspiron', qty: 1, deposito: 'Loja 1', destino: '', motivo: 'Venda PDV', operador: 'Lucas A.', data: '21/05/2026 11:10' },
-    ];
+    let movimentacoes = loadMovs();
 
     const DEPOSITOS = [
       { nome: 'Depósito Principal', icone: '🏭', endereco: 'Rua Industrial, 400 — Bauru/SP', cor: 'var(--accent)' },
@@ -1107,7 +1127,8 @@ font-size: 14px;
       const valor = products.reduce((s, p) => s + p.estoque * p.custo, 0);
       const baixo = products.filter(p => p.estoque > 0 && p.estoque <= p.estoqueMin).length;
       const zerado = products.filter(p => p.estoque === 0).length;
-      const hoje = movimentacoes.filter(m => m.data.startsWith('26/05/2026')).length;
+      const hojeStr = new Date().toLocaleDateString('pt-BR');
+      const hoje = movimentacoes.filter(m => m.data.startsWith(hojeStr)).length;
       document.getElementById('kpi-total').textContent = total;
       document.getElementById('kpi-valor').textContent = 'R$ ' + fmt(valor);
       document.getElementById('kpi-baixo').textContent = baixo;
@@ -1438,10 +1459,12 @@ font-size: 14px;
         deposito: dep,
         destino: movType === 'transferencia' ? document.getElementById('movDepDestino').value : '',
         motivo: obs || motivo,
-        operador: 'João D.',
+        operador: (NexoAuth.getSession()?.user?.name || 'Sistema').split(' ').slice(0,2).join(' '),
         data: dataStr,
       });
 
+      saveProducts();
+      saveMovs();
       populateProdSelect();
       closeMov();
       applyFilters();

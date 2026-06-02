@@ -795,12 +795,8 @@ font-size: 14px;
       } catch (e) { return null; }
     }
 
-    // Carrega do localStorage — se não existir, gera e salva
-    let vendas = carregarVendas();
-    if (!vendas) {
-      vendas = gerarVendas();
-      salvarVendas(vendas);
-    }
+    // Carrega do localStorage — começa vazio se não houver dados
+    let vendas = carregarVendas() || [];
     let filtered = [...vendas];
     let currentFilter = 'todos';
     let currentPage = 1;

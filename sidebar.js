@@ -3,7 +3,7 @@
       { label: 'Dashboard',       href: 'dashboard.html',     icon: 'bi-grid-1x2-fill',            section: 'Principal' },
       { label: 'PDV',             href: 'pdv.html',           icon: 'bi-display',                  section: 'Principal' },
       { label: 'Pedidos de Vendas',         href: 'pedidos.html',       icon: 'bi-file-earmark-text-fill',   section: 'Principal' },
-      { label: 'Vendas',          href: 'vendas.html',        icon: 'bi-cart4',                    section: 'Principal', badge: '12' },
+      { label: 'Vendas',          href: 'vendas.html',        icon: 'bi-cart4',                    section: 'Principal' },
       { label: 'Clientes',        href: 'clientes.html',      icon: 'bi-people-fill',              section: 'Principal' },
       { label: 'Produtos',        href: 'produtos.html',      icon: 'bi-box-seam-fill',            section: 'Principal' },
       { label: 'Catálogo',        href: 'catalogo.html',      icon: 'bi-grid-3x3-gap-fill',        section: 'Principal', newTab: true },
@@ -41,10 +41,11 @@
         </div>`;
     }).join('');
   
-    const user = JSON.parse(localStorage.getItem('nexoerp.user') || '{}');
+    const session = JSON.parse(localStorage.getItem('nexoerp.session') || '{}');
+    const user = session?.user || {};
     const userName  = user.name  || 'Usuário';
     const userRole  = user.role  || 'Administrador';
-    const userInitials = userName.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+    const userInitials = userName.trim().split(/\s+/).filter(Boolean).map(n => n[0]).join('').substring(0,2).toUpperCase() || 'U';
   
     const html = `
       <aside class="sidebar collapsed" id="sidebar">

@@ -898,7 +898,7 @@
 
   const produtos = (() => {
     try {
-      const raw = localStorage.getItem('sistemy.produtos');
+      const raw = localStorage.getItem('nexoerp.produtos') || localStorage.getItem('sistemy.produtos');
       if (raw) {
         return JSON.parse(raw)
           .filter(p => p.status !== 'inativo')
@@ -1226,12 +1226,12 @@
      LOCALSTORAGE
   ═══════════════════════════════════════ */
   function saveConfig() {
-    localStorage.setItem('catalogo-cfg', JSON.stringify(cfg));
+    localStorage.setItem('nexoerp.catalogo.config', JSON.stringify(cfg));
   }
 
   function loadConfig() {
     try {
-      const raw = localStorage.getItem('catalogo-cfg');
+      const raw = localStorage.getItem('nexoerp.catalogo.config') || localStorage.getItem('catalogo-cfg');
       if (raw) cfg = { ...DEFAULTS, ...JSON.parse(raw) };
     } catch (_) {}
   }
