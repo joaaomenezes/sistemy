@@ -2732,18 +2732,18 @@ transition: border-color .15s;
     function renderTabelas() {
       document.getElementById('tblReceber').innerHTML = RECEBER.map(r => `
       <tr>
-        <td>${r.venc}</td>
-        <td class="u-fw-500">${r.cliente}</td>
-        <td class="u-muted">${r.desc}</td>
+        <td>${escapeHTML(r.venc)}</td>
+        <td class="u-fw-500">${escapeHTML(r.cliente)}</td>
+        <td class="u-muted">${escapeHTML(r.desc)}</td>
         <td class="${r.status === 'vencida' ? 'val-negativo' : 'val-positivo'}">R$ ${fmt(r.valor)}</td>
         <td>${pillHtml(r.status)}</td>
       </tr>`).join('');
 
       document.getElementById('tblPagar').innerHTML = PAGAR.map(p => `
       <tr>
-        <td>${p.venc}</td>
-        <td class="u-fw-500">${p.fornec}</td>
-        <td class="u-muted">${p.desc}</td>
+        <td>${escapeHTML(p.venc)}</td>
+        <td class="u-fw-500">${escapeHTML(p.fornec)}</td>
+        <td class="u-muted">${escapeHTML(p.desc)}</td>
         <td class="${p.status === 'vencida' ? 'val-negativo' : (p.status === 'pago' ? '' : 'val-negativo')}" style="${p.status === 'pago' ? 'color:var(--muted)' : ''}">R$ ${fmt(p.valor)}</td>
         <td>${pillHtml(p.status)}</td>
       </tr>`).join('');
@@ -3097,15 +3097,15 @@ transition: border-color .15s;
       }
       tbody.innerHTML = rows.map((r, i) => `
         <tr>
-          <td><span class="u-fw-600">${r.nome}</span></td>
-          <td><span class="status-pill orcamento">${r.cat}</span></td>
-          <td class="u-sub">${r.periodo}</td>
-          <td class="u-sub">${r.por}</td>
-          <td class="u-sub">${r.data}</td>
-          <td>${fmtIcon(r.fmt)} <span style="font-size:11px;color:var(--sub)">${r.fmt}</span></td>
+          <td><span class="u-fw-600">${escapeHTML(r.nome)}</span></td>
+          <td><span class="status-pill orcamento">${escapeHTML(r.cat)}</span></td>
+          <td class="u-sub">${escapeHTML(r.periodo)}</td>
+          <td class="u-sub">${escapeHTML(r.por)}</td>
+          <td class="u-sub">${escapeHTML(r.data)}</td>
+          <td>${fmtIcon(r.fmt)} <span style="font-size:11px;color:var(--sub)">${escapeHTML(r.fmt)}</span></td>
           <td>
             <div class="action-cell" style="opacity:1;justify-content:center">
-              <button class="act-btn ok" title="Baixar" onclick="showToast('⬇️ Baixando ${r.nome}…')"><i class="bi bi-download"></i></button>
+              <button class="act-btn ok" title="Baixar" onclick="showToast('⬇️ Baixando ${escapeHTML(r.nome)}…')"><i class="bi bi-download"></i></button>
               <button class="act-btn danger" title="Excluir" onclick="excluirRel(${i})"><i class="bi bi-trash"></i></button>
             </div>
           </td>

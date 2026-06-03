@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap');
 
 
 /* ═══════════════════════════════════════════════════
@@ -23,7 +23,8 @@
   --muted: #4A5568;
   --sub: #94A3B8;
   --font-h: 'Syne', sans-serif;
-  --font-b: 'DM Sans', sans-serif;
+  --font-b: 'Inter', sans-serif;
+  --font-num: 'Inter', sans-serif;
   --sidebar: 240px;
   --sidebar-c: 68px;
   --ease: all .2s ease;
@@ -211,6 +212,24 @@ body {
   font-weight: 700;
   padding: 1px 6px;
   border-radius: 100px;
+}
+
+.nav-item.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.badge-soon {
+  margin-left: auto;
+  flex-shrink: 0;
+  background: rgba(107, 127, 150, .18);
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 100px;
+  letter-spacing: .3px;
 }
 
 .nav-label {
@@ -1364,7 +1383,7 @@ input, select, textarea, button { font-family: var(--font-b); }
    Origem: pedidos.html    → .item-total, .totais-total, .qty-big-input */
 .kpi-val, .stock-val, .dep-stat-val, .mov-qty,
 .qty-big-input, .item-total, .totais-total, .resumo-total,
-.parcela-val { font-family: var(--font-h); }
+.parcela-val { font-family: var(--font-num); }
 
 /* ── Tabelas — células de destaque ──
    Origem: produtos.html   → .pc-name, .pc-price, .pc-id, .pc-total,
@@ -1373,11 +1392,13 @@ input, select, textarea, button { font-family: var(--font-b); }
    Origem: clientes.html   → .client-avatar, .client-av, .uc-avatar
    Origem: vendas.html     → .valor-cell, .venda-id
    Nota: tbody tr:hover .dp-id → regra contextual, não remover */
-.pc-name, .pc-price, .pc-id, .pc-total,
-.dp-prod-name, .dp-price-big, .dp-avatar, .dp-name,
+.pc-price, .pc-id, .pc-total,
+.dp-price-big, .dp-avatar, .dp-name,
 .dp-id, .dp-total, .client-avatar, .client-av,
 .valor-cell, .venda-id, .item-total,
-tbody tr:hover .dp-id { font-family: var(--font-h); }
+tbody tr:hover .dp-id { font-family: var(--font-num); }
+
+.pc-name, .dp-prod-name { font-family: var(--font-b); }
 
 /* ── Detail panel / Avatar ──
    Origem: clientes.html → .uc-avatar */
@@ -1385,7 +1406,7 @@ tbody tr:hover .dp-id { font-family: var(--font-h); }
 
 /* ── Financeiro — planos e preços ──
    Origem: financeiro.html → .plan-name, .plan-opt-name, .plan-opt-price */
-.plan-name, .plan-opt-name, .plan-opt-price { font-family: var(--font-h); }
+.plan-name, .plan-opt-name, .plan-opt-price { font-family: var(--font-num); }
 
 /* ── Botões das páginas internas ──
    Origem: clientes.html      → .btn-save, .btn-cancel, .btn-modal-next

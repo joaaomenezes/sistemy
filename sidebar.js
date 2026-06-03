@@ -8,12 +8,12 @@
       { label: 'Produtos',        href: 'produtos.html',      icon: 'bi-box-seam-fill',            section: 'Principal' },
       { label: 'Catálogo',        href: 'catalogo.html',      icon: 'bi-grid-3x3-gap-fill',        section: 'Principal', newTab: true },
       { label: 'Estoque',         href: 'estoque.html',       icon: 'bi-stack',                    section: 'Principal' },
-      { label: 'Relatórios',      href: '#',                  icon: 'bi-graph-up-arrow',           section: 'Financeiro' },
+      { label: 'Relatórios',      href: '#',                  icon: 'bi-graph-up-arrow',           section: 'Financeiro', comingSoon: true },
       { label: 'Financeiro',      href: 'financeiro.html',    icon: 'bi-credit-card-2-back-fill',  section: 'Financeiro' },
-      { label: 'Fiscal / NF-e',   href: '#',                  icon: 'bi-receipt-cutoff',           section: 'Financeiro' },
-      { label: 'Parceiros',       href: '#',                  icon: 'bi-briefcase-fill',           section: 'Sistema' },
+      { label: 'Fiscal / NF-e',   href: '#',                  icon: 'bi-receipt-cutoff',           section: 'Financeiro', comingSoon: true },
+      { label: 'Parceiros',       href: '#',                  icon: 'bi-briefcase-fill',           section: 'Sistema',    comingSoon: true },
       { label: 'Configurações',   href: 'configuracoes.html', icon: 'bi-gear-fill',                section: 'Sistema' },
-      { label: 'WhatsApp',     href: '#',                  icon: 'bi-whatsapp',                section: 'Integrações' },
+      { label: 'WhatsApp',        href: '#',                  icon: 'bi-whatsapp',                 section: 'Integrações', comingSoon: true },
     ];
   
     const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
@@ -23,11 +23,16 @@
   
     let sectionsHTML = sections.map(sec => {
       const items = MENU.filter(i => i.section === sec).map(item => {
-        const active = item.href === currentPage ? 'active' : '';
-        const badge  = item.badge ? `<span class="badge">${item.badge}</span>` : '';
-        const target = item.newTab ? ' target="_blank" rel="noopener"' : '';
+        const active  = item.href === currentPage ? 'active' : '';
+        const disabled = item.comingSoon ? 'disabled' : '';
+        const badge   = item.comingSoon
+          ? `<span class="badge-soon">Em breve</span>`
+          : item.badge ? `<span class="badge">${item.badge}</span>` : '';
+        const target  = item.newTab ? ' target="_blank" rel="noopener"' : '';
+        const href    = item.comingSoon ? '#' : item.href;
+        const extra   = item.comingSoon ? ' title="Módulo em desenvolvimento" onclick="return false"' : '';
         return `
-          <a href="${item.href}"${target} class="nav-item ${active}">
+          <a href="${href}"${target}${extra} class="nav-item ${active} ${disabled}">
             <i class="bi ${item.icon}"></i>
             <span class="nav-label">${item.label}</span>
             ${badge}

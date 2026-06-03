@@ -1339,14 +1339,14 @@ font-weight: 800;
       const filtered = getFiltered();
       const body = document.getElementById('listBody');
       body.innerHTML = filtered.map(p => `<tr onclick="openDetail('${p.id}')">
-    <td><span style="font-weight:700">${p.id}</span><br><span style="color:var(--muted);font-size:11px">${p.dataStr}</span></td>
-    <td style="font-weight:500">${p.cliente}</td>
+    <td><span style="font-weight:700">${escapeHTML(p.id)}</span><br><span style="color:var(--muted);font-size:11px">${escapeHTML(p.dataStr)}</span></td>
+    <td style="font-weight:500">${escapeHTML(p.cliente)}</td>
     <td style="color:var(--muted)">${p.itens.length} itens</td>
-    <td style="font-size:12px;color:var(--muted)">${p.condicaoLabel}</td>
+    <td style="font-size:12px;color:var(--muted)">${escapeHTML(p.condicaoLabel)}</td>
     <td><span style="font-weight:800;color:var(--accent)">R$ ${fmt(p.total)}</span></td>
     <td><span class="status-pill ${p.status}">${STATUS_LABELS[p.status]}</span></td>
-    <td style="color:var(--muted);font-size:12px">${p.dataStr}</td>
-    <td style="color:var(--muted);font-size:12px">${p.vendedor}</td>
+    <td style="color:var(--muted);font-size:12px">${escapeHTML(p.dataStr)}</td>
+    <td style="color:var(--muted);font-size:12px">${escapeHTML(p.vendedor)}</td>
     <td><div class="action-cell" onclick="event.stopPropagation()">
       <div class="act-btn" onclick="openDetail('${p.id}')"><i class="bi bi-eye"></i></div>
       ${p.status === 'orcamento' ? `<div class="act-btn ok" onclick="enviarPendente('${p.id}')"><i class="bi bi-send"></i></div>` : ''}
@@ -1379,13 +1379,13 @@ font-weight: 800;
         ['Entrega', p.entrega || '—'],
         p.obsCliente ? ['Obs. cliente', p.obsCliente] : null,
       ].filter(Boolean).map(([l, v]) =>
-        `<div class="dp-row"><span class="dp-label">${l}</span><span>${v}</span></div>`
+        `<div class="dp-row"><span class="dp-label">${escapeHTML(l)}</span><span>${escapeHTML(v)}</span></div>`
       ).join('');
 
       document.getElementById('dp-itens').innerHTML = p.itens.map(item =>
         `<div class="item-row">
-      <div class="item-emoji">${item.emoji}</div>
-      <div class="item-info"><div class="item-name">${item.nome}</div><div class="item-qty">${item.qty}x · R$ ${fmt(item.preco)}</div></div>
+      <div class="item-emoji">${escapeHTML(item.emoji)}</div>
+      <div class="item-info"><div class="item-name">${escapeHTML(item.nome)}</div><div class="item-qty">${item.qty}x · R$ ${fmt(item.preco)}</div></div>
       <div class="item-total">R$ ${fmt(item.subtotal)}</div>
     </div>`
       ).join('');

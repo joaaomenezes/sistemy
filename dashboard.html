@@ -321,7 +321,7 @@ cursor: pointer;
     ═══════════════════════════════ */
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 12px;
       margin-bottom: 12px;
     }
@@ -374,6 +374,8 @@ cursor: pointer;
     .kpi.b .kpi-ico { background: rgba(47, 128, 255, .10); color: var(--blue); }
     .kpi.o .kpi-ico { background: rgba(255, 140, 66, .10); color: var(--orange); }
     .kpi.r .kpi-ico { background: rgba(255, 77, 109, .10); color: var(--red); }
+    .kpi.p { --kpi-accent: var(--purple); }
+    .kpi.p .kpi-ico { background: rgba(167, 139, 250, .10); color: var(--purple); }
 
     .kpi-body {
       flex: 1;
@@ -428,11 +430,273 @@ cursor: pointer;
     ═══════════════════════════════ */
     .chart-grid {
       display: grid;
-      grid-template-columns: 1.8fr 1fr;
+      grid-template-columns: 9fr 5fr 6fr;
       gap: 12px;
       margin-bottom: 12px;
       animation: fadeUp .35s .2s ease both;
     }
+
+    /* ─── Contas R/P ─── */
+    .rp-section {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .5px; color: var(--muted); margin: 10px 0 6px;
+    }
+    .rp-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.04);
+    }
+    .rp-row:last-child { border-bottom: none; }
+    .rp-label { font-size: 12px; color: var(--sub); }
+    .rp-val   { font-weight: 700; font-size: 12.5px; }
+    .rp-val.pos { color: var(--green); }
+    .rp-val.neg { color: var(--red); }
+
+    /* ─── Contas R/P — duas colunas ─── */
+    .rp-cols { display: grid; grid-template-columns: 1fr 1fr; }
+    .rp-col  { padding: 10px 14px 8px; }
+    .rp-col:first-child { border-right: 1px solid rgba(255,255,255,.05); }
+    .rp-col-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+    .rp-col-total { font-size: 18px; font-weight: 800; margin-bottom: 8px; line-height: 1.1; }
+    .rp-col-row   { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-top: 1px solid rgba(255,255,255,.04); font-size: 11.5px; }
+    .rp-col-lbl   { color: var(--sub); }
+    .rp-col-val   { font-weight: 600; }
+    .rp-detail-btn {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      margin: 0 14px 14px; padding: 8px 14px; border-radius: 9px;
+      border: 1px solid var(--border); background: none; color: var(--sub);
+      font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: none;
+      transition: var(--ease);
+    }
+    .rp-detail-btn:hover { border-color: var(--border-h); color: var(--text); }
+
+    /* ─── Receitas x Despesas — layout horizontal ─── */
+    .rd-body        { display: flex; flex-direction: row; align-items: stretch; gap: 0; padding: 10px 16px; height: 100%; }
+    .rd-donut-wrap  { flex-shrink: 0; display: flex; align-items: center; padding-right: 16px; border-right: 1px solid rgba(255,255,255,.07); }
+    .rd-donut-wrap svg { width: 155px; height: 155px; display: block; }
+    .rd-legend      { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px; padding-left: 16px; }
+    .rd-leg-item    { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 100%; }
+    .rd-leg-label   { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--sub); font-weight: 600; }
+    .rd-leg-dot     { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .rd-leg-val     { font-size: 14px; font-weight: 700; color: var(--text); font-family: var(--font-b); }
+    .rd-leg-pct     { font-size: 11px; color: var(--muted); }
+
+    /* ─── Atividades Recentes ─── */
+    .act-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 9px 16px; border-bottom: 1px solid rgba(255,255,255,.03);
+      transition: background .12s;
+    }
+    .act-item:hover { background: rgba(255,255,255,.018); }
+    .act-item:last-child { border-bottom: none; }
+    .act-ico {
+      width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 13px; margin-top: 2px;
+    }
+    .act-body  { flex: 1; min-width: 0; }
+    .act-title { font-size: 12.5px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .act-desc  { font-size: 11px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .act-time  { font-size: 10px; color: var(--muted); flex-shrink: 0; margin-top: 4px; white-space: nowrap; }
+    .act-ver-btn {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      margin: 4px 16px 12px; padding: 7px; border-radius: 9px;
+      border: 1px solid var(--border); background: none; color: var(--sub);
+      font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: none;
+      transition: var(--ease);
+    }
+    .act-ver-btn:hover { border-color: var(--border-h); color: var(--text); }
+
+    /* ─── Configurar Painel — Drawer ─── */
+    .painel-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.55);
+      z-index: 900; opacity: 0; pointer-events: none; transition: opacity .3s;
+    }
+    .painel-overlay.open { opacity: 1; pointer-events: all; }
+    .painel-drawer {
+      position: fixed; top: 0; right: 0; bottom: 0; width: 460px; max-width: 95vw;
+      background: #0b1220; border-left: 1px solid rgba(255,255,255,.08);
+      z-index: 901; display: flex; flex-direction: column;
+      transform: translateX(100%); transition: transform .32s cubic-bezier(.4,0,.2,1);
+      box-shadow: -24px 0 64px rgba(0,0,0,.45);
+    }
+    .painel-drawer.open { transform: translateX(0); }
+    .painel-head {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 22px 22px 18px; border-bottom: 1px solid rgba(255,255,255,.06); flex-shrink: 0;
+    }
+    .painel-title { font-size: 15px; font-weight: 700; color: var(--text); }
+    .painel-sub   { font-size: 11.5px; color: var(--sub); margin-top: 4px; line-height: 1.5; max-width: 320px; }
+    .painel-close {
+      width: 30px; height: 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,.08);
+      background: none; color: var(--sub); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: var(--ease); flex-shrink: 0;
+    }
+    .painel-close:hover { background: rgba(255,255,255,.05); color: var(--text); }
+    .painel-body { flex: 1; overflow-y: auto; }
+    .painel-body::-webkit-scrollbar { width: 3px; }
+    .painel-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,.07); border-radius: 2px; }
+    .painel-section { padding: 16px 22px; border-bottom: 1px solid rgba(255,255,255,.04); }
+    .painel-sec-title {
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px;
+      color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; gap: 7px;
+    }
+    .painel-sec-title i { font-size: 12px; }
+    /* Toggle switch */
+    .cfg-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,.03);
+    }
+    .cfg-row:last-child { border-bottom: none; }
+    .cfg-lbl { font-size: 12.5px; color: var(--sub); font-weight: 500; }
+    .cfg-lbl small { font-size: 10.5px; color: var(--muted); display: block; margin-top: 1px; }
+    .cfg-sw { position: relative; width: 34px; height: 19px; flex-shrink: 0; }
+    .cfg-sw input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .cfg-sw-track {
+      position: absolute; inset: 0; background: rgba(255,255,255,.1);
+      border-radius: 100px; cursor: pointer; transition: background .2s;
+    }
+    .cfg-sw-track::after {
+      content: ''; position: absolute; width: 13px; height: 13px; border-radius: 50%;
+      background: #fff; top: 3px; left: 3px; transition: left .2s;
+    }
+    .cfg-sw input:checked ~ .cfg-sw-track { background: var(--accent); }
+    .cfg-sw input:checked ~ .cfg-sw-track::after { left: 18px; }
+    /* Drag rows */
+    .cfg-drag-list { display: flex; flex-direction: column; gap: 4px; }
+    .cfg-drag-item {
+      display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+      border-radius: 8px; background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.05);
+      cursor: grab; transition: background .15s, border-color .15s; user-select: none;
+    }
+    .cfg-drag-item:active { cursor: grabbing; }
+    .cfg-drag-item.drag-over { border-color: var(--accent); background: rgba(0,200,150,.07); }
+    .cfg-drag-item.dragging  { opacity: .4; }
+    .cfg-drag-handle { color: var(--muted); font-size: 13px; }
+    .cfg-drag-lbl    { font-size: 12.5px; color: var(--sub); flex: 1; }
+    /* Select */
+    .cfg-select {
+      width: 100%; padding: 8px 12px; border-radius: 9px; background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08); color: var(--text); font-size: 13px;
+      font-family: var(--font-b); cursor: pointer; outline: none; transition: border-color .15s;
+    }
+    .cfg-select:focus { border-color: rgba(0,200,150,.4); }
+    .cfg-select option { background: #0b1220; }
+    /* KPI chips */
+    .cfg-kpi-counter { font-size: 11px; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+    .cfg-kpi-counter b { color: var(--accent); }
+    .cfg-chip-grid { display: flex; flex-direction: column; gap: 5px; }
+    .cfg-chip {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 12px; border-radius: 9px; border: 1px solid rgba(255,255,255,.06);
+      background: rgba(255,255,255,.02); cursor: pointer; transition: var(--ease);
+    }
+    .cfg-chip:hover:not(.cfg-chip-disabled) { border-color: rgba(255,255,255,.1); background: rgba(255,255,255,.04); }
+    .cfg-chip.cfg-chip-on  { border-color: rgba(0,200,150,.35); background: rgba(0,200,150,.06); }
+    .cfg-chip.cfg-chip-disabled { opacity: .35; cursor: not-allowed; }
+    .cfg-chip-name { font-size: 12.5px; color: var(--sub); font-weight: 500; }
+    .cfg-chip-ico  { color: var(--accent); font-size: 13px; }
+    /* Layout options */
+    .cfg-layout-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+    .cfg-layout-opt {
+      padding: 12px 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,.06);
+      background: rgba(255,255,255,.02); cursor: pointer; text-align: center; transition: var(--ease);
+    }
+    .cfg-layout-opt:hover { border-color: rgba(255,255,255,.1); background: rgba(255,255,255,.04); }
+    .cfg-layout-opt.cfg-layout-on { border-color: rgba(0,200,150,.4); background: rgba(0,200,150,.07); }
+    .cfg-layout-opt i { font-size: 20px; color: var(--muted); display: block; margin-bottom: 5px; }
+    .cfg-layout-opt.cfg-layout-on i { color: var(--accent); }
+    .cfg-layout-name { font-size: 12px; font-weight: 600; color: var(--sub); }
+    .cfg-layout-desc { font-size: 10px; color: var(--muted); margin-top: 2px; }
+    /* Colors */
+    .cfg-colors { display: flex; gap: 10px; align-items: center; }
+    .cfg-color {
+      width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+      border: 3px solid transparent; transition: var(--ease); position: relative; flex-shrink: 0;
+    }
+    .cfg-color:hover { transform: scale(1.12); }
+    .cfg-color.cfg-color-on { border-color: #fff; }
+    .cfg-color.cfg-color-on::after {
+      content: '✓'; position: absolute; inset: 0; display: flex;
+      align-items: center; justify-content: center; color: #fff; font-size: 13px; font-weight: 700;
+    }
+    /* Nexo AI card */
+    .cfg-ai-badge {
+      background: linear-gradient(135deg, rgba(0,200,150,.1), rgba(47,128,255,.08));
+      border: 1px solid rgba(0,200,150,.2); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px;
+    }
+    .cfg-ai-badge-title {
+      font-size: 13px; font-weight: 700; color: var(--accent);
+      display: flex; align-items: center; gap: 6px; margin-bottom: 3px;
+    }
+    .cfg-ai-badge-sub { font-size: 11px; color: var(--muted); }
+    /* Footer */
+    .painel-footer {
+      display: flex; gap: 8px; padding: 14px 22px;
+      border-top: 1px solid rgba(255,255,255,.06); flex-shrink: 0;
+    }
+    .painel-btn-rst {
+      padding: 8px 12px; border-radius: 9px; border: 1px solid rgba(255,255,255,.07);
+      background: none; color: var(--muted); font-size: 12px; font-weight: 600;
+      cursor: pointer; font-family: var(--font-b); transition: var(--ease); white-space: nowrap;
+    }
+    .painel-btn-rst:hover { color: var(--text); border-color: rgba(255,255,255,.14); }
+    .painel-btn-cancel {
+      flex: 1; padding: 9px 16px; border-radius: 9px; border: 1px solid rgba(255,255,255,.07);
+      background: none; color: var(--sub); font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: var(--font-b); transition: var(--ease);
+    }
+    .painel-btn-cancel:hover { color: var(--text); border-color: rgba(255,255,255,.14); }
+    .painel-btn-save {
+      flex: 2; padding: 9px 20px; border-radius: 9px; border: none;
+      background: var(--accent); color: #021c14; font-size: 13px; font-weight: 700;
+      cursor: pointer; font-family: var(--font-b); transition: opacity .18s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .painel-btn-save:hover { opacity: .88; }
+    /* Layout effects */
+    .layout-compacto .kpi        { padding: 10px 12px; }
+    .layout-compacto .kpi-val    { font-size: 16px; }
+    .layout-compacto .dcard-head { padding: 8px 14px 7px; }
+    .layout-executivo .kpi       { padding: 18px 20px; }
+    .layout-executivo .kpi-val   { font-size: 24px; }
+    .layout-executivo .kpi-grid  { gap: 16px; margin-bottom: 16px; }
+    /* Alert card */
+    .dash-alert-card {
+      background: rgba(255,77,109,.05); border: 1px solid rgba(255,77,109,.18);
+      border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; animation: fadeUp .3s ease;
+    }
+    .dash-alert-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px;
+      color: var(--danger); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+    }
+    .dash-alert-item {
+      display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--sub);
+      padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.03);
+    }
+    .dash-alert-item:last-child { border-bottom: none; }
+    .dash-alert-item i { color: var(--danger); font-size: 13px; flex-shrink: 0; }
+    .dash-hidden { display: none !important; }
+
+    /* ─── Ações Rápidas ─── */
+    .aq-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .5px; color: var(--muted); margin: 14px 0 8px;
+    }
+    .aq-grid {
+      display: grid; grid-template-columns: repeat(6, 1fr);
+      gap: 10px; animation: fadeUp .35s .32s ease both;
+    }
+    .aq-card {
+      background: rgba(11,18,32,.95); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px 12px; display: flex;
+      flex-direction: column; align-items: center; gap: 8px;
+      cursor: pointer; transition: var(--ease); text-decoration: none;
+    }
+    .aq-card:hover {
+      border-color: var(--border-h); background: rgba(14,22,40,.98);
+      transform: translateY(-2px);
+    }
+    .aq-card i   { font-size: 22px; }
+    .aq-card span { font-size: 11.5px; font-weight: 600; color: var(--sub); text-align: center; }
 
     /* shared card */
     .dcard {
@@ -633,7 +897,7 @@ transition: var(--ease);
     ═══════════════════════════════ */
     .bottom-grid {
       display: grid;
-      grid-template-columns: 460px 1fr;
+      grid-template-columns: 7fr 6fr 7fr;
       gap: 12px;
       animation: fadeUp .35s .26s ease both;
     }
@@ -820,18 +1084,27 @@ transition: var(--ease);
        RESPONSIVE
     ═══════════════════════════════ */
     @media (max-width: 1200px) {
+      .chart-grid  { grid-template-columns: 1fr 1fr; }
+      .bottom-grid { grid-template-columns: 1fr 1fr; }
+      .chart-main, .donut-card { height: auto; max-height: none; }
+    }
+
+    @media (max-width: 900px) {
       .chart-grid  { grid-template-columns: 1fr; }
       .bottom-grid { grid-template-columns: 1fr; }
-      .chart-main, .donut-card { height: auto; max-height: none; }
+      .kpi-grid    { grid-template-columns: repeat(3, 1fr); }
+      .aq-grid     { grid-template-columns: repeat(3, 1fr); }
     }
 
     @media (max-width: 860px) {
       .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-      .content { padding: 12px 14px 20px; }
+      .content  { padding: 12px 14px 20px; }
+      .aq-grid  { grid-template-columns: repeat(3, 1fr); }
     }
 
     @media (max-width: 500px) {
       .kpi-grid { grid-template-columns: 1fr; }
+      .aq-grid  { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
@@ -899,191 +1172,166 @@ transition: var(--ease);
             </div>
           </div>
 
-          <button class="hbtn hbtn-ghost"><i class="bi bi-download"></i> Exportar</button>
-          <button class="hbtn hbtn-primary"><i class="bi bi-plus-lg"></i> Nova Venda</button>
+          <button class="hbtn hbtn-ghost" onclick="openPainelConfig()"><i class="bi bi-sliders"></i> Configurar Painel</button>
         </div>
       </div>
 
-      <!-- KPIs -->
-      <div class="kpi-grid">
+      <!-- ALERT CARD (configurável) -->
+      <div id="dash-alert-card" class="dash-alert-card" style="display:none"></div>
 
-        <div class="kpi g">
+      <!-- KPIs -->
+      <div class="kpi-grid" id="section-kpis">
+
+        <div class="kpi g" id="kpi-card-faturamento" data-kpi="faturamento">
           <div class="kpi-ico"><i class="bi bi-currency-dollar"></i></div>
           <div class="kpi-body">
-            <div class="kpi-val" id="kpi-faturamento">R$ 0,00</div>
-            <div class="kpi-lbl">Faturamento do mês</div>
+            <div class="kpi-val" id="kpi-faturamento">—</div>
+            <div class="kpi-lbl">Faturamento bruto</div>
           </div>
           <div class="kpi-badge" id="kpi-faturamento-badge"></div>
         </div>
 
-        <div class="kpi b">
-          <div class="kpi-ico"><i class="bi bi-cart-check-fill"></i></div>
+        <div class="kpi b" id="kpi-card-receitas" data-kpi="receitas">
+          <div class="kpi-ico"><i class="bi bi-cash-stack"></i></div>
           <div class="kpi-body">
-            <div class="kpi-val" id="kpi-pedidos">0</div>
-            <div class="kpi-lbl">Vendas no mês</div>
+            <div class="kpi-val" id="kpi-receitas">—</div>
+            <div class="kpi-lbl">Receitas</div>
           </div>
-          <div class="kpi-badge" id="kpi-pedidos-badge"></div>
+          <div class="kpi-badge" id="kpi-receitas-badge"></div>
         </div>
 
-        <div class="kpi o">
-          <div class="kpi-ico"><i class="bi bi-person-plus-fill"></i></div>
+        <div class="kpi r" id="kpi-card-despesas" data-kpi="despesas">
+          <div class="kpi-ico"><i class="bi bi-credit-card"></i></div>
           <div class="kpi-body">
-            <div class="kpi-val" id="kpi-clientes">0</div>
-            <div class="kpi-lbl">Clientes cadastrados</div>
+            <div class="kpi-val" id="kpi-despesas">—</div>
+            <div class="kpi-lbl">Despesas</div>
           </div>
-          <div class="kpi-badge" id="kpi-clientes-badge"></div>
+          <div class="kpi-badge" id="kpi-despesas-badge"></div>
         </div>
 
-        <div class="kpi r">
-          <div class="kpi-ico"><i class="bi bi-box-seam"></i></div>
+        <div class="kpi p" id="kpi-card-lucro" data-kpi="lucro">
+          <div class="kpi-ico"><i class="bi bi-graph-up-arrow"></i></div>
           <div class="kpi-body">
-            <div class="kpi-val" id="kpi-estoque">0%</div>
-            <div class="kpi-lbl">Estoque disponível</div>
+            <div class="kpi-val" id="kpi-lucro">—</div>
+            <div class="kpi-lbl">Lucro líquido</div>
           </div>
-          <div class="kpi-badge" id="kpi-estoque-badge"></div>
+          <div class="kpi-badge" id="kpi-lucro-badge"></div>
+        </div>
+
+        <div class="kpi o" id="kpi-card-saldo" data-kpi="saldo">
+          <div class="kpi-ico"><i class="bi bi-wallet2"></i></div>
+          <div class="kpi-body">
+            <div class="kpi-val" id="kpi-saldo">—</div>
+            <div class="kpi-lbl">Saldo em conta</div>
+          </div>
+          <div class="kpi-badge" id="kpi-saldo-badge"></div>
+        </div>
+
+        <!-- KPIs extras (ocultos, ativados via config) -->
+        <div class="kpi b" id="kpi-card-ticket" data-kpi="ticket" style="display:none">
+          <div class="kpi-ico"><i class="bi bi-receipt"></i></div>
+          <div class="kpi-body"><div class="kpi-val" id="kpi-ticket">—</div><div class="kpi-lbl">Ticket Médio</div></div>
+          <div class="kpi-badge" id="kpi-ticket-badge"></div>
+        </div>
+        <div class="kpi g" id="kpi-card-pedidos" data-kpi="pedidos" style="display:none">
+          <div class="kpi-ico"><i class="bi bi-bag-check"></i></div>
+          <div class="kpi-body"><div class="kpi-val" id="kpi-pedidos-total">—</div><div class="kpi-lbl">Total de Pedidos</div></div>
+          <div class="kpi-badge" id="kpi-pedidos-total-badge"></div>
+        </div>
+        <div class="kpi o" id="kpi-card-clientes-ativos" data-kpi="clientesAtivos" style="display:none">
+          <div class="kpi-ico"><i class="bi bi-people-fill"></i></div>
+          <div class="kpi-body"><div class="kpi-val" id="kpi-clientes-ativos">—</div><div class="kpi-lbl">Clientes Ativos</div></div>
+          <div class="kpi-badge" id="kpi-clientes-ativos-badge"></div>
+        </div>
+        <div class="kpi p" id="kpi-card-margem" data-kpi="margem" style="display:none">
+          <div class="kpi-ico"><i class="bi bi-percent"></i></div>
+          <div class="kpi-body"><div class="kpi-val" id="kpi-margem">—</div><div class="kpi-lbl">Margem de Lucro</div></div>
+          <div class="kpi-badge" id="kpi-margem-badge"></div>
         </div>
 
       </div>
 
       <!-- CHARTS -->
-      <div class="chart-grid">
+      <div class="chart-grid" id="section-chart-row1">
 
         <!-- Bar chart -->
-        <div class="dcard chart-main">
+        <div class="dcard chart-main" id="section-fluxo">
           <div class="dcard-head">
             <div>
-              <div class="dcard-title">Faturamento</div>
-              <div class="dcard-sub">Receita bruta no período</div>
+              <div class="dcard-title">Fluxo de Caixa</div>
+              <div class="dcard-sub">Entradas e saídas no período</div>
             </div>
             <div style="display:flex;align-items:center;gap:14px">
               <div class="clegend">
-                <div class="cleg">
-                  <div class="cleg-dot" style="background:var(--green)"></div>Atual
-                </div>
-                <div class="cleg">
-                  <div class="cleg-dot" style="background:var(--blue)"></div>Destaque
-                </div>
+                <div class="cleg"><div class="cleg-dot" style="background:var(--green)"></div>Entradas</div>
+                <div class="cleg"><div class="cleg-dot" style="background:var(--red)"></div>Saídas</div>
+                <div class="cleg"><div class="cleg-dot" style="background:var(--blue)"></div>Saldo</div>
               </div>
               <div class="chips">
-                <button class="chip on" onclick="setChip(this)">7D</button>
-                <button class="chip" onclick="setChip(this)">30D</button>
-                <button class="chip" onclick="setChip(this)">90D</button>
+                <button class="chip" onclick="setFluxoFiltro(this,'diario')">Diário</button>
+                <button class="chip" onclick="setFluxoFiltro(this,'semanal')">Semanal</button>
+                <button class="chip on" onclick="setFluxoFiltro(this,'mensal')">Mensal</button>
               </div>
             </div>
           </div>
           <div class="dcard-body">
-            <svg class="bars" viewBox="0 0 560 148" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="gG" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#00D084" />
-                  <stop offset="100%" stop-color="#009f63" stop-opacity=".65" />
-                </linearGradient>
-                <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#2F80FF" />
-                  <stop offset="100%" stop-color="#1556c7" stop-opacity=".65" />
-                </linearGradient>
-              </defs>
-              <!-- grid -->
-              <line x1="28" y1="135" x2="558" y2="135" stroke="rgba(255,255,255,.07)" stroke-width="1" />
-              <line x1="28" y1="100" x2="558" y2="100" stroke="rgba(255,255,255,.04)" stroke-width=".5"
-                stroke-dasharray="4,4" />
-              <line x1="28" y1="65" x2="558" y2="65" stroke="rgba(255,255,255,.04)" stroke-width=".5"
-                stroke-dasharray="4,4" />
-              <line x1="28" y1="30" x2="558" y2="30" stroke="rgba(255,255,255,.04)" stroke-width=".5"
-                stroke-dasharray="4,4" />
-              <!-- y labels -->
-              <text x="0" y="138" fill="rgba(148,163,184,.38)" font-size="8.5" font-family="DM Sans,sans-serif">0</text>
-              <text x="0" y="103" fill="rgba(148,163,184,.38)" font-size="8.5"
-                font-family="DM Sans,sans-serif">15k</text>
-              <text x="0" y="68" fill="rgba(148,163,184,.38)" font-size="8.5"
-                font-family="DM Sans,sans-serif">30k</text>
-              <text x="0" y="33" fill="rgba(148,163,184,.38)" font-size="8.5"
-                font-family="DM Sans,sans-serif">45k</text>
-              <!-- bars — 7 days -->
-              <g class="bgrp">
-                <rect x="38" y="97" width="52" height="38" rx="6" fill="url(#gG)" opacity=".7" /><text x="64" y="92"
-                  text-anchor="middle" fill="rgba(148,163,184,.55)" font-size="8"
-                  font-family="DM Sans,sans-serif">12k</text>
-              </g>
-              <g class="bgrp">
-                <rect x="118" y="79" width="52" height="56" rx="6" fill="url(#gG)" opacity=".7" /><text x="144" y="74"
-                  text-anchor="middle" fill="rgba(148,163,184,.55)" font-size="8"
-                  font-family="DM Sans,sans-serif">17k</text>
-              </g>
-              <g class="bgrp">
-                <rect x="198" y="88" width="52" height="47" rx="6" fill="url(#gG)" opacity=".7" /><text x="224" y="83"
-                  text-anchor="middle" fill="rgba(148,163,184,.55)" font-size="8"
-                  font-family="DM Sans,sans-serif">14k</text>
-              </g>
-              <g class="bgrp">
-                <rect x="278" y="51" width="52" height="84" rx="6" fill="url(#gB)" /><text x="304" y="46"
-                  text-anchor="middle" fill="rgba(240,244,255,.9)" font-size="8" font-family="DM Sans,sans-serif"
-                  font-weight="700">24k</text>
-              </g>
-              <g class="bgrp">
-                <rect x="358" y="64" width="52" height="71" rx="6" fill="url(#gG)" opacity=".7" /><text x="384" y="59"
-                  text-anchor="middle" fill="rgba(148,163,184,.55)" font-size="8"
-                  font-family="DM Sans,sans-serif">20k</text>
-              </g>
-              <g class="bgrp">
-                <rect x="438" y="26" width="52" height="109" rx="6" fill="url(#gB)" /><text x="464" y="21"
-                  text-anchor="middle" fill="rgba(240,244,255,.9)" font-size="8" font-family="DM Sans,sans-serif"
-                  font-weight="700">31k</text>
-              </g>
-              <g class="bgrp">
-                <rect x="498" y="38" width="52" height="97" rx="6" fill="url(#gG)" /><text x="524" y="33"
-                  text-anchor="middle" fill="rgba(0,208,132,.95)" font-size="8" font-family="DM Sans,sans-serif"
-                  font-weight="700">27k</text>
-              </g>
-            </svg>
-            <div class="x-lbls">
-              <span>19/Mai</span><span>20/Mai</span><span>21/Mai</span>
-              <span>22/Mai</span><span>23/Mai</span><span>24/Mai</span><span>Hoje</span>
-            </div>
+            <div id="fluxoCaixaChart" style="flex:1;display:flex;align-items:flex-end;width:100%"></div>
           </div>
         </div>
 
         <!-- Donut -->
-        <div class="dcard donut-card">
+        <div class="dcard donut-card" id="section-rd">
           <div class="dcard-head">
             <div>
-              <div class="dcard-title">Por canal</div>
-              <div class="dcard-sub">Distribuição do mês</div>
+              <div class="dcard-title">Receitas x Despesas</div>
+              <div class="dcard-sub">Distribuição financeira</div>
             </div>
           </div>
-          <div class="dcard-body">
-            <svg class="donut" viewBox="0 0 100 100">
-              <!-- circ 2π×38 ≈ 238.76 -->
-              <circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="11" />
-              <circle cx="50" cy="50" r="38" fill="none" stroke="#00D084" stroke-width="11"
-                stroke-dasharray="107.4 238.8" stroke-dashoffset="0" transform="rotate(-90 50 50)" />
-              <circle cx="50" cy="50" r="38" fill="none" stroke="#2F80FF" stroke-width="11"
-                stroke-dasharray="71.6 238.8" stroke-dashoffset="-107.4" transform="rotate(-90 50 50)" />
-              <circle cx="50" cy="50" r="38" fill="none" stroke="#FF8C42" stroke-width="11"
-                stroke-dasharray="59.7 238.8" stroke-dashoffset="-179" transform="rotate(-90 50 50)" />
-              <text x="50" y="46" text-anchor="middle" fill="#FFF" font-size="12" font-weight="800"
-                font-family="Syne,sans-serif">45%</text>
-              <text x="50" y="57" text-anchor="middle" fill="rgba(148,163,184,.55)" font-size="7.5"
-                font-family="DM Sans,sans-serif">PDV</text>
-            </svg>
-            <div class="dleg">
-              <div class="dleg-row">
-                <div class="dleg-dot" style="background:#00D084"></div>
-                PDV Físico
-                <span class="dleg-val">R$ 37,9k</span>
-                <span class="dleg-pct">45%</span>
+          <div class="rd-body">
+            <div class="rd-donut-wrap">
+              <svg viewBox="0 0 100 100" id="rdDonutSvg">
+                <circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="11"/>
+                <text x="50" y="50" text-anchor="middle" fill="rgba(148,163,184,.3)" font-size="8" font-family="Inter">—</text>
+              </svg>
+            </div>
+            <div class="rd-legend" id="rdDonutLeg"></div>
+          </div>
+        </div>
+
+        <!-- Contas R/P -->
+        <div class="dcard donut-card" id="section-rp">
+          <div class="dcard-head">
+            <div>
+              <div class="dcard-title">Contas a Receber e a Pagar</div>
+              <div class="dcard-sub">Pendentes em aberto</div>
+            </div>
+            <a href="financeiro.html" class="dlink">Ver detalhes <i class="bi bi-arrow-right"></i></a>
+          </div>
+          <div style="flex:1;display:flex;align-items:center">
+            <div class="rp-cols" style="width:100%">
+              <div class="rp-col">
+                <div class="rp-col-title" style="color:var(--green)">A Receber</div>
+                <div class="rp-col-total" style="color:var(--green)" id="rp-rec-total">—</div>
+                <div class="rp-col-row">
+                  <span class="rp-col-lbl">Vencidos</span>
+                  <span class="rp-col-val" style="color:var(--red)" id="rp-rec-venc">—</span>
+                </div>
+                <div class="rp-col-row">
+                  <span class="rp-col-lbl">A Vencer</span>
+                  <span class="rp-col-val" style="color:var(--green)" id="rp-rec-av">—</span>
+                </div>
               </div>
-              <div class="dleg-row">
-                <div class="dleg-dot" style="background:#2F80FF"></div>
-                Loja Online
-                <span class="dleg-val">R$ 25,3k</span>
-                <span class="dleg-pct">30%</span>
-              </div>
-              <div class="dleg-row">
-                <div class="dleg-dot" style="background:#FF8C42"></div>
-                Parceiros
-                <span class="dleg-val">R$ 21,1k</span>
-                <span class="dleg-pct">25%</span>
+              <div class="rp-col">
+                <div class="rp-col-title" style="color:var(--red)">A Pagar</div>
+                <div class="rp-col-total" style="color:var(--red)" id="rp-pag-total">—</div>
+                <div class="rp-col-row">
+                  <span class="rp-col-lbl">Vencidos</span>
+                  <span class="rp-col-val" style="color:var(--red)" id="rp-pag-venc">—</span>
+                </div>
+                <div class="rp-col-row">
+                  <span class="rp-col-lbl">A Vencer</span>
+                  <span class="rp-col-val" style="color:var(--sub)" id="rp-pag-av">—</span>
+                </div>
               </div>
             </div>
           </div>
@@ -1092,48 +1340,204 @@ transition: var(--ease);
       </div>
 
       <!-- BOTTOM ROW -->
-      <div class="bottom-grid">
+      <div class="bottom-grid" id="section-chart-row2">
 
-        <!-- Sales table -->
-        <div class="dcard">
+        <!-- Faturamento dos Últimos 6 Meses -->
+        <div class="dcard chart-main" id="section-fat6">
           <div class="dcard-head">
             <div>
-              <div class="dcard-title">Últimas Vendas</div>
-              <div class="dcard-sub" id="dbSalesDate">Hoje</div>
+              <div class="dcard-title">Faturamento dos Últimos 6 Meses</div>
+              <div class="dcard-sub">Receita bruta por mês</div>
+            </div>
+            <span style="font-size:11px;color:var(--muted);font-weight:600">Mensal</span>
+          </div>
+          <div class="dcard-body">
+            <div id="fat6mChart" style="flex:1;display:flex;align-items:flex-end;width:100%"></div>
+          </div>
+        </div>
+
+        <!-- Despesas por Categoria -->
+        <div class="dcard donut-card" id="section-despc">
+          <div class="dcard-head">
+            <div>
+              <div class="dcard-title">Despesas por Categoria</div>
+              <div class="dcard-sub">Distribuição do período</div>
+            </div>
+          </div>
+          <div class="dcard-body" style="gap:10px;padding:10px 16px">
+            <div id="despCatSvgWrap" style="display:flex;justify-content:center"></div>
+            <div class="dleg" id="despCatLegend">
+              <div style="text-align:center;color:var(--muted);font-size:12px;padding:8px">Sem lançamentos</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Atividade Recente -->
+        <div class="dcard donut-card" id="section-atv">
+          <div class="dcard-head">
+            <div>
+              <div class="dcard-title">Atividades Recentes</div>
+              <div class="dcard-sub">Eventos do sistema</div>
             </div>
             <a href="vendas.html" class="dlink">Ver todas <i class="bi bi-arrow-right"></i></a>
           </div>
-          <table class="stbl">
-            <thead>
-              <tr>
-                <th>Cliente</th>
-                <th>Valor</th>
-                <th>Status</th>
-                <th style="text-align:right">Hora</th>
-              </tr>
-            </thead>
-            <tbody id="lastSalesTbody">
-              <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px;font-size:12.5px">Nenhuma venda registrada ainda.</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Timeline activity -->
-        <div class="dcard" style="display:flex;flex-direction:column">
-          <div class="dcard-head">
-            <div>
-              <div class="dcard-title">Atividade Recente</div>
-              <div class="dcard-sub">Eventos do sistema</div>
-            </div>
-          </div>
-          <div class="tl" style="flex:1" id="activityTimeline">
+          <div style="flex:1;overflow:hidden" id="activityTimeline">
             <div style="text-align:center;color:var(--muted);padding:28px;font-size:13px">Nenhuma atividade recente.</div>
           </div>
         </div>
 
       </div>
+      <!-- AÇÕES RÁPIDAS -->
+      <div id="section-aq">
+        <div class="aq-title">Ações Rápidas</div>
+        <div class="aq-grid" id="aq-grid-container">
+          <a class="aq-card" href="pdv.html"        id="aq-novaVenda">  <i class="bi bi-display"           style="color:var(--green)"></i>  <span>Nova Venda (PDV)</span></a>
+          <a class="aq-card" href="pedidos.html"    id="aq-novoPedido"> <i class="bi bi-file-earmark-plus" style="color:var(--blue)"></i>   <span>Novo Pedido</span></a>
+          <a class="aq-card" href="clientes.html"   id="aq-novoCliente"><i class="bi bi-person-plus"        style="color:var(--orange)"></i> <span>Novo Cliente</span></a>
+          <a class="aq-card" href="produtos.html"   id="aq-novoProduto"><i class="bi bi-box-seam"           style="color:var(--purple)"></i> <span>Novo Produto</span></a>
+          <a class="aq-card" href="financeiro.html" id="aq-financeiro"> <i class="bi bi-currency-dollar"   style="color:var(--yellow)"></i> <span>Financeiro</span></a>
+          <a class="aq-card" href="estoque.html"    id="aq-estoque">    <i class="bi bi-stack"              style="color:var(--red)"></i>    <span>Estoque</span></a>
+        </div>
+      </div>
+
     </div><!-- /content -->
   </div><!-- /main -->
+
+  <!-- PAINEL CONFIG -->
+  <div class="painel-overlay" id="painelOverlay" onclick="closePainelConfig()"></div>
+  <div class="painel-drawer" id="painelDrawer">
+
+    <div class="painel-head">
+      <div>
+        <div class="painel-title"><i class="bi bi-sliders" style="margin-right:7px;color:var(--accent)"></i>Configurar Dashboard</div>
+        <div class="painel-sub">Personalize os indicadores e widgets exibidos na sua tela inicial.</div>
+      </div>
+      <button class="painel-close" onclick="closePainelConfig()"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    <div class="painel-body">
+
+      <!-- S1: Widgets -->
+      <div class="painel-section">
+        <div class="painel-sec-title"><i class="bi bi-grid-1x2-fill"></i>Widgets visíveis</div>
+        <div class="cfg-row"><span class="cfg-lbl">KPIs — linha de indicadores</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-kpis"  onchange="cfgWidget('kpiGrid',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Fluxo de Caixa</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-fluxo" onchange="cfgWidget('fluxoCaixa',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Receitas x Despesas</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-rd"    onchange="cfgWidget('receitasDespesas',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Contas a Receber e Pagar</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-rp"    onchange="cfgWidget('contasRP',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Faturamento dos Últimos 6 Meses</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-fat6"  onchange="cfgWidget('fat6meses',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Despesas por Categoria</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-desp"  onchange="cfgWidget('despCat',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Atividades Recentes</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-atv"   onchange="cfgWidget('atividades',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Ações Rápidas</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-aq"    onchange="cfgWidget('acoesRapidas',this.checked)"><span class="cfg-sw-track"></span></label></div>
+      </div>
+
+      <!-- S2: Ordem dos KPIs -->
+      <div class="painel-section">
+        <div class="painel-sec-title"><i class="bi bi-arrow-down-up"></i>Ordem dos KPIs <span style="font-size:10px;color:var(--muted);text-transform:none;letter-spacing:0;font-weight:400">— arraste para reorganizar</span></div>
+        <div class="cfg-drag-list" id="cfg-kpi-order-list"></div>
+      </div>
+
+      <!-- S3: Período padrão -->
+      <div class="painel-section">
+        <div class="painel-sec-title"><i class="bi bi-calendar3"></i>Período Padrão</div>
+        <select class="cfg-select" id="cfg-periodo" onchange="cfgPeriodo(this.value)">
+          <option value="hoje">Hoje</option>
+          <option value="7d">Últimos 7 dias</option>
+          <option value="30d">Últimos 30 dias</option>
+          <option value="mes">Este mês</option>
+          <option value="90d">Últimos 90 dias</option>
+          <option value="ano">Este ano</option>
+        </select>
+      </div>
+
+      <!-- S4: KPIs principais -->
+      <div class="painel-section">
+        <div class="painel-sec-title"><i class="bi bi-bar-chart-fill"></i>KPIs Principais <span style="font-size:10px;color:var(--muted);text-transform:none;letter-spacing:0;font-weight:400">— máx. 5</span></div>
+        <div class="cfg-kpi-counter">Selecionados: <b id="cfg-kpi-count">5</b>/5</div>
+        <div class="cfg-chip-grid" id="cfg-kpi-chips"></div>
+      </div>
+
+      <!-- S5: Alertas -->
+      <div class="painel-section">
+        <div class="painel-sec-title"><i class="bi bi-bell-fill"></i>Alertas no Dashboard</div>
+        <div class="cfg-row"><span class="cfg-lbl">Estoque Baixo<small>Produto atingiu o mínimo configurado</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-a-estoque"  onchange="cfgAlerta('estoqueBaixo',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Contas Vencidas<small>Títulos a pagar/receber em atraso</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-a-vencidas" onchange="cfgAlerta('contasVencidas',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Fluxo de Caixa Negativo<small>Saldo projetado abaixo de zero</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-a-fluxo"    onchange="cfgAlerta('fluxoNegativo',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Metas Não Atingidas<small>Indicadores abaixo da meta mensal</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-a-metas"    onchange="cfgAlerta('metasNaoAtingidas',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Produtos Sem Giro<small>Sem venda nos últimos 30 dias</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-a-giro"     onchange="cfgAlerta('semGiro',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Boletos Próximos do Vencimento<small>Vencendo nos próximos 3 dias</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-a-boletos"  onchange="cfgAlerta('boletosVencendo',this.checked)"><span class="cfg-sw-track"></span></label></div>
+      </div>
+
+      <!-- S6: Ações rápidas -->
+      <div class="painel-section">
+        <div class="painel-sec-title"><i class="bi bi-lightning-fill"></i>Ações Rápidas</div>
+        <div class="cfg-row"><span class="cfg-lbl">Nova Venda (PDV)</span><label class="cfg-sw"><input type="checkbox" id="cfg-aq-venda"   onchange="cfgAcao('novaVenda',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Novo Pedido</span><label class="cfg-sw"><input type="checkbox" id="cfg-aq-pedido"  onchange="cfgAcao('novoPedido',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Novo Cliente</span><label class="cfg-sw"><input type="checkbox" id="cfg-aq-cliente" onchange="cfgAcao('novoCliente',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Novo Produto</span><label class="cfg-sw"><input type="checkbox" id="cfg-aq-produto" onchange="cfgAcao('novoProduto',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Financeiro</span><label class="cfg-sw"><input type="checkbox" id="cfg-aq-fin"     onchange="cfgAcao('financeiro',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Estoque</span><label class="cfg-sw"><input type="checkbox" id="cfg-aq-est"     onchange="cfgAcao('estoque',this.checked)"><span class="cfg-sw-track"></span></label></div>
+      </div>
+
+      <!-- S7: Nexo AI -->
+      <div class="painel-section">
+        <div class="painel-sec-title"><i class="bi bi-stars"></i>Nexo AI</div>
+        <div class="cfg-ai-badge">
+          <div class="cfg-ai-badge-title"><i class="bi bi-stars"></i>Nexo AI — Inteligência Integrada</div>
+          <div class="cfg-ai-badge-sub">Widgets que analisam seus dados automaticamente.</div>
+        </div>
+        <div class="cfg-row"><span class="cfg-lbl">Insights Automáticos<small>Análise do desempenho diário</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-ai-insights" onchange="cfgAI('insights',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Oportunidades de Venda<small>Produtos com potencial de crescimento</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-ai-oportun"  onchange="cfgAI('oportunidades',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Alertas Financeiros<small>Anomalias no fluxo de caixa</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-ai-alertas"  onchange="cfgAI('alertasFinanceiros',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Previsão de Caixa<small>Projeção para os próximos 30 dias</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-ai-previsao" onchange="cfgAI('previsaoCaixa',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Sugestões de Compra<small>Reposição baseada em histórico</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-ai-sugest"   onchange="cfgAI('sugestoes',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Produtos Sem Giro<small>Identifica itens parados no estoque</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-ai-giro"     onchange="cfgAI('semGiro',this.checked)"><span class="cfg-sw-track"></span></label></div>
+      </div>
+
+      <!-- S8: Layout -->
+      <div class="painel-section">
+        <div class="painel-sec-title"><i class="bi bi-layout-three-columns"></i>Modo de Visualização</div>
+        <div class="cfg-layout-grid">
+          <div class="cfg-layout-opt" id="cfg-l-compacto"   onclick="cfgLayout('compacto')">
+            <i class="bi bi-grid-3x3-gap"></i><div class="cfg-layout-name">Compacto</div><div class="cfg-layout-desc">Mais info por tela</div>
+          </div>
+          <div class="cfg-layout-opt" id="cfg-l-confortavel" onclick="cfgLayout('confortavel')">
+            <i class="bi bi-grid"></i><div class="cfg-layout-name">Confortável</div><div class="cfg-layout-desc">Espaçamento padrão</div>
+          </div>
+          <div class="cfg-layout-opt" id="cfg-l-executivo"  onclick="cfgLayout('executivo')">
+            <i class="bi bi-display"></i><div class="cfg-layout-name">Executivo</div><div class="cfg-layout-desc">Cards em destaque</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- S9: Cor de destaque -->
+      <div class="painel-section">
+        <div class="painel-sec-title"><i class="bi bi-palette-fill"></i>Cor de Destaque</div>
+        <div class="cfg-colors">
+          <div class="cfg-color" id="cfg-c-verde"   style="background:#00D084" title="Verde NexoERP" onclick="cfgCor('verde',  '#00D084')"></div>
+          <div class="cfg-color" id="cfg-c-azul"    style="background:#2F80FF" title="Azul"          onclick="cfgCor('azul',   '#2F80FF')"></div>
+          <div class="cfg-color" id="cfg-c-roxo"    style="background:#A78BFA" title="Roxo"          onclick="cfgCor('roxo',   '#A78BFA')"></div>
+          <div class="cfg-color" id="cfg-c-laranja" style="background:#FF8C42" title="Laranja"       onclick="cfgCor('laranja','#FF8C42')"></div>
+        </div>
+      </div>
+
+      <!-- S10: Permissões (admin) -->
+      <div class="painel-section" id="cfg-admin-sec" style="display:none">
+        <div class="painel-sec-title"><i class="bi bi-shield-check"></i>Permissões</div>
+        <div class="cfg-row">
+          <span class="cfg-lbl">Tornar padrão para todos os usuários<small>Aplica este layout para toda a empresa</small></span>
+          <label class="cfg-sw"><input type="checkbox" id="cfg-padrao-empresa" onchange="cfgPadraoEmpresa(this.checked)"><span class="cfg-sw-track"></span></label>
+        </div>
+      </div>
+
+    </div><!-- /painel-body -->
+
+    <div class="painel-footer">
+      <button class="painel-btn-rst" onclick="cfgRestore()">Restaurar Padrão</button>
+      <button class="painel-btn-cancel" onclick="closePainelConfig()">Cancelar</button>
+      <button class="painel-btn-save" onclick="cfgSalvar()"><i class="bi bi-check2"></i> Salvar</button>
+    </div>
+
+  </div><!-- /painel-drawer -->
 
   <script src="utils.js"></script>
   <script src="auth.js"></script>
@@ -1148,8 +1552,6 @@ transition: var(--ease);
       const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
       document.getElementById('dbDate').textContent =
         `${dias[d.getDay()]}, ${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()} · Operação de hoje`;
-      document.getElementById('dbSalesDate').textContent =
-        `Hoje · ${d.getDate()}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
     })();
 
     // ── Helpers ───────────────────────────────────────────────
@@ -1159,8 +1561,6 @@ transition: var(--ease);
     }
 
     function fmtMoeda(v) {
-      if (v >= 1000000) return 'R$ ' + (v / 1000000).toFixed(1).replace('.', ',') + 'M';
-      if (v >= 1000)    return 'R$ ' + (v / 1000).toFixed(1).replace('.', ',') + 'k';
       return 'R$ ' + fmt(v);
     }
 
@@ -1196,84 +1596,84 @@ transition: var(--ease);
     const pedidos   = readKey('nexoerp.pedidos');
     const financeiro = readKey('nexoerp.financeiro');
 
-    // ── KPI: Faturamento do mês ───────────────────────────────
+    // ── KPI 1: Faturamento bruto ──────────────────────────────
     const vendasMes = vendas.filter(v =>
       v.status === 'concluida' && isMesAtual(v.dataISO || v.dataStr)
     );
     const faturamento = vendasMes.reduce((s, v) => s + (v.total || 0), 0);
-
     document.getElementById('kpi-faturamento').textContent = fmtMoeda(faturamento);
-    document.getElementById('kpi-faturamento-badge').textContent =
-      vendasMes.length > 0 ? `${vendasMes.length} venda${vendasMes.length > 1 ? 's' : ''}` : '—';
+    const badgeFat = document.getElementById('kpi-faturamento-badge');
+    if (vendasMes.length > 0) {
+      badgeFat.textContent = `${vendasMes.length} venda${vendasMes.length > 1 ? 's' : ''}`;
+    } else { badgeFat.textContent = '—'; }
 
-    // ── KPI: Vendas no mês ────────────────────────────────────
-    document.getElementById('kpi-pedidos').textContent = vendasMes.length;
-    const pedidosMes = pedidos.filter(p => isMesAtual(p.data || p.dataISO || p.createdAt));
-    document.getElementById('kpi-pedidos-badge').textContent =
-      pedidosMes.length > 0 ? `+ ${pedidosMes.length} pedido${pedidosMes.length > 1 ? 's' : ''}` : '—';
+    // ── KPI 2: Receitas ───────────────────────────────────────
+    const receitasMes = financeiro.filter(l =>
+      l.tipo === 'receita' && isMesAtual(l.vencimento || l.data)
+    );
+    const totalReceitas = receitasMes.reduce((s, l) => s + (l.valor || 0), 0);
+    document.getElementById('kpi-receitas').textContent = fmtMoeda(totalReceitas);
+    const recPagas = receitasMes.filter(l => l.status === 'pago').length;
+    const badgeRec = document.getElementById('kpi-receitas-badge');
+    if (recPagas > 0) { badgeRec.classList.add('up'); badgeRec.innerHTML = `<i class="bi bi-arrow-up-short"></i>${recPagas} recebida${recPagas > 1 ? 's' : ''}`; }
+    else { badgeRec.textContent = receitasMes.length > 0 ? `${receitasMes.length} a receber` : '—'; }
 
-    // ── KPI: Clientes cadastrados ─────────────────────────────
-    document.getElementById('kpi-clientes').textContent = clientes.length;
-    const clientesMes = clientes.filter(c => isMesAtual(c.cadastro));
-    const badgeClientes = document.getElementById('kpi-clientes-badge');
-    if (clientesMes.length > 0) {
-      badgeClientes.classList.add('up');
-      badgeClientes.innerHTML = `<i class="bi bi-arrow-up-short"></i>${clientesMes.length} este mês`;
+    // ── KPI 3: Despesas ───────────────────────────────────────
+    const despesasMes = financeiro.filter(l =>
+      l.tipo === 'despesa' && isMesAtual(l.vencimento || l.data)
+    );
+    const totalDespesas = despesasMes.reduce((s, l) => s + (l.valor || 0), 0);
+    document.getElementById('kpi-despesas').textContent = fmtMoeda(totalDespesas);
+    const despVencidas = despesasMes.filter(l => l.status !== 'pago' && l.vencimento && new Date(l.vencimento) < new Date()).length;
+    const badgeDesp = document.getElementById('kpi-despesas-badge');
+    if (despVencidas > 0) { badgeDesp.classList.add('down'); badgeDesp.innerHTML = `<i class="bi bi-arrow-down-short"></i>${despVencidas} vencida${despVencidas > 1 ? 's' : ''}`; }
+    else { badgeDesp.textContent = despesasMes.length > 0 ? `${despesasMes.length} lançamento${despesasMes.length > 1 ? 's' : ''}` : '—'; }
+
+    // ── KPI 4: Lucro líquido ──────────────────────────────────
+    const recPagasMes = financeiro.filter(l => l.tipo === 'receita' && l.status === 'pago' && isMesAtual(l.vencimento || l.data));
+    const despPagasMes = financeiro.filter(l => l.tipo === 'despesa' && l.status === 'pago' && isMesAtual(l.vencimento || l.data));
+    const totalRecP  = recPagasMes.reduce((s, l) => s + (l.valor || 0), 0);
+    const totalDespP = despPagasMes.reduce((s, l) => s + (l.valor || 0), 0);
+    const lucro = totalRecP - totalDespP;
+    const elLucro    = document.getElementById('kpi-lucro');
+    const badgeLucro = document.getElementById('kpi-lucro-badge');
+    if (totalRecP === 0 && totalDespP === 0) {
+      elLucro.textContent = '—'; badgeLucro.textContent = '—';
     } else {
-      badgeClientes.textContent = '—';
+      elLucro.textContent = fmtMoeda(Math.abs(lucro));
+      if (lucro > 0)      { badgeLucro.classList.add('up');   badgeLucro.innerHTML = `<i class="bi bi-arrow-up-short"></i>Lucro`; }
+      else if (lucro < 0) { badgeLucro.classList.add('down'); badgeLucro.innerHTML = `<i class="bi bi-arrow-down-short"></i>Prejuízo`; }
+      else                { badgeLucro.textContent = 'Neutro'; }
     }
 
-    // ── KPI: Estoque disponível ───────────────────────────────
-    const prodAtivos = produtos.filter(p => p.status !== 'inativo');
-    const disponiveis = prodAtivos.filter(p => p.estoque > (p.estoqueMin || 0));
-    const pctEstoque = prodAtivos.length > 0
-      ? Math.round((disponiveis.length / prodAtivos.length) * 100)
-      : 0;
-    const zerados = prodAtivos.filter(p => p.estoque === 0).length;
+    // ── KPI 5: Saldo em conta ─────────────────────────────────
+    const todasRecPagas  = financeiro.filter(l => l.tipo === 'receita' && l.status === 'pago');
+    const todasDespPagas = financeiro.filter(l => l.tipo === 'despesa' && l.status === 'pago');
+    const saldo = todasRecPagas.reduce((s, l) => s + (l.valor || 0), 0)
+                - todasDespPagas.reduce((s, l) => s + (l.valor || 0), 0);
+    const elSaldo    = document.getElementById('kpi-saldo');
+    const badgeSaldo = document.getElementById('kpi-saldo-badge');
+    elSaldo.textContent = fmtMoeda(Math.abs(saldo));
+    if (todasRecPagas.length === 0 && todasDespPagas.length === 0) {
+      elSaldo.textContent = '—'; badgeSaldo.textContent = '—';
+    } else if (saldo >= 0) { badgeSaldo.classList.add('up');   badgeSaldo.innerHTML = `<i class="bi bi-arrow-up-short"></i>Positivo`; }
+    else                   { badgeSaldo.classList.add('down'); badgeSaldo.innerHTML = `<i class="bi bi-arrow-down-short"></i>Negativo`; }
 
-    document.getElementById('kpi-estoque').textContent = prodAtivos.length > 0 ? pctEstoque + '%' : '—';
-    const badgeEstoque = document.getElementById('kpi-estoque-badge');
-    if (zerados > 0) {
-      badgeEstoque.classList.add('down');
-      badgeEstoque.innerHTML = `<i class="bi bi-arrow-down-short"></i>${zerados} zerado${zerados > 1 ? 's' : ''}`;
-    } else if (prodAtivos.length > 0) {
-      badgeEstoque.classList.add('up');
-      badgeEstoque.innerHTML = `<i class="bi bi-arrow-up-short"></i>OK`;
-    } else {
-      badgeEstoque.textContent = '—';
-    }
-
-    // ── Últimas Vendas ────────────────────────────────────────
-    const tbody = document.getElementById('lastSalesTbody');
-    const ultimas = [...vendas]
-      .sort((a, b) => new Date(b.dataISO) - new Date(a.dataISO))
-      .slice(0, 5);
-
-    if (ultimas.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px;font-size:12.5px">Nenhuma venda registrada ainda.</td></tr>`;
-    } else {
-      const statusMap = {
-        concluida: { cls: 'ok',   label: 'Aprovado' },
-        cancelada: { cls: 'canc', label: 'Cancelado' },
-        estornada: { cls: 'canc', label: 'Estornado' },
-        pendente:  { cls: 'pend', label: 'Pendente' },
-      };
-      tbody.innerHTML = ultimas.map(v => {
-        const s = statusMap[v.status] || { cls: 'pend', label: v.status || '—' };
-        const amtCls = v.status === 'cancelada' || v.status === 'estornada' ? 'neg' : 'pos';
-        const clienteNome = typeof v.cliente === 'object'
-          ? v.cliente.nome || '—' : (v.cliente || '—');
-        return `<tr onclick="location.href='vendas.html'" style="cursor:pointer">
-          <td>
-            <div class="td-name">${escapeHTML(clienteNome)}</div>
-            <div class="td-id">${escapeHTML(v.id || '')}</div>
-          </td>
-          <td><span class="td-amt ${amtCls}">R$ ${fmt(v.total || 0)}</span></td>
-          <td><span class="spill ${s.cls}">${s.label}</span></td>
-          <td style="color:var(--muted);text-align:right;font-size:12px">${escapeHTML(v.horaStr || '')}</td>
-        </tr>`;
-      }).join('');
-    }
+    // ── Contas R/P ────────────────────────────────────────────
+    (function () {
+      const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+      const isVenc = l => l.vencimento && new Date(l.vencimento) < hoje;
+      const soma   = arr => arr.reduce((s, l) => s + (l.valor || 0), 0);
+      const f      = v => v > 0 ? fmtMoeda(v) : '—';
+      const pendRec = financeiro.filter(l => l.tipo === 'receita' && l.status !== 'pago');
+      const pendPag = financeiro.filter(l => l.tipo === 'despesa' && l.status !== 'pago');
+      document.getElementById('rp-rec-total').textContent = f(soma(pendRec));
+      document.getElementById('rp-rec-venc').textContent  = f(soma(pendRec.filter(isVenc)));
+      document.getElementById('rp-rec-av').textContent    = f(soma(pendRec.filter(l => !isVenc(l))));
+      document.getElementById('rp-pag-total').textContent = f(soma(pendPag));
+      document.getElementById('rp-pag-venc').textContent  = f(soma(pendPag.filter(isVenc)));
+      document.getElementById('rp-pag-av').textContent    = f(soma(pendPag.filter(l => !isVenc(l))));
+    })();
 
     // ── Atividade Recente ─────────────────────────────────────
     const eventos = [];
@@ -1329,24 +1729,273 @@ transition: var(--ease);
       });
 
     const tl = document.getElementById('activityTimeline');
-    if (eventos.length === 0) {
-      tl.innerHTML = `<div style="text-align:center;color:var(--muted);padding:28px;font-size:13px">Nenhuma atividade recente.</div>`;
-    } else {
-      tl.innerHTML = eventos.map(e => `
-        <div class="tl-item">
-          <div class="tl-dot-wrap"><div class="tl-dot" style="background:${e.cor}"></div></div>
-          <div class="tl-body">
-            <div class="tl-text">${e.texto}</div>
-            ${e.tempo ? `<div class="tl-time">${tempoRelativo(e.tempo)}</div>` : ''}
-          </div>
-        </div>`).join('');
+    const ACT_TIPOS = {
+      venda:     { ico: 'bi-currency-dollar',    bg: 'rgba(0,208,132,.12)',   cor: 'var(--green)'  },
+      estoque:   { ico: 'bi-exclamation-triangle',bg: 'rgba(245,183,0,.12)',  cor: 'var(--yellow)' },
+      cliente:   { ico: 'bi-person-plus',         bg: 'rgba(47,128,255,.12)', cor: 'var(--blue)'   },
+      financeiro:{ ico: 'bi-file-earmark-text',   bg: 'rgba(255,77,109,.12)', cor: 'var(--red)'    },
+      pedido:    { ico: 'bi-bag-check',           bg: 'rgba(167,139,250,.12)',cor: 'var(--purple)' },
+      sistema:   { ico: 'bi-person-check',        bg: 'rgba(107,127,150,.12)',cor: 'var(--sub)'    },
+    };
+
+    // Monta lista completa de atividades (mais recentes primeiro)
+    const todasAtividades = [];
+    vendas.filter(v=>v.status==='concluida'&&v.dataISO)
+      .sort((a,b)=>new Date(b.dataISO)-new Date(a.dataISO))
+      .forEach(v=>{
+        const nome = typeof v.cliente==='object' ? v.cliente.nome||'Cliente' : (v.cliente||'Cliente');
+        todasAtividades.push({ tipo:'venda', titulo:'Venda concluída', desc:`${escapeHTML(nome)} · R$ ${fmt(v.total||0)}`, tempo:v.dataISO });
+      });
+    financeiro.filter(l=>l.status==='pago')
+      .sort((a,b)=>new Date(b.pago_em||b.vencimento||0)-new Date(a.pago_em||a.vencimento||0))
+      .forEach(l=>{
+        const t = l.tipo==='receita' ? 'Recebimento registrado' : 'Pagamento realizado';
+        todasAtividades.push({ tipo:'financeiro', titulo:t, desc:`${escapeHTML(l.descricao||l.categoria||'—')} · R$ ${fmt(l.valor||0)}`, tempo:l.pago_em||l.vencimento||null });
+      });
+    pedidos.forEach(p=>{
+      todasAtividades.push({ tipo:'pedido', titulo:'Pedido criado', desc:`${escapeHTML(p.id||'—')} · ${escapeHTML(p.cliente||'—')}`, tempo:p.dataISO||null });
+    });
+    produtos.filter(p=>p.estoque===0&&p.status!=='inativo').forEach(p=>{
+      todasAtividades.push({ tipo:'estoque', titulo:'Estoque zerado', desc:escapeHTML(p.nome), tempo:null });
+    });
+    clientes.forEach(c=>{
+      todasAtividades.push({ tipo:'cliente', titulo:'Novo cliente cadastrado', desc:escapeHTML(c.nome||'—'), tempo:null });
+    });
+    // Ordena por tempo (com tempo primeiro, sem tempo no final)
+    todasAtividades.sort((a,b)=>{
+      if (!a.tempo && !b.tempo) return 0;
+      if (!a.tempo) return 1;
+      if (!b.tempo) return -1;
+      return new Date(b.tempo) - new Date(a.tempo);
+    });
+
+    function buildActItem(a) {
+      const cfg = ACT_TIPOS[a.tipo] || ACT_TIPOS.sistema;
+      return `<div class="act-item">
+        <div class="act-ico" style="background:${cfg.bg};color:${cfg.cor}"><i class="bi ${cfg.ico}"></i></div>
+        <div class="act-body">
+          <div class="act-title">${a.titulo}</div>
+          <div class="act-desc">${a.desc}</div>
+        </div>
+        <div class="act-time">${a.tempo ? tempoRelativo(a.tempo) : '—'}</div>
+      </div>`;
     }
 
-    // ── Date picker / chips ───────────────────────────────────
-    function setChip(el) {
-      document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
-      el.classList.add('on');
+    if (!tl) {
+      // sem elemento, ignora
+    } else if (todasAtividades.length === 0) {
+      tl.innerHTML = `<div style="text-align:center;color:var(--muted);padding:28px;font-size:13px">Nenhuma atividade recente.</div>`;
+    } else {
+      // Renderiza 1 item para medir a altura real
+      tl.innerHTML = buildActItem(todasAtividades[0]);
+      const itemH = tl.firstElementChild.offsetHeight || 50;
+      const availH = tl.clientHeight || 188;
+      const maxItems = Math.max(1, Math.floor(availH / itemH));
+      tl.innerHTML = todasAtividades.slice(0, maxItems).map(buildActItem).join('');
     }
+
+    // ── Donut: Receitas x Despesas (horizontal) ──────────────
+    (function () {
+      const totalR = financeiro.filter(l => l.tipo === 'receita').reduce((s, l) => s + (l.valor || 0), 0);
+      const totalD = financeiro.filter(l => l.tipo === 'despesa').reduce((s, l) => s + (l.valor || 0), 0);
+      const total  = totalR + totalD;
+      const svgEl  = document.getElementById('rdDonutSvg');
+      const legEl  = document.getElementById('rdDonutLeg');
+      if (!svgEl || !legEl) return;
+      if (total === 0) {
+        legEl.innerHTML = `<div style="color:var(--muted);font-size:12px">Sem dados financeiros</div>`;
+        return;
+      }
+      const R = 44, circ = 2 * Math.PI * R;
+      const dashR = (totalR / total) * circ;
+      const dashD = (totalD / total) * circ;
+      const pctR  = (totalR / total * 100).toFixed(1);
+      const pctD  = (totalD / total * 100).toFixed(1);
+      svgEl.innerHTML = `
+        <circle cx="50" cy="50" r="${R}" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="9"/>
+        <circle cx="50" cy="50" r="${R}" fill="none" stroke="#00D084" stroke-width="9"
+          stroke-dasharray="${dashR.toFixed(2)} ${circ.toFixed(2)}" stroke-dashoffset="0" transform="rotate(-90 50 50)"/>
+        <circle cx="50" cy="50" r="${R}" fill="none" stroke="#FF4D6D" stroke-width="9"
+          stroke-dasharray="${dashD.toFixed(2)} ${circ.toFixed(2)}" stroke-dashoffset="${(-dashR).toFixed(2)}" transform="rotate(-90 50 50)"/>
+        <text x="50" y="44" text-anchor="middle" fill="#FFF" font-size="9.5" font-weight="800" font-family="Inter,sans-serif">${fmtMoeda(total)}</text>
+        <text x="50" y="56" text-anchor="middle" fill="rgba(148,163,184,.5)" font-size="7" font-family="Inter,sans-serif">Total</text>`;
+      legEl.innerHTML = `
+        <div class="rd-leg-item">
+          <div class="rd-leg-label"><div class="rd-leg-dot" style="background:#00D084"></div>Receitas</div>
+          <div class="rd-leg-val">${fmtMoeda(totalR)}</div>
+          <div class="rd-leg-pct">${pctR}% do total</div>
+        </div>
+        <div class="rd-leg-item">
+          <div class="rd-leg-label"><div class="rd-leg-dot" style="background:#FF4D6D"></div>Despesas</div>
+          <div class="rd-leg-val">${fmtMoeda(totalD)}</div>
+          <div class="rd-leg-pct">${pctD}% do total</div>
+        </div>`;
+    })();
+
+    // ── Faturamento dos Últimos 6 Meses ──────────────────────
+    (function () {
+      const MESES_S = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+      const months  = [];
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i);
+        months.push({ m: d.getMonth(), y: d.getFullYear(), lbl: MESES_S[d.getMonth()] + '/' + String(d.getFullYear()).slice(2) });
+      }
+      const data = months.map(mo => ({
+        lbl: mo.lbl,
+        total: vendas.filter(v => {
+          if (v.status !== 'concluida') return false;
+          const d = v.dataISO ? new Date(v.dataISO) : null;
+          return d && d.getMonth() === mo.m && d.getFullYear() === mo.y;
+        }).reduce((s, v) => s + (v.total || 0), 0)
+      }));
+      const max  = Math.max(...data.map(d => d.total), 1);
+      const W = 520, H = 120, bW = 54, pad = 16;
+      const step = (W - pad * 2) / 6;
+      const bars = data.map((d, i) => {
+        const h = Math.max(d.total > 0 ? 5 : 0, (d.total / max) * H);
+        const x = (pad + i * step + (step - bW) / 2).toFixed(1);
+        const y = (H - h).toFixed(1);
+        return `<g class="bgrp">
+          <rect x="${x}" y="${y}" width="${bW}" height="${h.toFixed(1)}" rx="5" fill="url(#gBl)" opacity=".85"/>
+          ${h > 10 ? `<text x="${(parseFloat(x)+bW/2).toFixed(1)}" y="${(parseFloat(y)-4).toFixed(1)}" text-anchor="middle" fill="rgba(148,163,184,.65)" font-size="7.5" font-family="Inter">${fmtMoeda(d.total)}</text>` : ''}
+          <text x="${(parseFloat(x)+bW/2).toFixed(1)}" y="${(H+14).toFixed(1)}" text-anchor="middle" fill="rgba(148,163,184,.5)" font-size="8.5" font-family="Inter">${d.lbl}</text>
+        </g>`;
+      }).join('');
+      const el = document.getElementById('fat6mChart');
+      if (!el) return;
+      el.innerHTML = `<svg style="width:100%;flex:1" viewBox="0 0 ${W} ${H+22}" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="gBl" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#2F80FF"/>
+          <stop offset="100%" stop-color="#1556c7" stop-opacity=".6"/>
+        </linearGradient></defs>
+        <line x1="${pad}" y1="${H}" x2="${W-pad}" y2="${H}" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+        ${bars}
+      </svg>`;
+    })();
+
+    // ── Despesas por Categoria ────────────────────────────────
+    (function () {
+      const cats = {};
+      financeiro.filter(l => l.tipo === 'despesa').forEach(l => {
+        const c = escapeHTML(l.categoria || 'Outros');
+        cats[c] = (cats[c] || 0) + (l.valor || 0);
+      });
+      const entries = Object.entries(cats).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      const total   = entries.reduce((s, [, v]) => s + v, 0);
+      const CORES   = ['#00D084','#2F80FF','#FF8C42','#A78BFA','#FF4D6D'];
+      const svgEl   = document.getElementById('despCatSvgWrap');
+      const legEl   = document.getElementById('despCatLegend');
+      if (!svgEl || !legEl) return;
+      if (total === 0) return;
+      const R = 38, circ = 2 * Math.PI * R;
+      let offset = 0;
+      const slices = entries.map(([, val], i) => {
+        const dash = (val / total) * circ;
+        const s = `<circle cx="50" cy="50" r="${R}" fill="none" stroke="${CORES[i]}" stroke-width="11"
+          stroke-dasharray="${dash.toFixed(2)} ${circ.toFixed(2)}" stroke-dashoffset="${(-offset).toFixed(2)}" transform="rotate(-90 50 50)"/>`;
+        offset += dash;
+        return s;
+      }).join('');
+      const totFmt = fmtMoeda(total);
+      svgEl.innerHTML = `<svg class="donut" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="${R}" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="11"/>
+        ${slices}
+        <text x="50" y="46" text-anchor="middle" fill="#FFF" font-size="9" font-weight="800" font-family="Inter,sans-serif">${totFmt.replace('R$ ','')}</text>
+        <text x="50" y="57" text-anchor="middle" fill="rgba(148,163,184,.5)" font-size="6.5" font-family="Inter,sans-serif">Total</text>
+      </svg>`;
+      legEl.innerHTML = entries.map(([cat, val], i) =>
+        `<div class="dleg-row">
+          <div class="dleg-dot" style="background:${CORES[i]}"></div>
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px">${cat}</span>
+          <span class="dleg-pct">${(val/total*100).toFixed(1)}%</span>
+        </div>`
+      ).join('');
+    })();
+
+    // ── Fluxo de Caixa (dinâmico) ────────────────────────────
+    function renderFluxoCaixa(periodo) {
+      const el = document.getElementById('fluxoCaixaChart');
+      if (!el) return;
+      const MESES_S = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+      let pts = [];
+
+      if (periodo === 'diario') {
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date(); d.setDate(d.getDate() - i);
+          const key = d.toISOString().slice(0, 10);
+          const lbl = i === 0 ? 'Hoje' : `${d.getDate()}/${d.getMonth()+1}`;
+          const ent = financeiro.filter(l => l.tipo==='receita' && l.status==='pago' && (l.pago_em||l.vencimento||'').slice(0,10)===key).reduce((s,l)=>s+(l.valor||0),0);
+          const sai = financeiro.filter(l => l.tipo==='despesa' && l.status==='pago' && (l.pago_em||l.vencimento||'').slice(0,10)===key).reduce((s,l)=>s+(l.valor||0),0);
+          pts.push({ lbl, ent, sai });
+        }
+      } else if (periodo === 'semanal') {
+        for (let i = 5; i >= 0; i--) {
+          const end = new Date(); end.setDate(end.getDate() - i * 7);
+          const start = new Date(end); start.setDate(start.getDate() - 6);
+          const inR = l => { const d = new Date(l.pago_em||l.vencimento||''); return d>=start && d<=end; };
+          const ent = financeiro.filter(l=>l.tipo==='receita'&&l.status==='pago'&&inR(l)).reduce((s,l)=>s+(l.valor||0),0);
+          const sai = financeiro.filter(l=>l.tipo==='despesa'&&l.status==='pago'&&inR(l)).reduce((s,l)=>s+(l.valor||0),0);
+          pts.push({ lbl:`S${6-i}`, ent, sai });
+        }
+      } else {
+        for (let i = 5; i >= 0; i--) {
+          const d = new Date(); d.setDate(1); d.setMonth(d.getMonth()-i);
+          const m = d.getMonth(), y = d.getFullYear();
+          const match = l => { const dd=new Date(l.pago_em||l.vencimento||''); return dd.getMonth()===m&&dd.getFullYear()===y; };
+          const ent = financeiro.filter(l=>l.tipo==='receita'&&l.status==='pago'&&match(l)).reduce((s,l)=>s+(l.valor||0),0);
+          const sai = financeiro.filter(l=>l.tipo==='despesa'&&l.status==='pago'&&match(l)).reduce((s,l)=>s+(l.valor||0),0);
+          pts.push({ lbl: MESES_S[m], ent, sai });
+        }
+      }
+
+      const n = pts.length;
+      const W = 560, H = 130, pad = 20;
+      const step = (W - 2*pad) / n;
+      const bW   = Math.max(10, Math.floor(step / 2) - 4);
+      const maxV = Math.max(...pts.map(p=>Math.max(p.ent,p.sai)), 1);
+
+      let saldo = 0;
+      const lineCoords = pts.map((p, i) => {
+        saldo += p.ent - p.sai;
+        const x = pad + i*step + step/2;
+        const y = H - Math.max(0, Math.min(1, saldo/maxV)) * H;
+        return { x: x.toFixed(1), y: y.toFixed(1) };
+      });
+
+      const bars = pts.map((p, i) => {
+        const cx = pad + i*step + step/2;
+        const eH = Math.max(p.ent>0?3:0, (p.ent/maxV)*H);
+        const sH = Math.max(p.sai>0?3:0, (p.sai/maxV)*H);
+        return `
+          <rect x="${(cx-bW-2).toFixed(1)}" y="${(H-eH).toFixed(1)}" width="${bW}" height="${eH.toFixed(1)}" rx="3" fill="url(#gGr)" opacity=".85"/>
+          <rect x="${(cx+2).toFixed(1)}" y="${(H-sH).toFixed(1)}" width="${bW}" height="${sH.toFixed(1)}" rx="3" fill="url(#gRd)" opacity=".85"/>
+          <text x="${cx.toFixed(1)}" y="${(H+14).toFixed(1)}" text-anchor="middle" fill="rgba(148,163,184,.5)" font-size="8.5" font-family="Inter">${p.lbl}</text>`;
+      }).join('');
+
+      const lineStr = lineCoords.map(p=>`${p.x},${p.y}`).join(' ');
+      const dots    = lineCoords.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="3" fill="#2F80FF"/>`).join('');
+
+      el.innerHTML = `<svg style="width:100%;flex:1" viewBox="0 0 ${W} ${H+22}" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="gGr" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00D084"/><stop offset="100%" stop-color="#009f63" stop-opacity=".6"/></linearGradient>
+          <linearGradient id="gRd" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FF4D6D"/><stop offset="100%" stop-color="#cc2244" stop-opacity=".6"/></linearGradient>
+        </defs>
+        <line x1="${pad}" y1="${H}" x2="${W-pad}" y2="${H}" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+        <line x1="${pad}" y1="${(H*0.5).toFixed(0)}" x2="${W-pad}" y2="${(H*0.5).toFixed(0)}" stroke="rgba(255,255,255,.03)" stroke-width=".5" stroke-dasharray="4,4"/>
+        ${bars}
+        <polyline points="${lineStr}" fill="none" stroke="#2F80FF" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        ${dots}
+      </svg>`;
+    }
+    renderFluxoCaixa('mensal');
+
+    function setFluxoFiltro(el, periodo) {
+      document.querySelectorAll('.chips .chip').forEach(c => c.classList.remove('on'));
+      el.classList.add('on');
+      renderFluxoCaixa(periodo);
+    }
+
+    // ── Date picker ───────────────────────────────────────────
     function toggleDp() { document.getElementById('dpDrop').classList.toggle('open'); }
     function selPeriod(el, label) {
       document.querySelectorAll('.dp-opt').forEach(o => o.classList.remove('sel'));
@@ -1367,6 +2016,439 @@ transition: var(--ease);
       const dd  = document.getElementById('dpDrop');
       if (btn && dd && !btn.contains(ev.target) && !dd.contains(ev.target)) dd.classList.remove('open');
     });
+
+    // ═══════════════════════════════════════════════════════════
+    // CONFIGURAR PAINEL — Sistema completo de personalização
+    // ═══════════════════════════════════════════════════════════
+
+    const KPI_META = {
+      faturamento:    { label: 'Faturamento Bruto',   id: 'kpi-card-faturamento'      },
+      receitas:       { label: 'Receitas',             id: 'kpi-card-receitas'         },
+      despesas:       { label: 'Despesas',             id: 'kpi-card-despesas'         },
+      lucro:          { label: 'Lucro Líquido',        id: 'kpi-card-lucro'            },
+      saldo:          { label: 'Saldo em Conta',       id: 'kpi-card-saldo'            },
+      ticket:         { label: 'Ticket Médio',         id: 'kpi-card-ticket'           },
+      pedidos:        { label: 'Total de Pedidos',     id: 'kpi-card-pedidos'          },
+      clientesAtivos: { label: 'Clientes Ativos',      id: 'kpi-card-clientes-ativos'  },
+      margem:         { label: 'Margem de Lucro',      id: 'kpi-card-margem'           },
+    };
+
+    const PAINEL_DEFAULT = {
+      widgets: {
+        kpiGrid: true, fluxoCaixa: true, receitasDespesas: true,
+        contasRP: true, fat6meses: true, despCat: true,
+        atividades: true, acoesRapidas: true,
+      },
+      kpiVisiveis: ['faturamento','receitas','despesas','lucro','saldo'],
+      kpiOrder:    ['faturamento','receitas','despesas','lucro','saldo','ticket','pedidos','clientesAtivos','margem'],
+      periodo:     'mes',
+      layout:      'confortavel',
+      cor:         'verde',
+      accentHex:   '#00D084',
+      alertas: {
+        estoqueBaixo: true, contasVencidas: true, fluxoNegativo: false,
+        metasNaoAtingidas: false, semGiro: false, boletosVencendo: false,
+      },
+      acoes: {
+        novaVenda: true, novoPedido: true, novoCliente: true,
+        novoProduto: true, financeiro: true, estoque: true,
+      },
+      ai: {
+        insights: false, oportunidades: false, alertasFinanceiros: false,
+        previsaoCaixa: false, sugestoes: false, semGiro: false,
+      },
+      padraoEmpresa: false,
+    };
+
+    function _getPainelKey() {
+      try {
+        const u = JSON.parse(localStorage.getItem('nexoerp.currentUser') || '{}');
+        return 'nexoerp.dashConfig.' + (u.id || u.email || 'default');
+      } catch (_) { return 'nexoerp.dashConfig.default'; }
+    }
+
+    function _loadPainelConfig() {
+      try {
+        const emp = localStorage.getItem('nexoerp.dashConfig.empresa');
+        const raw = localStorage.getItem(_getPainelKey());
+        const base = emp ? JSON.parse(emp) : JSON.parse(JSON.stringify(PAINEL_DEFAULT));
+        if (!raw) return JSON.parse(JSON.stringify(base));
+        const saved = JSON.parse(raw);
+        return {
+          widgets:       Object.assign({}, base.widgets,  saved.widgets  || {}),
+          kpiVisiveis:   Array.isArray(saved.kpiVisiveis)  ? saved.kpiVisiveis  : base.kpiVisiveis,
+          kpiOrder:      Array.isArray(saved.kpiOrder)     ? saved.kpiOrder     : base.kpiOrder,
+          periodo:       saved.periodo    || base.periodo,
+          layout:        saved.layout     || base.layout,
+          cor:           saved.cor        || base.cor,
+          accentHex:     saved.accentHex  || base.accentHex,
+          alertas:       Object.assign({}, base.alertas,  saved.alertas  || {}),
+          acoes:         Object.assign({}, base.acoes,    saved.acoes    || {}),
+          ai:            Object.assign({}, base.ai,       saved.ai       || {}),
+          padraoEmpresa: saved.padraoEmpresa || false,
+        };
+      } catch (_) { return JSON.parse(JSON.stringify(PAINEL_DEFAULT)); }
+    }
+
+    function _savePainelConfig(cfg) {
+      localStorage.setItem(_getPainelKey(), JSON.stringify(cfg));
+      if (cfg.padraoEmpresa) localStorage.setItem('nexoerp.dashConfig.empresa', JSON.stringify(cfg));
+    }
+
+    // Estado em memória (preview em tempo real enquanto o drawer está aberto)
+    let _cfg = _loadPainelConfig();
+
+    // ─── Saudação dinâmica ──────────────────────────────────────
+    (function () {
+      const h = new Date().getHours();
+      const saudacao = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
+      let nome = 'Usuário';
+      try {
+        const u = JSON.parse(localStorage.getItem('nexoerp.currentUser') || '{}');
+        const n = u.nome || u.name || u.email?.split('@')[0] || 'Usuário';
+        nome = n.split(' ')[0];
+        nome = nome.charAt(0).toUpperCase() + nome.slice(1);
+      } catch (_) {}
+      const el = document.getElementById('greeting-text');
+      if (el) el.textContent = saudacao + ', ' + nome + ' 👋';
+    })();
+
+    // ─── Aplicar configuração ao DOM (preview em tempo real) ────
+    function applyPainelConfig(cfg) {
+      const widgetMap = {
+        kpiGrid: 'section-kpis', fluxoCaixa: 'section-fluxo',
+        receitasDespesas: 'section-rd', contasRP: 'section-rp',
+        fat6meses: 'section-fat6', despCat: 'section-despc',
+        atividades: 'section-atv', acoesRapidas: 'section-aq',
+      };
+      Object.entries(widgetMap).forEach(([key, id]) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('dash-hidden', !cfg.widgets[key]);
+      });
+
+      // KPIs — visibilidade e ordem
+      const kpiGrid = document.getElementById('section-kpis');
+      if (kpiGrid) {
+        const ordemVisible = cfg.kpiOrder.filter(k => cfg.kpiVisiveis.includes(k));
+        ordemVisible.forEach(k => {
+          const el = document.getElementById(KPI_META[k]?.id);
+          if (el) { el.style.display = ''; kpiGrid.appendChild(el); }
+        });
+        Object.keys(KPI_META).forEach(k => {
+          if (!cfg.kpiVisiveis.includes(k)) {
+            const el = document.getElementById(KPI_META[k]?.id);
+            if (el) el.style.display = 'none';
+          }
+        });
+      }
+
+      // Layout
+      const content = document.querySelector('.content');
+      if (content) {
+        content.classList.remove('layout-compacto','layout-confortavel','layout-executivo');
+        content.classList.add('layout-' + cfg.layout);
+      }
+
+      // Cor de destaque (somente elementos do dashboard via CSS var)
+      document.documentElement.style.setProperty('--accent', cfg.accentHex || '#00D084');
+
+      // Ações rápidas
+      const aqMap = {
+        novaVenda: 'aq-novaVenda', novoPedido: 'aq-novoPedido',
+        novoCliente: 'aq-novoCliente', novoProduto: 'aq-novoProduto',
+        financeiro: 'aq-financeiro', estoque: 'aq-estoque',
+      };
+      Object.entries(aqMap).forEach(([key, id]) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('dash-hidden', !cfg.acoes[key]);
+      });
+
+      // Alertas
+      _renderAlertCard(cfg);
+    }
+
+    function _renderAlertCard(cfg) {
+      const card = document.getElementById('dash-alert-card');
+      if (!card) return;
+      const alertList = [];
+      const hoje = new Date(); hoje.setHours(0,0,0,0);
+
+      if (cfg.alertas.estoqueBaixo) {
+        const n = produtos.filter(p => (p.estoque || 0) <= 0 && p.status !== 'inativo').length;
+        if (n) alertList.push({ ico: 'bi-box-seam', txt: n + ' produto(s) com estoque zerado' });
+      }
+      if (cfg.alertas.contasVencidas) {
+        const n = financeiro.filter(l => l.status !== 'pago' && l.vencimento && new Date(l.vencimento) < hoje).length;
+        if (n) alertList.push({ ico: 'bi-exclamation-circle', txt: n + ' conta(s) vencida(s)' });
+      }
+      if (cfg.alertas.fluxoNegativo && saldo < 0) {
+        alertList.push({ ico: 'bi-arrow-down-circle', txt: 'Fluxo de caixa negativo detectado' });
+      }
+      if (cfg.alertas.boletosVencendo) {
+        const em3 = new Date(); em3.setDate(em3.getDate() + 3);
+        const n = financeiro.filter(l => l.status !== 'pago' && l.vencimento && new Date(l.vencimento) <= em3 && new Date(l.vencimento) >= new Date()).length;
+        if (n) alertList.push({ ico: 'bi-calendar-x', txt: n + ' boleto(s) próximo(s) do vencimento' });
+      }
+      if (cfg.alertas.semGiro) {
+        const n = produtos.filter(p => {
+          if (p.status === 'inativo') return false;
+          return !vendas.some(v => v.itens && v.itens.some(i => (i.id || i.produtoId) === p.id));
+        }).length;
+        if (n) alertList.push({ ico: 'bi-arrow-repeat', txt: n + ' produto(s) sem giro' });
+      }
+
+      if (!alertList.length) { card.style.display = 'none'; return; }
+      card.style.display = '';
+      card.innerHTML = '<div class="dash-alert-title"><i class="bi bi-exclamation-triangle-fill"></i>Alertas Ativos</div>'
+        + alertList.map(a => '<div class="dash-alert-item"><i class="bi ' + a.ico + '"></i>' + a.txt + '</div>').join('');
+    }
+
+    // ─── Abrir / Fechar Drawer ──────────────────────────────────
+    function openPainelConfig() {
+      _cfg = _loadPainelConfig();
+      _initPainelUI();
+      document.getElementById('painelOverlay').classList.add('open');
+      document.getElementById('painelDrawer').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePainelConfig() {
+      document.getElementById('painelOverlay').classList.remove('open');
+      document.getElementById('painelDrawer').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    // ─── Popular UI do Drawer ───────────────────────────────────
+    function _initPainelUI() {
+      const cfg = _cfg;
+
+      // Widgets
+      const wmap = {
+        'cfg-w-kpis':'kpiGrid','cfg-w-fluxo':'fluxoCaixa','cfg-w-rd':'receitasDespesas',
+        'cfg-w-rp':'contasRP','cfg-w-fat6':'fat6meses','cfg-w-desp':'despCat',
+        'cfg-w-atv':'atividades','cfg-w-aq':'acoesRapidas',
+      };
+      Object.entries(wmap).forEach(([id,key]) => { const el=document.getElementById(id); if(el) el.checked=cfg.widgets[key]; });
+
+      // Alertas
+      const amap = {
+        'cfg-a-estoque':'estoqueBaixo','cfg-a-vencidas':'contasVencidas','cfg-a-fluxo':'fluxoNegativo',
+        'cfg-a-metas':'metasNaoAtingidas','cfg-a-giro':'semGiro','cfg-a-boletos':'boletosVencendo',
+      };
+      Object.entries(amap).forEach(([id,key]) => { const el=document.getElementById(id); if(el) el.checked=cfg.alertas[key]; });
+
+      // Ações rápidas
+      const qmap = {
+        'cfg-aq-venda':'novaVenda','cfg-aq-pedido':'novoPedido','cfg-aq-cliente':'novoCliente',
+        'cfg-aq-produto':'novoProduto','cfg-aq-fin':'financeiro','cfg-aq-est':'estoque',
+      };
+      Object.entries(qmap).forEach(([id,key]) => { const el=document.getElementById(id); if(el) el.checked=cfg.acoes[key]; });
+
+      // AI
+      const aimap = {
+        'cfg-ai-insights':'insights','cfg-ai-oportun':'oportunidades','cfg-ai-alertas':'alertasFinanceiros',
+        'cfg-ai-previsao':'previsaoCaixa','cfg-ai-sugest':'sugestoes','cfg-ai-giro':'semGiro',
+      };
+      Object.entries(aimap).forEach(([id,key]) => { const el=document.getElementById(id); if(el) el.checked=cfg.ai[key]; });
+
+      // Período
+      const perEl = document.getElementById('cfg-periodo');
+      if (perEl) perEl.value = cfg.periodo;
+
+      // Layout
+      document.querySelectorAll('.cfg-layout-opt').forEach(o => o.classList.remove('cfg-layout-on'));
+      const lEl = document.getElementById('cfg-l-' + cfg.layout);
+      if (lEl) lEl.classList.add('cfg-layout-on');
+
+      // Cor
+      document.querySelectorAll('.cfg-color').forEach(o => o.classList.remove('cfg-color-on'));
+      const cEl = document.getElementById('cfg-c-' + cfg.cor);
+      if (cEl) cEl.classList.add('cfg-color-on');
+
+      // Admin
+      try {
+        const u = JSON.parse(localStorage.getItem('nexoerp.currentUser') || '{}');
+        const isAdmin = u.role==='admin' || u.perfil==='admin' || u.nivel==='admin' || u.admin===true;
+        const sec = document.getElementById('cfg-admin-sec');
+        if (sec) sec.style.display = isAdmin ? '' : 'none';
+        const pe = document.getElementById('cfg-padrao-empresa');
+        if (pe) pe.checked = cfg.padraoEmpresa;
+      } catch (_) {}
+
+      _renderKpiChips();
+      _renderKpiDragList();
+    }
+
+    // ─── KPI Chips (Seção 4) ────────────────────────────────────
+    function _renderKpiChips() {
+      const cfg = _cfg;
+      const grid = document.getElementById('cfg-kpi-chips');
+      const counter = document.getElementById('cfg-kpi-count');
+      if (!grid) return;
+      const count = cfg.kpiVisiveis.length;
+      if (counter) counter.textContent = count;
+
+      grid.innerHTML = Object.entries(KPI_META).map(([key, meta]) => {
+        const on = cfg.kpiVisiveis.includes(key);
+        const disabled = !on && count >= 5;
+        return '<div class="cfg-chip' + (on?' cfg-chip-on':'') + (disabled?' cfg-chip-disabled':'') + '" '
+          + 'onclick="toggleKpiChip(\'' + key + '\')" id="kpi-chip-' + key + '">'
+          + '<span class="cfg-chip-name">' + meta.label + '</span>'
+          + (on ? '<i class="bi bi-check2 cfg-chip-ico"></i>' : '<i class="bi bi-plus cfg-chip-ico" style="color:var(--muted)"></i>')
+          + '</div>';
+      }).join('');
+    }
+
+    function toggleKpiChip(key) {
+      const cfg = _cfg;
+      if (cfg.kpiVisiveis.includes(key)) {
+        cfg.kpiVisiveis = cfg.kpiVisiveis.filter(k => k !== key);
+      } else {
+        if (cfg.kpiVisiveis.length >= 5) return;
+        cfg.kpiVisiveis.push(key);
+        if (!cfg.kpiOrder.includes(key)) cfg.kpiOrder.push(key);
+      }
+      _renderKpiChips();
+      _renderKpiDragList();
+      applyPainelConfig(cfg);
+    }
+
+    // ─── Drag & Drop (Seção 2) ──────────────────────────────────
+    var _dragSrc = null;
+
+    function _renderKpiDragList() {
+      const cfg = _cfg;
+      const list = document.getElementById('cfg-kpi-order-list');
+      if (!list) return;
+      const visible = cfg.kpiOrder.filter(k => cfg.kpiVisiveis.includes(k));
+      list.innerHTML = visible.map(k =>
+        '<div class="cfg-drag-item" draggable="true" data-kpi="' + k + '">'
+        + '<i class="bi bi-grip-vertical cfg-drag-handle"></i>'
+        + '<span class="cfg-drag-lbl">' + (KPI_META[k]?.label || k) + '</span>'
+        + '</div>'
+      ).join('');
+
+      list.querySelectorAll('.cfg-drag-item').forEach(function(item) {
+        item.addEventListener('dragstart', function(e) {
+          _dragSrc = item;
+          item.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+        });
+        item.addEventListener('dragend', function() {
+          item.classList.remove('dragging');
+          list.querySelectorAll('.cfg-drag-item').forEach(function(i){ i.classList.remove('drag-over'); });
+        });
+        item.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          if (item !== _dragSrc) {
+            list.querySelectorAll('.cfg-drag-item').forEach(function(i){ i.classList.remove('drag-over'); });
+            item.classList.add('drag-over');
+          }
+        });
+        item.addEventListener('drop', function(e) {
+          e.preventDefault();
+          if (!_dragSrc || _dragSrc === item) return;
+          const allItems = Array.from(list.querySelectorAll('.cfg-drag-item'));
+          const fromIdx = allItems.indexOf(_dragSrc);
+          const toIdx   = allItems.indexOf(item);
+          const vis = cfg.kpiOrder.filter(k => cfg.kpiVisiveis.includes(k));
+          const moved = vis.splice(fromIdx, 1)[0];
+          vis.splice(toIdx, 0, moved);
+          cfg.kpiOrder = vis.concat(cfg.kpiOrder.filter(k => !cfg.kpiVisiveis.includes(k)));
+          _renderKpiDragList();
+          applyPainelConfig(cfg);
+        });
+      });
+    }
+
+    // ─── Handlers em tempo real ─────────────────────────────────
+    function cfgWidget(key, checked) {
+      _cfg.widgets[key] = checked;
+      applyPainelConfig(_cfg);
+    }
+
+    function cfgPeriodo(val) {
+      _cfg.periodo = val;
+      const lmap = { hoje:'Hoje','7d':'Últimos 7 dias','30d':'Últimos 30 dias',mes:'Este mês','90d':'Últimos 90 dias',ano:'Este ano' };
+      const dpLbl = document.getElementById('dpLabel');
+      if (dpLbl) dpLbl.textContent = lmap[val] || val;
+    }
+
+    function cfgLayout(layout) {
+      _cfg.layout = layout;
+      document.querySelectorAll('.cfg-layout-opt').forEach(function(o){ o.classList.remove('cfg-layout-on'); });
+      const el = document.getElementById('cfg-l-' + layout);
+      if (el) el.classList.add('cfg-layout-on');
+      applyPainelConfig(_cfg);
+    }
+
+    function cfgCor(nome, hex) {
+      _cfg.cor = nome;
+      _cfg.accentHex = hex;
+      document.querySelectorAll('.cfg-color').forEach(function(o){ o.classList.remove('cfg-color-on'); });
+      const el = document.getElementById('cfg-c-' + nome);
+      if (el) el.classList.add('cfg-color-on');
+      applyPainelConfig(_cfg);
+    }
+
+    function cfgAlerta(key, checked) {
+      _cfg.alertas[key] = checked;
+      _renderAlertCard(_cfg);
+    }
+
+    function cfgAcao(key, checked) {
+      _cfg.acoes[key] = checked;
+      applyPainelConfig(_cfg);
+    }
+
+    function cfgAI(key, checked) {
+      _cfg.ai[key] = checked;
+    }
+
+    function cfgPadraoEmpresa(checked) {
+      _cfg.padraoEmpresa = checked;
+    }
+
+    // ─── Salvar / Restaurar ─────────────────────────────────────
+    function cfgSalvar() {
+      _savePainelConfig(_cfg);
+      closePainelConfig();
+      _showDashToast('<i class="bi bi-check-circle-fill"></i> Configuração salva com sucesso!');
+    }
+
+    function cfgRestore() {
+      _cfg = JSON.parse(JSON.stringify(PAINEL_DEFAULT));
+      applyPainelConfig(_cfg);
+      _initPainelUI();
+      _showDashToast('<i class="bi bi-arrow-counterclockwise"></i> Configuração restaurada ao padrão.', 'warning');
+    }
+
+    function _showDashToast(html, type) {
+      let t = document.getElementById('dash-toast');
+      if (!t) {
+        t = document.createElement('div');
+        t.id = 'dash-toast';
+        document.body.appendChild(t);
+      }
+      t.className = 'toast' + (type === 'warning' ? ' warning' : '');
+      t.innerHTML = html;
+      t.classList.add('show');
+      clearTimeout(t._tmr);
+      t._tmr = setTimeout(function(){ t.classList.remove('show'); }, 3200);
+    }
+
+    // ─── Inicialização ao carregar a página ─────────────────────
+    (function () {
+      const cfg = _loadPainelConfig();
+      _cfg = cfg;
+      applyPainelConfig(cfg);
+      // Aplicar período padrão no label do date picker
+      const lmap = { hoje:'Hoje','7d':'Últimos 7 dias','30d':'Últimos 30 dias',mes:'Este mês','90d':'Últimos 90 dias',ano:'Este ano' };
+      const dpLbl = document.getElementById('dpLabel');
+      if (dpLbl && lmap[cfg.periodo]) dpLbl.textContent = lmap[cfg.periodo];
+    })();
+
   </script>
 </body>
 
