@@ -452,14 +452,22 @@ cursor: pointer;
     .rp-val.neg { color: var(--red); }
 
     /* ─── Contas R/P — duas colunas ─── */
+    /* ── Contas R/P ── */
+    .rp-prop-bar  { height: 6px; border-radius: 3px; overflow: hidden; background: rgba(255,77,109,.35); margin: 0 16px 2px; }
+    .rp-prop-fill { height: 100%; border-radius: 3px; background: #00D084; transition: width .5s ease; }
+    .rp-prop-lbls { display: flex; justify-content: space-between; padding: 0 16px 10px; font-size: 10px; font-weight: 700; }
+    .rp-liquida   { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; border-top: 1px solid rgba(255,255,255,.05); border-bottom: 1px solid rgba(255,255,255,.05); margin-bottom: 2px; }
+    .rp-liquida-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
+    .rp-liquida-val { font-size: 14px; font-weight: 800; letter-spacing: -.5px; }
     .rp-cols { display: grid; grid-template-columns: 1fr 1fr; }
     .rp-col  { padding: 10px 14px 8px; }
     .rp-col:first-child { border-right: 1px solid rgba(255,255,255,.05); }
     .rp-col-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
-    .rp-col-total { font-size: 18px; font-weight: 800; margin-bottom: 8px; line-height: 1.1; }
+    .rp-col-total { font-size: 17px; font-weight: 800; margin-bottom: 8px; line-height: 1.1; }
     .rp-col-row   { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-top: 1px solid rgba(255,255,255,.04); font-size: 11.5px; }
     .rp-col-lbl   { color: var(--sub); }
     .rp-col-val   { font-weight: 600; }
+    .rp-venc-badge { display:inline-flex; align-items:center; gap:3px; font-size:10px; font-weight:700; color:#FF4D6D; }
     .rp-detail-btn {
       display: flex; align-items: center; justify-content: center; gap: 6px;
       margin: 0 14px 14px; padding: 8px 14px; border-radius: 9px;
@@ -469,16 +477,18 @@ cursor: pointer;
     }
     .rp-detail-btn:hover { border-color: var(--border-h); color: var(--text); }
 
-    /* ─── Receitas x Despesas — layout horizontal ─── */
-    .rd-body        { display: flex; flex-direction: row; align-items: stretch; gap: 0; padding: 10px 16px; height: 100%; }
-    .rd-donut-wrap  { flex-shrink: 0; display: flex; align-items: center; padding-right: 16px; border-right: 1px solid rgba(255,255,255,.07); }
-    .rd-donut-wrap svg { width: 155px; height: 155px; display: block; }
-    .rd-legend      { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px; padding-left: 16px; }
-    .rd-leg-item    { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 100%; }
-    .rd-leg-label   { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--sub); font-weight: 600; }
-    .rd-leg-dot     { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .rd-leg-val     { font-size: 14px; font-weight: 700; color: var(--text); font-family: var(--font-b); }
-    .rd-leg-pct     { font-size: 11px; color: var(--muted); }
+    /* ─── Resultado do Mês ─── */
+    .resultado-body { display: flex; flex-direction: column; padding: 14px 18px; height: 100%; gap: 10px; justify-content: center; }
+    .resultado-lbl  { font-size: 10px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .6px; }
+    .resultado-val  { font-size: 24px; font-weight: 800; letter-spacing: -1px; line-height: 1.1; }
+    .resultado-sub  { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+    .resultado-div  { height: 1px; background: var(--border); }
+    .res-bar-row    { display: flex; align-items: center; gap: 8px; }
+    .res-bar-lbl    { width: 58px; color: var(--muted); font-weight: 600; font-size: 11px; flex-shrink: 0; }
+    .res-bar-track  { flex: 1; height: 5px; background: rgba(255,255,255,.06); border-radius: 3px; overflow: hidden; }
+    .res-bar-fill   { height: 100%; border-radius: 3px; transition: width .5s ease; }
+    .res-bar-val    { width: 68px; text-align: right; font-weight: 700; font-size: 11px; }
+    .resultado-vs   { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; }
 
     /* ─── Atividades Recentes ─── */
     .act-item {
@@ -803,6 +813,13 @@ transition: var(--ease);
       border-radius: 50%;
     }
 
+    /* ── Fluxo de Caixa — faixa de resumo ── */
+    .fluxo-strip        { display:flex; border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+    .fluxo-metric       { flex:1; padding:7px 14px; display:flex; flex-direction:column; gap:1px; }
+    .fluxo-metric + .fluxo-metric { border-left:1px solid rgba(255,255,255,.06); }
+    .fluxo-metric-lbl   { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); display:flex; align-items:center; gap:4px; }
+    .fluxo-metric-val   { font-size:15px; font-weight:800; letter-spacing:-.5px; }
+
     /* bar chart */
     svg.bars {
       width: 100%;
@@ -859,38 +876,16 @@ transition: var(--ease);
       margin: 0 auto;
     }
 
-    .dleg {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .dleg-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      color: var(--sub);
-    }
-
-    .dleg-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .dleg-val {
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .dleg-pct {
-      margin-left: auto;
-      font-weight: 700;
-      color: var(--text);
-      font-size: 12px;
-    }
+    /* ── Despesas por Categoria — layout horizontal ── */
+    .despc-body   { display:flex; height:100%; padding:10px 16px 14px; gap:14px; align-items:center; }
+    .despc-donut  { flex-shrink:0; }
+    .despc-donut svg { width:148px; height:148px; display:block; }
+    .despc-legend { flex:1; display:flex; flex-direction:column; gap:10px; justify-content:center; min-width:0; }
+    .despc-row    { display:flex; align-items:center; gap:7px; }
+    .despc-dot    { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
+    .despc-name   { flex:1; font-size:12px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text); }
+    .despc-val    { font-size:11px; color:var(--muted); white-space:nowrap; }
+    .despc-pct    { font-size:12px; font-weight:800; min-width:36px; text-align:right; }
 
     /* ═══════════════════════════════
        BOTTOM GRID
@@ -1165,8 +1160,8 @@ transition: var(--ease);
               <div class="dp-sep"></div>
               <div class="dp-custom">
                 <label>Período personalizado</label>
-                <input type="date" id="dpS" style="margin-bottom:5px">
-                <input type="date" id="dpE">
+                <input type="date" id="dpS" style="margin-bottom:5px" oninput="updateDpCustomLabel()">
+                <input type="date" id="dpE" oninput="updateDpCustomLabel()">
                 <button class="dp-apply" onclick="applyDp()">Aplicar</button>
               </div>
             </div>
@@ -1261,11 +1256,10 @@ transition: var(--ease);
               <div class="dcard-title">Fluxo de Caixa</div>
               <div class="dcard-sub">Entradas e saídas no período</div>
             </div>
-            <div style="display:flex;align-items:center;gap:14px">
+            <div style="display:flex;align-items:center;gap:10px">
               <div class="clegend">
-                <div class="cleg"><div class="cleg-dot" style="background:var(--green)"></div>Entradas</div>
-                <div class="cleg"><div class="cleg-dot" style="background:var(--red)"></div>Saídas</div>
-                <div class="cleg"><div class="cleg-dot" style="background:var(--blue)"></div>Saldo</div>
+                <div class="cleg"><div class="cleg-dot" style="background:#00D084;border-radius:2px;width:9px;height:9px"></div>Saldo</div>
+                <div class="cleg"><div class="cleg-dot" style="background:#FF4D6D;border-radius:2px;width:9px;height:9px"></div>Saídas</div>
               </div>
               <div class="chips">
                 <button class="chip" onclick="setFluxoFiltro(this,'diario')">Diário</button>
@@ -1274,27 +1268,43 @@ transition: var(--ease);
               </div>
             </div>
           </div>
-          <div class="dcard-body">
+          <div class="fluxo-strip">
+            <div class="fluxo-metric">
+              <div class="fluxo-metric-lbl"><i class="bi bi-arrow-down-circle-fill" style="color:#00D084"></i> Entradas</div>
+              <div class="fluxo-metric-val" id="fluxo-sum-ent" style="color:#00D084">—</div>
+            </div>
+            <div class="fluxo-metric">
+              <div class="fluxo-metric-lbl"><i class="bi bi-arrow-up-circle-fill" style="color:#FF4D6D"></i> Saídas</div>
+              <div class="fluxo-metric-val" id="fluxo-sum-sai" style="color:#FF4D6D">—</div>
+            </div>
+            <div class="fluxo-metric">
+              <div class="fluxo-metric-lbl"><i class="bi bi-wallet2-fill" style="color:var(--muted)"></i> Saldo</div>
+              <div class="fluxo-metric-val" id="fluxo-sum-saldo">—</div>
+            </div>
+          </div>
+          <div class="dcard-body" style="padding-top:8px">
             <div id="fluxoCaixaChart" style="flex:1;display:flex;align-items:flex-end;width:100%"></div>
           </div>
         </div>
 
         <!-- Donut -->
-        <div class="dcard donut-card" id="section-rd">
+        <div class="dcard donut-card" id="section-resultado">
           <div class="dcard-head">
             <div>
-              <div class="dcard-title">Receitas x Despesas</div>
-              <div class="dcard-sub">Distribuição financeira</div>
+              <div class="dcard-title">Resultado do Mês</div>
+              <div class="dcard-sub">Lucro, margem e evolução</div>
             </div>
           </div>
-          <div class="rd-body">
-            <div class="rd-donut-wrap">
-              <svg viewBox="0 0 100 100" id="rdDonutSvg">
-                <circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="11"/>
-                <text x="50" y="50" text-anchor="middle" fill="rgba(148,163,184,.3)" font-size="8" font-family="Inter">—</text>
-              </svg>
+          <div class="resultado-body">
+            <div>
+              <div class="resultado-lbl">Lucro Líquido</div>
+              <div class="resultado-val" id="res-lucro">—</div>
+              <div class="resultado-sub" id="res-margem">— de margem</div>
             </div>
-            <div class="rd-legend" id="rdDonutLeg"></div>
+            <div class="resultado-div"></div>
+            <div style="display:flex;flex-direction:column;gap:7px" id="res-bars"></div>
+            <div class="resultado-div"></div>
+            <div class="resultado-vs" id="res-vs">—</div>
           </div>
         </div>
 
@@ -1307,26 +1317,38 @@ transition: var(--ease);
             </div>
             <a href="financeiro.html" class="dlink">Ver detalhes <i class="bi bi-arrow-right"></i></a>
           </div>
-          <div style="flex:1;display:flex;align-items:center">
-            <div class="rp-cols" style="width:100%">
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+            <!-- Barra de proporção -->
+            <div class="rp-prop-bar"><div class="rp-prop-fill" id="rp-prop-fill" style="width:50%"></div></div>
+            <div class="rp-prop-lbls">
+              <span style="color:#00D084" id="rp-prop-rec-pct">A Receber 50%</span>
+              <span style="color:#FF4D6D" id="rp-prop-pag-pct">A Pagar 50%</span>
+            </div>
+            <!-- Posição líquida -->
+            <div class="rp-liquida">
+              <span class="rp-liquida-lbl">Posição Líquida</span>
+              <span class="rp-liquida-val" id="rp-liquida-val">—</span>
+            </div>
+            <!-- Colunas de detalhe -->
+            <div class="rp-cols">
               <div class="rp-col">
-                <div class="rp-col-title" style="color:var(--green)">A Receber</div>
-                <div class="rp-col-total" style="color:var(--green)" id="rp-rec-total">—</div>
+                <div class="rp-col-title" style="color:#00D084">A Receber</div>
+                <div class="rp-col-total" style="color:#00D084" id="rp-rec-total">—</div>
                 <div class="rp-col-row">
-                  <span class="rp-col-lbl">Vencidos</span>
-                  <span class="rp-col-val" style="color:var(--red)" id="rp-rec-venc">—</span>
+                  <span class="rp-col-lbl" id="rp-rec-venc-lbl">Vencidos</span>
+                  <span class="rp-col-val" id="rp-rec-venc">—</span>
                 </div>
                 <div class="rp-col-row">
                   <span class="rp-col-lbl">A Vencer</span>
-                  <span class="rp-col-val" style="color:var(--green)" id="rp-rec-av">—</span>
+                  <span class="rp-col-val" style="color:#00D084" id="rp-rec-av">—</span>
                 </div>
               </div>
               <div class="rp-col">
-                <div class="rp-col-title" style="color:var(--red)">A Pagar</div>
-                <div class="rp-col-total" style="color:var(--red)" id="rp-pag-total">—</div>
+                <div class="rp-col-title" style="color:#FF4D6D">A Pagar</div>
+                <div class="rp-col-total" style="color:#FF4D6D" id="rp-pag-total">—</div>
                 <div class="rp-col-row">
-                  <span class="rp-col-lbl">Vencidos</span>
-                  <span class="rp-col-val" style="color:var(--red)" id="rp-pag-venc">—</span>
+                  <span class="rp-col-lbl" id="rp-pag-venc-lbl">Vencidos</span>
+                  <span class="rp-col-val" id="rp-pag-venc">—</span>
                 </div>
                 <div class="rp-col-row">
                   <span class="rp-col-lbl">A Vencer</span>
@@ -1364,10 +1386,10 @@ transition: var(--ease);
               <div class="dcard-sub">Distribuição do período</div>
             </div>
           </div>
-          <div class="dcard-body" style="gap:10px;padding:10px 16px">
-            <div id="despCatSvgWrap" style="display:flex;justify-content:center"></div>
-            <div class="dleg" id="despCatLegend">
-              <div style="text-align:center;color:var(--muted);font-size:12px;padding:8px">Sem lançamentos</div>
+          <div class="despc-body">
+            <div class="despc-donut" id="despCatSvgWrap"></div>
+            <div class="despc-legend" id="despCatLegend">
+              <div style="color:var(--muted);font-size:12px">Sem lançamentos</div>
             </div>
           </div>
         </div>
@@ -1422,7 +1444,7 @@ transition: var(--ease);
         <div class="painel-sec-title"><i class="bi bi-grid-1x2-fill"></i>Widgets visíveis</div>
         <div class="cfg-row"><span class="cfg-lbl">KPIs — linha de indicadores</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-kpis"  onchange="cfgWidget('kpiGrid',this.checked)"><span class="cfg-sw-track"></span></label></div>
         <div class="cfg-row"><span class="cfg-lbl">Fluxo de Caixa</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-fluxo" onchange="cfgWidget('fluxoCaixa',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Receitas x Despesas</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-rd"    onchange="cfgWidget('receitasDespesas',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Resultado do Mês</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-rd"    onchange="cfgWidget('resultado',this.checked)"><span class="cfg-sw-track"></span></label></div>
         <div class="cfg-row"><span class="cfg-lbl">Contas a Receber e Pagar</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-rp"    onchange="cfgWidget('contasRP',this.checked)"><span class="cfg-sw-track"></span></label></div>
         <div class="cfg-row"><span class="cfg-lbl">Faturamento dos Últimos 6 Meses</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-fat6"  onchange="cfgWidget('fat6meses',this.checked)"><span class="cfg-sw-track"></span></label></div>
         <div class="cfg-row"><span class="cfg-lbl">Despesas por Categoria</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-desp"  onchange="cfgWidget('despCat',this.checked)"><span class="cfg-sw-track"></span></label></div>
@@ -1659,20 +1681,77 @@ transition: var(--ease);
     } else if (saldo >= 0) { badgeSaldo.classList.add('up');   badgeSaldo.innerHTML = `<i class="bi bi-arrow-up-short"></i>Positivo`; }
     else                   { badgeSaldo.classList.add('down'); badgeSaldo.innerHTML = `<i class="bi bi-arrow-down-short"></i>Negativo`; }
 
+    // ── KPI Ticket Médio ─────────────────────────────────────
+    const ticket = vendasMes.length > 0 ? faturamento / vendasMes.length : 0;
+    const elTicket = document.getElementById('kpi-ticket');
+    const badgeTicket = document.getElementById('kpi-ticket-badge');
+    if (elTicket) {
+      elTicket.textContent = ticket > 0 ? fmtMoeda(ticket) : '—';
+      if (badgeTicket) badgeTicket.textContent = vendasMes.length > 0 ? `${vendasMes.length} venda${vendasMes.length > 1 ? 's' : ''}` : '—';
+    }
+
+    // ── KPI Margem de Lucro ───────────────────────────────────
+    const margemPct = totalRecP > 0 ? (lucro / totalRecP * 100) : null;
+    const elMargem = document.getElementById('kpi-margem');
+    const badgeMargem = document.getElementById('kpi-margem-badge');
+    if (elMargem) {
+      elMargem.textContent = margemPct !== null ? margemPct.toFixed(1) + '%' : '—';
+      if (badgeMargem) {
+        if (margemPct === null) { badgeMargem.textContent = '—'; }
+        else if (margemPct > 0) { badgeMargem.classList.add('up');   badgeMargem.innerHTML = `<i class="bi bi-arrow-up-short"></i>Positiva`; }
+        else if (margemPct < 0) { badgeMargem.classList.add('down'); badgeMargem.innerHTML = `<i class="bi bi-arrow-down-short"></i>Negativa`; }
+        else                    { badgeMargem.textContent = 'Neutra'; }
+      }
+    }
+
     // ── Contas R/P ────────────────────────────────────────────
     (function () {
-      const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
-      const isVenc = l => l.vencimento && new Date(l.vencimento) < hoje;
-      const soma   = arr => arr.reduce((s, l) => s + (l.valor || 0), 0);
-      const f      = v => v > 0 ? fmtMoeda(v) : '—';
+      const hoje    = new Date(); hoje.setHours(0, 0, 0, 0);
+      const isVenc  = l => l.vencimento && new Date(l.vencimento) < hoje;
+      const soma    = arr => arr.reduce((s, l) => s + (l.valor || 0), 0);
+      const f       = v => v > 0 ? fmtMoeda(v) : '—';
+
       const pendRec = financeiro.filter(l => l.tipo === 'receita' && l.status !== 'pago');
       const pendPag = financeiro.filter(l => l.tipo === 'despesa' && l.status !== 'pago');
-      document.getElementById('rp-rec-total').textContent = f(soma(pendRec));
-      document.getElementById('rp-rec-venc').textContent  = f(soma(pendRec.filter(isVenc)));
+      const totalRec = soma(pendRec);
+      const totalPag = soma(pendPag);
+      const vencRec  = soma(pendRec.filter(isVenc));
+      const vencPag  = soma(pendPag.filter(isVenc));
+
+      // totais e detalhe
+      document.getElementById('rp-rec-total').textContent = f(totalRec);
+      document.getElementById('rp-rec-venc').textContent  = f(vencRec);
       document.getElementById('rp-rec-av').textContent    = f(soma(pendRec.filter(l => !isVenc(l))));
-      document.getElementById('rp-pag-total').textContent = f(soma(pendPag));
-      document.getElementById('rp-pag-venc').textContent  = f(soma(pendPag.filter(isVenc)));
+      document.getElementById('rp-pag-total').textContent = f(totalPag);
+      document.getElementById('rp-pag-venc').textContent  = f(vencPag);
       document.getElementById('rp-pag-av').textContent    = f(soma(pendPag.filter(l => !isVenc(l))));
+
+      // badge de alerta em vencidos
+      const recVencLbl = document.getElementById('rp-rec-venc-lbl');
+      const pagVencLbl = document.getElementById('rp-pag-venc-lbl');
+      if (recVencLbl) recVencLbl.innerHTML = vencRec > 0 ? `<span class="rp-venc-badge"><i class="bi bi-exclamation-circle-fill"></i>Vencidos</span>` : 'Vencidos';
+      if (pagVencLbl) pagVencLbl.innerHTML = vencPag > 0 ? `<span class="rp-venc-badge"><i class="bi bi-exclamation-circle-fill"></i>Vencidos</span>` : 'Vencidos';
+
+      // barra de proporção
+      const grandTotal = totalRec + totalPag;
+      const recPct = grandTotal > 0 ? (totalRec / grandTotal * 100) : 50;
+      const fill = document.getElementById('rp-prop-fill');
+      const recLbl = document.getElementById('rp-prop-rec-pct');
+      const pagLbl = document.getElementById('rp-prop-pag-pct');
+      if (fill)   fill.style.width = recPct.toFixed(1) + '%';
+      if (recLbl) recLbl.textContent = `A Receber ${recPct.toFixed(0)}%`;
+      if (pagLbl) pagLbl.textContent = `A Pagar ${(100 - recPct).toFixed(0)}%`;
+
+      // posição líquida
+      const liquida = totalRec - totalPag;
+      const elLiq = document.getElementById('rp-liquida-val');
+      if (elLiq) {
+        elLiq.textContent = grandTotal > 0 ? fmtMoeda(Math.abs(liquida)) : '—';
+        elLiq.style.color = liquida >= 0 ? '#00D084' : '#FF4D6D';
+        if (grandTotal > 0) {
+          elLiq.innerHTML = `<i class="bi bi-arrow-${liquida>=0?'up':'down'}-short"></i>${fmtMoeda(Math.abs(liquida))}`;
+        }
+      }
     })();
 
     // ── Atividade Recente ─────────────────────────────────────
@@ -1794,42 +1873,63 @@ transition: var(--ease);
       tl.innerHTML = todasAtividades.slice(0, maxItems).map(buildActItem).join('');
     }
 
-    // ── Donut: Receitas x Despesas (horizontal) ──────────────
+    // ── Resultado do Mês ─────────────────────────────────────
     (function () {
-      const totalR = financeiro.filter(l => l.tipo === 'receita').reduce((s, l) => s + (l.valor || 0), 0);
-      const totalD = financeiro.filter(l => l.tipo === 'despesa').reduce((s, l) => s + (l.valor || 0), 0);
-      const total  = totalR + totalD;
-      const svgEl  = document.getElementById('rdDonutSvg');
-      const legEl  = document.getElementById('rdDonutLeg');
-      if (!svgEl || !legEl) return;
-      if (total === 0) {
-        legEl.innerHTML = `<div style="color:var(--muted);font-size:12px">Sem dados financeiros</div>`;
-        return;
+      const mesAtualRec  = financeiro.filter(l => l.tipo === 'receita' && l.status === 'pago' && isMesAtual(l.vencimento || l.data));
+      const mesAtualDesp = financeiro.filter(l => l.tipo === 'despesa' && l.status === 'pago' && isMesAtual(l.vencimento || l.data));
+      const rec  = mesAtualRec.reduce((s, l) => s + (l.valor || 0), 0);
+      const desp = mesAtualDesp.reduce((s, l) => s + (l.valor || 0), 0);
+      const lucro = rec - desp;
+      const margem = rec > 0 ? (lucro / rec * 100) : null;
+
+      // mês anterior para comparativo
+      const now = new Date();
+      const isMesAnt = s => {
+        if (!s) return false;
+        const d = new Date(s.includes('/') ? s.split('/').reverse().join('-') : s);
+        if (isNaN(d)) return false;
+        return d.getMonth() === (now.getMonth() === 0 ? 11 : now.getMonth() - 1) &&
+               d.getFullYear() === (now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear());
+      };
+      const recAnt  = financeiro.filter(l => l.tipo === 'receita' && l.status === 'pago' && isMesAnt(l.vencimento || l.data)).reduce((s,l)=>s+(l.valor||0),0);
+      const despAnt = financeiro.filter(l => l.tipo === 'despesa' && l.status === 'pago' && isMesAnt(l.vencimento || l.data)).reduce((s,l)=>s+(l.valor||0),0);
+      const lucroAnt = recAnt - despAnt;
+
+      // lucro líquido
+      const elVal = document.getElementById('res-lucro');
+      const elMarg = document.getElementById('res-margem');
+      const isLucro = lucro >= 0;
+      const cor = rec === 0 && desp === 0 ? 'var(--muted)' : isLucro ? '#00D084' : '#FF4D6D';
+      elVal.textContent = rec === 0 && desp === 0 ? '—' : fmtMoeda(Math.abs(lucro));
+      elVal.style.color = cor;
+      if (margem !== null) {
+        elMarg.innerHTML = `<i class="bi bi-percent" style="font-size:11px"></i><span style="color:${cor};font-weight:700">${margem.toFixed(1)}%</span> de margem`;
       }
-      const R = 44, circ = 2 * Math.PI * R;
-      const dashR = (totalR / total) * circ;
-      const dashD = (totalD / total) * circ;
-      const pctR  = (totalR / total * 100).toFixed(1);
-      const pctD  = (totalD / total * 100).toFixed(1);
-      svgEl.innerHTML = `
-        <circle cx="50" cy="50" r="${R}" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="9"/>
-        <circle cx="50" cy="50" r="${R}" fill="none" stroke="#00D084" stroke-width="9"
-          stroke-dasharray="${dashR.toFixed(2)} ${circ.toFixed(2)}" stroke-dashoffset="0" transform="rotate(-90 50 50)"/>
-        <circle cx="50" cy="50" r="${R}" fill="none" stroke="#FF4D6D" stroke-width="9"
-          stroke-dasharray="${dashD.toFixed(2)} ${circ.toFixed(2)}" stroke-dashoffset="${(-dashR).toFixed(2)}" transform="rotate(-90 50 50)"/>
-        <text x="50" y="44" text-anchor="middle" fill="#FFF" font-size="9.5" font-weight="800" font-family="Inter,sans-serif">${fmtMoeda(total)}</text>
-        <text x="50" y="56" text-anchor="middle" fill="rgba(148,163,184,.5)" font-size="7" font-family="Inter,sans-serif">Total</text>`;
-      legEl.innerHTML = `
-        <div class="rd-leg-item">
-          <div class="rd-leg-label"><div class="rd-leg-dot" style="background:#00D084"></div>Receitas</div>
-          <div class="rd-leg-val">${fmtMoeda(totalR)}</div>
-          <div class="rd-leg-pct">${pctR}% do total</div>
-        </div>
-        <div class="rd-leg-item">
-          <div class="rd-leg-label"><div class="rd-leg-dot" style="background:#FF4D6D"></div>Despesas</div>
-          <div class="rd-leg-val">${fmtMoeda(totalD)}</div>
-          <div class="rd-leg-pct">${pctD}% do total</div>
+
+      // mini barras
+      const max = Math.max(rec, desp, Math.abs(lucro), 1);
+      const bar = (lbl, val, color) => `
+        <div class="res-bar-row">
+          <span class="res-bar-lbl">${lbl}</span>
+          <div class="res-bar-track"><div class="res-bar-fill" style="width:${(val/max*100).toFixed(1)}%;background:${color}"></div></div>
+          <span class="res-bar-val" style="color:${color}">${val > 0 ? fmtMoeda(val) : '—'}</span>
         </div>`;
+      document.getElementById('res-bars').innerHTML =
+        bar('Receitas', rec, '#00D084') +
+        bar('Despesas', desp, '#FF4D6D') +
+        bar(isLucro ? 'Lucro' : 'Prejuízo', Math.abs(lucro), cor);
+
+      // vs mês anterior
+      const elVs = document.getElementById('res-vs');
+      if (lucroAnt !== 0 && (rec > 0 || desp > 0)) {
+        const delta = ((lucro - lucroAnt) / Math.abs(lucroAnt) * 100);
+        const up = delta >= 0;
+        elVs.innerHTML = `<i class="bi bi-arrow-${up?'up':'down'}-short" style="color:${up?'#00D084':'#FF4D6D'}"></i>
+          <span style="color:${up?'#00D084':'#FF4D6D'}">${up?'+':''}${delta.toFixed(1)}%</span>
+          <span style="color:var(--muted);font-weight:400">vs mês anterior</span>`;
+      } else {
+        elVs.innerHTML = `<span style="color:var(--muted);font-size:12px">Sem dados do mês anterior</span>`;
+      }
     })();
 
     // ── Faturamento dos Últimos 6 Meses ──────────────────────
@@ -1904,10 +2004,11 @@ transition: var(--ease);
         <text x="50" y="57" text-anchor="middle" fill="rgba(148,163,184,.5)" font-size="6.5" font-family="Inter,sans-serif">Total</text>
       </svg>`;
       legEl.innerHTML = entries.map(([cat, val], i) =>
-        `<div class="dleg-row">
-          <div class="dleg-dot" style="background:${CORES[i]}"></div>
-          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px">${cat}</span>
-          <span class="dleg-pct">${(val/total*100).toFixed(1)}%</span>
+        `<div class="despc-row">
+          <div class="despc-dot" style="background:${CORES[i]}"></div>
+          <span class="despc-name">${cat}</span>
+          <span class="despc-val">${fmtMoeda(val)}</span>
+          <span class="despc-pct" style="color:${CORES[i]}">${(val/total*100).toFixed(1)}%</span>
         </div>`
       ).join('');
     })();
@@ -1924,15 +2025,15 @@ transition: var(--ease);
           const d = new Date(); d.setDate(d.getDate() - i);
           const key = d.toISOString().slice(0, 10);
           const lbl = i === 0 ? 'Hoje' : `${d.getDate()}/${d.getMonth()+1}`;
-          const ent = financeiro.filter(l => l.tipo==='receita' && l.status==='pago' && (l.pago_em||l.vencimento||'').slice(0,10)===key).reduce((s,l)=>s+(l.valor||0),0);
-          const sai = financeiro.filter(l => l.tipo==='despesa' && l.status==='pago' && (l.pago_em||l.vencimento||'').slice(0,10)===key).reduce((s,l)=>s+(l.valor||0),0);
+          const ent = financeiro.filter(l=>l.tipo==='receita'&&l.status==='pago'&&(l.pago_em||l.vencimento||'').slice(0,10)===key).reduce((s,l)=>s+(l.valor||0),0);
+          const sai = financeiro.filter(l=>l.tipo==='despesa'&&l.status==='pago'&&(l.pago_em||l.vencimento||'').slice(0,10)===key).reduce((s,l)=>s+(l.valor||0),0);
           pts.push({ lbl, ent, sai });
         }
       } else if (periodo === 'semanal') {
         for (let i = 5; i >= 0; i--) {
-          const end = new Date(); end.setDate(end.getDate() - i * 7);
-          const start = new Date(end); start.setDate(start.getDate() - 6);
-          const inR = l => { const d = new Date(l.pago_em||l.vencimento||''); return d>=start && d<=end; };
+          const end = new Date(); end.setDate(end.getDate() - i*7);
+          const start = new Date(end); start.setDate(start.getDate()-6);
+          const inR = l => { const d=new Date(l.pago_em||l.vencimento||''); return d>=start&&d<=end; };
           const ent = financeiro.filter(l=>l.tipo==='receita'&&l.status==='pago'&&inR(l)).reduce((s,l)=>s+(l.valor||0),0);
           const sai = financeiro.filter(l=>l.tipo==='despesa'&&l.status==='pago'&&inR(l)).reduce((s,l)=>s+(l.valor||0),0);
           pts.push({ lbl:`S${6-i}`, ent, sai });
@@ -1948,43 +2049,68 @@ transition: var(--ease);
         }
       }
 
-      const n = pts.length;
-      const W = 560, H = 130, pad = 20;
-      const step = (W - 2*pad) / n;
-      const bW   = Math.max(10, Math.floor(step / 2) - 4);
-      const maxV = Math.max(...pts.map(p=>Math.max(p.ent,p.sai)), 1);
+      // ── resumo strip ──
+      const totalEnt  = pts.reduce((s,p)=>s+p.ent,0);
+      const totalSai  = pts.reduce((s,p)=>s+p.sai,0);
+      const saldoLiq  = totalEnt - totalSai;
+      const elEnt     = document.getElementById('fluxo-sum-ent');
+      const elSai     = document.getElementById('fluxo-sum-sai');
+      const elSaldo   = document.getElementById('fluxo-sum-saldo');
+      if (elEnt)   elEnt.textContent   = fmtMoeda(totalEnt);
+      if (elSai)   elSai.textContent   = fmtMoeda(totalSai);
+      if (elSaldo) {
+        elSaldo.textContent  = fmtMoeda(Math.abs(saldoLiq));
+        elSaldo.style.color  = saldoLiq >= 0 ? '#00D084' : '#FF4D6D';
+      }
 
-      let saldo = 0;
-      const lineCoords = pts.map((p, i) => {
-        saldo += p.ent - p.sai;
-        const x = pad + i*step + step/2;
-        const y = H - Math.max(0, Math.min(1, saldo/maxV)) * H;
-        return { x: x.toFixed(1), y: y.toFixed(1) };
-      });
+      // ── chart ──
+      const n    = pts.length;
+      const W    = 560, H = 118, padL = 38, padR = 10, padB = 22;
+      const step = (W - padL - padR) / n;
+      const maxV = Math.max(...pts.map(p => p.ent), 1);
+
+      // nice Y scale
+      const mag   = Math.pow(10, Math.floor(Math.log10(maxV)));
+      const niceM = maxV/mag <= 1 ? mag : maxV/mag <= 2 ? 2*mag : maxV/mag <= 5 ? 5*mag : 10*mag;
+      const fmtK  = v => v >= 1e6 ? (v/1e6).toFixed(1)+'M' : v >= 1e3 ? (v/1e3).toFixed(0)+'k' : v.toFixed(0);
+      const ticks = [niceM*0.25, niceM*0.5, niceM*0.75, niceM].map(v => ({
+        v, y: (H - (v/niceM)*H).toFixed(1)
+      }));
+
+      const gridLines = ticks.map(t =>
+        `<line x1="${padL}" y1="${t.y}" x2="${W-padR}" y2="${t.y}" stroke="rgba(255,255,255,.05)" stroke-width=".8"/>
+         <text x="${(padL-5)}" y="${(+t.y+3.5).toFixed(1)}" text-anchor="end" fill="rgba(148,163,184,.4)" font-size="8" font-family="Inter">${fmtK(t.v)}</text>`
+      ).join('');
+
+      // stacked bars: bottom = saídas (red), top = surplus entradas-saídas (green)
+      const bW = Math.max(10, Math.floor(step * 0.62));
 
       const bars = pts.map((p, i) => {
-        const cx = pad + i*step + step/2;
-        const eH = Math.max(p.ent>0?3:0, (p.ent/maxV)*H);
-        const sH = Math.max(p.sai>0?3:0, (p.sai/maxV)*H);
-        return `
-          <rect x="${(cx-bW-2).toFixed(1)}" y="${(H-eH).toFixed(1)}" width="${bW}" height="${eH.toFixed(1)}" rx="3" fill="url(#gGr)" opacity=".85"/>
-          <rect x="${(cx+2).toFixed(1)}" y="${(H-sH).toFixed(1)}" width="${bW}" height="${sH.toFixed(1)}" rx="3" fill="url(#gRd)" opacity=".85"/>
-          <text x="${cx.toFixed(1)}" y="${(H+14).toFixed(1)}" text-anchor="middle" fill="rgba(148,163,184,.5)" font-size="8.5" font-family="Inter">${p.lbl}</text>`;
+        const cx      = padL + i*step + step/2;
+        const saiH    = Math.min((p.sai / niceM) * H, H);
+        const surplus = Math.max(0, p.ent - p.sai);
+        const surH    = (surplus / niceM) * H;
+        const totalH  = saiH + surH;
+        const rx      = 3;
+        // red (saídas) — bottom
+        const redY    = (H - saiH).toFixed(1);
+        // green (surplus) — top of red
+        const grnY    = (H - saiH - surH).toFixed(1);
+        // rounded top only on the uppermost segment
+        const topSeg  = surH > 0
+          ? `<path d="M${(cx-bW/2).toFixed(1)},${(H-totalH+rx).toFixed(1)} Q${(cx-bW/2).toFixed(1)},${(H-totalH).toFixed(1)} ${(cx-bW/2+rx).toFixed(1)},${(H-totalH).toFixed(1)} H${(cx+bW/2-rx).toFixed(1)} Q${(cx+bW/2).toFixed(1)},${(H-totalH).toFixed(1)} ${(cx+bW/2).toFixed(1)},${(H-totalH+rx).toFixed(1)} V${(H-saiH).toFixed(1)} H${(cx-bW/2).toFixed(1)} Z" fill="#00D084" opacity=".85"/>`
+          : '';
+        const botSeg  = saiH > 0
+          ? `<path d="M${(cx-bW/2).toFixed(1)},${redY} H${(cx+bW/2).toFixed(1)} V${(H-rx).toFixed(1)} Q${(cx+bW/2).toFixed(1)},${H} ${(cx+bW/2-rx).toFixed(1)},${H} H${(cx-bW/2+rx).toFixed(1)} Q${(cx-bW/2).toFixed(1)},${H} ${(cx-bW/2).toFixed(1)},${(H-rx).toFixed(1)} Z" fill="#FF4D6D" opacity=".85"/>`
+          : '';
+        return `${botSeg}${topSeg}
+          <text x="${cx.toFixed(1)}" y="${(H+padB-4)}" text-anchor="middle" fill="rgba(148,163,184,.55)" font-size="9.5" font-family="Inter">${p.lbl}</text>`;
       }).join('');
 
-      const lineStr = lineCoords.map(p=>`${p.x},${p.y}`).join(' ');
-      const dots    = lineCoords.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="3" fill="#2F80FF"/>`).join('');
-
-      el.innerHTML = `<svg style="width:100%;flex:1" viewBox="0 0 ${W} ${H+22}" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="gGr" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00D084"/><stop offset="100%" stop-color="#009f63" stop-opacity=".6"/></linearGradient>
-          <linearGradient id="gRd" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FF4D6D"/><stop offset="100%" stop-color="#cc2244" stop-opacity=".6"/></linearGradient>
-        </defs>
-        <line x1="${pad}" y1="${H}" x2="${W-pad}" y2="${H}" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
-        <line x1="${pad}" y1="${(H*0.5).toFixed(0)}" x2="${W-pad}" y2="${(H*0.5).toFixed(0)}" stroke="rgba(255,255,255,.03)" stroke-width=".5" stroke-dasharray="4,4"/>
+      el.innerHTML = `<svg style="width:100%;flex:1" viewBox="0 0 ${W} ${H+padB}" xmlns="http://www.w3.org/2000/svg">
+        <line x1="${padL}" y1="${H}" x2="${W-padR}" y2="${H}" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+        ${gridLines}
         ${bars}
-        <polyline points="${lineStr}" fill="none" stroke="#2F80FF" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-        ${dots}
       </svg>`;
     }
     renderFluxoCaixa('mensal');
@@ -2003,13 +2129,24 @@ transition: var(--ease);
       document.getElementById('dpLabel').textContent = label;
       document.getElementById('dpDrop').classList.remove('open');
     }
-    function applyDp() {
+    function updateDpCustomLabel() {
       const s = document.getElementById('dpS').value;
       const e = document.getElementById('dpE').value;
       const fmtD = v => v.split('-').reverse().join('/');
-      if (s && e) document.getElementById('dpLabel').textContent = `${fmtD(s)} – ${fmtD(e)}`;
-      else if (s) document.getElementById('dpLabel').textContent = `A partir de ${fmtD(s)}`;
+      if (s && e) {
+        document.querySelectorAll('.dp-opt').forEach(o => o.classList.remove('sel'));
+        document.getElementById('dpLabel').textContent = `${fmtD(s)} – ${fmtD(e)}`;
+      }
+    }
+    function applyDp() {
+      const s = document.getElementById('dpS').value;
+      const e = document.getElementById('dpE').value;
+      if (!s || !e) { showToast('Selecione as duas datas.'); return; }
+      const fmtD = v => v.split('-').reverse().join('/');
+      document.querySelectorAll('.dp-opt').forEach(o => o.classList.remove('sel'));
+      document.getElementById('dpLabel').textContent = `${fmtD(s)} – ${fmtD(e)}`;
       document.getElementById('dpDrop').classList.remove('open');
+      showToast('Período atualizado: ' + fmtD(s) + ' – ' + fmtD(e));
     }
     document.addEventListener('click', ev => {
       const btn = document.getElementById('dpBtn');
@@ -2035,7 +2172,7 @@ transition: var(--ease);
 
     const PAINEL_DEFAULT = {
       widgets: {
-        kpiGrid: true, fluxoCaixa: true, receitasDespesas: true,
+        kpiGrid: true, fluxoCaixa: true, resultado: true,
         contasRP: true, fat6meses: true, despCat: true,
         atividades: true, acoesRapidas: true,
       },
@@ -2117,13 +2254,13 @@ transition: var(--ease);
     function applyPainelConfig(cfg) {
       const widgetMap = {
         kpiGrid: 'section-kpis', fluxoCaixa: 'section-fluxo',
-        receitasDespesas: 'section-rd', contasRP: 'section-rp',
+        resultado: 'section-resultado', contasRP: 'section-rp',
         fat6meses: 'section-fat6', despCat: 'section-despc',
         atividades: 'section-atv', acoesRapidas: 'section-aq',
       };
       Object.entries(widgetMap).forEach(([key, id]) => {
         const el = document.getElementById(id);
-        if (el) el.classList.toggle('dash-hidden', !cfg.widgets[key]);
+        if (el) el.classList.toggle('dash-hidden', cfg.widgets[key] === false);
       });
 
       // KPIs — visibilidade e ordem
@@ -2224,7 +2361,7 @@ transition: var(--ease);
 
       // Widgets
       const wmap = {
-        'cfg-w-kpis':'kpiGrid','cfg-w-fluxo':'fluxoCaixa','cfg-w-rd':'receitasDespesas',
+        'cfg-w-kpis':'kpiGrid','cfg-w-fluxo':'fluxoCaixa','cfg-w-rd':'resultado',
         'cfg-w-rp':'contasRP','cfg-w-fat6':'fat6meses','cfg-w-desp':'despCat',
         'cfg-w-atv':'atividades','cfg-w-aq':'acoesRapidas',
       };
