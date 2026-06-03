@@ -6915,6 +6915,39 @@
       updateStats();
       cupomAtivo = null;
       updateCupomBadge();
+
+      // ── Persistência em nexoerp.pdv.vendas ──
+      try {
+        const session = JSON.parse(localStorage.getItem('nexoerp.session') || '{}');
+        const operador = session?.user?.name || 'PDV';
+        const now = new Date();
+        const venda = {
+          id: `#PDV${now.getTime().toString().slice(-6)}`,
+          cliente: sale.client || 'Venda Balcão',
+          operador,
+          metodo: selectedMethod || 'dinheiro',
+          itens: (sale.cartSnapshot || []).map(c => ({
+            nome:     c.nome || '',
+            emoji:    c.emoji || '📦',
+            preco:    c.preco,
+            qty:      c.qty,
+            subtotal: c.preco * c.qty,
+          })),
+          subtotal:      sale.subtotal,
+          desconto:      sale.desconto || 0,
+          total,
+          status:        'concluida',
+          dataISO:       now.toISOString(),
+          dataStr:       now.toLocaleDateString('pt-BR'),
+          horaStr:       sale.time || now.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' }),
+          estornoMotivo: '',
+          tipo:          'pdv',
+        };
+        const raw = localStorage.getItem('nexoerp.pdv.vendas');
+        const lista = raw ? JSON.parse(raw) : [];
+        lista.unshift(venda);
+        localStorage.setItem('nexoerp.pdv.vendas', JSON.stringify(lista));
+      } catch(e) {}
     }
 
     function _mostrarSucesso(sale, total) {

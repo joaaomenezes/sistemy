@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistemy — Clientes</title>
+  <title>Sistemy — Parceiros</title>
   <link rel="stylesheet" href="global.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
@@ -101,7 +101,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-font-weight: 800;
+      font-weight: 800;
       font-size: 13px;
     }
 
@@ -152,8 +152,6 @@ font-weight: 800;
       color: var(--border);
       margin-bottom: 16px;
     }
-
-    .modal-overlay.open
 
     /* wizard tabs */
     .wizard-tabs {
@@ -323,18 +321,18 @@ font-weight: 800;
     }
 
     .btn-modal-back {
-    padding: 10px 20px;
-    border-radius: 9px;
-    border: 1px solid var(--border);
-    background: none;
-    color: var(--text);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: border-color .18s;
+      padding: 10px 20px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: border-color .18s;
     }
 
     .btn-modal-back:hover {
@@ -347,7 +345,7 @@ font-weight: 800;
       border: none;
       background: var(--accent);
       color: #021c14;
-font-size: 14px;
+      font-size: 14px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
@@ -367,12 +365,12 @@ font-size: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-font-weight: 800;
+      font-weight: 800;
       font-size: 20px;
     }
 
     .dp-name {
-font-size: 17px;
+      font-size: 17px;
       font-weight: 800;
       letter-spacing: -.3px;
     }
@@ -383,23 +381,73 @@ font-size: 17px;
       margin-top: 2px;
     }
 
-    /* scrollbar */
-    ::-webkit-scrollbar {
-      width: 4px;
-      height: 4px;
+    .section-tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px;
+      width: fit-content;
+      margin-bottom: 20px;
+    }
+    .sec-tab {
+      padding: 8px 20px;
+      border-radius: 9px;
+      border: none;
+      background: none;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: all .18s;
+    }
+    .sec-tab.active {
+      background: var(--card);
+      color: var(--text);
+      box-shadow: 0 1px 4px rgba(0,0,0,.25);
     }
 
-    ::-webkit-scrollbar-track {
-      background: transparent;
+    .btn-del {
+      padding: 10px 20px;
+      border-radius: 9px;
+      border: none;
+      background: var(--danger);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: opacity .18s;
     }
-
-    ::-webkit-scrollbar-thumb {
-      background: var(--border);
-      border-radius: 2px;
+    .btn-del:hover { opacity: .85; }
+    .confirm-body {
+      padding: 24px 28px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
     }
+    .confirm-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: rgba(255,71,87,.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: var(--danger);
+      flex-shrink: 0;
+    }
+    .confirm-text h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .confirm-text p  { font-size: 13px; color: var(--muted); }
 
     @media(max-width:900px) {
-
       .form-grid.cols3 {
         grid-template-columns: 1fr 1fr;
       }
@@ -410,16 +458,16 @@ font-size: 17px;
 <body>
 
   <!-- SIDEBAR -->
-<div id="sidebar-root"></div>
-<script src="sidebar.js"></script>
+  <div id="sidebar-root"></div>
+  <script src="sidebar.js"></script>
 
   <!-- MAIN -->
   <div class="main collapsed" id="mainContent">
     <div class="topbar">
       <div class="topbar-left">
-        <span class="page-title">Clientes</span>
+        <span class="page-title">Parceiros</span>
         <span class="breadcrumb-sep">/</span>
-        <span class="breadcrumb-cur">Lista</span>
+        <span class="breadcrumb-cur" id="breadcrumb-cur">Clientes</span>
       </div>
       <div class="topbar-right">
         <div class="icon-btn"><i class="bi bi-bell"></i>
@@ -434,14 +482,19 @@ font-size: 17px;
       <!-- Header -->
       <div class="page-header">
         <div>
-          <h1>Clientes</h1>
-          <p>Gerencie seu cadastro de clientes, histórico e relacionamento.</p>
+          <h1 id="page-h1">Clientes</h1>
+          <p id="page-sub">Gerencie seu cadastro de clientes, histórico e relacionamento.</p>
         </div>
         <div class="header-actions">
           <button class="btn-sm btn-ghost-sm"><i class="bi bi-download"></i> Exportar</button>
-          <button class="btn-sm btn-primary-sm" onclick="openModal()"><i class="bi bi-plus-lg"></i> Novo
-            Cliente</button>
+          <button class="btn-sm btn-primary-sm" onclick="openModal()"><i class="bi bi-plus-lg"></i> <span id="btn-novo-label">Novo Cliente</span></button>
         </div>
+      </div>
+
+      <!-- Section Tabs -->
+      <div class="section-tabs">
+        <button class="sec-tab active" id="sec-clientes" onclick="switchSection('clientes')"><i class="bi bi-people-fill"></i> Clientes</button>
+        <button class="sec-tab" id="sec-fornecedores" onclick="switchSection('fornecedores')"><i class="bi bi-truck"></i> Fornecedores</button>
       </div>
 
       <!-- KPIs -->
@@ -450,7 +503,7 @@ font-size: 17px;
           <div class="kpi-mini-icon g"><i class="bi bi-people-fill"></i></div>
           <div>
             <div class="kpi-mini-val" id="kpi-total">0</div>
-            <div class="kpi-mini-lbl">Total de clientes</div>
+            <div class="kpi-mini-lbl" id="kpi-total-lbl">Total de clientes</div>
           </div>
         </div>
         <div class="kpi-mini">
@@ -464,7 +517,7 @@ font-size: 17px;
           <div class="kpi-mini-icon o"><i class="bi bi-person-plus-fill"></i></div>
           <div>
             <div class="kpi-mini-val" id="kpi-mes">0</div>
-            <div class="kpi-mini-lbl">Novos este mês</div>
+            <div class="kpi-mini-lbl" id="kpi-mes-lbl">Novos este mês</div>
           </div>
         </div>
         <div class="kpi-mini">
@@ -505,7 +558,7 @@ font-size: 17px;
                 <th>Tipo</th>
                 <th onclick="sortTable('cidade')">Cidade <span class="sort-icon">↕</span></th>
                 <th>Telefone</th>
-                <th onclick="sortTable('compras')">Compras <span class="sort-icon">↕</span></th>
+                <th onclick="sortTable('compras')" id="th-compras">Compras <span class="sort-icon">↕</span></th>
                 <th>Status</th>
                 <th>Cadastro</th>
                 <th></th>
@@ -515,8 +568,8 @@ font-size: 17px;
           </table>
           <div class="empty-state" id="emptyState">
             <div class="empty-icon"><i class="bi bi-people"></i></div>
-            <h3>Nenhum cliente encontrado</h3>
-            <p>Tente ajustar os filtros ou cadastre um novo cliente.</p>
+            <h3 id="empty-h3">Nenhum cliente encontrado</h3>
+            <p id="empty-p">Tente ajustar os filtros ou cadastre um novo cliente.</p>
           </div>
         </div>
         <div class="table-footer">
@@ -866,6 +919,26 @@ font-size: 17px;
     </div>
   </div>
 
+  <!-- MODAL CONFIRMAÇÃO -->
+  <div class="modal-overlay" id="confirmOverlay">
+    <div class="modal" style="max-width:420px">
+      <div class="confirm-body">
+        <div class="confirm-icon"><i class="bi bi-trash3"></i></div>
+        <div class="confirm-text">
+          <h3 id="confirmTitle">Excluir registro</h3>
+          <p id="confirmMsg">—</p>
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content:space-between">
+        <div style="color:var(--muted);font-size:12px">Esta ação não pode ser desfeita.</div>
+        <div style="display:flex;gap:10px">
+          <button class="btn-modal-back" onclick="closeConfirm()">Cancelar</button>
+          <button class="btn-del" onclick="doConfirm()"><i class="bi bi-trash3"></i> Excluir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- DETAIL PANEL -->
   <div class="detail-panel" id="detailPanel">
     <div class="dp-header">
@@ -918,78 +991,109 @@ font-size: 17px;
     NexoAuth.requireAuth();
 
     // ─── STORAGE ─────────────────────────────────────────────
-    const CLIENTES_KEY = 'nexoerp.clientes';
+    const CLIENTES_KEY     = 'nexoerp.clientes';
+    const FORNECEDORES_KEY = 'nexoerp.fornecedores';
 
-    function loadClients() {
-      try {
-        const raw = localStorage.getItem(CLIENTES_KEY);
-        if (raw) return JSON.parse(raw);
-      } catch (_) {}
+    function loadData(key) {
+      try { const raw = localStorage.getItem(key); if (raw) return JSON.parse(raw); } catch(_) {}
       return [];
     }
-
-    function saveClients() {
-      try {
-        localStorage.setItem(CLIENTES_KEY, JSON.stringify(clients));
-      } catch (err) {
-        if (err.name === 'QuotaExceededError') showToast('❌ Armazenamento local cheio.', 'error');
-      }
+    function saveData(key, data) {
+      try { localStorage.setItem(key, JSON.stringify(data)); }
+      catch(err) { if (err.name === 'QuotaExceededError') showToast('❌ Armazenamento local cheio.'); }
     }
 
-    // ─── DATA ───────────────────────────────────────────────
+    // ─── DATA ────────────────────────────────────────────────
     const COLORS = [
-      ['#00c896', '#021c14'], ['#0077ff', '#e8f0ff'], ['#ff6b35', '#fff0ea'],
-      ['#a855f7', '#f3e8ff'], ['#ec4899', '#fce7f3'], ['#14b8a6', '#e0f7f5']
+      ['#00c896','#021c14'],['#0077ff','#e8f0ff'],['#ff6b35','#fff0ea'],
+      ['#a855f7','#f3e8ff'],['#ec4899','#fce7f3'],['#14b8a6','#e0f7f5']
     ];
     function colorFor(name) {
       const idx = (name.charCodeAt(0) + (name.charCodeAt(1) || 0)) % COLORS.length;
       return COLORS[idx];
     }
 
-    let clients = loadClients();
-    let filtered = [...clients];
+    let clients     = loadData(CLIENTES_KEY);
+    let fornecedores = loadData(FORNECEDORES_KEY);
+    let currentSection = 'clientes';
+    let filtered = [];
     let currentFilter = 'todos';
     let currentPage = 1;
     const perPage = 6;
     let editingId = null;
     let currentDetailId = null;
 
+    function activeData()      { return currentSection === 'clientes' ? clients : fornecedores; }
+    function setActiveData(d)  { if (currentSection === 'clientes') clients = d; else fornecedores = d; }
+    function saveActive()      { saveData(currentSection === 'clientes' ? CLIENTES_KEY : FORNECEDORES_KEY, activeData()); }
+    function entityLabel()     { return currentSection === 'clientes' ? 'Cliente' : 'Fornecedor'; }
+
+    // ─── SECTION SWITCH ──────────────────────────────────────
+    function switchSection(section) {
+      currentSection = section;
+      const isCli = section === 'clientes';
+      document.getElementById('sec-clientes').classList.toggle('active', isCli);
+      document.getElementById('sec-fornecedores').classList.toggle('active', !isCli);
+      document.getElementById('btn-novo-label').textContent    = isCli ? 'Novo Cliente' : 'Novo Fornecedor';
+      document.getElementById('page-h1').textContent           = isCli ? 'Clientes' : 'Fornecedores';
+      document.getElementById('page-sub').textContent          = isCli
+        ? 'Gerencie seu cadastro de clientes, histórico e relacionamento.'
+        : 'Gerencie seus fornecedores, contatos e condições comerciais.';
+      document.getElementById('kpi-total-lbl').textContent     = isCli ? 'Total de clientes' : 'Total de fornecedores';
+      document.getElementById('kpi-mes-lbl').textContent       = 'Novos este mês';
+      document.getElementById('breadcrumb-cur').textContent    = isCli ? 'Clientes' : 'Fornecedores';
+      document.getElementById('th-compras').firstChild.textContent = isCli ? 'Compras ' : 'Pedidos ';
+      document.getElementById('empty-h3').textContent          = isCli ? 'Nenhum cliente encontrado' : 'Nenhum fornecedor encontrado';
+      document.getElementById('empty-p').textContent           = isCli
+        ? 'Tente ajustar os filtros ou cadastre um novo cliente.'
+        : 'Tente ajustar os filtros ou cadastre um novo fornecedor.';
+      currentFilter = 'todos';
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('.filter-btn[onclick*="todos"]').classList.add('active');
+      document.getElementById('searchInput').value = '';
+      currentPage = 1;
+      applyFilters();
+    }
+
     // ─── RENDER TABLE ────────────────────────────────────────
     function renderTable() {
-      const body = document.getElementById('tableBody');
+      const body  = document.getElementById('tableBody');
       const empty = document.getElementById('emptyState');
       const total = filtered.length;
       const start = (currentPage - 1) * perPage;
       const slice = filtered.slice(start, start + perPage);
+      const isCli = currentSection === 'clientes';
 
       if (!total) { body.innerHTML = ''; empty.classList.add('show'); }
       else empty.classList.remove('show');
 
       body.innerHTML = slice.map(c => {
-        const [bg, fg] = colorFor(c.nome);
+        const [bg, fg]  = colorFor(c.nome);
         const typeLabel = c.tipo === 'pf' ? 'Pessoa Física' : c.tipo === 'pj' ? 'Pessoa Jurídica' : 'MEI';
         const statusLabel = c.status === 'ativo' ? 'Ativo' : c.status === 'inativo' ? 'Inativo' : 'Bloqueado';
         const statusClass = c.status === 'ativo' ? 'ativo' : c.status === 'inativo' ? 'inativo' : 'bloq';
+        const movVal = isCli ? (c.compras || 0) : (c.pedidos || 0);
         return `<tr onclick="openDetail(${c.id})">
-      <td><div class="client-cell">
-        <div class="client-avatar" style="background:${bg};color:${fg}">${initials(c.nome)}</div>
-        <div><div class="client-name">${c.nome}</div><div class="client-doc">${c.doc}</div></div>
-      </div></td>
-      <td><span class="client-type ${c.tipo}">${typeLabel}</span></td>
-      <td style="color:var(--muted);font-size:13px">${c.cidade}/${c.estado}</td>
-      <td style="font-size:13px">${c.tel}</td>
-      <td style="font-weight:700;font-size:13px">${c.compras}</td>
-      <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
-      <td style="color:var(--muted);font-size:12px">${c.cadastro}</td>
-      <td><div class="action-cell" onclick="event.stopPropagation()">
-        <div class="act-btn" title="Editar" onclick="openEdit(${c.id})"><i class="bi bi-pencil"></i></div>
-        <div class="act-btn del" title="Excluir" onclick="deleteClient(${c.id})"><i class="bi bi-trash3"></i></div>
-      </div></td>
-    </tr>`;
+          <td><div class="client-cell">
+            <div class="client-avatar" style="background:${bg};color:${fg}">${initials(c.nome)}</div>
+            <div><div class="client-name">${c.nome}</div><div class="client-doc">${c.doc}</div></div>
+          </div></td>
+          <td><span class="client-type ${c.tipo}">${typeLabel}</span></td>
+          <td style="color:var(--muted);font-size:13px">${c.cidade || '—'}/${c.estado || '—'}</td>
+          <td style="font-size:13px">${c.tel}</td>
+          <td style="font-weight:700;font-size:13px">${movVal}</td>
+          <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
+          <td style="color:var(--muted);font-size:12px">${c.cadastro}</td>
+          <td><div class="action-cell" onclick="event.stopPropagation()">
+            <div class="act-btn" title="Editar" onclick="openEdit(${c.id})"><i class="bi bi-pencil"></i></div>
+            <div class="act-btn del" title="Excluir" onclick="deleteEntity(${c.id})"><i class="bi bi-trash3"></i></div>
+          </div></td>
+        </tr>`;
       }).join('');
 
+      const noun = isCli ? 'clientes' : 'fornecedores';
       document.getElementById('tableInfo').textContent =
-        `Mostrando ${Math.min(start + 1, total)}–${Math.min(start + perPage, total)} de ${total} clientes`;
+        `Mostrando ${Math.min(start + 1, total)}–${Math.min(start + perPage, total)} de ${total} ${noun}`;
       renderPagination(total);
       updateKPIs();
     }
@@ -998,9 +1102,9 @@ font-size: 17px;
       const pages = Math.ceil(total / perPage);
       const pg = document.getElementById('pagination');
       if (pages <= 1) { pg.innerHTML = ''; return; }
-      let html = `<button class="pg-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}><i class="bi bi-chevron-left"></i></button>`;
-      for (let i = 1; i <= pages; i++) html += `<button class="pg-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
-      html += `<button class="pg-btn" onclick="goPage(${currentPage + 1})" ${currentPage === pages ? 'disabled' : ''}><i class="bi bi-chevron-right"></i></button>`;
+      let html = `<button class="pg-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}><i class="bi bi-chevron-left"></i></button>`;
+      for (let i = 1; i <= pages; i++) html += `<button class="pg-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+      html += `<button class="pg-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}><i class="bi bi-chevron-right"></i></button>`;
       pg.innerHTML = html;
     }
     function goPage(p) {
@@ -1010,15 +1114,15 @@ font-size: 17px;
     }
 
     function updateKPIs() {
+      const data = activeData();
       const now = new Date();
-      const mesAtual = String(now.getMonth() + 1).padStart(2, '0');
-      const anoAtual = String(now.getFullYear());
-      document.getElementById('kpi-total').textContent = clients.length;
-      document.getElementById('kpi-ativos').textContent = clients.filter(c => c.status === 'ativo').length;
-      document.getElementById('kpi-inativos').textContent = clients.filter(c => c.status === 'inativo' || c.status === 'bloq').length;
-      document.getElementById('kpi-mes').textContent = clients.filter(c => {
-        const parts = (c.cadastro || '').split('/');
-        return parts[1] === mesAtual && parts[2] === anoAtual;
+      const mes = String(now.getMonth()+1).padStart(2,'0');
+      const ano = String(now.getFullYear());
+      document.getElementById('kpi-total').textContent    = data.length;
+      document.getElementById('kpi-ativos').textContent   = data.filter(c => c.status === 'ativo').length;
+      document.getElementById('kpi-inativos').textContent = data.filter(c => c.status === 'inativo' || c.status === 'bloq').length;
+      document.getElementById('kpi-mes').textContent      = data.filter(c => {
+        const p = (c.cadastro||'').split('/'); return p[1]===mes && p[2]===ano;
       }).length;
     }
 
@@ -1026,15 +1130,13 @@ font-size: 17px;
     function setFilter(el, val) {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       el.classList.add('active');
-      currentFilter = val;
-      currentPage = 1;
-      applyFilters();
+      currentFilter = val; currentPage = 1; applyFilters();
     }
     function filterTable() { currentPage = 1; applyFilters(); }
     function applyFilters() {
       const q = document.getElementById('searchInput').value.toLowerCase();
-      filtered = clients.filter(c => {
-        const matchQ = !q || c.nome.toLowerCase().includes(q) || c.doc.includes(q) || c.email.toLowerCase().includes(q);
+      filtered = activeData().filter(c => {
+        const matchQ = !q || c.nome.toLowerCase().includes(q) || c.doc.includes(q) || (c.email||'').toLowerCase().includes(q);
         const matchF = currentFilter === 'todos' || c.status === currentFilter || c.tipo === currentFilter;
         return matchQ && matchF;
       });
@@ -1045,12 +1147,26 @@ font-size: 17px;
     let sortDir = 1;
     function sortTable(key) {
       filtered.sort((a, b) => {
-        const av = typeof a[key] === 'number' ? a[key] : a[key].toLowerCase();
-        const bv = typeof b[key] === 'number' ? b[key] : b[key].toLowerCase();
+        const av = typeof a[key]==='number' ? a[key] : (a[key]||'').toLowerCase();
+        const bv = typeof b[key]==='number' ? b[key] : (b[key]||'').toLowerCase();
         return av > bv ? sortDir : av < bv ? -sortDir : 0;
       });
       sortDir *= -1; renderTable();
     }
+
+    // ─── CONFIRM MODAL ───────────────────────────────────────
+    let confirmCallback = null;
+    function openConfirm(title, msg, cb) {
+      document.getElementById('confirmTitle').textContent = title;
+      document.getElementById('confirmMsg').textContent   = msg;
+      confirmCallback = cb;
+      document.getElementById('confirmOverlay').classList.add('open');
+    }
+    function closeConfirm() {
+      document.getElementById('confirmOverlay').classList.remove('open');
+      confirmCallback = null;
+    }
+    function doConfirm() { if (confirmCallback) confirmCallback(); closeConfirm(); }
 
     // ─── MODAL ───────────────────────────────────────────────
     let wizardStep = 1;
@@ -1058,21 +1174,21 @@ font-size: 17px;
 
     function openModal(reset = true) {
       editingId = null;
-      document.getElementById('modalTitle').textContent = 'Novo Cliente';
-      document.getElementById('modalSub').textContent = 'Preencha os dados do cliente';
+      document.getElementById('modalTitle').textContent = `Novo ${entityLabel()}`;
+      document.getElementById('modalSub').textContent   = `Preencha os dados do ${entityLabel().toLowerCase()}`;
       if (reset) { resetForm(); wizardGoTo(1); }
       document.getElementById('modalOverlay').classList.add('open');
     }
     function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
-    function handleOverlayClick(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
+    function handleOverlayClick(e) { if (e.target===document.getElementById('modalOverlay')) closeModal(); }
 
     function resetForm() {
-      ['f-nome', 'f-cpf', 'f-rg', 'f-nasc', 'f-tel', 'f-email', 'f-cep', 'f-logradouro',
-        'f-numero', 'f-complemento', 'f-bairro', 'f-cidade', 'f-pais', 'f-tel2', 'f-site',
-        'f-limite', 'f-desconto', 'f-obs', 'f-tags'].forEach(id => {
-          const el = document.getElementById(id); if (el) el.value = '';
-        });
-      ['f-genero', 'f-estado', 'f-condicao', 'f-vendedor', 'f-grupo', 'f-status', 'f-origem'].forEach(id => {
+      ['f-nome','f-cpf','f-rg','f-nasc','f-tel','f-email','f-cep','f-logradouro',
+       'f-numero','f-complemento','f-bairro','f-cidade','f-pais','f-tel2','f-site',
+       'f-limite','f-desconto','f-obs','f-tags'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = '';
+      });
+      ['f-genero','f-estado','f-condicao','f-vendedor','f-grupo','f-status','f-origem'].forEach(id => {
         const el = document.getElementById(id); if (el) el.selectedIndex = 0;
       });
       document.getElementById('f-pais').value = 'Brasil';
@@ -1082,166 +1198,164 @@ font-size: 17px;
     function wizardGoTo(step) {
       wizardStep = step;
       for (let i = 1; i <= 4; i++) {
-        document.getElementById(`mstep-${i}`).style.display = i === step ? 'block' : 'none';
+        document.getElementById(`mstep-${i}`).style.display = i===step ? 'block' : 'none';
         const tab = document.getElementById(`tab-${i}`);
-        tab.classList.remove('active', 'done');
+        tab.classList.remove('active','done');
         if (i < step) tab.classList.add('done');
         if (i === step) tab.classList.add('active');
         if (i < step) tab.querySelector('.tab-num').innerHTML = '<i class="bi bi-check2"></i>';
         else tab.querySelector('.tab-num').textContent = i;
       }
       document.getElementById('mf-step-info').textContent = `Passo ${step} de 4`;
-      document.getElementById('btnBack').style.display = step > 1 ? 'flex' : 'none';
-      document.getElementById('btnNext').innerHTML = step < 4
+      document.getElementById('btnBack').style.display    = step > 1 ? 'flex' : 'none';
+      document.getElementById('btnNext').innerHTML        = step < 4
         ? 'Próximo <i class="bi bi-arrow-right"></i>'
-        : '<i class="bi bi-check2"></i> Salvar cliente';
+        : `<i class="bi bi-check2"></i> Salvar ${entityLabel().toLowerCase()}`;
       document.getElementById('modalBody').scrollTop = 0;
     }
 
     function wizardNext() {
-      if (wizardStep === 1 && !validateStep1()) return;
-      if (wizardStep < 4) { wizardGoTo(wizardStep + 1); return; }
-      saveClient();
+      if (wizardStep===1 && !validateStep1()) return;
+      if (wizardStep < 4) { wizardGoTo(wizardStep+1); return; }
+      saveEntity();
     }
-    function wizardBack() { if (wizardStep > 1) wizardGoTo(wizardStep - 1); }
+    function wizardBack() { if (wizardStep > 1) wizardGoTo(wizardStep-1); }
 
     function validateStep1() {
       let ok = true;
-      const nome = document.getElementById('f-nome');
-      const tel = document.getElementById('f-tel');
-      const cpf = document.getElementById('f-cpf');
-      const eNome = document.getElementById('e-nome');
-      const eTel = document.getElementById('e-tel');
-      const eCpf = document.getElementById('e-cpf');
-      if (!nome.value.trim()) { nome.classList.add('err'); eNome.classList.add('show'); ok = false; }
-      else { nome.classList.remove('err'); eNome.classList.remove('show'); }
-      if (!tel.value.trim()) { tel.classList.add('err'); eTel.classList.add('show'); ok = false; }
-      else { tel.classList.remove('err'); eTel.classList.remove('show'); }
-      if (!cpf.value.trim()) { cpf.classList.add('err'); eCpf.classList.add('show'); ok = false; }
-      else { cpf.classList.remove('err'); eCpf.classList.remove('show'); }
+      [{id:'f-nome',err:'e-nome'},{id:'f-tel',err:'e-tel'},{id:'f-cpf',err:'e-cpf'}].forEach(({id,err}) => {
+        const el = document.getElementById(id), er = document.getElementById(err);
+        if (!el.value.trim()) { el.classList.add('err'); er.classList.add('show'); ok = false; }
+        else { el.classList.remove('err'); er.classList.remove('show'); }
+      });
       return ok;
     }
 
-    function saveClient() {
-      const newClient = {
-        id: editingId || Date.now(),
-        nome: document.getElementById('f-nome').value.trim(),
-        tipo: tipoSel,
-        doc: document.getElementById('f-cpf').value.trim(),
-        tel: document.getElementById('f-tel').value.trim(),
-        email: document.getElementById('f-email').value.trim(),
-        cidade: document.getElementById('f-cidade').value.trim() || '—',
-        estado: document.getElementById('f-estado').value || 'SP',
-        status: document.getElementById('f-status').value || 'ativo',
-        compras: 0,
-        limite: document.getElementById('f-limite').value.replace(/\D/g, '') || '0',
-        condicao: document.getElementById('f-condicao').value || 'À vista',
-        vendedor: document.getElementById('f-vendedor').value || '',
-        cadastro: new Date().toLocaleDateString('pt-BR'),
+    function saveEntity() {
+      const data     = activeData();
+      const existing = editingId ? data.find(x => x.id===editingId) : null;
+      const entry = {
+        id:         editingId || Date.now(),
+        nome:       document.getElementById('f-nome').value.trim(),
+        tipo:       tipoSel,
+        doc:        document.getElementById('f-cpf').value.trim(),
+        tel:        document.getElementById('f-tel').value.trim(),
+        email:      document.getElementById('f-email').value.trim(),
+        cidade:     document.getElementById('f-cidade').value.trim() || '—',
+        estado:     document.getElementById('f-estado').value || 'SP',
+        status:     document.getElementById('f-status').value || 'ativo',
+        compras:    existing?.compras  || 0,
+        pedidos:    existing?.pedidos  || 0,
+        limite:     document.getElementById('f-limite').value.replace(/\D/g,'') || '0',
+        condicao:   document.getElementById('f-condicao').value || 'À vista',
+        vendedor:   document.getElementById('f-vendedor').value || '',
+        cadastro:   existing?.cadastro || new Date().toLocaleDateString('pt-BR'),
         logradouro: document.getElementById('f-logradouro').value,
-        numero: document.getElementById('f-numero').value,
-        bairro: document.getElementById('f-bairro').value,
-        cep: document.getElementById('f-cep').value,
-        obs: document.getElementById('f-obs').value,
-        grupo: document.getElementById('f-grupo').value,
-        origem: document.getElementById('f-origem').value,
+        numero:     document.getElementById('f-numero').value,
+        bairro:     document.getElementById('f-bairro').value,
+        cep:        document.getElementById('f-cep').value,
+        obs:        document.getElementById('f-obs').value,
+        grupo:      document.getElementById('f-grupo').value,
+        origem:     document.getElementById('f-origem').value,
       };
-
-      if (editingId) {
-        const idx = clients.findIndex(c => c.id === editingId);
-        if (idx >= 0) { newClient.compras = clients[idx].compras; clients[idx] = newClient; }
-      } else {
-        clients.unshift(newClient);
-      }
-
-      saveClients();
+      if (editingId) { const idx = data.findIndex(x => x.id===editingId); if (idx>=0) data[idx]=entry; }
+      else data.unshift(entry);
+      setActiveData(data);
+      saveActive();
       closeModal();
       applyFilters();
-      showToast(editingId ? 'Cliente atualizado com sucesso!' : 'Cliente cadastrado com sucesso!');
+      showToast(editingId ? `${entityLabel()} atualizado com sucesso!` : `${entityLabel()} cadastrado com sucesso!`);
     }
 
     // ─── EDIT / DELETE ───────────────────────────────────────
     function openEdit(id) {
-      const c = clients.find(cl => cl.id === id);
+      const c = activeData().find(x => x.id===id);
       if (!c) return;
       editingId = id;
-      document.getElementById('modalTitle').textContent = 'Editar Cliente';
-      document.getElementById('modalSub').textContent = c.nome;
+      document.getElementById('modalTitle').textContent = `Editar ${entityLabel()}`;
+      document.getElementById('modalSub').textContent   = c.nome;
       resetForm();
-      document.getElementById('f-nome').value = c.nome;
-      document.getElementById('f-cpf').value = c.doc;
-      document.getElementById('f-tel').value = c.tel;
-      document.getElementById('f-email').value = c.email;
-      document.getElementById('f-cidade').value = c.cidade;
+      document.getElementById('f-nome').value      = c.nome;
+      document.getElementById('f-cpf').value       = c.doc;
+      document.getElementById('f-tel').value       = c.tel;
+      document.getElementById('f-email').value     = c.email;
+      document.getElementById('f-cidade').value    = c.cidade !== '—' ? c.cidade : '';
       document.getElementById('f-logradouro').value = c.logradouro || '';
-      document.getElementById('f-numero').value = c.numero || '';
-      document.getElementById('f-bairro').value = c.bairro || '';
-      document.getElementById('f-cep').value = c.cep || '';
-      document.getElementById('f-obs').value = c.obs || '';
+      document.getElementById('f-numero').value    = c.numero || '';
+      document.getElementById('f-bairro').value    = c.bairro || '';
+      document.getElementById('f-cep').value       = c.cep || '';
+      document.getElementById('f-obs').value       = c.obs || '';
       if (c.limite) {
-        const v = (parseFloat(c.limite) / 100).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        const v = (parseFloat(c.limite)/100).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
         document.getElementById('f-limite').value = v;
       }
-      setSelectVal('f-estado', c.estado);
-      setSelectVal('f-status', c.status);
-      setSelectVal('f-condicao', c.condicao);
-      setSelectVal('f-vendedor', c.vendedor);
-      setSelectVal('f-grupo', c.grupo);
-      // tipo
+      setSelectVal('f-estado',c.estado); setSelectVal('f-status',c.status);
+      setSelectVal('f-condicao',c.condicao); setSelectVal('f-vendedor',c.vendedor);
+      setSelectVal('f-grupo',c.grupo);
       const tipoEl = document.getElementById(`tipo-${c.tipo}`);
       if (tipoEl) selectTipo(tipoEl, c.tipo);
       wizardGoTo(1);
       document.getElementById('modalOverlay').classList.add('open');
     }
+
     function setSelectVal(id, val) {
       const el = document.getElementById(id); if (!el || !val) return;
-      for (let o of el.options) if (o.value === val || o.text === val) { o.selected = true; break; }
+      for (let o of el.options) if (o.value===val || o.text===val) { o.selected=true; break; }
     }
 
-    function deleteClient(id) {
-      if (!confirm('Tem certeza que deseja excluir este cliente?')) return;
-      clients = clients.filter(c => c.id !== id);
-      saveClients();
-      if (currentDetailId === id) closeDetail();
-      applyFilters();
-      showToast('Cliente removido.');
+    function deleteEntity(id) {
+      const entry = activeData().find(x => x.id===id);
+      if (!entry) return;
+      openConfirm(
+        `Excluir ${entityLabel().toLowerCase()}`,
+        `"${entry.nome}" será removido permanentemente.`,
+        () => {
+          setActiveData(activeData().filter(x => x.id!==id));
+          saveActive();
+          if (currentDetailId===id) closeDetail();
+          applyFilters();
+          showToast(`${entityLabel()} removido.`);
+        }
+      );
     }
 
     // ─── DETAIL PANEL ────────────────────────────────────────
     function openDetail(id) {
-      const c = clients.find(cl => cl.id === id);
+      const c = activeData().find(x => x.id===id);
       if (!c) return;
       currentDetailId = id;
-      const [bg, fg] = colorFor(c.nome);
+      const [bg,fg] = colorFor(c.nome);
       document.getElementById('dp-avatar').style.cssText = `background:${bg};color:${fg}`;
-      document.getElementById('dp-avatar').textContent = initials(c.nome);
-      document.getElementById('dp-name').textContent = c.nome;
-      document.getElementById('dp-doc').textContent = c.doc;
+      document.getElementById('dp-avatar').textContent   = initials(c.nome);
+      document.getElementById('dp-name').textContent     = c.nome;
+      document.getElementById('dp-doc').textContent      = c.doc;
 
-      const typeLabel = c.tipo === 'pf' ? 'Pessoa Física' : c.tipo === 'pj' ? 'Pessoa Jurídica' : 'MEI';
-      const statusLabel = c.status === 'ativo' ? 'Ativo' : c.status === 'inativo' ? 'Inativo' : 'Bloqueado';
+      const typeLabel   = c.tipo==='pf' ? 'Pessoa Física' : c.tipo==='pj' ? 'Pessoa Jurídica' : 'MEI';
+      const statusLabel = c.status==='ativo' ? 'Ativo' : c.status==='inativo' ? 'Inativo' : 'Bloqueado';
+      const isCli       = currentSection === 'clientes';
+      const movLabel    = isCli ? 'Compras' : 'Pedidos';
+      const movVal      = isCli ? (c.compras||0)+' pedidos' : (c.pedidos||0)+' ordens';
+      const parteLabel  = isCli ? 'Vendedor' : 'Comprador';
 
       document.getElementById('dp-info').innerHTML = [
-        ['Tipo', typeLabel], ['Telefone', c.tel], ['E-mail', c.email || '—'],
-        ['Vendedor', c.vendedor || '—'], ['Grupo', c.grupo || '—'], ['Status', statusLabel],
-        ['Cadastro', c.cadastro], ['Compras', c.compras + ' pedidos']
-      ].map(([l, v]) => `<div class="dp-row"><span class="dp-label">${l}</span><span class="dp-val">${v}</span></div>`).join('');
+        ['Tipo',typeLabel],['Telefone',c.tel],['E-mail',c.email||'—'],
+        [parteLabel,c.vendedor||'—'],['Grupo',c.grupo||'—'],['Status',statusLabel],
+        ['Cadastro',c.cadastro],[movLabel,movVal]
+      ].map(([l,v])=>`<div class="dp-row"><span class="dp-label">${l}</span><span class="dp-val">${v}</span></div>`).join('');
 
-      const addr = [c.logradouro, c.numero, c.bairro, c.cidade, c.estado, c.cep].filter(Boolean).join(', ') || '—';
-      document.getElementById('dp-addr').innerHTML = `<div class="dp-row"><span class="dp-label">Endereço</span><span class="dp-val" style="max-width:200px;text-align:right">${addr}</span></div>`;
+      const addr = [c.logradouro,c.numero,c.bairro,c.cidade,c.estado,c.cep].filter(Boolean).join(', ')||'—';
+      document.getElementById('dp-addr').innerHTML =
+        `<div class="dp-row"><span class="dp-label">Endereço</span><span class="dp-val" style="max-width:200px;text-align:right">${addr}</span></div>`;
 
-      const limiteFormatado = c.limite ? 'R$ ' + fmt(parseFloat(c.limite) || 0) : '—';
+      const limFmt = c.limite ? 'R$ '+fmt(parseFloat(c.limite)||0) : '—';
       document.getElementById('dp-fin').innerHTML = [
-        ['Limite', limiteFormatado], ['Condição', c.condicao || '—']
-      ].map(([l, v]) => `<div class="dp-row"><span class="dp-label">${escapeHTML(l)}</span><span class="dp-val">${escapeHTML(v)}</span></div>`).join('');
+        ['Limite',limFmt],['Condição',c.condicao||'—']
+      ].map(([l,v])=>`<div class="dp-row"><span class="dp-label">${escapeHTML(l)}</span><span class="dp-val">${escapeHTML(v)}</span></div>`).join('');
 
       document.getElementById('detailPanel').classList.add('open');
     }
-    function closeDetail() {
-      document.getElementById('detailPanel').classList.remove('open');
-      currentDetailId = null;
-    }
-    function editClient() { if (currentDetailId) { closeDetail(); openEdit(currentDetailId); } }
+    function closeDetail() { document.getElementById('detailPanel').classList.remove('open'); currentDetailId=null; }
+    function editClient()  { if (currentDetailId) { closeDetail(); openEdit(currentDetailId); } }
 
     // ─── TIPO PESSOA ─────────────────────────────────────────
     function selectTipo(el, tipo) {
@@ -1249,68 +1363,65 @@ font-size: 17px;
       document.querySelectorAll('.radio-opt').forEach(o => o.classList.remove('sel'));
       el.classList.add('sel');
       const isPJ = tipo === 'pj';
-      document.getElementById('dados-title').textContent = isPJ ? 'Dados da Empresa' : 'Dados Pessoais';
-      document.getElementById('lbl-doc').textContent = isPJ ? 'CNPJ *' : 'CPF *';
-      document.getElementById('lbl-rg').textContent = isPJ ? 'Inscrição Estadual' : 'RG';
-      document.getElementById('f-cpf').placeholder = isPJ ? '00.000.000/0001-00' : '000.000.000-00';
-      document.getElementById('grp-nasc').style.display = isPJ ? 'none' : '';
+      document.getElementById('dados-title').textContent  = isPJ ? 'Dados da Empresa' : 'Dados Pessoais';
+      document.getElementById('lbl-doc').textContent      = isPJ ? 'CNPJ *' : 'CPF *';
+      document.getElementById('lbl-rg').textContent       = isPJ ? 'Inscrição Estadual' : 'RG';
+      document.getElementById('f-cpf').placeholder        = isPJ ? '00.000.000/0001-00' : '000.000.000-00';
+      document.getElementById('grp-nasc').style.display   = isPJ ? 'none' : '';
       document.getElementById('grp-genero').style.display = isPJ ? 'none' : '';
     }
 
     // ─── MASKS ───────────────────────────────────────────────
     function maskCPF(el) {
-      let v = el.value.replace(/\D/g, '');
-      if (tipoSel === 'pj' || tipoSel === 'mei') {
-        v = v.substring(0, 14);
-        if (v.length > 12) v = v.slice(0, 2) + '.' + v.slice(2, 5) + '.' + v.slice(5, 8) + '/' + v.slice(8, 12) + '-' + v.slice(12);
-        else if (v.length > 8) v = v.slice(0, 2) + '.' + v.slice(2, 5) + '.' + v.slice(5, 8) + '/' + v.slice(8);
-        else if (v.length > 5) v = v.slice(0, 2) + '.' + v.slice(2, 5) + '.' + v.slice(5);
-        else if (v.length > 2) v = v.slice(0, 2) + '.' + v.slice(2);
+      let v = el.value.replace(/\D/g,'');
+      if (tipoSel==='pj'||tipoSel==='mei') {
+        v=v.substring(0,14);
+        if(v.length>12) v=v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5,8)+'/'+v.slice(8,12)+'-'+v.slice(12);
+        else if(v.length>8) v=v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5,8)+'/'+v.slice(8);
+        else if(v.length>5) v=v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5);
+        else if(v.length>2) v=v.slice(0,2)+'.'+v.slice(2);
       } else {
-        v = v.substring(0, 11);
-        if (v.length > 9) v = v.slice(0, 3) + '.' + v.slice(3, 6) + '.' + v.slice(6, 9) + '-' + v.slice(9);
-        else if (v.length > 6) v = v.slice(0, 3) + '.' + v.slice(3, 6) + '.' + v.slice(6);
-        else if (v.length > 3) v = v.slice(0, 3) + '.' + v.slice(3);
+        v=v.substring(0,11);
+        if(v.length>9) v=v.slice(0,3)+'.'+v.slice(3,6)+'.'+v.slice(6,9)+'-'+v.slice(9);
+        else if(v.length>6) v=v.slice(0,3)+'.'+v.slice(3,6)+'.'+v.slice(6);
+        else if(v.length>3) v=v.slice(0,3)+'.'+v.slice(3);
       }
-      el.value = v;
+      el.value=v;
     }
     function maskDate(el) {
-      let v = el.value.replace(/\D/g, '').substring(0, 8);
-      if (v.length > 4) v = v.slice(0, 2) + '/' + v.slice(2, 4) + '/' + v.slice(4);
-      else if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
-      el.value = v;
+      let v=el.value.replace(/\D/g,'').substring(0,8);
+      if(v.length>4) v=v.slice(0,2)+'/'+v.slice(2,4)+'/'+v.slice(4);
+      else if(v.length>2) v=v.slice(0,2)+'/'+v.slice(2);
+      el.value=v;
     }
     function maskCurrency(el) {
-      let v = el.value.replace(/\D/g, '');
-      if (!v) { el.value = ''; return; }
-      v = (parseInt(v) / 100).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-      el.value = v;
+      let v=el.value.replace(/\D/g,'');
+      if(!v){el.value='';return;}
+      el.value=(parseInt(v)/100).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
     }
 
-    // ─── CEP API (ViaCEP) ────────────────────────────────────
+    // ─── CEP API ─────────────────────────────────────────────
     async function buscaCEP() {
-      const cep = document.getElementById('f-cep').value.replace(/\D/g, '');
-      if (cep.length !== 8) return;
-      document.getElementById('cep-loading').style.display = 'block';
+      const cep = document.getElementById('f-cep').value.replace(/\D/g,'');
+      if (cep.length!==8) return;
+      document.getElementById('cep-loading').style.display='block';
       try {
-        const r = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-        const d = await r.json();
-        if (!d.erro) {
-          document.getElementById('f-logradouro').value = d.logradouro || '';
-          document.getElementById('f-bairro').value = d.bairro || '';
-          document.getElementById('f-cidade').value = d.localidade || '';
-          setSelectVal('f-estado', d.uf);
+        const r=await fetch(`https://viacep.com.br/ws/${cep}/json/`), d=await r.json();
+        if(!d.erro){
+          document.getElementById('f-logradouro').value=d.logradouro||'';
+          document.getElementById('f-bairro').value=d.bairro||'';
+          document.getElementById('f-cidade').value=d.localidade||'';
+          setSelectVal('f-estado',d.uf);
           document.getElementById('f-numero').focus();
         }
-      } catch (e) { }
-      document.getElementById('cep-loading').style.display = 'none';
+      } catch(e){}
+      document.getElementById('cep-loading').style.display='none';
     }
 
-    // ─── TOAST ───────────────────────────────────────────────
-    // ─── SIDEBAR ─────────────────────────────────────────────
     // ─── INIT ─────────────────────────────────────────────────
     NexoAuth.renderCurrentUser();
-    renderTable();
+    filtered = [...clients];
+    applyFilters();
   </script>
 </body>
 

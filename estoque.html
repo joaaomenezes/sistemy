@@ -251,7 +251,7 @@
     }
 
     .stock-val {
-font-size: 14px;
+      font-size: 14px;
       font-weight: 800;
     }
 
@@ -323,7 +323,7 @@ font-size: 14px;
     }
 
     .mov-title {
-font-size: 15px;
+      font-size: 15px;
       font-weight: 700;
     }
 
@@ -400,7 +400,7 @@ font-size: 15px;
     }
 
     .mov-qty {
-font-size: 15px;
+      font-size: 15px;
       font-weight: 800;
       text-align: right;
     }
@@ -467,7 +467,7 @@ font-size: 15px;
     }
 
     .dep-name {
-font-size: 16px;
+      font-size: 16px;
       font-weight: 800;
       letter-spacing: -.3px;
       margin-bottom: 4px;
@@ -492,7 +492,7 @@ font-size: 16px;
     }
 
     .dep-stat-val {
-font-size: 18px;
+      font-size: 18px;
       font-weight: 800;
     }
 
@@ -501,8 +501,6 @@ font-size: 18px;
       font-size: 10px;
       margin-top: 2px;
     }
-
-    .modal-overlay.open
 
     /* tipo de movimentação */
     .mov-type-grid {
@@ -604,7 +602,7 @@ font-size: 18px;
       border: 1px solid var(--border);
       border-radius: 9px;
       color: var(--text);
-font-size: 22px;
+      font-size: 22px;
       font-weight: 800;
       text-align: center;
       outline: none;
@@ -658,7 +656,7 @@ font-size: 22px;
       border: 1px solid var(--border);
       background: none;
       color: var(--text);
-font-size: 14px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       transition: border-color .18s;
@@ -674,7 +672,7 @@ font-size: 14px;
       border: none;
       background: var(--accent);
       color: #021c14;
-font-size: 14px;
+      font-size: 14px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
@@ -685,20 +683,6 @@ font-size: 14px;
 
     .btn-save:hover {
       opacity: .88;
-    }
-
-    ::-webkit-scrollbar {
-      width: 4px;
-      height: 4px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: var(--border);
-      border-radius: 2px;
     }
 
     @media(max-width:1100px) {
@@ -725,10 +709,10 @@ font-size: 14px;
 
 <body>
 
- <!-- SIDEBAR -->
-<div id="sidebar-root"></div>
-<script src="sidebar.js"></script>
-  
+  <!-- SIDEBAR -->
+  <div id="sidebar-root"></div>
+  <script src="sidebar.js"></script>
+
   <!-- MAIN -->
   <div class="main collapsed" id="mainContent">
     <div class="topbar">
@@ -1053,13 +1037,13 @@ font-size: 14px;
     // STORAGE — lê/grava produtos compartilhados com produtos.html
     // ═══════════════════════════════════════════════
     const PRODUTOS_KEY = 'nexoerp.produtos';
-    const MOVS_KEY     = 'nexoerp.movimentacoes';
+    const MOVS_KEY = 'nexoerp.movimentacoes';
 
     function loadProducts() {
       try {
         const raw = localStorage.getItem(PRODUTOS_KEY);
         if (raw) return JSON.parse(raw);
-      } catch (_) {}
+      } catch (_) { }
       return [];
     }
 
@@ -1075,14 +1059,14 @@ font-size: 14px;
       try {
         const raw = localStorage.getItem(MOVS_KEY);
         if (raw) return JSON.parse(raw);
-      } catch (_) {}
+      } catch (_) { }
       return [];
     }
 
     function saveMovs() {
       try {
         localStorage.setItem(MOVS_KEY, JSON.stringify(movimentacoes));
-      } catch (_) {}
+      } catch (_) { }
     }
 
     // ═══════════════════════════════════════════════
@@ -1459,7 +1443,7 @@ font-size: 14px;
         deposito: dep,
         destino: movType === 'transferencia' ? document.getElementById('movDepDestino').value : '',
         motivo: obs || motivo,
-        operador: (NexoAuth.getSession()?.user?.name || 'Sistema').split(' ').slice(0,2).join(' '),
+        operador: (NexoAuth.getSession()?.user?.name || 'Sistema').split(' ').slice(0, 2).join(' '),
         data: dataStr,
       });
 
