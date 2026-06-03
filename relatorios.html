@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistemy — Relatórios</title>
+  <link rel="stylesheet" href="global.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <style>
+    /* ── Filtro de categorias ── */
+    .rel-cats {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .rel-cat-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all .18s;
+      white-space: nowrap;
+    }
+
+    .rel-cat-btn:hover { color: var(--text); border-color: var(--muted); }
+
+    .rel-cat-btn.active {
+      background: rgba(0, 200, 150, .08);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ── Grid de relatórios ── */
+    .rel-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .rel-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color .2s, transform .2s, box-shadow .2s;
+    }
+
+    .rel-card:hover {
+      border-color: rgba(0, 200, 150, .3);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0,0,0,.3);
+    }
+
+    .rel-card.hidden { display: none; }
+
+    .rel-card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .rel-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .rel-card-info { flex: 1; }
+
+    .rel-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -.2px;
+      margin-bottom: 5px;
+    }
+
+    .rel-card-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .rel-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .rel-tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 100px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .rel-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .rel-cat-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: var(--muted);
+    }
+
+    /* ── Histórico ── */
+    .hist-section-title {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -.3px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hist-empty {
+      text-align: center;
+      padding: 32px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* ── Modal ── */
+    .rel-modal-section {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .rel-period-btns {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .rel-period-btn {
+      padding: 6px 12px;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .rel-period-btn.active {
+      background: rgba(0,200,150,.1);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .rel-date-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .rel-filters-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .rel-fmt-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .rel-fmt-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all .15s;
+    }
+
+    .rel-fmt-btn.active {
+      border-color: var(--accent);
+      background: rgba(0,200,150,.08);
+      color: var(--accent);
+    }
+
+    .rel-fmt-btn.disabled {
+      opacity: .35;
+      cursor: not-allowed;
+    }
+
+    .btn-generate {
+      padding: 11px 24px;
+      border-radius: 9px;
+      border: none;
+      background: var(--accent);
+      color: #021c14;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: opacity .18s;
+    }
+
+    .btn-generate:hover { opacity: .88; }
+
+    @media(max-width:900px) {
+      .rel-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-root"></div>
+  <script src="sidebar.js"></script>
+
+  <!-- MAIN -->
+  <div class="main collapsed" id="mainContent">
+    <div class="topbar">
+      <div class="topbar-left">
+        <span class="page-title">Relatórios</span>
+        <span style="color:var(--muted);font-size:12px">/</span>
+        <span style="color:var(--muted);font-size:13px" id="topbarSub">Todos</span>
+      </div>
+      <div class="topbar-right">
+        <div class="icon-btn"><i class="bi bi-bell"></i></div>
+        <div class="icon-btn"><i class="bi bi-question-circle"></i></div>
+        <div class="user-avatar">JD</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div class="page-header">
+        <div>
+          <h1>Relatórios</h1>
+          <p>Gere e exporte relatórios de vendas, estoque, produtos e financeiro.</p>
+        </div>
+      </div>
+
+      <!-- Filtro de categorias -->
+      <div class="rel-cats" id="relCats"></div>
+
+      <!-- Grid de relatórios -->
+      <div class="rel-grid" id="relGrid"></div>
+      <div class="pagination" id="relPagination" style="justify-content:center;margin-bottom:32px"></div>
+
+      <!-- Histórico -->
+      <div class="hist-section-title">
+        <i class="bi bi-clock-history" style="color:var(--accent)"></i>
+        Relatórios Gerados
+      </div>
+      <div class="table-card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Relatório</th>
+                <th>Categoria</th>
+                <th>Período</th>
+                <th>Gerado em</th>
+                <th>Formato</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="histBody"></tbody>
+          </table>
+          <div class="empty-state" id="histEmpty">
+            <i class="bi bi-graph-up-arrow" style="font-size:40px;color:var(--border);display:block;margin-bottom:12px"></i>
+            <h3>Nenhum relatório gerado</h3>
+            <p>Configure e gere um relatório para ele aparecer aqui.</p>
+          </div>
+        </div>
+        <div class="table-footer">
+          <span id="histInfo">—</span>
+          <button class="btn-sm btn-ghost-sm" id="btnLimparHist" onclick="limparHistorico()" style="display:none">
+            <i class="bi bi-trash3"></i> Limpar histórico
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL CONFIGURAR RELATÓRIO -->
+  <div class="modal-overlay" id="relModalOverlay" onclick="if(event.target===this)closeRelModal()">
+    <div class="modal" style="max-width:520px">
+      <div class="modal-header">
+        <div>
+          <h2 id="relModalTitle">Gerar Relatório</h2>
+          <div style="color:var(--muted);font-size:12px;margin-top:2px">Configure os parâmetros antes de gerar</div>
+        </div>
+        <div class="modal-close" onclick="closeRelModal()"><i class="bi bi-x-lg"></i></div>
+      </div>
+      <div class="modal-body">
+
+        <div class="rel-modal-section">Período</div>
+        <div class="rel-period-btns" id="relPeriodBtns">
+          <button class="rel-period-btn" onclick="setRelPeriod(this,'today')">Hoje</button>
+          <button class="rel-period-btn" onclick="setRelPeriod(this,'week')">Esta semana</button>
+          <button class="rel-period-btn active" onclick="setRelPeriod(this,'month')">Este mês</button>
+          <button class="rel-period-btn" onclick="setRelPeriod(this,'quarter')">Trimestre</button>
+          <button class="rel-period-btn" onclick="setRelPeriod(this,'year')">Este ano</button>
+        </div>
+        <div class="rel-date-row">
+          <div>
+            <label class="lbl">De</label>
+            <div class="inp-wrap"><i class="bi bi-calendar pre"></i>
+              <input class="field" type="date" id="rel-dp-start">
+            </div>
+          </div>
+          <div>
+            <label class="lbl">Até</label>
+            <div class="inp-wrap"><i class="bi bi-calendar pre"></i>
+              <input class="field" type="date" id="rel-dp-end">
+            </div>
+          </div>
+        </div>
+
+        <div id="relFiltrosExtra" style="display:none">
+          <div class="rel-modal-section" style="margin-top:4px">Filtros</div>
+          <div class="rel-filters-wrap" id="relFiltrosWrap"></div>
+        </div>
+
+        <div style="margin-top:16px">
+          <div class="rel-modal-section">Formato</div>
+          <div class="rel-fmt-row">
+            <button class="rel-fmt-btn active" id="fmt-csv" onclick="setFmt('csv')">
+              <i class="bi bi-filetype-csv"></i> CSV
+            </button>
+            <button class="rel-fmt-btn disabled" title="Disponível em breve">
+              <i class="bi bi-file-earmark-pdf"></i> PDF <span style="font-size:9px;margin-left:4px;opacity:.6">Em breve</span>
+            </button>
+            <button class="rel-fmt-btn disabled" title="Disponível em breve">
+              <i class="bi bi-file-earmark-excel"></i> Excel <span style="font-size:9px;margin-left:4px;opacity:.6">Em breve</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <div style="color:var(--muted);font-size:12px">Os dados são lidos em tempo real.</div>
+        <div style="display:flex;gap:10px">
+          <button class="btn-sm btn-ghost-sm" onclick="closeRelModal()">Cancelar</button>
+          <button class="btn-generate" onclick="gerarRelatorio()"><i class="bi bi-download"></i> Gerar e Baixar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"><i class="bi bi-check-circle-fill"></i><span id="toastMsg">—</span></div>
+
+  <script src="utils.js"></script>
+  <script src="auth.js"></script>
+  <script>
+    NexoAuth.requireAuth();
+
+    // ── Storage keys ──────────────────────────────────────────
+    const KEYS = {
+      produtos:    'nexoerp.produtos',
+      movs:        'nexoerp.movimentacoes',
+      pdvVendas:   'nexoerp.pdv.vendas',
+      pedVendas:   'nexoerp.vendas',
+      financeiro:  'nexoerp.financeiro',
+      custos:      'nexoerp.custos',
+      historico:   'nexoerp.relatorios.historico',
+    };
+
+    function load(key) {
+      try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : []; } catch(_) { return []; }
+    }
+
+    // ── Catálogo de relatórios ────────────────────────────────
+    const CAT_LABELS = { vendas:'Vendas', estoque:'Estoque', produtos:'Produtos', financeiro:'Financeiro' };
+    const CAT_COLORS = { vendas:'#00c896', estoque:'#ff6b35', produtos:'#0077ff', financeiro:'#a855f7' };
+
+    const REPORTS = [
+      {
+        id: 'vendas-historico', cat: 'vendas',
+        titulo: 'Histórico de Vendas',
+        desc: 'Todas as vendas realizadas no período com status, método de pagamento e operador.',
+        icon: 'bi-receipt', cor: '#00c896',
+        tags: ['PDV', 'Pedidos'],
+        filtros: [
+          { id: 'rf-status',  label: 'Status',  opts: ['Todos', 'concluida', 'estornada', 'cancelada'] },
+          { id: 'rf-metodo',  label: 'Método',  opts: ['Todos', 'dinheiro', 'pix', 'credito', 'debito', 'multiplo'] },
+          { id: 'rf-fonte',   label: 'Fonte',   opts: ['Todos', 'PDV', 'Pedidos de Venda'] },
+        ],
+      },
+      {
+        id: 'vendas-ranking', cat: 'vendas',
+        titulo: 'Produtos Mais Vendidos',
+        desc: 'Ranking de produtos por quantidade vendida e faturamento no período.',
+        icon: 'bi-trophy-fill', cor: '#f59e0b',
+        tags: ['PDV', 'Pedidos'],
+        filtros: [],
+      },
+      {
+        id: 'vendas-ticket', cat: 'vendas',
+        titulo: 'Ticket Médio',
+        desc: 'Resumo do ticket médio e faturamento total das vendas concluídas.',
+        icon: 'bi-graph-up-arrow', cor: '#0077ff',
+        tags: ['PDV'],
+        filtros: [],
+      },
+      {
+        id: 'estoque-posicao', cat: 'estoque',
+        titulo: 'Posição de Estoque',
+        desc: 'Saldo atual de todos os produtos com localização, mínimos e valor em estoque.',
+        icon: 'bi-boxes', cor: '#00c896',
+        tags: ['Todos os produtos'],
+        filtros: [
+          { id: 'rf-cat-est', label: 'Categoria', opts: ['Todas', ...getCategorias()] },
+        ],
+      },
+      {
+        id: 'estoque-critico', cat: 'estoque',
+        titulo: 'Estoque Crítico',
+        desc: 'Produtos zerados ou abaixo do estoque mínimo configurado.',
+        icon: 'bi-exclamation-triangle-fill', cor: '#ff6b35',
+        tags: ['Alertas'],
+        filtros: [],
+      },
+      {
+        id: 'estoque-movs', cat: 'estoque',
+        titulo: 'Movimentações de Estoque',
+        desc: 'Histórico de entradas, saídas e ajustes no período selecionado.',
+        icon: 'bi-arrow-left-right', cor: '#a855f7',
+        tags: ['Entradas', 'Saídas', 'Ajustes'],
+        filtros: [
+          { id: 'rf-tipo-mov', label: 'Tipo', opts: ['Todos', 'entrada', 'saida', 'ajuste', 'transferencia'] },
+        ],
+      },
+      {
+        id: 'produtos-catalogo', cat: 'produtos',
+        titulo: 'Catálogo de Produtos',
+        desc: 'Lista completa com preço de venda, custo, margem e estoque atual.',
+        icon: 'bi-box-seam-fill', cor: '#00c896',
+        tags: ['Completo'],
+        filtros: [
+          { id: 'rf-status-prod', label: 'Status', opts: ['Todos', 'ativo', 'inativo'] },
+        ],
+      },
+      {
+        id: 'produtos-margem', cat: 'produtos',
+        titulo: 'Análise de Margem',
+        desc: 'Margem de lucro por produto, ordenada do maior para o menor retorno.',
+        icon: 'bi-percent', cor: '#0077ff',
+        tags: ['Financeiro'],
+        filtros: [],
+      },
+      {
+        id: 'fin-fluxo', cat: 'financeiro',
+        titulo: 'Fluxo de Caixa',
+        desc: 'Entradas, saídas e saldo de caixa no período selecionado.',
+        icon: 'bi-bar-chart-line-fill', cor: '#00c896',
+        tags: ['Caixa'],
+        filtros: [],
+      },
+      {
+        id: 'fin-pagar', cat: 'financeiro',
+        titulo: 'Contas a Pagar',
+        desc: 'Listagem de despesas por vencimento, categoria e status.',
+        icon: 'bi-arrow-up-circle-fill', cor: '#ff4757',
+        tags: ['Despesas'],
+        filtros: [
+          { id: 'rf-status-fin', label: 'Status', opts: ['Todos', 'pendente', 'pago', 'vencido'] },
+        ],
+      },
+      {
+        id: 'fin-receber', cat: 'financeiro',
+        titulo: 'Contas a Receber',
+        desc: 'Receitas e duplicatas previstas com datas de vencimento.',
+        icon: 'bi-arrow-down-circle-fill', cor: '#a855f7',
+        tags: ['Receitas'],
+        filtros: [
+          { id: 'rf-status-rec', label: 'Status', opts: ['Todos', 'pendente', 'recebido', 'vencido'] },
+        ],
+      },
+      {
+        id: 'fin-dre', cat: 'financeiro',
+        titulo: 'DRE',
+        desc: 'Demonstrativo de resultado: receita total, despesas e lucro líquido.',
+        icon: 'bi-file-earmark-bar-graph-fill', cor: '#0077ff',
+        tags: ['Gerencial'],
+        filtros: [],
+      },
+      {
+        id: 'fin-custos', cat: 'financeiro',
+        titulo: 'Centro de Custos Operacionais',
+        desc: 'Distribuição de custos operacionais por categoria no período selecionado.',
+        icon: 'bi-diagram-3-fill', cor: '#f59e0b',
+        tags: ['Custos Operacionais'],
+        filtros: [],
+      },
+      {
+        id: 'fin-despesas', cat: 'financeiro',
+        titulo: 'Centro de Despesas Operacionais',
+        desc: 'Distribuição de despesas operacionais por categoria no período selecionado.',
+        icon: 'bi-diagram-3-fill', cor: '#a855f7',
+        tags: ['Despesas Operacionais'],
+        filtros: [],
+      },
+    ];
+
+    function getCategorias() {
+      try {
+        const cats = localStorage.getItem('nexoerp.categorias');
+        return cats ? JSON.parse(cats) : [];
+      } catch(_) { return []; }
+    }
+
+    // ── Estado ───────────────────────────────────────────────
+    let currentCat    = 'todos';
+    let currentReport = null;
+    let historico     = load(KEYS.historico);
+    let relPage       = 1;
+    const relPerPage  = 12;
+
+    // ── Render categorias ────────────────────────────────────
+    function renderCats() {
+      const cats = ['todos', 'vendas', 'estoque', 'produtos', 'financeiro'];
+      const labels = { todos: 'Todos', ...CAT_LABELS };
+      const icons  = { todos:'bi-grid-fill', vendas:'bi-receipt', estoque:'bi-stack', produtos:'bi-box-seam', financeiro:'bi-currency-dollar' };
+      document.getElementById('relCats').innerHTML = cats.map(c =>
+        `<button class="rel-cat-btn ${c === currentCat ? 'active' : ''}" onclick="setCat('${c}')">
+          <i class="bi ${icons[c]}"></i> ${labels[c]}
+        </button>`
+      ).join('');
+    }
+
+    function setCat(cat) {
+      currentCat = cat;
+      relPage = 1;
+      document.getElementById('topbarSub').textContent = cat === 'todos' ? 'Todos' : CAT_LABELS[cat];
+      renderCats();
+      renderCards();
+    }
+
+    // ── Render cards ─────────────────────────────────────────
+    function renderCards() {
+      const filtered = currentCat === 'todos' ? REPORTS : REPORTS.filter(r => r.cat === currentCat);
+      const total    = filtered.length;
+      const pages    = Math.ceil(total / relPerPage);
+      if (relPage > pages) relPage = Math.max(1, pages);
+      const start = (relPage - 1) * relPerPage;
+      const slice = filtered.slice(start, start + relPerPage);
+
+      document.getElementById('relGrid').innerHTML = slice.map(r => {
+        const catColor = CAT_COLORS[r.cat];
+        return `<div class="rel-card" data-cat="${r.cat}" data-id="${r.id}">
+          <div class="rel-card-top">
+            <div class="rel-card-icon" style="background:${r.cor}18;color:${r.cor}">
+              <i class="bi ${r.icon}"></i>
+            </div>
+            <div class="rel-card-info">
+              <div class="rel-card-title">${r.titulo}</div>
+              <div class="rel-card-desc">${r.desc}</div>
+            </div>
+          </div>
+          <div class="rel-tags">
+            ${r.tags.map(t => `<span class="rel-tag">${t}</span>`).join('')}
+          </div>
+          <div class="rel-card-footer">
+            <span class="rel-cat-label" style="color:${catColor}">${CAT_LABELS[r.cat]}</span>
+            <button class="btn-sm btn-primary-sm" onclick="openRelModal('${r.id}')">
+              <i class="bi bi-play-fill"></i> Gerar
+            </button>
+          </div>
+        </div>`;
+      }).join('');
+
+      // paginação
+      const pg = document.getElementById('relPagination');
+      if (pages <= 1) { pg.innerHTML = ''; return; }
+      let h = `<button class="pg-btn" onclick="relGoPage(${relPage-1})" ${relPage===1?'disabled':''}><i class="bi bi-chevron-left"></i></button>`;
+      for (let i = 1; i <= pages; i++)
+        h += `<button class="pg-btn ${i===relPage?'active':''}" onclick="relGoPage(${i})">${i}</button>`;
+      h += `<button class="pg-btn" onclick="relGoPage(${relPage+1})" ${relPage===pages?'disabled':''}><i class="bi bi-chevron-right"></i></button>`;
+      pg.innerHTML = h;
+    }
+
+    function relGoPage(p) {
+      const filtered = currentCat === 'todos' ? REPORTS : REPORTS.filter(r => r.cat === currentCat);
+      const pages = Math.ceil(filtered.length / relPerPage);
+      if (p < 1 || p > pages) return;
+      relPage = p;
+      renderCards();
+      document.getElementById('relGrid').scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+
+    // ── Modal ────────────────────────────────────────────────
+    function openRelModal(id) {
+      currentReport = REPORTS.find(r => r.id === id);
+      if (!currentReport) return;
+
+      document.getElementById('relModalTitle').textContent = currentReport.titulo;
+
+      // datas padrão: este mês
+      const hoje = new Date();
+      const ini  = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+      document.getElementById('rel-dp-start').value = ini.toISOString().slice(0, 10);
+      document.getElementById('rel-dp-end').value   = hoje.toISOString().slice(0, 10);
+
+      // reset period buttons
+      document.querySelectorAll('.rel-period-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.rel-period-btn')[2].classList.add('active');
+
+      // filtros dinâmicos
+      const wrap = document.getElementById('relFiltrosWrap');
+      const extra = document.getElementById('relFiltrosExtra');
+      if (currentReport.filtros.length) {
+        wrap.innerHTML = currentReport.filtros.map(f => `
+          <div class="form-group">
+            <label class="lbl">${f.label}</label>
+            <div class="inp-wrap"><i class="bi bi-funnel pre"></i>
+              <select class="field" id="${f.id}">
+                ${f.opts.map(o => `<option value="${o}">${o}</option>`).join('')}
+              </select>
+            </div>
+          </div>`).join('');
+        extra.style.display = 'block';
+      } else {
+        wrap.innerHTML = '';
+        extra.style.display = 'none';
+      }
+
+      // reset formato
+      document.getElementById('fmt-csv').classList.add('active');
+
+      document.getElementById('relModalOverlay').classList.add('open');
+    }
+
+    function closeRelModal() {
+      document.getElementById('relModalOverlay').classList.remove('open');
+    }
+
+    function setRelPeriod(el, tipo) {
+      document.querySelectorAll('.rel-period-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      const hoje = new Date();
+      let ini = new Date(hoje);
+      if (tipo === 'today')   { ini = new Date(hoje); }
+      if (tipo === 'week')    { ini = new Date(hoje); ini.setDate(hoje.getDate() - hoje.getDay()); }
+      if (tipo === 'month')   { ini = new Date(hoje.getFullYear(), hoje.getMonth(), 1); }
+      if (tipo === 'quarter') { const q = Math.floor(hoje.getMonth()/3); ini = new Date(hoje.getFullYear(), q*3, 1); }
+      if (tipo === 'year')    { ini = new Date(hoje.getFullYear(), 0, 1); }
+      document.getElementById('rel-dp-start').value = ini.toISOString().slice(0, 10);
+      document.getElementById('rel-dp-end').value   = hoje.toISOString().slice(0, 10);
+    }
+
+    function setFmt(fmt) {
+      document.querySelectorAll('.rel-fmt-btn:not(.disabled)').forEach(b => b.classList.remove('active'));
+      document.getElementById(`fmt-${fmt}`)?.classList.add('active');
+    }
+
+    // ── Helpers ──────────────────────────────────────────────
+    function getDateRange() {
+      const s = document.getElementById('rel-dp-start').value;
+      const e = document.getElementById('rel-dp-end').value;
+      return {
+        start: s ? new Date(s) : null,
+        end:   e ? new Date(e + 'T23:59:59') : null,
+        label: s && e ? `${fmtDate(s)} – ${fmtDate(e)}` : 'Todos os períodos',
+      };
+    }
+
+    function fmtDate(iso) {
+      const [y,m,d] = iso.split('-'); return `${d}/${m}/${y}`;
+    }
+
+    function filterByPeriod(lista, dr) {
+      if (!dr.start && !dr.end) return lista;
+      return lista.filter(item => {
+        const raw = item.dataISO || item.data || item.venc || '';
+        const d = raw.includes('/') ? parseBR(raw) : new Date(raw);
+        if (isNaN(d)) return true;
+        if (dr.start && d < dr.start) return false;
+        if (dr.end   && d > dr.end)   return false;
+        return true;
+      });
+    }
+
+    function parseBR(str) {
+      const [d,m,y] = str.split('/'); return new Date(`${y}-${m}-${d}`);
+    }
+
+    function fmtVal(v) {
+      return 'R$ ' + (v||0).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+    }
+
+    function downloadCSV(filename, rows) {
+      const csv = rows.map(r => r.map(c => `"${String(c==null?'—':c).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob(['﻿'+csv], { type:'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // ── Geração ──────────────────────────────────────────────
+    function gerarRelatorio() {
+      if (!currentReport) return;
+      const dr    = getDateRange();
+      const today = new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
+
+      switch(currentReport.id) {
+
+        case 'vendas-historico': {
+          const filtroStatus = document.getElementById('rf-status')?.value || 'Todos';
+          const filtroMetodo = document.getElementById('rf-metodo')?.value || 'Todos';
+          const filtroFonte  = document.getElementById('rf-fonte')?.value  || 'Todos';
+          let vendas = [];
+          if (filtroFonte !== 'Pedidos de Venda') vendas = vendas.concat(load(KEYS.pdvVendas).map(v=>({...v,fonte:'PDV'})));
+          if (filtroFonte !== 'PDV')              vendas = vendas.concat(load(KEYS.pedVendas).map(v=>({...v,fonte:'Pedidos'})));
+          vendas = filterByPeriod(vendas, dr);
+          if (filtroStatus !== 'Todos') vendas = vendas.filter(v => v.status === filtroStatus);
+          if (filtroMetodo !== 'Todos') vendas = vendas.filter(v => v.metodo === filtroMetodo);
+          const h = ['Nº Venda','Cliente','Operador','Método','Subtotal','Desconto','Total','Status','Data','Hora','Fonte'];
+          downloadCSV(`vendas_historico_${today}.csv`, [h, ...vendas.map(v=>[v.id,v.cliente,v.operador,v.metodo,fmtVal(v.subtotal),fmtVal(v.desconto),fmtVal(v.total),v.status,v.dataStr,v.horaStr,v.fonte])]);
+          break;
+        }
+
+        case 'vendas-ranking': {
+          let vendas = [...load(KEYS.pdvVendas), ...load(KEYS.pedVendas)];
+          vendas = filterByPeriod(vendas, dr).filter(v => v.status === 'concluida');
+          const rank = {};
+          vendas.forEach(v => (v.itens||[]).forEach(item => {
+            if (!rank[item.nome]) rank[item.nome] = { nome:item.nome, qty:0, total:0 };
+            rank[item.nome].qty   += item.qty   || 1;
+            rank[item.nome].total += item.subtotal || 0;
+          }));
+          const sorted = Object.values(rank).sort((a,b) => b.qty - a.qty);
+          downloadCSV(`ranking_produtos_${today}.csv`, [['Produto','Qtd Vendida','Faturamento'], ...sorted.map(r=>[r.nome, r.qty, fmtVal(r.total)])]);
+          break;
+        }
+
+        case 'vendas-ticket': {
+          let vendas = [...load(KEYS.pdvVendas), ...load(KEYS.pedVendas)];
+          vendas = filterByPeriod(vendas, dr).filter(v => v.status === 'concluida');
+          const totalFat = vendas.reduce((s,v) => s+(v.total||0), 0);
+          const ticket   = vendas.length ? totalFat/vendas.length : 0;
+          downloadCSV(`ticket_medio_${today}.csv`, [
+            ['Período','Total de Vendas','Faturamento','Ticket Médio'],
+            [dr.label, vendas.length, fmtVal(totalFat), fmtVal(ticket)],
+          ]);
+          break;
+        }
+
+        case 'estoque-posicao': {
+          let produtos = load(KEYS.produtos);
+          const catF = document.getElementById('rf-cat-est')?.value || 'Todas';
+          if (catF !== 'Todas') produtos = produtos.filter(p => p.cat === catF);
+          const h = ['SKU','Nome','Categoria','Unidade','Estoque Atual','Estoque Mín.','Preço Venda','Custo','Valor em Estoque','Depósito','Status'];
+          downloadCSV(`posicao_estoque_${today}.csv`, [h, ...produtos.map(p=>[
+            p.sku, p.nome, p.cat, p.unidade, p.estoque, p.estoqueMin,
+            fmtVal(p.preco), fmtVal(p.custo), fmtVal((p.estoque||0)*(p.custo||0)),
+            p.deposito, p.status,
+          ])]);
+          break;
+        }
+
+        case 'estoque-critico': {
+          const criticos = load(KEYS.produtos).filter(p => p.estoque <= (p.estoqueMin||0));
+          const h = ['SKU','Nome','Categoria','Estoque Atual','Estoque Mín.','Situação','Fornecedor'];
+          downloadCSV(`estoque_critico_${today}.csv`, [h, ...criticos.map(p=>[
+            p.sku, p.nome, p.cat, p.estoque, p.estoqueMin,
+            p.estoque === 0 ? 'Zerado' : 'Abaixo do mínimo',
+            p.fornecedor || '—',
+          ])]);
+          break;
+        }
+
+        case 'estoque-movs': {
+          let movs = filterByPeriod(load(KEYS.movs), dr);
+          const tipoF = document.getElementById('rf-tipo-mov')?.value || 'Todos';
+          if (tipoF !== 'Todos') movs = movs.filter(m => m.tipo === tipoF);
+          const h = ['Data','Produto','Tipo','Quantidade','Depósito Origem','Depósito Destino','Operador','Observação'];
+          downloadCSV(`movimentacoes_${today}.csv`, [h, ...movs.map(m=>[
+            m.dataStr||m.data||'—', m.produto||'—', m.tipo, m.quantidade,
+            m.depositoOrigem||'—', m.depositoDestino||'—', m.operador||'—', m.obs||'—',
+          ])]);
+          break;
+        }
+
+        case 'produtos-catalogo': {
+          let produtos = load(KEYS.produtos);
+          const stF = document.getElementById('rf-status-prod')?.value || 'Todos';
+          if (stF !== 'Todos') produtos = produtos.filter(p => p.status === stF);
+          const h = ['SKU','EAN','Nome','Categoria','Marca','Unidade','Preço Venda','Custo','Margem %','Estoque','Status','Cadastro'];
+          downloadCSV(`catalogo_${today}.csv`, [h, ...produtos.map(p=>{
+            const mg = p.preco>0&&p.custo>0 ? ((p.preco-p.custo)/p.preco*100).toFixed(1)+'%' : '—';
+            return [p.sku,p.ean||'—',p.nome,p.cat,p.marca||'—',p.unidade,fmtVal(p.preco),fmtVal(p.custo),mg,p.estoque,p.status,p.cadastro||'—'];
+          })]);
+          break;
+        }
+
+        case 'produtos-margem': {
+          const produtos = load(KEYS.produtos).filter(p=>p.preco>0&&p.custo>0)
+            .sort((a,b)=>((b.preco-b.custo)/b.preco)-((a.preco-a.custo)/a.preco));
+          const h = ['Nome','Categoria','Preço Venda','Custo','Margem R$','Margem %'];
+          downloadCSV(`margem_${today}.csv`, [h, ...produtos.map(p=>{
+            const mgR = p.preco-p.custo;
+            return [p.nome, p.cat, fmtVal(p.preco), fmtVal(p.custo), fmtVal(mgR), (mgR/p.preco*100).toFixed(1)+'%'];
+          })]);
+          break;
+        }
+
+        case 'fin-fluxo': {
+          const lancamentos = filterByPeriod(load(KEYS.financeiro), dr);
+          const h = ['Data','Descrição','Tipo','Categoria','Valor','Status'];
+          downloadCSV(`fluxo_caixa_${today}.csv`, [h, ...lancamentos.map(l=>[l.venc||'—',l.desc||'—',l.tipo||'—',l.categ||'—',fmtVal(l.valor),l.status||'—'])]);
+          break;
+        }
+
+        case 'fin-pagar': {
+          let desp = filterByPeriod(load(KEYS.financeiro).filter(l=>l.tipo==='despesa'), dr);
+          const stF = document.getElementById('rf-status-fin')?.value || 'Todos';
+          if (stF !== 'Todos') desp = desp.filter(l => l.status === stF);
+          downloadCSV(`contas_pagar_${today}.csv`, [['Vencimento','Descrição','Categoria','Valor','Status'], ...desp.map(l=>[l.venc,l.desc,l.categ,fmtVal(l.valor),l.status||'—'])]);
+          break;
+        }
+
+        case 'fin-receber': {
+          let rec = filterByPeriod(load(KEYS.financeiro).filter(l=>l.tipo==='receita'), dr);
+          const stF = document.getElementById('rf-status-rec')?.value || 'Todos';
+          if (stF !== 'Todos') rec = rec.filter(l => l.status === stF);
+          downloadCSV(`contas_receber_${today}.csv`, [['Vencimento','Descrição','Categoria','Valor','Status'], ...rec.map(l=>[l.venc,l.desc,l.categ,fmtVal(l.valor),l.status||'—'])]);
+          break;
+        }
+
+        case 'fin-dre': {
+          const lancs   = filterByPeriod(load(KEYS.financeiro), dr);
+          const receitas = lancs.filter(l=>l.tipo==='receita').reduce((s,l)=>s+(l.valor||0),0);
+          const despesas = lancs.filter(l=>l.tipo==='despesa').reduce((s,l)=>s+(l.valor||0),0);
+          const resultado = receitas - despesas;
+          downloadCSV(`dre_${today}.csv`, [
+            ['Descrição','Valor'],
+            ['Receita Total', fmtVal(receitas)],
+            ['Despesas Totais', fmtVal(despesas)],
+            ['Resultado Líquido', fmtVal(resultado)],
+            ['Margem Líquida', receitas>0 ? (resultado/receitas*100).toFixed(1)+'%' : '—'],
+          ]);
+          break;
+        }
+
+        case 'fin-custos': {
+          const custos = filterByPeriod(load(KEYS.custos), dr).filter(c=>(c.tipo||'custo')==='custo');
+          downloadCSV(`custos_operacionais_${today}.csv`, [
+            ['Data','Descrição','Categoria','Fornecedor','Valor','Observação'],
+            ...custos.map(c=>[c.data||'—',c.desc,c.categoria,c.fornecedor||'—',fmtVal(c.valor),c.obs||'—']),
+          ]);
+          break;
+        }
+
+        case 'fin-despesas': {
+          const despesas = filterByPeriod(load(KEYS.custos), dr).filter(c=>(c.tipo||'custo')==='despesa');
+          downloadCSV(`despesas_operacionais_${today}.csv`, [
+            ['Data','Descrição','Categoria','Fornecedor','Valor','Observação'],
+            ...despesas.map(c=>[c.data||'—',c.desc,c.categoria,c.fornecedor||'—',fmtVal(c.valor),c.obs||'—']),
+          ]);
+          break;
+        }
+
+        default: showToast('Relatório não implementado.'); return;
+      }
+
+      addToHistory(currentReport.titulo, currentReport.cat, dr.label);
+      closeRelModal();
+      showToast(`✅ ${currentReport.titulo} gerado com sucesso!`);
+    }
+
+    // ── Histórico ────────────────────────────────────────────
+    function addToHistory(titulo, cat, periodo) {
+      const now = new Date();
+      historico.unshift({
+        titulo, cat,
+        periodo,
+        data: now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' }),
+        formato: 'CSV',
+      });
+      if (historico.length > 50) historico.pop();
+      localStorage.setItem(KEYS.historico, JSON.stringify(historico));
+      renderHistorico();
+    }
+
+    function renderHistorico() {
+      const body  = document.getElementById('histBody');
+      const empty = document.getElementById('histEmpty');
+      const info  = document.getElementById('histInfo');
+      const btnL  = document.getElementById('btnLimparHist');
+
+      if (!historico.length) {
+        body.innerHTML = '';
+        empty.classList.add('show');
+        info.textContent = '—';
+        btnL.style.display = 'none';
+        return;
+      }
+
+      empty.classList.remove('show');
+      btnL.style.display = 'flex';
+      info.textContent = `${historico.length} relatório${historico.length!==1?'s':''} gerado${historico.length!==1?'s':''}`;
+
+      body.innerHTML = historico.map((r, i) => `
+        <tr>
+          <td style="font-weight:600;font-size:13px">${escapeHTML(r.titulo)}</td>
+          <td><span class="status-pill ativo" style="background:${CAT_COLORS[r.cat]}18;color:${CAT_COLORS[r.cat]}">${CAT_LABELS[r.cat]||r.cat}</span></td>
+          <td style="color:var(--muted);font-size:12px">${escapeHTML(r.periodo)}</td>
+          <td style="color:var(--muted);font-size:12px">${escapeHTML(r.data)}</td>
+          <td><span style="font-size:11px;font-weight:700;color:var(--accent)">CSV</span></td>
+          <td><div class="action-cell">
+            <div class="act-btn danger" onclick="removerHistorico(${i})" title="Remover"><i class="bi bi-trash3"></i></div>
+          </div></td>
+        </tr>`).join('');
+    }
+
+    function removerHistorico(i) {
+      historico.splice(i, 1);
+      localStorage.setItem(KEYS.historico, JSON.stringify(historico));
+      renderHistorico();
+    }
+
+    function limparHistorico() {
+      historico = [];
+      localStorage.removeItem(KEYS.historico);
+      renderHistorico();
+      showToast('Histórico limpo.');
+    }
+
+    // ── Init ─────────────────────────────────────────────────
+    NexoAuth.renderCurrentUser();
+    renderCats();
+    renderCards();
+    renderHistorico();
+  </script>
+</body>
+
+</html>

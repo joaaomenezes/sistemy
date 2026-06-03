@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
@@ -602,136 +602,6 @@ font-size: 13px;
       }
     }
 
-    /* ── Modal Gerar Relatório ── */
-    .rel-chip {
-      padding: 6px 14px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: none;
-      color: var(--sub);
-      font-size: 12px;
-      font-weight: 600;
-cursor: pointer;
-      transition: all .15s;
-      white-space: nowrap;
-    }
-
-    .rel-chip:hover {
-      border-color: var(--border-h);
-      color: var(--text);
-    }
-
-    .rel-chip.active {
-      background: rgba(0, 208, 132, .1);
-      border-color: rgba(0, 208, 132, .35);
-      color: var(--accent);
-    }
-
-    .rel-format-opt {
-      cursor: pointer;
-    }
-
-    .rel-format-opt input {
-      display: none;
-    }
-
-    .rel-format-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      padding: 14px 22px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: rgba(255, 255, 255, .02);
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--sub);
-      transition: all .15s;
-      cursor: pointer;
-      min-width: 90px;
-    }
-
-    .rel-format-card:hover {
-      border-color: var(--border-h);
-      color: var(--text);
-    }
-
-    .rel-format-card.active {
-      border-color: var(--accent);
-      background: rgba(0, 208, 132, .07);
-      color: var(--text);
-    }
-
-    .rel-filtro-select {
-      width: 100%;
-      padding: 9px 12px;
-      background: rgba(255, 255, 255, .03);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-font-size: 13px;
-      outline: none;
-      cursor: pointer;
-      -webkit-appearance: none;
-      appearance: none;
-      transition: border-color .2s;
-    }
-
-    .rel-filtro-select:focus {
-      border-color: var(--accent);
-    }
-
-    .rel-filtro-select option {
-      background: var(--card);
-    }
-
-    #relCustomPeriod.visible {
-      display: grid !important;
-    }
-
-    /* ── Relatórios — cards e botões ── */
-    .rcard {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      transition: border-color .2s, transform .2s;
-    }
-
-    .rcard:hover {
-      border-color: rgba(0, 208, 132, .25);
-      transform: translateY(-2px);
-    }
-
-    .rcard.rhidden {
-      display: none;
-    }
-
-    .rbtn {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      padding: 6px 12px;
-      border-radius: 7px;
-      border: 1px solid var(--border);
-      background: none;
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 600;
-cursor: pointer;
-      transition: all .15px;
-    }
-
-    .rbtn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: rgba(0, 208, 132, .06);
-    }
-
     /* ── Date picker do financeiro ── */
     .fin-dp-opt {
       padding: 8px 12px;
@@ -1065,6 +935,76 @@ transition: border-color .15s;
       .dre-grid { grid-template-columns: 1fr; }
       .dre-kpis { grid-template-columns: repeat(3,1fr); }
     }
+
+    /* ── CENTRO DE CUSTOS ── */
+    .custos-toolbar { display:flex; justify-content:space-between; align-items:center; margin:20px 0 16px; gap:12px; flex-wrap:wrap; }
+    .custos-kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
+    .custos-kpi { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 18px; transition:var(--ease); }
+    .custos-kpi:hover { border-color:var(--border-h); transform:translateY(-2px); }
+    .custos-kpi-lbl { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+    .custos-kpi-val { font-size:20px; font-weight:800; letter-spacing:-1px; }
+    .custos-kpi-delta { font-size:11px; margin-top:5px; display:flex; align-items:center; gap:3px; }
+    .custos-kpi-delta.up { color:var(--danger); }
+    .custos-kpi-delta.down { color:var(--accent); }
+    .custos-grid { display:grid; grid-template-columns:300px 1fr; gap:20px; align-items:start; }
+    .custos-donut-wrap { position:relative; width:180px; height:180px; margin:0 auto 20px; }
+    .custos-donut { width:180px; height:180px; border-radius:50%; background:var(--border); }
+    .custos-donut-hole { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:108px; height:108px; border-radius:50%; background:var(--card); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+    .custos-legend { display:flex; flex-direction:column; gap:7px; width:100%; }
+    .custos-legend-item { display:flex; align-items:center; gap:8px; font-size:12px; cursor:pointer; padding:3px 0; }
+    .custos-legend-dot { width:10px; height:10px; border-radius:3px; flex-shrink:0; }
+    .custos-legend-name { flex:1; color:var(--muted); }
+    .custos-legend-val { font-size:11px; color:var(--muted); }
+    .custos-legend-pct { font-weight:700; font-size:11px; min-width:36px; text-align:right; }
+    .cc-cat-badge { display:inline-block; padding:2px 8px; border-radius:100px; font-size:11px; font-weight:600; }
+
+    /* ── CATEGORIES MODAL ── */
+    .cc-cat-form { display:flex; gap:8px; margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+    .cc-cat-items { display:flex; flex-direction:column; gap:5px; max-height:380px; overflow-y:auto; }
+    .cc-cat-row { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:10px; background:var(--surface); border:1px solid var(--border); transition:border-color .15s, background .15s; }
+    .cc-cat-row:hover { border-color:rgba(255,255,255,.1); background:rgba(255,255,255,.02); }
+    .cc-cat-accent { width:4px; min-height:32px; border-radius:4px; flex-shrink:0; }
+    .cc-cat-name { flex:1; font-size:13px; font-weight:600; }
+    .cc-cat-pill { font-size:10px; font-weight:700; padding:2px 8px; border-radius:100px; white-space:nowrap; }
+    .cc-cat-edit-inp { flex:1; background:none; border:none; border-bottom:1px solid var(--accent); color:var(--text); font-size:13px; font-weight:600; outline:none; padding:2px 0; }
+
+    /* ── MODAL CONFIRM (custos) ── */
+    .cc-confirm-body { padding:24px 28px; display:flex; gap:16px; align-items:flex-start; }
+    .cc-confirm-icon { width:42px; height:42px; border-radius:10px; background:rgba(255,71,87,.12); display:flex; align-items:center; justify-content:center; font-size:20px; color:var(--danger); flex-shrink:0; }
+    .cc-confirm-text h3 { font-size:15px; font-weight:700; margin-bottom:4px; }
+    .cc-confirm-text p  { font-size:13px; color:var(--muted); }
+    .btn-del { padding:10px 20px; border-radius:9px; border:none; background:var(--danger); color:#fff; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:7px; transition:opacity .18s; }
+    .btn-del:hover { opacity:.85; }
+
+    /* ── Tipo tabs (Todos/Custos/Despesas) ── */
+    .custos-tipo-tabs { display:flex; gap:6px; margin-bottom:16px; }
+    .custos-tipo-tab { padding:7px 16px; border-radius:8px; border:1px solid var(--border); background:none; color:var(--muted); font-size:12px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px; transition:all .15s; }
+    .custos-tipo-tab:hover { color:var(--text); border-color:var(--border-h); }
+    .custos-tipo-tab.active.t-todos   { background:rgba(255,255,255,.05); border-color:var(--border-h); color:var(--text); }
+    .custos-tipo-tab.active.t-custo   { background:rgba(255,107,53,.1); border-color:#ff6b35; color:#ff6b35; }
+    .custos-tipo-tab.active.t-despesa { background:rgba(168,85,247,.1); border-color:#a855f7; color:#a855f7; }
+    /* ── Tipo badge na tabela ── */
+    .cc-tipo-badge { display:inline-flex; align-items:center; gap:3px; padding:1px 7px; border-radius:100px; font-size:10px; font-weight:700; }
+    .cc-tipo-badge.custo   { background:rgba(255,107,53,.12); color:#ff6b35; }
+    .cc-tipo-badge.despesa { background:rgba(168,85,247,.12); color:#a855f7; }
+    .cc-rec-badge { display:inline-flex; align-items:center; gap:2px; padding:1px 6px; border-radius:100px; font-size:10px; font-weight:700; background:rgba(0,200,150,.1); color:var(--accent); margin-left:4px; }
+    /* ── Tipo toggle no modal ── */
+    .cf-tipo-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .cf-tipo-opt { cursor:pointer; }
+    .cf-tipo-opt input { display:none; }
+    .cf-tipo-card { display:flex; align-items:center; justify-content:center; gap:7px; padding:10px; border:1px solid var(--border); border-radius:10px; font-size:13px; font-weight:600; color:var(--muted); transition:all .15s; }
+    .cf-tipo-card:hover { border-color:var(--border-h); color:var(--text); }
+    .cf-tipo-opt input:checked + .cf-tipo-card.custo-card   { border-color:#ff6b35; background:rgba(255,107,53,.08); color:#ff6b35; }
+    .cf-tipo-opt input:checked + .cf-tipo-card.despesa-card { border-color:#a855f7; background:rgba(168,85,247,.08); color:#a855f7; }
+    /* ── Recorrência ── */
+    .cf-rec-toggle { display:flex; align-items:center; gap:8px; padding:10px 14px; background:var(--surface); border:1px solid var(--border); border-radius:10px; cursor:pointer; transition:border-color .15s; }
+    .cf-rec-toggle:hover { border-color:var(--border-h); }
+    .cf-rec-toggle input[type=checkbox] { accent-color:var(--accent); width:15px; height:15px; cursor:pointer; flex-shrink:0; }
+    .cf-rec-opts { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+    /* ── Categorias tipo tabs ── */
+    .cc-cat-tipo-tabs { display:flex; gap:0; margin-bottom:14px; background:var(--surface); border-radius:9px; padding:3px; border:1px solid var(--border); }
+    .cc-cat-tipo-tab { flex:1; padding:6px 12px; border-radius:7px; border:none; background:none; color:var(--muted); font-size:12px; font-weight:600; cursor:pointer; transition:all .15s; }
+    .cc-cat-tipo-tab.active { background:var(--card); color:var(--text); box-shadow:0 1px 4px rgba(0,0,0,.2); }
 </style>
 </head>
 
@@ -1105,11 +1045,7 @@ transition: border-color .15s;
             <h1 id="finTitle">Visão Geral</h1>
             <p id="finDesc">Resumo financeiro do mês — receitas, despesas e fluxo de caixa.</p>
           </div>
-          <div class="header-actions">
-            <button class="btn-sm btn-ghost-sm" onclick="exportar()"><i class="bi bi-download"></i> Exportar</button>
-            <button class="btn-sm btn-primary-sm" onclick="openModal()"><i class="bi bi-plus-lg"></i> Novo
-              Lançamento</button>
-          </div>
+          <div class="header-actions"></div>
         </div>
 
         <!-- ABAS HÍBRIDAS -->
@@ -1165,10 +1101,6 @@ transition: border-color .15s;
                 onclick="switchTabFromMais('categorias','Categorias Financeiras','Gerencie categorias de receitas e despesas.')">
                 <i class="bi bi-tags"></i> Categorias Financeiras
               </div>
-              <div class="mais-item"
-                onclick="switchTabFromMais('relatorios','Relatórios','Relatórios gerenciais e análises financeiras.')">
-                <i class="bi bi-graph-up-arrow"></i> Relatórios
-              </div>
               <div class="mais-item" onclick="switchTabFromMais('dre','DRE','Demonstração do Resultado do Exercício.')">
                 <i class="bi bi-file-earmark-bar-graph"></i> DRE
               </div>
@@ -1193,8 +1125,7 @@ transition: border-color .15s;
             onclick="toggleFinDp()" onmouseenter="this.style.borderColor='var(--accent)'"
             onmouseleave="this.style.borderColor='var(--border)'">
             <i class="bi bi-calendar3 u-muted-13" ></i>
-            <span id="finDpLabel" style="font-size:12px;color:var(--text);white-space:nowrap">01/05/2026 –
-              31/05/2026</span>
+            <span id="finDpLabel" style="font-size:12px;color:var(--text);white-space:nowrap">Este mês</span>
             <i class="bi bi-chevron-down" style="color:var(--muted);font-size:11px"></i>
           </div>
           <div id="finDpDrop"
@@ -1650,10 +1581,76 @@ transition: border-color .15s;
 
       <!-- Centro de Custo -->
       <div class="fin-panel" id="panel-centro-custo">
-        <div class="empty-state show u-mt-40" >
-          <i class="bi bi-diagram-3"></i>
-          <h3>Centro de Custo</h3>
-          <p>Análise por departamento em desenvolvimento. Em breve disponível.</p>
+        <div class="custos-toolbar">
+          <div class="period-btns" id="custos-period-btns">
+            <button class="period-btn active" onclick="setCustosPeriod(this,'mes')">Este mês</button>
+            <button class="period-btn" onclick="setCustosPeriod(this,'mes-ant')">Mês anterior</button>
+            <button class="period-btn" onclick="setCustosPeriod(this,'trim')">Trimestre</button>
+            <button class="period-btn" onclick="setCustosPeriod(this,'ano')">Este ano</button>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-sm btn-ghost-sm" onclick="openCustosCatModal()"><i class="bi bi-tags"></i> Categorias</button>
+            <button class="btn-sm btn-primary-sm" onclick="openCustosModal()"><i class="bi bi-plus-lg"></i> Novo Lançamento</button>
+          </div>
+        </div>
+
+        <div class="custos-tipo-tabs" id="custos-tipo-tabs">
+          <button class="custos-tipo-tab active t-todos" onclick="setCustosTipo(this,'todos')"><i class="bi bi-grid-fill"></i> Todos</button>
+          <button class="custos-tipo-tab t-custo"   onclick="setCustosTipo(this,'custo')"><i class="bi bi-box-seam-fill"></i> Custos</button>
+          <button class="custos-tipo-tab t-despesa" onclick="setCustosTipo(this,'despesa')"><i class="bi bi-wallet2-fill"></i> Despesas</button>
+        </div>
+
+        <div class="custos-kpis" id="custosKpis"></div>
+
+        <div class="custos-grid">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="bi bi-pie-chart-fill" style="color:var(--accent)"></i> Distribuição</div>
+            </div>
+            <div class="card-body" style="display:flex;flex-direction:column;align-items:center">
+              <div class="custos-donut-wrap">
+                <div class="custos-donut" id="custosDonut"></div>
+                <div class="custos-donut-hole">
+                  <div id="custosDonutTotal" style="font-size:15px;font-weight:800;color:var(--text)">R$ 0</div>
+                  <div style="font-size:10px;color:var(--muted);margin-top:1px">total</div>
+                </div>
+              </div>
+              <div class="custos-legend" id="custosLegend"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="bi bi-list-ul" style="color:var(--accent)"></i> Lançamentos</div>
+              <div class="search-input" style="max-width:200px">
+                <i class="bi bi-search" style="color:var(--muted)"></i>
+                <input type="text" id="custosSearch" placeholder="Buscar..." oninput="renderCustosList()">
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Descrição</th>
+                    <th>Categoria</th>
+                    <th>Data</th>
+                    <th style="text-align:right">Valor</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="custosTbody"></tbody>
+              </table>
+              <div class="empty-state" id="custosEmpty">
+                <i class="bi bi-receipt" style="font-size:40px;color:var(--border);display:block;margin-bottom:12px"></i>
+                <h3 id="custosEmptyH3">Nenhum lançamento cadastrado</h3>
+                <p id="custosEmptyP">Registre seu primeiro custo clicando em "Novo Lançamento".</p>
+              </div>
+            </div>
+            <div class="table-footer">
+              <span id="custosInfo">—</span>
+              <div class="pagination" id="custosPagination"></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1666,338 +1663,6 @@ transition: border-color .15s;
         </div>
       </div>
 
-      <!-- Relatórios -->
-      <div class="fin-panel" id="panel-relatorios">
-        <div style="margin-top:14px">
-
-          <!-- Relatórios disponíveis -->
-          <p class="u-section-title">
-            Relatórios Disponíveis</p>
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px" id="relGrid">
-
-            <div class="rcard" data-cat="fluxo">
-              <div
-                class="u-ico-g">
-                <i class="bi bi-bar-chart-line"></i>
-              </div>
-              <div class="u-flex-1">
-                <div class="u-label-field">Fluxo de Caixa</div>
-                <div class="u-hint">Entradas, saídas e
-                  saldo do fluxo de caixa no período.</div>
-                <button class="rbtn" onclick="gerarRel('Fluxo de Caixa')"><i class="bi bi-file-earmark-text"></i> Gerar
-                  Relatório</button>
-              </div>
-            </div>
-
-            <div class="rcard" data-cat="pagar">
-              <div
-                style="width:38px;height:38px;border-radius:10px;background:rgba(255,71,87,.1);color:var(--danger);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">
-                <i class="bi bi-arrow-up-circle"></i>
-              </div>
-              <div class="u-flex-1">
-                <div class="u-label-field">Contas a Pagar</div>
-                <div class="u-hint">Listagem de contas por
-                  período, status ou fornecedor.</div>
-                <button class="rbtn" onclick="gerarRel('Contas a Pagar')"><i class="bi bi-file-earmark-text"></i> Gerar
-                  Relatório</button>
-              </div>
-            </div>
-
-            <div class="rcard" data-cat="receber">
-              <div
-                class="u-ico-b">
-                <i class="bi bi-arrow-down-circle"></i>
-              </div>
-              <div class="u-flex-1">
-                <div class="u-label-field">Contas a Receber</div>
-                <div class="u-hint">Listagem de contas por
-                  período, status ou cliente.</div>
-                <button class="rbtn" onclick="gerarRel('Contas a Receber')"><i class="bi bi-file-earmark-text"></i>
-                  Gerar Relatório</button>
-              </div>
-            </div>
-
-            <div class="rcard" data-cat="bancario">
-              <div
-                style="width:38px;height:38px;border-radius:10px;background:rgba(168,85,247,.1);color:#a855f7;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">
-                <i class="bi bi-bank"></i>
-              </div>
-              <div class="u-flex-1">
-                <div class="u-label-field">Extrato Bancário</div>
-                <div class="u-hint">Movimentações
-                  bancárias no período selecionado.</div>
-                <button class="rbtn" onclick="gerarRel('Extrato Bancário')"><i class="bi bi-file-earmark-text"></i>
-                  Gerar Relatório</button>
-              </div>
-            </div>
-
-            <div class="rcard" data-cat="gerencial">
-              <div
-                style="width:38px;height:38px;border-radius:10px;background:rgba(255,107,53,.1);color:var(--warn);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">
-                <i class="bi bi-pie-chart"></i>
-              </div>
-              <div class="u-flex-1">
-                <div class="u-label-field">DRE</div>
-                <div class="u-hint">Receitas, despesas e
-                  resultado do exercício.</div>
-                <button class="rbtn" onclick="gerarRel('DRE')"><i class="bi bi-file-earmark-text"></i> Gerar
-                  Relatório</button>
-              </div>
-            </div>
-
-            <div class="rcard" data-cat="gerencial">
-              <div
-                class="u-ico-g">
-                <i class="bi bi-graph-up-arrow"></i>
-              </div>
-              <div class="u-flex-1">
-                <div class="u-label-field">Resumo Financeiro</div>
-                <div class="u-hint">Resumo geral das
-                  principais movimentações financeiras.</div>
-                <button class="rbtn" onclick="gerarRel('Resumo Financeiro')"><i class="bi bi-file-earmark-text"></i>
-                  Gerar Relatório</button>
-              </div>
-            </div>
-
-            <div class="rcard" data-cat="gerencial">
-              <div
-                class="u-ico-b">
-                <i class="bi bi-diagram-3"></i>
-              </div>
-              <div class="u-flex-1">
-                <div class="u-label-field">Centro de Custo</div>
-                <div class="u-hint">Receitas e despesas
-                  agrupadas por centro de custo.</div>
-                <button class="rbtn" onclick="gerarRel('Centro de Custo')"><i class="bi bi-file-earmark-text"></i> Gerar
-                  Relatório</button>
-              </div>
-            </div>
-
-            <div class="rcard" data-cat="outros">
-              <div
-                style="width:38px;height:38px;border-radius:10px;background:rgba(107,127,150,.1);color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">
-                <i class="bi bi-three-dots"></i>
-              </div>
-              <div class="u-flex-1">
-                <div class="u-label-field">Outros Relatórios</div>
-                <div class="u-hint">Acesse todos os
-                  relatórios disponíveis no sistema.</div>
-                <button class="rbtn" onclick="showToast('Em desenvolvimento')"><i class="bi bi-eye"></i> Ver
-                  Todos</button>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- Relatórios gerados -->
-          <p class="u-section-title">
-            Relatórios Gerados
-        </div>
-        <div class="table-card">
-          <div
-            style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border)">
-            <span style="font-size:14px;font-weight:700">Relatórios Gerados</span>
-            <div class="search-input" style="max-width:220px;min-width:0">
-              <i class="bi bi-search u-muted-13" ></i>
-              <input type="text" placeholder="Buscar relatórios..." oninput="relBuscar(this.value)">
-            </div>
-          </div>
-          <div class="table-wrap">
-            <table style="table-layout:fixed;width:100%">
-              <thead>
-                <tr>
-                  <th style="width:25%;text-align:left">Nome do Relatório</th>
-                  <th style="width:15%;text-align:left">Categoria</th>
-                  <th style="width:20%;text-align:left">Período</th>
-                  <th style="width:12%;text-align:left">Gerado por</th>
-                  <th style="width:14%;text-align:left">Data de Geração</th>
-                  <th style="width:7%;text-align:left">Formato</th>
-                  <th style="width:7%;text-align:center">Ações</th>
-                </tr>
-              </thead>
-              <tbody id="relTbody">
-                <tr>
-                  <td>
-                    <div class="u-flex-g10">
-                      <div
-                        class="u-ico-sm-g">
-                        <i class="bi bi-bar-chart-line u-fs-accent" ></i>
-                      </div><span class="u-fw-600">Fluxo de Caixa</span>
-                    </div>
-                  </td>
-                  <td><span class="status-pill ativo">Financeiro</span></td>
-                  <td class="u-muted">01/05/2025 – 31/05/2025</td>
-                  <td>Administrador</td>
-                  <td class="u-muted">31/05/2025 08:45</td>
-                  <td><span
-                      class="u-badge-danger">PDF</span>
-                  </td>
-                  <td>
-                    <div class="u-flex-g8">
-                      <div class="act-btn" title="Download" onclick="showToast('Baixando...')"><i
-                          class="bi bi-download"></i></div>
-                      <div class="act-btn" title="Enviar por e-mail" onclick="showToast('E-mail enviado!')"><i
-                          class="bi bi-envelope"></i></div>
-                      <div class="act-btn danger" title="Excluir" onclick="showToast('Excluído','warning')"><i
-                          class="bi bi-trash3"></i></div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <div class="u-flex-g10">
-                      <div
-                        style="width:32px;height:32px;border-radius:8px;background:rgba(0,119,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                        <i class="bi bi-arrow-up-circle" style="color:var(--accent2);font-size:14px"></i>
-                      </div><span class="u-fw-600">Contas a Pagar</span>
-                    </div>
-                  </td>
-                  <td><span class="status-pill pendente">Contas a Pagar</span></td>
-                  <td class="u-muted">01/05/2025 – 31/05/2025</td>
-                  <td>Administrador</td>
-                  <td class="u-muted">31/05/2025 08:30</td>
-                  <td><span
-                      class="u-badge-accent">Excel</span>
-                  </td>
-                  <td>
-                    <div class="u-flex-g8">
-                      <div class="act-btn" onclick="showToast('Baixando...')"><i class="bi bi-download"></i></div>
-                      <div class="act-btn" onclick="showToast('E-mail enviado!')"><i class="bi bi-envelope"></i></div>
-                      <div class="act-btn danger" onclick="showToast('Excluído','warning')"><i class="bi bi-trash3"></i>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <div class="u-flex-g10">
-                      <div
-                        style="width:32px;height:32px;border-radius:8px;background:rgba(168,85,247,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                        <i class="bi bi-arrow-down-circle" style="color:#a855f7;font-size:14px"></i>
-                      </div><span class="u-fw-600">Contas a Receber</span>
-                    </div>
-                  </td>
-                  <td><span class="status-pill aprovado">Contas a Receber</span></td>
-                  <td class="u-muted">01/05/2025 – 31/05/2025</td>
-                  <td>Administrador</td>
-                  <td class="u-muted">31/05/2025 08:15</td>
-                  <td><span
-                      class="u-badge-danger">PDF</span>
-                  </td>
-                  <td>
-                    <div class="u-flex-g8">
-                      <div class="act-btn" onclick="showToast('Baixando...')"><i class="bi bi-download"></i></div>
-                      <div class="act-btn" onclick="showToast('E-mail enviado!')"><i class="bi bi-envelope"></i></div>
-                      <div class="act-btn danger" onclick="showToast('Excluído','warning')"><i class="bi bi-trash3"></i>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <div class="u-flex-g10">
-                      <div
-                        style="width:32px;height:32px;border-radius:8px;background:rgba(255,107,53,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                        <i class="bi bi-bank" style="color:var(--warn);font-size:14px"></i>
-                      </div><span class="u-fw-600">Extrato Bancário – Conta Principal</span>
-                    </div>
-                  </td>
-                  <td><span class="status-pill faturado">Bancário</span></td>
-                  <td class="u-muted">01/05/2025 – 31/05/2025</td>
-                  <td>Administrador</td>
-                  <td class="u-muted">31/05/2025 07:50</td>
-                  <td><span
-                      class="u-badge-danger">PDF</span>
-                  </td>
-                  <td>
-                    <div class="u-flex-g8">
-                      <div class="act-btn" onclick="showToast('Baixando...')"><i class="bi bi-download"></i></div>
-                      <div class="act-btn" onclick="showToast('E-mail enviado!')"><i class="bi bi-envelope"></i></div>
-                      <div class="act-btn danger" onclick="showToast('Excluído','warning')"><i class="bi bi-trash3"></i>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <div class="u-flex-g10">
-                      <div
-                        class="u-ico-sm-g">
-                        <i class="bi bi-pie-chart u-fs-accent" ></i>
-                      </div><span class="u-fw-600">DRE – Maio/2025</span>
-                    </div>
-                  </td>
-                  <td><span class="status-pill concluido">Gerencial</span></td>
-                  <td class="u-muted">01/05/2025 – 31/05/2025</td>
-                  <td>Administrador</td>
-                  <td class="u-muted">31/05/2025 07:30</td>
-                  <td><span
-                      class="u-badge-accent">Excel</span>
-                  </td>
-                  <td>
-                    <div class="u-flex-g8">
-                      <div class="act-btn" onclick="showToast('Baixando...')"><i class="bi bi-download"></i></div>
-                      <div class="act-btn" onclick="showToast('E-mail enviado!')"><i class="bi bi-envelope"></i></div>
-                      <div class="act-btn danger" onclick="showToast('Excluído','warning')"><i class="bi bi-trash3"></i>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="table-footer">
-            <span id="relCount">Mostrando 1 a 5 de 12 relatórios</span>
-            <div class="pagination">
-              <button class="pg-btn" id="pgPrev" onclick="relPage(relCurrentPage-1)" disabled><i
-                  class="bi bi-chevron-left"></i></button>
-              <button class="pg-btn active" id="pg1" onclick="relPage(1)">1</button>
-              <button class="pg-btn" id="pg2" onclick="relPage(2)">2</button>
-              <button class="pg-btn" id="pg3" onclick="relPage(3)">3</button>
-              <button class="pg-btn" id="pgNext" onclick="relPage(relCurrentPage+1)"><i
-                  class="bi bi-chevron-right"></i></button>
-            </div>
-          </div>
-        </div>
-        <script>
-          let relCurrentPage = 1;
-          const relTotalPages = 3;
-
-          function relPage(page) {
-            if (page < 1 || page > relTotalPages) return;
-            relCurrentPage = page;
-            // Atualizar botões
-            for (let i = 1; i <= relTotalPages; i++) {
-              const btn = document.getElementById('pg' + i);
-              if (btn) btn.classList.toggle('active', i === page);
-            }
-            document.getElementById('pgPrev').disabled = page === 1;
-            document.getElementById('pgNext').disabled = page === relTotalPages;
-            // Atualizar contador
-            const inicio = (page - 1) * 5 + 1;
-            const fim = Math.min(page * 5, 12);
-            document.getElementById('relCount').textContent = `Mostrando ${inicio} a ${fim} de 12 relatórios`;
-            // Scroll suave até a tabela
-            document.getElementById('relCount').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          }
-
-          function relFilterCat(el, cat) {
-            document.querySelectorAll('.rcat').forEach(b => {
-              b.style.background = 'none';
-              b.style.borderColor = 'var(--border)';
-              b.style.color = 'var(--muted)';
-            });
-            el.style.background = 'rgba(0,200,150,.08)';
-            el.style.borderColor = 'var(--accent)';
-            el.style.color = 'var(--accent)';
-            document.querySelectorAll('.rcard').forEach(c => {
-              c.classList.toggle('rhidden', cat !== 'todos' && !c.dataset.cat.includes(cat));
-            });
-          }
-
-        </script>
-
-      </div>
     </div>
 
     <!-- DRE -->
@@ -2342,86 +2007,158 @@ transition: border-color .15s;
   </div><!-- /main -->
 
 
-  <!-- MODAL GERAR RELATÓRIO -->
-  <div class="modal-overlay" id="relModalOverlay" onclick="handleRelOverlay(event)">
-    <div class="modal" style="max-width:540px">
+  <!-- MODAL CUSTO: LANÇAMENTO -->
+  <div class="modal-overlay" id="custosModalOverlay" onclick="if(event.target===this)closeCustosModal()">
+    <div class="modal" style="max-width:520px">
       <div class="modal-header">
         <div>
-          <h2 id="relModalTitle">Gerar Relatório</h2>
-          <div class="modal-sub" id="relModalSub">Configure os parâmetros do relatório</div>
+          <h2 id="custosModalTitle">Novo Lançamento</h2>
+          <div style="color:var(--muted);font-size:12px;margin-top:2px">Registre um custo ou despesa</div>
         </div>
-        <div class="modal-close" onclick="closeRelModal()"><i class="bi bi-x-lg"></i></div>
+        <div class="modal-close" onclick="closeCustosModal()"><i class="bi bi-x-lg"></i></div>
       </div>
-      <div class="modal-body" style="padding:22px">
-
-        <!-- Período -->
-        <div class="form-section">
-          <div class="form-section-title">Período</div>
-          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap" id="relPeriodChips">
-            <button class="rel-chip active" onclick="setRelPeriod(this,'today')">Hoje</button>
-            <button class="rel-chip" onclick="setRelPeriod(this,'week')">Esta semana</button>
-            <button class="rel-chip" onclick="setRelPeriod(this,'month')">Este mês</button>
-            <button class="rel-chip" onclick="setRelPeriod(this,'quarter')">Trimestre</button>
-            <button class="rel-chip" onclick="setRelPeriod(this,'year')">Este ano</button>
-            <button class="rel-chip" onclick="setRelPeriod(this,'custom')">Personalizado</button>
+      <div class="modal-body">
+        <!-- Tipo -->
+        <div class="form-group full" style="margin-bottom:14px">
+          <label class="lbl">Tipo *</label>
+          <div class="cf-tipo-row">
+            <label class="cf-tipo-opt">
+              <input type="radio" name="cf-tipo" value="custo" checked onchange="onCfTipoChange()">
+              <div class="cf-tipo-card custo-card"><i class="bi bi-box-seam-fill"></i> Custo</div>
+            </label>
+            <label class="cf-tipo-opt">
+              <input type="radio" name="cf-tipo" value="despesa" onchange="onCfTipoChange()">
+              <div class="cf-tipo-card despesa-card"><i class="bi bi-wallet2-fill"></i> Despesa</div>
+            </label>
           </div>
-          <div id="relCustomPeriod" style="display:none;display:grid;grid-template-columns:1fr 1fr;gap:10px">
-            <div class="form-group">
-              <label class="u-label-sm">Data inicial</label>
-              <div class="inp-wrap">
-                <i class="bi bi-calendar3 pre"></i>
-                <input type="date" class="field" id="relDataInicio">
-              </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label class="lbl">Descrição *</label>
+            <div class="inp-wrap"><i class="bi bi-pencil pre"></i>
+              <input class="field" type="text" id="cf-desc" placeholder="Ex: Aluguel do escritório">
             </div>
-            <div class="form-group">
-              <label class="u-label-sm">Data final</label>
-              <div class="inp-wrap">
-                <i class="bi bi-calendar3 pre"></i>
-                <input type="date" class="field" id="relDataFim">
-              </div>
+          </div>
+          <div class="form-group">
+            <label class="lbl">Valor (R$) *</label>
+            <div class="inp-wrap"><i class="bi bi-currency-dollar pre"></i>
+              <input class="field" type="text" id="cf-valor" placeholder="0,00" oninput="maskCurrency(this)">
             </div>
+          </div>
+          <div class="form-group">
+            <label class="lbl">Data *</label>
+            <div class="inp-wrap"><i class="bi bi-calendar pre"></i>
+              <input class="field" type="date" id="cf-data">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="lbl">Categoria *</label>
+            <div class="inp-wrap"><i class="bi bi-tag pre"></i>
+              <select class="field" id="cf-cat"></select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="lbl">Fornecedor / Beneficiário</label>
+            <div class="inp-wrap"><i class="bi bi-person pre"></i>
+              <input class="field" type="text" id="cf-fornecedor" placeholder="Ex: João Silva">
+            </div>
+          </div>
+          <div class="form-group full">
+            <label class="lbl">Observação</label>
+            <textarea class="field" id="cf-obs" placeholder="Detalhes adicionais..." style="height:60px;resize:vertical"></textarea>
           </div>
         </div>
 
-        <!-- Filtros dinâmicos por tipo -->
-        <div class="form-section" id="relFiltrosExtra">
-          <!-- preenchido dinamicamente por JS -->
-        </div>
-
-        <!-- Formato de saída -->
-        <div class="form-section" style="margin-bottom:0">
-          <div class="form-section-title">Formato de saída</div>
-          <div style="display:flex;gap:10px">
-            <label class="rel-format-opt" id="fmtPDF">
-              <input type="radio" name="relFormato" value="PDF" checked onchange="setFmt(this)">
-              <div class="rel-format-card active">
-                <i class="bi bi-file-earmark-pdf" style="color:#FF4D6D;font-size:20px"></i>
-                <span>PDF</span>
+        <!-- Recorrência (oculto ao editar) -->
+        <div id="cf-rec-section" style="margin-top:12px">
+          <label class="cf-rec-toggle" onclick="toggleCfRec()">
+            <input type="checkbox" id="cf-recorrente" onclick="event.stopPropagation();toggleCfRec()">
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--text)">Lançamento recorrente</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:1px">Repete automaticamente todo mês, semana ou ano</div>
+            </div>
+          </label>
+          <div class="cf-rec-opts" id="cf-rec-opts" style="display:none">
+            <div class="form-group" style="margin-bottom:0">
+              <label class="lbl">Frequência</label>
+              <div class="inp-wrap"><i class="bi bi-arrow-repeat pre"></i>
+                <select class="field" id="cf-freq">
+                  <option value="mensal">Mensal</option>
+                  <option value="semanal">Semanal</option>
+                  <option value="anual">Anual</option>
+                </select>
               </div>
-            </label>
-            <label class="rel-format-opt" id="fmtXLSX">
-              <input type="radio" name="relFormato" value="Excel" onchange="setFmt(this)">
-              <div class="rel-format-card">
-                <i class="bi bi-file-earmark-excel" style="color:#00D084;font-size:20px"></i>
-                <span>Excel</span>
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="lbl">Repetir por</label>
+              <div class="inp-wrap"><i class="bi bi-hash pre"></i>
+                <select class="field" id="cf-rep">
+                  <option value="3">3 meses</option>
+                  <option value="6">6 meses</option>
+                  <option value="12">12 meses</option>
+                  <option value="24">Indeterminado (24x)</option>
+                </select>
               </div>
-            </label>
-            <label class="rel-format-opt" id="fmtCSV">
-              <input type="radio" name="relFormato" value="CSV" onchange="setFmt(this)">
-              <div class="rel-format-card">
-                <i class="bi bi-filetype-csv" style="color:#2F80FF;font-size:20px"></i>
-                <span>CSV</span>
-              </div>
-            </label>
+            </div>
           </div>
         </div>
 
       </div>
       <div class="modal-footer">
-        <button class="btn-cancel-m" onclick="closeRelModal()">Cancelar</button>
-        <button class="btn-save-m" onclick="confirmarGerarRel()">
-          <i class="bi bi-file-earmark-text"></i> Gerar Relatório
-        </button>
+        <div style="color:var(--muted);font-size:12px">* Campos obrigatórios</div>
+        <div style="display:flex;gap:10px">
+          <button class="btn-cancel" onclick="closeCustosModal()">Cancelar</button>
+          <button class="btn-save" onclick="saveCusto()"><i class="bi bi-check2"></i> Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CUSTO: CATEGORIAS -->
+  <div class="modal-overlay" id="custosCatOverlay" onclick="if(event.target===this)closeCustosCatModal()">
+    <div class="modal" style="max-width:480px">
+      <div class="modal-header">
+        <div>
+          <h2>Categorias</h2>
+          <div style="color:var(--muted);font-size:12px;margin-top:2px">Gerencie categorias de custos e despesas</div>
+        </div>
+        <div class="modal-close" onclick="closeCustosCatModal()"><i class="bi bi-x-lg"></i></div>
+      </div>
+      <div class="modal-body">
+        <div class="cc-cat-tipo-tabs">
+          <button class="cc-cat-tipo-tab active" onclick="setCatTipoTab(this,'custo')">Custos</button>
+          <button class="cc-cat-tipo-tab" onclick="setCatTipoTab(this,'despesa')">Despesas</button>
+        </div>
+        <div class="cc-cat-form">
+          <input class="field" type="text" id="cc-cat-input" placeholder="Nome da nova categoria..." onkeydown="if(event.key==='Enter') addCustosCat()">
+          <button class="btn-sm btn-primary-sm" style="white-space:nowrap" onclick="addCustosCat()"><i class="bi bi-plus-lg"></i> Adicionar</button>
+        </div>
+        <div class="cc-cat-items" id="custosCatList"></div>
+      </div>
+      <div class="modal-footer">
+        <div style="color:var(--muted);font-size:12px" id="custosCatCount">—</div>
+        <button class="btn-sm btn-ghost-sm" onclick="closeCustosCatModal()"><i class="bi bi-check2"></i> Concluído</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CUSTO: CONFIRMAR EXCLUSÃO -->
+  <div class="modal-overlay" id="ccConfirmOverlay">
+    <div class="modal" style="max-width:420px">
+      <div class="cc-confirm-body">
+        <div class="cc-confirm-icon"><i class="bi bi-trash3"></i></div>
+        <div class="cc-confirm-text">
+          <h3>Excluir lançamento</h3>
+          <p id="ccConfirmMsg">—</p>
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content:space-between">
+        <div style="color:var(--muted);font-size:12px">Esta ação não pode ser desfeita.</div>
+        <div style="display:flex;gap:10px">
+          <button class="btn-cancel" onclick="closeCcConfirm()">Cancelar</button>
+          <button class="btn-del" id="btnDelSerie" onclick="doDelSerie()" style="display:none"><i class="bi bi-arrow-repeat"></i> Excluir série</button>
+          <button class="btn-del" onclick="doCcConfirm()"><i class="bi bi-trash3"></i> Excluir este</button>
+        </div>
       </div>
     </div>
   </div>
@@ -2828,6 +2565,7 @@ transition: border-color .15s;
       document.getElementById('finDesc').textContent = desc;
       document.getElementById('topbarSub').textContent = title;
       closeMais();
+      if (panelId === 'centro-custo') renderCustosPanel();
     }
 
     function toggleMais() {
@@ -2897,232 +2635,8 @@ transition: border-color .15s;
     // INIT
     // ═══════════════════════════════════════════════
 
-    // ═══════════════════════════════════════════════
-    // MODAL GERAR RELATÓRIO
-    // ═══════════════════════════════════════════════
-
-    const REL_CONFIG = {
-      'Fluxo de Caixa': {
-        filtros: [
-          { label: 'Conta bancária', id: 'relConta', opts: ['Todas as contas', 'Conta Corrente Principal', 'Conta Poupança', 'Caixa Físico'] },
-          { label: 'Tipo de movimentação', id: 'relTipoFluxo', opts: ['Todas', 'Somente entradas', 'Somente saídas'] }
-        ]
-      },
-      'Contas a Pagar': {
-        filtros: [
-          { label: 'Status', id: 'relStatus', opts: ['Todos', 'Em aberto', 'Vencido', 'Pago', 'Cancelado'] },
-          { label: 'Fornecedor', id: 'relFornecedor', opts: ['Todos os fornecedores', 'Fornecedor A', 'Fornecedor B', 'Fornecedor C'] }
-        ]
-      },
-      'Contas a Receber': {
-        filtros: [
-          { label: 'Status', id: 'relStatus', opts: ['Todos', 'Em aberto', 'Vencido', 'Recebido', 'Cancelado'] },
-          { label: 'Cliente', id: 'relCliente', opts: ['Todos os clientes', 'Cliente A', 'Cliente B', 'Cliente C'] }
-        ]
-      },
-      'Extrato Bancário': {
-        filtros: [
-          { label: 'Conta bancária', id: 'relConta', opts: ['Todas as contas', 'Conta Corrente Principal', 'Conta Poupança', 'Caixa Físico'] }
-        ]
-      },
-      'DRE': {
-        filtros: [
-          { label: 'Competência', id: 'relComp', opts: ['Mensal', 'Trimestral', 'Semestral', 'Anual'] },
-          { label: 'Centro de custo', id: 'relCC', opts: ['Todos', 'Administrativo', 'Comercial', 'Operacional'] }
-        ]
-      },
-      'Resumo Financeiro': {
-        filtros: [
-          { label: 'Agrupar por', id: 'relAgrup', opts: ['Mês', 'Semana', 'Categoria', 'Centro de custo'] }
-        ]
-      },
-      'Centro de Custo': {
-        filtros: [
-          { label: 'Centro de custo', id: 'relCC', opts: ['Todos', 'Administrativo', 'Comercial', 'Operacional'] }
-        ]
-      }
-    };
-
-    let _relNomeAtual = '';
-    let _relPeriodoAtual = 'month';
-
-    function gerarRel(nome) {
-      _relNomeAtual = nome;
-      _relPeriodoAtual = 'month';
-
-      // title
-      document.getElementById('relModalTitle').textContent = 'Gerar — ' + nome;
-      document.getElementById('relModalSub').textContent = 'Configure os parâmetros antes de gerar';
-
-      // reset period chips
-      document.querySelectorAll('.rel-chip').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('.rel-chip')[2].classList.add('active'); // "Este mês"
-      document.getElementById('relCustomPeriod').style.display = 'none';
-      document.getElementById('relCustomPeriod').classList.remove('visible');
-
-      // set default dates
-      const hoje = new Date();
-      const primDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-      document.getElementById('relDataInicio').value = primDia.toISOString().split('T')[0];
-      document.getElementById('relDataFim').value = hoje.toISOString().split('T')[0];
-
-      // dynamic filters
-      const cfg = REL_CONFIG[nome];
-      const el = document.getElementById('relFiltrosExtra');
-      if (cfg && cfg.filtros.length) {
-        let html = '<div class="form-section-title">' + (cfg.filtros.length > 1 ? 'Filtros' : 'Filtro') + '</div>';
-        html += '<div class="form-grid' + (cfg.filtros.length === 1 ? ' g1' : '') + '">';
-        cfg.filtros.forEach(f => {
-          html += '<div class="form-group">';
-          html += '<label class="u-label-sm">' + f.label + '</label>';
-          html += '<select class="rel-filtro-select" id="' + f.id + '">';
-          f.opts.forEach(o => html += '<option>' + o + '</option>');
-          html += '</select></div>';
-        });
-        html += '</div>';
-        el.innerHTML = html;
-        el.style.display = 'block';
-      } else {
-        el.innerHTML = '';
-        el.style.display = 'none';
-      }
-
-      // reset formato
-      document.querySelectorAll('.rel-format-card').forEach(c => c.classList.remove('active'));
-      document.querySelector('.rel-format-card').classList.add('active');
-      document.querySelector('input[name="relFormato"][value="PDF"]').checked = true;
-
-      document.getElementById('relModalOverlay').classList.add('open');
-    }
-
-    function closeRelModal() {
-      document.getElementById('relModalOverlay').classList.remove('open');
-    }
-
-    function handleRelOverlay(e) {
-      if (e.target === document.getElementById('relModalOverlay')) closeRelModal();
-    }
-
-    function setRelPeriod(el, tipo) {
-      document.querySelectorAll('.rel-chip').forEach(c => c.classList.remove('active'));
-      el.classList.add('active');
-      _relPeriodoAtual = tipo;
-      const cp = document.getElementById('relCustomPeriod');
-      if (tipo === 'custom') {
-        cp.style.display = 'grid';
-      } else {
-        cp.style.display = 'none';
-        // auto fill dates
-        const hoje = new Date();
-        let inicio = new Date(hoje);
-        if (tipo === 'today') { inicio = new Date(hoje); }
-        if (tipo === 'week') { inicio.setDate(hoje.getDate() - hoje.getDay()); }
-        if (tipo === 'month') { inicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1); }
-        if (tipo === 'quarter') { const q = Math.floor(hoje.getMonth() / 3); inicio = new Date(hoje.getFullYear(), q * 3, 1); }
-        if (tipo === 'year') { inicio = new Date(hoje.getFullYear(), 0, 1); }
-        document.getElementById('relDataInicio').value = inicio.toISOString().split('T')[0];
-        document.getElementById('relDataFim').value = hoje.toISOString().split('T')[0];
-      }
-    }
-
-    function setFmt(input) {
-      document.querySelectorAll('.rel-format-card').forEach(c => c.classList.remove('active'));
-      input.closest('.rel-format-opt').querySelector('.rel-format-card').classList.add('active');
-    }
-
-    function confirmarGerarRel() {
-      const nome = _relNomeAtual;
-      const fmt = document.querySelector('input[name="relFormato"]:checked').value;
-      const inicio = document.getElementById('relDataInicio').value;
-      const fim = document.getElementById('relDataFim').value;
-
-      // Período label
-      const labels = { today: 'Hoje', week: 'Esta semana', month: 'Este mês', quarter: 'Trimestre', year: 'Este ano', custom: 'Personalizado' };
-      const periodoLabel = _relPeriodoAtual === 'custom'
-        ? formatDate(inicio) + ' – ' + formatDate(fim)
-        : labels[_relPeriodoAtual] || 'Este mês';
-
-      // Add row to table
-      addRelGerado(nome, periodoLabel, fmt);
-      closeRelModal();
-      showToast('📄 ' + nome + ' gerado em ' + fmt + ' com sucesso!');
-    }
-
-    function formatDate(iso) {
-      if (!iso) return '—';
-      const [y, m, d] = iso.split('-');
-      return d + '/' + m + '/' + y;
-    }
-
-    // ─── Tabela de relatórios gerados ───
-    let relGerados = [
-      { nome: 'Fluxo de Caixa', cat: 'Caixa', periodo: 'Mai 2026', por: 'Admin', data: '29/05/2026', fmt: 'PDF' },
-      { nome: 'DRE', cat: 'Gerencial', periodo: 'Abr 2026', por: 'Admin', data: '30/04/2026', fmt: 'Excel' },
-      { nome: 'Contas a Pagar', cat: 'Pagar', periodo: 'Mar 2026', por: 'Admin', data: '31/03/2026', fmt: 'PDF' },
-      { nome: 'Resumo Fin.', cat: 'Gerencial', periodo: 'T1 2026', por: 'Admin', data: '01/04/2026', fmt: 'CSV' },
-      { nome: 'Extrato Banc.', cat: 'Bancário', periodo: 'Mai 2026', por: 'Admin', data: '28/05/2026', fmt: 'PDF' },
-    ];
-
-    function addRelGerado(nome, periodo, fmt) {
-      const hoje = new Date();
-      const data = String(hoje.getDate()).padStart(2, '0') + '/' +
-        String(hoje.getMonth() + 1).padStart(2, '0') + '/' + hoje.getFullYear();
-      const user = document.querySelector('.user-name')?.textContent || 'Admin';
-      const cat = {
-        'Fluxo de Caixa': 'Caixa', 'Contas a Pagar': 'Pagar', 'Contas a Receber': 'Receber',
-        'Extrato Bancário': 'Bancário', 'DRE': 'Gerencial', 'Resumo Financeiro': 'Gerencial',
-        'Centro de Custo': 'Gerencial'
-      }[nome] || 'Geral';
-      relGerados.unshift({ nome, cat, periodo, por: user, data, fmt });
-      renderRelTable();
-    }
-
-    function fmtIcon(fmt) {
-      if (fmt === 'PDF') return '<i class="bi bi-file-earmark-pdf" style="color:#FF4D6D"></i>';
-      if (fmt === 'Excel') return '<i class="bi bi-file-earmark-excel" style="color:#00D084"></i>';
-      if (fmt === 'CSV') return '<i class="bi bi-filetype-csv" style="color:#2F80FF"></i>';
-      return fmt;
-    }
-
-    function renderRelTable(filtro) {
-      const tbody = document.getElementById('relTbody');
-      if (!tbody) return;
-      const q = (filtro || '').toLowerCase();
-      const rows = relGerados.filter(r =>
-        !q || r.nome.toLowerCase().includes(q) || r.cat.toLowerCase().includes(q) || r.periodo.toLowerCase().includes(q)
-      );
-      if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--sub);padding:28px">Nenhum relatório encontrado</td></tr>';
-        return;
-      }
-      tbody.innerHTML = rows.map((r, i) => `
-        <tr>
-          <td><span class="u-fw-600">${escapeHTML(r.nome)}</span></td>
-          <td><span class="status-pill orcamento">${escapeHTML(r.cat)}</span></td>
-          <td class="u-sub">${escapeHTML(r.periodo)}</td>
-          <td class="u-sub">${escapeHTML(r.por)}</td>
-          <td class="u-sub">${escapeHTML(r.data)}</td>
-          <td>${fmtIcon(r.fmt)} <span style="font-size:11px;color:var(--sub)">${escapeHTML(r.fmt)}</span></td>
-          <td>
-            <div class="action-cell" style="opacity:1;justify-content:center">
-              <button class="act-btn ok" title="Baixar" onclick="showToast('⬇️ Baixando ${escapeHTML(r.nome)}…')"><i class="bi bi-download"></i></button>
-              <button class="act-btn danger" title="Excluir" onclick="excluirRel(${i})"><i class="bi bi-trash"></i></button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    function excluirRel(idx) {
-      relGerados.splice(idx, 1);
-      renderRelTable();
-      showToast('Relatório removido.');
-    }
-
-    function relBuscar(q) { renderRelTable(q); }
 
     NexoAuth.renderCurrentUser();
-    renderRelTable();
     renderKPIs();
     renderChart();
     renderDonut();
@@ -3138,7 +2652,7 @@ transition: border-color .15s;
       const opts = document.querySelectorAll('.fin-dp-opt');
       opts.forEach(o => o.classList.remove('active'));
       opts[2] && opts[2].classList.add('active');
-      _finUpdateLabel(ini, hoje);
+      _finUpdateLabelStr('Este mês');
     })();
 
     function toggleFinDp() {
@@ -3166,7 +2680,7 @@ transition: border-color .15s;
       if (tipo === 'year') { ini = new Date(hoje.getFullYear(), 0, 1); }
       document.getElementById('finDpStart').value = ini.toISOString().split('T')[0];
       document.getElementById('finDpEnd').value = hoje.toISOString().split('T')[0];
-      _finUpdateLabel(ini, hoje);
+      _finUpdateLabelStr(el.textContent.trim());
       document.getElementById('finDpDrop').style.display = 'none';
     }
 
@@ -3206,6 +2720,466 @@ transition: border-color .15s;
       return String(date.getDate()).padStart(2, '0') + '/' +
         String(date.getMonth() + 1).padStart(2, '0') + '/' +
         date.getFullYear();
+    }
+
+    // ═══════════════════════════════════════════════
+    // CENTRO DE CUSTOS
+    // ═══════════════════════════════════════════════
+    const CUSTOS_KEY        = 'nexoerp.custos';
+    const CUSTO_CATS_KEY    = 'nexoerp.custos.cats.custo';
+    const DESPESA_CATS_KEY  = 'nexoerp.custos.cats.despesa';
+    const CC_COLORS         = ['#00c896','#0077ff','#ff6b35','#a855f7','#ec4899','#f59e0b','#14b8a6','#6b7f96'];
+    const CC_DEFAULT_CUSTO_CATS   = ['Insumos','Matéria-prima','Embalagens','Frete','Mão de obra','Equipamentos'];
+    const CC_DEFAULT_DESPESA_CATS = ['Funcionários','Aluguel','Marketing','Serviços','Administrativo','Outros'];
+
+    // Migração: se existia a key antiga, migra para custo
+    (function migrate() {
+      const old = localStorage.getItem('nexoerp.custos.categorias');
+      if (old && !localStorage.getItem(CUSTO_CATS_KEY)) {
+        localStorage.setItem(CUSTO_CATS_KEY, old);
+      }
+    })();
+
+    let custosData  = (() => { try { const r=localStorage.getItem(CUSTOS_KEY); return r?JSON.parse(r):[]; } catch(_){return[];} })();
+    let custoCats   = (() => { try { const r=localStorage.getItem(CUSTO_CATS_KEY); return r?JSON.parse(r):[...CC_DEFAULT_CUSTO_CATS]; } catch(_){return[...CC_DEFAULT_CUSTO_CATS];} })();
+    let despesaCats = (() => { try { const r=localStorage.getItem(DESPESA_CATS_KEY); return r?JSON.parse(r):[...CC_DEFAULT_DESPESA_CATS]; } catch(_){return[...CC_DEFAULT_DESPESA_CATS];} })();
+
+    let custosPeriod     = 'mes';
+    let custosTipoFilter = 'todos';
+    let custosCatFilter  = null;
+    let custosPage       = 1;
+    const custosPerPage  = 8;
+    let editingCustoId   = null;
+    let ccConfirmCb      = null;
+    let ccSerieCb        = null;
+    let activeCatTab     = 'custo';
+
+    function saveCustosData()  { localStorage.setItem(CUSTOS_KEY,       JSON.stringify(custosData));  }
+    function saveCustoCats()   { localStorage.setItem(CUSTO_CATS_KEY,   JSON.stringify(custoCats));   }
+    function saveDespesaCats() { localStorage.setItem(DESPESA_CATS_KEY, JSON.stringify(despesaCats)); }
+
+    function fmtCusto(v) {
+      return (v||0).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+    }
+
+    function getCatsByTipo(tipo) { return tipo==='despesa' ? despesaCats : custoCats; }
+
+    function filterCustosByPeriod(period, tipoOvr) {
+      const p = period || custosPeriod;
+      const t = tipoOvr !== undefined ? tipoOvr : custosTipoFilter;
+      const now = new Date();
+      return custosData.filter(c => {
+        const d = new Date(c.data); if (isNaN(d)) return false;
+        if (p==='mes')     { if (!(d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear())) return false; }
+        if (p==='mes-ant') { const a=new Date(now.getFullYear(),now.getMonth()-1,1); if (!(d.getMonth()===a.getMonth()&&d.getFullYear()===a.getFullYear())) return false; }
+        if (p==='trim')    { const q=Math.floor(now.getMonth()/3); if (!(Math.floor(d.getMonth()/3)===q&&d.getFullYear()===now.getFullYear())) return false; }
+        if (p==='ano')     { if (d.getFullYear()!==now.getFullYear()) return false; }
+        if (t!=='todos')   { if ((c.tipo||'custo')!==t) return false; }
+        return true;
+      });
+    }
+
+    function renderCustosPanel() {
+      renderCustosKPIs();
+      renderCustosDonut();
+      renderCustosList();
+    }
+
+    function renderCustosKPIs() {
+      const allPeriod   = filterCustosByPeriod(null,'todos');
+      const anterior    = filterCustosByPeriod('mes-ant','todos');
+      const custosPer   = allPeriod.filter(c=>(c.tipo||'custo')==='custo');
+      const despesasPer = allPeriod.filter(c=>(c.tipo||'custo')==='despesa');
+      const totalGeral  = allPeriod.reduce((s,c)=>s+c.valor,0);
+      const totalCusto  = custosPer.reduce((s,c)=>s+c.valor,0);
+      const totalDesp   = despesasPer.reduce((s,c)=>s+c.valor,0);
+
+      let kpis;
+
+      if (custosTipoFilter === 'todos') {
+        const totalAnt = anterior.reduce((s,c)=>s+c.valor,0);
+        const delta    = totalAnt>0 ? ((totalGeral-totalAnt)/totalAnt*100) : null;
+        kpis = [
+          { lbl:'Total no período', val:'R$ '+fmtCusto(totalGeral), color:'var(--text)', icon:'bi-cash-stack' },
+          { lbl:'Custos',           val:'R$ '+fmtCusto(totalCusto), color:'#ff6b35',       icon:'bi-box-seam-fill' },
+          { lbl:'Despesas',         val:'R$ '+fmtCusto(totalDesp),  color:'#a855f7',       icon:'bi-wallet2-fill' },
+          { lbl:'vs mês anterior',
+            val: delta!==null?(delta>0?'+':'')+delta.toFixed(1)+'%':'—',
+            color: delta===null?'var(--muted)':delta>0?'var(--danger)':'var(--accent)',
+            icon: delta!==null&&delta>0?'bi-arrow-up-short':'bi-arrow-down-short',
+            delta: delta!==null?(delta>0?'up':'down'):null,
+            sub: delta!==null?'R$ '+fmtCusto(anterior.reduce((s,c)=>s+c.valor,0))+' anterior':''
+          },
+        ];
+      } else {
+        const isCusto  = custosTipoFilter === 'custo';
+        const filtered = isCusto ? custosPer : despesasPer;
+        const total    = isCusto ? totalCusto : totalDesp;
+        const color    = isCusto ? '#ff6b35' : '#a855f7';
+        const antFilt  = anterior.filter(c=>(c.tipo||'custo')===custosTipoFilter);
+        const totalAnt = antFilt.reduce((s,c)=>s+c.valor,0);
+        const delta    = totalAnt>0 ? ((total-totalAnt)/totalAnt*100) : null;
+        const bycat    = {};
+        filtered.forEach(c=>{ bycat[c.categoria]=(bycat[c.categoria]||0)+c.valor; });
+        const topCat   = Object.entries(bycat).sort((a,b)=>b[1]-a[1])[0];
+        const cats     = getCatsByTipo(custosTipoFilter);
+        const topIdx   = topCat ? cats.indexOf(topCat[0]) : -1;
+        const topColor = topIdx>=0 ? CC_COLORS[topIdx%CC_COLORS.length] : 'var(--muted)';
+        kpis = [
+          { lbl: isCusto?'Total em Custos':'Total em Despesas', val:'R$ '+fmtCusto(total), color:'var(--text)', icon:'bi-cash-stack' },
+          { lbl:'Lançamentos', val:filtered.length, color:'var(--text)', icon:'bi-receipt' },
+          { lbl:'Maior categoria', val:topCat?topCat[0]:'—', color:topColor, icon:'bi-tag' },
+          { lbl:'vs mês anterior',
+            val: delta!==null?(delta>0?'+':'')+delta.toFixed(1)+'%':'—',
+            color: delta===null?'var(--muted)':delta>0?'var(--danger)':'var(--accent)',
+            icon: delta!==null&&delta>0?'bi-arrow-up-short':'bi-arrow-down-short',
+            delta: delta!==null?(delta>0?'up':'down'):null,
+            sub: delta!==null?'R$ '+fmtCusto(totalAnt)+' anterior':''
+          },
+        ];
+      }
+
+      document.getElementById('custosKpis').innerHTML = kpis.map(k=>`
+        <div class="custos-kpi">
+          <div class="custos-kpi-lbl">${k.lbl}</div>
+          <div class="custos-kpi-val" style="color:${k.color}">${k.val}</div>
+          ${k.sub?`<div class="custos-kpi-delta ${k.delta||''}"><i class="bi ${k.icon}"></i>${k.sub}</div>`:''}
+        </div>`).join('');
+    }
+
+    function renderCustosDonut() {
+      const donutEl  = document.getElementById('custosDonut');
+      const totalEl  = document.getElementById('custosDonutTotal');
+      const legendEl = document.getElementById('custosLegend');
+
+      if (custosTipoFilter === 'todos') {
+        const allPeriod  = filterCustosByPeriod(null,'todos');
+        const totalCusto = allPeriod.filter(c=>(c.tipo||'custo')==='custo').reduce((s,c)=>s+c.valor,0);
+        const totalDesp  = allPeriod.filter(c=>(c.tipo||'custo')==='despesa').reduce((s,c)=>s+c.valor,0);
+        const total      = totalCusto + totalDesp;
+        totalEl.textContent = 'R$ '+fmtCusto(total);
+        if (!total) { donutEl.style.background='var(--border)'; legendEl.innerHTML=''; return; }
+        const segments = [
+          { label:'Custos',   val:totalCusto, color:'#ff6b35' },
+          { label:'Despesas', val:totalDesp,  color:'#a855f7' },
+        ].filter(s=>s.val>0);
+        let pct=0; const stops=[];
+        segments.forEach(s=>{ const share=s.val/total*100; stops.push(`${s.color} ${pct.toFixed(2)}% ${(pct+share).toFixed(2)}%`); s.share=share; pct+=share; });
+        donutEl.style.background=`conic-gradient(${stops.join(',')})`;
+        legendEl.innerHTML=segments.map(s=>`
+          <div class="custos-legend-item" onclick="setCustosTipo(document.querySelector('.custos-tipo-tab.t-${s.label==='Custos'?'custo':'despesa'}'),'${s.label==='Custos'?'custo':'despesa'}')">
+            <div class="custos-legend-dot" style="background:${s.color}"></div>
+            <span class="custos-legend-name">${s.label}</span>
+            <span class="custos-legend-val">R$ ${fmtCusto(s.val)}</span>
+            <span class="custos-legend-pct" style="color:${s.color}">${s.share.toFixed(1)}%</span>
+          </div>`).join('');
+      } else {
+        const current = filterCustosByPeriod();
+        const total   = current.reduce((s,c)=>s+c.valor,0);
+        const cats    = getCatsByTipo(custosTipoFilter);
+        const bycat   = {};
+        cats.forEach(c=>bycat[c]=0);
+        current.forEach(c=>{ bycat[c.categoria]=(bycat[c.categoria]||0)+c.valor; });
+        totalEl.textContent = 'R$ '+fmtCusto(total);
+        const entries = Object.entries(bycat).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+        if (!entries.length) { donutEl.style.background='var(--border)'; legendEl.innerHTML=''; return; }
+        let pct=0; const stops=[], legendItems=[];
+        entries.forEach(([cat,val])=>{
+          const i=cats.indexOf(cat); const color=CC_COLORS[i>=0?i%CC_COLORS.length:CC_COLORS.length-1];
+          const share=val/total*100;
+          stops.push(`${color} ${pct.toFixed(2)}% ${(pct+share).toFixed(2)}%`);
+          legendItems.push({cat,val,share,color}); pct+=share;
+        });
+        donutEl.style.background=`conic-gradient(${stops.join(',')})`;
+        legendEl.innerHTML=legendItems.map(({cat,val,share,color})=>`
+          <div class="custos-legend-item" onclick="filterCustosByCat('${cat.replace(/'/g,"\\'")}')">
+            <div class="custos-legend-dot" style="background:${color}"></div>
+            <span class="custos-legend-name">${cat}</span>
+            <span class="custos-legend-val">R$ ${fmtCusto(val)}</span>
+            <span class="custos-legend-pct" style="color:${color}">${share.toFixed(1)}%</span>
+          </div>`).join('');
+      }
+    }
+
+    function filterCustosByCat(cat) {
+      custosCatFilter = custosCatFilter===cat ? null : cat;
+      custosPage=1; renderCustosList();
+    }
+
+    function renderCustosList() {
+      const current = filterCustosByPeriod();
+      const q = (document.getElementById('custosSearch')?.value||'').toLowerCase();
+      const filtered = current.filter(c=>
+        (!custosCatFilter || c.categoria===custosCatFilter) &&
+        (!q || c.desc.toLowerCase().includes(q)||(c.categoria||'').toLowerCase().includes(q)||(c.fornecedor||'').toLowerCase().includes(q))
+      );
+      const body=document.getElementById('custosTbody'), empty=document.getElementById('custosEmpty');
+      const total=filtered.length, start=(custosPage-1)*custosPerPage;
+      const slice=filtered.slice(start,start+custosPerPage);
+      if (!total) {
+        body.innerHTML=''; empty.classList.add('show');
+        document.getElementById('custosEmptyH3').textContent=custosData.length===0?'Nenhum lançamento cadastrado':'Nenhum resultado encontrado';
+        document.getElementById('custosEmptyP').textContent =custosData.length===0?'Clique em "Novo Lançamento" para começar.':'Tente ajustar o período ou a busca.';
+      } else { empty.classList.remove('show'); }
+
+      const allCats=[...custoCats,...despesaCats];
+      const catColor=cat=>{ const i=allCats.indexOf(cat); return CC_COLORS[i>=0?i%CC_COLORS.length:CC_COLORS.length-1]; };
+
+      body.innerHTML=slice.map(c=>{
+        const color=catColor(c.categoria);
+        const d=new Date(c.data); const dataFmt=isNaN(d)?c.data:d.toLocaleDateString('pt-BR');
+        const tipo=c.tipo||'custo';
+        const tipoLabel=tipo==='despesa'?'Despesa':'Custo';
+        const recBadge=c.recorrenciaId?`<span class="cc-rec-badge"><i class="bi bi-arrow-repeat"></i>Recorrente</span>`:'';
+        return `<tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
+              <span style="font-weight:600;font-size:13px">${escapeHTML(c.desc)}</span>${recBadge}
+            </div>
+            <div style="display:flex;gap:5px;margin-top:2px">
+              <span class="cc-tipo-badge ${tipo}">${tipoLabel}</span>
+              ${c.fornecedor?`<span style="font-size:11px;color:var(--muted)">${escapeHTML(c.fornecedor)}</span>`:''}
+            </div>
+          </td>
+          <td><span class="cc-cat-badge" style="background:${color}18;color:${color}">${escapeHTML(c.categoria)}</span></td>
+          <td style="color:var(--muted);font-size:12px">${dataFmt}</td>
+          <td style="font-weight:700;color:var(--danger);text-align:right">R$ ${fmtCusto(c.valor)}</td>
+          <td><div class="action-cell" onclick="event.stopPropagation()">
+            <div class="act-btn" onclick="openCustosModal(${c.id})"><i class="bi bi-pencil"></i></div>
+            <div class="act-btn del" onclick="deleteCusto(${c.id})"><i class="bi bi-trash3"></i></div>
+          </div></td>
+        </tr>`;
+      }).join('');
+
+      document.getElementById('custosInfo').textContent=total
+        ?`Mostrando ${Math.min(start+1,total)}–${Math.min(start+custosPerPage,total)} de ${total} lançamento${total!==1?'s':''}`:'—';
+      renderCustosPagination(total);
+    }
+
+    function renderCustosPagination(total) {
+      const pages=Math.ceil(total/custosPerPage), pg=document.getElementById('custosPagination');
+      if (pages<=1) { pg.innerHTML=''; return; }
+      let h=`<button class="pg-btn" onclick="custosGoPage(${custosPage-1})" ${custosPage===1?'disabled':''}><i class="bi bi-chevron-left"></i></button>`;
+      for(let i=1;i<=pages;i++) h+=`<button class="pg-btn ${i===custosPage?'active':''}" onclick="custosGoPage(${i})">${i}</button>`;
+      h+=`<button class="pg-btn" onclick="custosGoPage(${custosPage+1})" ${custosPage===pages?'disabled':''}><i class="bi bi-chevron-right"></i></button>`;
+      pg.innerHTML=h;
+    }
+    function custosGoPage(p) {
+      const pages=Math.ceil(filterCustosByPeriod().length/custosPerPage);
+      if(p<1||p>pages) return; custosPage=p; renderCustosList();
+    }
+
+    function setCustosPeriod(el,period) {
+      custosPeriod=period; custosCatFilter=null; custosPage=1;
+      document.querySelectorAll('#custos-period-btns .period-btn').forEach(b=>b.classList.remove('active'));
+      el.classList.add('active'); renderCustosPanel();
+    }
+
+    function setCustosTipo(el,tipo) {
+      custosTipoFilter=tipo; custosCatFilter=null; custosPage=1;
+      document.querySelectorAll('#custos-tipo-tabs .custos-tipo-tab').forEach(b=>b.classList.remove('active'));
+      el.classList.add('active'); renderCustosPanel();
+    }
+
+    // ── Modal lançamento ──
+    function onCfTipoChange() {
+      const tipo=document.querySelector('input[name="cf-tipo"]:checked')?.value||'custo';
+      populateCfCat(tipo);
+    }
+
+    function populateCfCat(tipoOvr) {
+      const sel=document.getElementById('cf-cat'); if (!sel) return;
+      const tipo=tipoOvr||document.querySelector('input[name="cf-tipo"]:checked')?.value||'custo';
+      const cats=getCatsByTipo(tipo);
+      const cur=sel.value;
+      sel.innerHTML=cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+      if (cur) { for(let o of sel.options) if(o.value===cur){o.selected=true;break;} }
+    }
+
+    function toggleCfRec() {
+      const checked=document.getElementById('cf-recorrente').checked;
+      document.getElementById('cf-rec-opts').style.display=checked?'grid':'none';
+    }
+
+    function openCustosModal(id) {
+      editingCustoId=id||null;
+      document.getElementById('custosModalTitle').textContent=id?'Editar Lançamento':'Novo Lançamento';
+      document.getElementById('cf-rec-section').style.display=id?'none':'block';
+      document.getElementById('cf-recorrente').checked=false;
+      document.getElementById('cf-rec-opts').style.display='none';
+
+      if (id) {
+        const c=custosData.find(x=>x.id===id); if (!c) return;
+        const tipo=c.tipo||'custo';
+        document.querySelector(`input[name="cf-tipo"][value="${tipo}"]`).checked=true;
+        populateCfCat(tipo);
+        document.getElementById('cf-desc').value       = c.desc;
+        document.getElementById('cf-valor').value      = fmtCusto(c.valor);
+        document.getElementById('cf-data').value       = c.data;
+        document.getElementById('cf-fornecedor').value = c.fornecedor||'';
+        document.getElementById('cf-obs').value        = c.obs||'';
+        for(let o of document.getElementById('cf-cat').options) if(o.value===c.categoria){o.selected=true;break;}
+      } else {
+        document.querySelector('input[name="cf-tipo"][value="custo"]').checked=true;
+        populateCfCat('custo');
+        document.getElementById('cf-desc').value       = '';
+        document.getElementById('cf-valor').value      = '';
+        document.getElementById('cf-data').value       = new Date().toISOString().split('T')[0];
+        document.getElementById('cf-fornecedor').value = '';
+        document.getElementById('cf-obs').value        = '';
+      }
+      document.getElementById('custosModalOverlay').classList.add('open');
+    }
+    function closeCustosModal() { document.getElementById('custosModalOverlay').classList.remove('open'); }
+
+    function saveCusto() {
+      const desc  = document.getElementById('cf-desc').value.trim();
+      const valor = parseFloat((document.getElementById('cf-valor').value||'0').replace(/\./g,'').replace(',','.'));
+      const data  = document.getElementById('cf-data').value;
+      const cat   = document.getElementById('cf-cat').value;
+      const tipo  = document.querySelector('input[name="cf-tipo"]:checked')?.value||'custo';
+      if (!desc||!valor||!data||!cat) { showToast('Preencha todos os campos obrigatórios.'); return; }
+
+      const base = {
+        desc, valor, data, categoria:cat, tipo,
+        fornecedor: document.getElementById('cf-fornecedor').value.trim(),
+        obs:        document.getElementById('cf-obs').value.trim(),
+      };
+
+      if (editingCustoId) {
+        const idx=custosData.findIndex(x=>x.id===editingCustoId);
+        if (idx>=0) custosData[idx]={...custosData[idx],...base};
+        saveCustosData(); closeCustosModal(); renderCustosPanel();
+        showToast('Lançamento atualizado!'); return;
+      }
+
+      const recorrente=document.getElementById('cf-recorrente').checked;
+      if (recorrente) {
+        const freq=document.getElementById('cf-freq').value;
+        const reps=parseInt(document.getElementById('cf-rep').value)||3;
+        const recorrenciaId=Date.now();
+        const entries=[];
+        for (let i=0;i<reps;i++) {
+          const d=new Date(data);
+          if (freq==='mensal')  d.setMonth(d.getMonth()+i);
+          if (freq==='semanal') d.setDate(d.getDate()+i*7);
+          if (freq==='anual')   d.setFullYear(d.getFullYear()+i);
+          entries.push({...base, id:recorrenciaId+i, data:d.toISOString().split('T')[0], recorrenciaId});
+        }
+        custosData=[...entries,...custosData];
+        saveCustosData(); closeCustosModal(); renderCustosPanel();
+        showToast(`${reps} lançamentos recorrentes criados!`);
+      } else {
+        custosData.unshift({...base, id:Date.now()});
+        saveCustosData(); closeCustosModal(); renderCustosPanel();
+        showToast('Lançamento registrado!');
+      }
+    }
+
+    // ── Confirm / delete ──
+    function openCcConfirm(msg,cb,serieCb) {
+      document.getElementById('ccConfirmMsg').textContent=msg;
+      ccConfirmCb=cb; ccSerieCb=serieCb||null;
+      document.getElementById('btnDelSerie').style.display=serieCb?'flex':'none';
+      document.getElementById('ccConfirmOverlay').classList.add('open');
+    }
+    function closeCcConfirm() { document.getElementById('ccConfirmOverlay').classList.remove('open'); ccConfirmCb=null; ccSerieCb=null; }
+    function doCcConfirm()    { if(ccConfirmCb) ccConfirmCb(); closeCcConfirm(); }
+    function doDelSerie()     { if(ccSerieCb)   ccSerieCb();   closeCcConfirm(); }
+
+    function deleteCusto(id) {
+      const c=custosData.find(x=>x.id===id); if (!c) return;
+      const serieCount=c.recorrenciaId ? custosData.filter(x=>x.recorrenciaId===c.recorrenciaId).length : 0;
+      const serieCb = serieCount>1 ? ()=>{
+        custosData=custosData.filter(x=>x.recorrenciaId!==c.recorrenciaId);
+        saveCustosData(); renderCustosPanel(); showToast(`${serieCount} lançamentos da série removidos.`);
+      } : null;
+      openCcConfirm(
+        serieCount>1 ? `"${c.desc}" — série com ${serieCount} lançamentos. Remover só este ou toda a série?` : `"${c.desc}" será removido permanentemente.`,
+        ()=>{ custosData=custosData.filter(x=>x.id!==id); saveCustosData(); renderCustosPanel(); showToast('Lançamento removido.'); },
+        serieCb
+      );
+    }
+
+    // ── Modal categorias ──
+    function openCustosCatModal() {
+      activeCatTab='custo';
+      document.querySelectorAll('.cc-cat-tipo-tab').forEach((t,i)=>t.classList.toggle('active',i===0));
+      renderCustosCatList();
+      document.getElementById('custosCatOverlay').classList.add('open');
+    }
+    function closeCustosCatModal() {
+      document.getElementById('custosCatOverlay').classList.remove('open');
+      document.getElementById('cc-cat-input').value='';
+      populateCfCat();
+    }
+    function setCatTipoTab(el,tipo) {
+      activeCatTab=tipo;
+      document.querySelectorAll('.cc-cat-tipo-tab').forEach(t=>t.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('cc-cat-input').value='';
+      renderCustosCatList();
+    }
+
+    function renderCustosCatList() {
+      const cats=getCatsByTipo(activeCatTab);
+      const list=document.getElementById('custosCatList');
+      document.getElementById('custosCatCount').textContent=cats.length+' categorias';
+      if (!cats.length) {
+        list.innerHTML='<div style="text-align:center;padding:32px;color:var(--muted);font-size:13px">Nenhuma categoria cadastrada.</div>'; return;
+      }
+      list.innerHTML=cats.map((cat,i)=>{
+        const count=custosData.filter(c=>c.categoria===cat).length;
+        const color=CC_COLORS[i%CC_COLORS.length];
+        return `<div class="cc-cat-row" id="cc-row-${i}">
+          <div class="cc-cat-accent" style="background:${color}"></div>
+          <span class="cc-cat-name" id="cc-name-${i}">${cat}</span>
+          <span class="cc-cat-pill" style="background:${color}20;color:${color}">${count} lançamento${count!==1?'s':''}</span>
+          <div class="act-btn" onclick="startRenameCustosCat(${i})" title="Renomear"><i class="bi bi-pencil"></i></div>
+          <div class="act-btn del" onclick="deleteCustosCat(${i})" title="Excluir"><i class="bi bi-trash3"></i></div>
+        </div>`;
+      }).join('');
+    }
+
+    function addCustosCat() {
+      const inp=document.getElementById('cc-cat-input'), val=inp.value.trim();
+      if (!val) return;
+      const cats=getCatsByTipo(activeCatTab);
+      if (cats.some(c=>c.toLowerCase()===val.toLowerCase())) { showToast('Categoria já existe!'); return; }
+      cats.push(val);
+      activeCatTab==='despesa' ? saveDespesaCats() : saveCustoCats();
+      inp.value=''; renderCustosCatList(); showToast('Categoria adicionada!');
+    }
+
+    function deleteCustosCat(i) {
+      const cats=getCatsByTipo(activeCatTab), cat=cats[i];
+      const inUse=custosData.filter(c=>c.categoria===cat).length;
+      if (inUse>0 && !confirm(`"${cat}" está em uso por ${inUse} lançamento(s). Remover mesmo assim?`)) return;
+      cats.splice(i,1);
+      activeCatTab==='despesa' ? saveDespesaCats() : saveCustoCats();
+      renderCustosCatList(); showToast('Categoria removida.');
+    }
+
+    function startRenameCustosCat(i) {
+      const cats=getCatsByTipo(activeCatTab);
+      const nameEl=document.getElementById(`cc-name-${i}`); if (!nameEl) return;
+      const current=cats[i]; let esc=false;
+      nameEl.outerHTML=`<input class="cc-cat-edit-inp" id="cc-edit-${i}" value="${current.replace(/"/g,'&quot;')}">`;
+      const inp=document.getElementById(`cc-edit-${i}`);
+      inp.addEventListener('keydown',e=>{ if(e.key==='Escape'){esc=true;renderCustosCatList();} if(e.key==='Enter') inp.blur(); });
+      inp.addEventListener('blur',()=>{
+        if(esc) return;
+        const nv=inp.value.trim();
+        if (nv&&nv!==current) {
+          if (cats.some((c,idx)=>idx!==i&&c.toLowerCase()===nv.toLowerCase())) { showToast('Categoria já existe!'); renderCustosCatList(); return; }
+          custosData.forEach(c=>{ if(c.categoria===current) c.categoria=nv; }); saveCustosData();
+          cats[i]=nv;
+          activeCatTab==='despesa' ? saveDespesaCats() : saveCustoCats();
+          showToast('Categoria renomeada!');
+        }
+        renderCustosCatList();
+      });
+      inp.focus(); inp.select();
     }
 
   </script>
