@@ -158,9 +158,70 @@
   }
 
   function confirmLogout() {
+    // Verifica se há um caixa aberto antes de sair
+    try {
+      const caixaRaw = localStorage.getItem('nexoerp.pdv.caixa');
+      if (caixaRaw) {
+        const caixa = JSON.parse(caixaRaw);
+        if (caixa && caixa.aberto) {
+          _showLogoutCaixaAlert();
+          return;
+        }
+      }
+    } catch (_) {}
     if (confirm('Deseja sair da sua conta?')) {
       logout('landing.html');
     }
+  }
+
+  function _showLogoutCaixaAlert() {
+    const existing = document.getElementById('_logoutCaixaAlert');
+    if (existing) { existing.remove(); return; }
+
+    const operador = (() => {
+      try {
+        return JSON.parse(localStorage.getItem('nexoerp.pdv.caixa'))?.operador || 'Operador';
+      } catch (_) { return 'Operador'; }
+    })();
+
+    const el = document.createElement('div');
+    el.id = '_logoutCaixaAlert';
+    el.style.cssText = `
+      position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+      background:#0f1929;border:1px solid rgba(255,107,53,.3);border-radius:14px;
+      padding:14px 18px;box-shadow:0 20px 50px rgba(0,0,0,.5);z-index:9999;
+      min-width:340px;max-width:460px;display:flex;align-items:center;gap:12px;
+      animation:slideUp .3s cubic-bezier(.34,1.2,.64,1) both;font-family:'Inter',sans-serif;
+    `;
+    el.innerHTML = `
+      <div style="width:38px;height:38px;border-radius:10px;background:rgba(255,107,53,.15);
+                  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+                  color:#ff6b35;font-size:16px">
+        <i class="bi bi-lock-fill"></i>
+      </div>
+      <div style="flex:1">
+        <strong style="display:block;font-size:13px;color:#e8edf5;margin-bottom:2px">
+          Caixa aberto por ${operador}
+        </strong>
+        <span style="font-size:12px;color:#94a3b8">
+          Feche o caixa antes de sair para manter o controle do turno.
+        </span>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button onclick="location.href='pdv.html'"
+          style="padding:6px 12px;border-radius:8px;border:none;background:#00c896;
+                 color:#021c14;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">
+          Ir ao PDV
+        </button>
+        <button onclick="document.getElementById('_logoutCaixaAlert').remove();
+                         if(confirm('Deseja sair da sua conta?')){localStorage.removeItem('nexoerp.session');location.href='landing.html'}"
+          style="padding:6px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.1);
+                 background:none;color:#94a3b8;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">
+          Ignorar e Sair
+        </button>
+      </div>`;
+    document.body.appendChild(el);
+    setTimeout(() => el.parentNode && el.remove(), 12000);
   }
 
   function getGreeting() {

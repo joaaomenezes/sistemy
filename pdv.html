@@ -6,8 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistemy — PDV</title>
 
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
@@ -22,8 +21,6 @@
       --danger: #ff4757;
       --text: #e8edf5;
       --muted: #6b7f96;
-      --sidebar: 220px;
-      --sidebar-c: 64px;
       --font-h: 'Inter', sans-serif;
       --sub: #94a3b8;
       /* alpha helpers */
@@ -59,147 +56,6 @@
       display: flex;
     }
 
-    /* ══ SIDEBAR ══ */
-    .sidebar {
-      width: var(--sidebar-c);
-      height: 100vh;
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-      transition: width .28s cubic-bezier(.4, 0, .2, 1);
-      overflow-x: hidden;
-      overflow-y: auto;
-      scrollbar-width: none;
-      position: relative;
-      z-index: 200;
-    }
-
-    .sidebar::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    .sidebar::-webkit-scrollbar-thumb {
-      background: transparent;
-      border-radius: 2px;
-    }
-
-    .sidebar:hover::-webkit-scrollbar-thumb {
-      background: var(--border);
-    }
-
-    /* expande ao hover */
-    .sidebar:hover {
-      width: var(--sidebar);
-    }
-
-    /* textos e labels só aparecem quando expandido */
-    .brand-text {
-      font-family: 'Inter', sans-serif;
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: -.5px;
-      opacity: 0;
-      transition: opacity .18s .05s;
-      white-space: nowrap;
-    }
-
-    .brand-text span {
-      color: var(--accent);
-    }
-
-    .sidebar:hover .brand-text {
-      opacity: 1;
-    }
-
-    .sidebar-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 14px;
-      border-bottom: 1px solid var(--border);
-      white-space: nowrap;
-    }
-
-    .brand-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      flex-shrink: 0;
-      background: linear-gradient(135deg, var(--accent), #008a60);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      font-size: 12px;
-      color: #021c14;
-    }
-
-    /* indicador visual de "arraste para expandir" */
-    .sidebar::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: 2px;
-      background: linear-gradient(to bottom, transparent, var(--accent), transparent);
-      opacity: 0;
-      transition: opacity .3s;
-    }
-
-    .sidebar:not(:hover)::after {
-      opacity: .3;
-      animation: sideGlow 2.5s ease-in-out infinite;
-    }
-
-    @keyframes sideGlow {
-
-      0%,
-      100% {
-        opacity: .15
-      }
-
-      50% {
-        opacity: .45
-      }
-    }
-
-    /* caixa status */
-    .caixa-status {
-      margin: 8px;
-      padding: 7px 10px;
-      border-radius: 10px;
-      background: rgba(255, 71, 87, .07);
-      border: 1px solid rgba(255, 71, 87, .2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      overflow: hidden;
-      width: calc(100% - 16px);
-      white-space: nowrap;
-      transition: background .3s, border-color .3s;
-    }
-
-    .caixa-status.aberto {
-      background: rgba(0, 200, 150, .07);
-      border: 1px solid rgba(0, 200, 150, .2);
-    }
-
-    .caixa-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-      flex-shrink: 0;
-      box-shadow: 0 0 6px var(--accent);
-      animation: pulse 2s infinite;
-    }
-
-
     @keyframes slideUp {
       from {
         opacity: 0;
@@ -224,194 +80,6 @@
       }
     }
 
-    .caixa-info {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      overflow: hidden;
-      opacity: 0;
-      max-width: 0;
-      transition: opacity .18s, max-width .18s;
-      white-space: nowrap;
-    }
-
-    .sidebar:hover .caixa-info {
-      opacity: 1;
-      max-width: 200px;
-    }
-
-    .caixa-label {
-      font-size: 10px;
-      color: var(--accent);
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .caixa-time {
-      font-size: 11px;
-      color: var(--muted);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .nav-section {
-      padding: 4px 10px;
-    }
-
-    .nav-section-label {
-      font-size: 9px;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--muted);
-      padding: 4px 4px 3px;
-      white-space: nowrap;
-      opacity: 0;
-      transition: opacity .18s;
-    }
-
-    .sidebar:hover .nav-section-label {
-      opacity: 1;
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 7px 8px;
-      border-radius: 8px;
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background .15s, color .15s;
-      margin-bottom: 1px;
-    }
-
-    .nav-item i {
-      font-size: 16px;
-      flex-shrink: 0;
-    }
-
-    .nav-item:hover {
-      background: var(--card);
-      color: var(--text);
-    }
-
-    .nav-item.active {
-      background: rgba(0, 200, 150, .1);
-      color: var(--accent);
-    }
-
-    .nav-label {
-      opacity: 0;
-      transition: opacity .18s;
-    }
-
-    .sidebar:hover .nav-label {
-      opacity: 1;
-    }
-
-    /* mini stats sidebar */
-    .sidebar-stats {
-      padding: 8px 10px;
-      margin-top: auto;
-      border-top: 1px solid var(--border);
-    }
-
-    .stat-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 4px;
-    }
-
-    .stat-row .stat-label,
-    .stat-row .stat-val {
-      opacity: 0;
-      transition: opacity .18s;
-    }
-
-    .sidebar:hover .stat-row .stat-label,
-    .sidebar:hover .stat-row .stat-val {
-      opacity: 1;
-    }
-
-    .stat-label {
-      font-size: 10px;
-      color: var(--muted);
-    }
-
-    .stat-val {
-      font-family: 'Inter', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .stat-val.g {
-      color: var(--accent);
-    }
-
-    .stat-val.b {
-      color: var(--accent2);
-    }
-
-    .sidebar-user {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-      border-top: 1px solid var(--border);
-      cursor: pointer;
-      transition: background .15s;
-    }
-
-    .sidebar-user:hover {
-      background: var(--card);
-    }
-
-    .u-avatar {
-      width: 30px;
-      height: 30px;
-      border-radius: 7px;
-      flex-shrink: 0;
-      background: linear-gradient(135deg, #2d5298, #1a3a7a);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Inter', sans-serif;
-      font-weight: 700;
-      font-size: 11px;
-      color: #fff;
-    }
-
-    .u-info {
-      overflow: hidden;
-      opacity: 0;
-      transition: opacity .18s;
-    }
-
-    .sidebar:hover .u-info {
-      opacity: 1;
-    }
-
-    .u-name {
-      font-weight: 600;
-      font-size: 12px;
-      white-space: nowrap;
-    }
-
-    .u-role {
-      color: var(--muted);
-      font-size: 10px;
-    }
-
     /* ══ MAIN ══ */
     .pdv-main {
       flex: 1;
@@ -428,6 +96,30 @@
       height: 100vh;
       overflow: hidden;
       border-right: 1px solid var(--border);
+    }
+
+    /* botão voltar */
+    .btn-back {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      text-decoration: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: all .15s;
+    }
+
+    .btn-back:hover {
+      color: var(--text);
+      border-color: var(--muted);
     }
 
     /* topbar */
@@ -523,25 +215,28 @@
     }
 
 
-    /* cabeçalho do grid */
-    .grid-header {
-      display: none;
+    /* linha de categorias dentro do grid-wrap */
+    .grid-cat-row {
+      display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding-bottom: 10px;
+      gap: 6px;
+      margin-bottom: 12px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      flex-shrink: 0;
     }
 
-    .grid-header-label {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--muted);
+    .grid-cat-row::-webkit-scrollbar {
+      display: none;
     }
 
     .grid-header-count {
       font-size: 11px;
       color: var(--muted);
+      white-space: nowrap;
+      margin-left: auto;
+      flex-shrink: 0;
+      padding-left: 8px;
     }
 
     /* grid produtos */
@@ -1250,6 +945,237 @@
       background: rgba(2, 28, 20, .3);
       padding: 2px 7px;
       border-radius: 4px;
+    }
+
+    /* ══ VENDAS SUSPENSAS ══ */
+    .cart-suspend-btn {
+      position: relative;
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all .15s;
+      flex-shrink: 0;
+    }
+
+    .cart-suspend-btn:hover {
+      color: var(--accent2);
+      border-color: rgba(0, 119, 255, .4);
+    }
+
+    .cart-suspend-btn.has-suspended {
+      color: var(--accent2);
+      border-color: rgba(0, 119, 255, .35);
+      background: rgba(0, 119, 255, .08);
+    }
+
+    .cart-suspend-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent2);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid var(--surface);
+    }
+
+    .cart-suspended-bar {
+      padding: 7px 14px;
+      background: rgba(0, 119, 255, .06);
+      border-bottom: 1px solid rgba(0, 119, 255, .14);
+      display: none;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: background .15s;
+      flex-shrink: 0;
+    }
+
+    .cart-suspended-bar.show {
+      display: flex;
+    }
+
+    .cart-suspended-bar:hover {
+      background: rgba(0, 119, 255, .12);
+    }
+
+    .cart-suspended-bar>i {
+      color: var(--accent2);
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .csb-text {
+      flex: 1;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent2);
+    }
+
+    .csb-retomar {
+      font-size: 11px;
+      color: var(--accent2);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      flex-shrink: 0;
+      opacity: .8;
+    }
+
+    /* Painel / modal de listagem */
+    .suspended-modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(20px) scale(.97);
+      transition: transform .3s cubic-bezier(.34, 1.2, .64, 1);
+      overflow: hidden;
+    }
+
+    .modal-overlay.open .suspended-modal {
+      transform: none;
+    }
+
+    .suspended-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      cursor: default;
+      transition: border-color .18s;
+    }
+
+    .suspended-item:hover {
+      border-color: rgba(0, 119, 255, .25);
+    }
+
+    .suspended-item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .suspended-item-label {
+      font-weight: 700;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .suspended-item-time {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .suspended-item-info {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .suspended-item-total {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--accent2);
+    }
+
+    .suspended-item-btns {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-retomar {
+      flex: 2;
+      padding: 8px;
+      border-radius: 8px;
+      border: none;
+      background: var(--accent2);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: opacity .15s;
+    }
+
+    .btn-retomar:hover {
+      opacity: .85;
+    }
+
+    .btn-descartar-susp {
+      flex: 1;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 71, 87, .25);
+      background: rgba(255, 71, 87, .06);
+      color: var(--danger);
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+
+    .btn-descartar-susp:hover {
+      opacity: .75;
+    }
+
+    /* Mini-modal de rótulo */
+    .suspend-label-modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 26px 24px 20px;
+      width: 100%;
+      max-width: 360px;
+      transform: translateY(20px) scale(.97);
+      transition: transform .3s cubic-bezier(.34, 1.2, .64, 1);
+    }
+
+    .modal-overlay.open .suspend-label-modal {
+      transform: none;
+    }
+
+    .suspend-label-modal h3 {
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .suspend-label-modal p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 16px;
+      line-height: 1.5;
     }
 
     /* ══ MODAL OVERLAY ══ */
@@ -3318,6 +3244,124 @@
       -webkit-print-color-adjust: exact;
     }
 
+    /* ══ CAIXA OVERTIME ══ */
+    .caixa-overtime-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 3500;
+      background: rgba(0, 0, 0, .75);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: fadeIn .25s ease both;
+    }
+
+    .caixa-overtime-card {
+      background: var(--card);
+      border: 1px solid rgba(255, 107, 53, .3);
+      border-radius: 20px;
+      padding: 36px 32px 28px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 0 80px rgba(255, 107, 53, .12);
+      animation: overtimeIn .35s cubic-bezier(.34, 1.2, .64, 1) both;
+    }
+
+    @keyframes overtimeIn {
+      from {
+        opacity: 0;
+        transform: scale(.9) translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .cot-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: rgba(255, 107, 53, .1);
+      border: 2px solid rgba(255, 107, 53, .3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      margin: 0 auto 20px;
+    }
+
+    .cot-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+      margin-bottom: 6px;
+    }
+
+    .cot-time {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--warn);
+      margin: 10px 0 14px;
+      letter-spacing: -1px;
+    }
+
+    .cot-desc {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+      margin-bottom: 26px;
+    }
+
+    .cot-btns {
+      display: flex;
+      gap: 10px;
+    }
+
+    .cot-btn-fechar {
+      flex: 2;
+      padding: 13px;
+      border-radius: 10px;
+      border: none;
+      background: var(--warn);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: opacity .15s;
+    }
+
+    .cot-btn-fechar:hover {
+      opacity: .85;
+    }
+
+    .cot-btn-continuar {
+      flex: 1;
+      padding: 13px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color .15s;
+    }
+
+    .cot-btn-continuar:hover {
+      border-color: var(--muted);
+    }
+
     /* ══ BARCODE indicator ══ */
     .barcode-indicator {
       position: fixed;
@@ -3518,47 +3562,45 @@
       border-color: var(--muted);
     }
 
-    /* ── Barra de categorias ── */
-    .categorias-bar {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(11, 18, 32, .3);
-      flex-shrink: 0;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-
-    .categorias-bar::-webkit-scrollbar {
-      display: none;
-    }
-
     .cat-chip {
-      padding: 5px 14px;
-      border-radius: 100px;
-      border: 1px solid var(--border);
-      background: var(--card);
+      position: relative;
+      padding: 10px 2px 4px;
+      background: none;
+      border: none;
       color: var(--muted);
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
       white-space: nowrap;
-      transition: all .15s;
       flex-shrink: 0;
       font-family: 'Inter', sans-serif;
+      transition: color .18s;
+    }
+
+    .cat-chip::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 1px;
+      transition: width .2s ease;
     }
 
     .cat-chip:hover {
-      border-color: var(--muted);
-      color: var(--text);
+      color: var(--sub);
     }
 
     .cat-chip.active {
-      background: rgba(0, 200, 150, .1);
-      border-color: rgba(0, 200, 150, .4);
-      color: var(--accent);
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .cat-chip.active::before {
+      width: 100%;
     }
 
     /* ── Paginação do grid ── */
@@ -3720,15 +3762,6 @@
     }
 
     @media(max-width:768px) {
-      :root {
-        --sidebar-c: 0px;
-        --sidebar: 0px;
-      }
-
-      .sidebar {
-        display: none;
-      }
-
       .pdv-main {
         flex-direction: column;
       }
@@ -4783,79 +4816,6 @@
 
 <body>
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-      <div class="brand-icon">N</div>
-      <span class="brand-text">Nexo<span>ERP</span></span>
-    </div>
-
-    <div class="caixa-status" id="caixaStatus">
-      <div class="caixa-dot" id="caixaDot" style="background:var(--danger);box-shadow:0 0 6px var(--danger)"></div>
-      <div class="caixa-info">
-        <span class="caixa-label" id="caixaLabel">Caixa fechado</span>
-        <span style="color:var(--border)">·</span>
-        <span class="caixa-time" id="caixaTime">--:--</span>
-      </div>
-    </div>
-
-    <div class="nav-section">
-      <div class="nav-section-label">PDV</div>
-      <a class="nav-item active"><i class="bi bi-display"></i><span class="nav-label">PDV / Caixa</span></a>
-      <a href="pedidos.html" class="nav-item"><i class="bi bi-file-earmark-text-fill"></i><span
-          class="nav-label">Pedidos de Venda</span></a>
-      <a class="nav-item" onclick="openDrawer()"><i class="bi bi-clock-history"></i><span class="nav-label">Últimas
-          Vendas</span></a>
-    </div>
-
-    <div class="nav-section">
-      <div class="nav-section-label">Principal</div>
-      <a class="nav-item" href="dashboard.html"><i class="bi bi-grid-1x2-fill"></i><span
-          class="nav-label">Dashboard</span></a>
-      <a class="nav-item" href="vendas.html"><i class="bi bi-cart4"></i><span class="nav-label">Vendas</span></a>
-      <a class="nav-item" href="clientes.html"><i class="bi bi-people-fill"></i><span
-          class="nav-label">Clientes</span></a>
-      <a class="nav-item" href="produtos.html"><i class="bi bi-box-seam-fill"></i><span
-          class="nav-label">Produtos</span></a>
-      <a class="nav-item" href="estoque.html"><i class="bi bi-stack"></i><span class="nav-label">Estoque</span></a>
-    </div>
-
-    <div class="nav-section">
-      <div class="nav-section-label">Financeiro</div>
-      <a class="nav-item" href="#"><i class="bi bi-graph-up-arrow"></i><span class="nav-label">Relatórios</span></a>
-      <a class="nav-item" href="financeiro.html"><i class="bi bi-credit-card-2-back-fill"></i><span
-          class="nav-label">Financeiro</span></a>
-      <a class="nav-item" href="#"><i class="bi bi-receipt-cutoff"></i><span class="nav-label">Fiscal / NF-e</span></a>
-    </div>
-
-    <div class="nav-section">
-      <div class="nav-section-label">Sistema</div>
-      <a class="nav-item" href="#"><i class="bi bi-briefcase-fill"></i><span class="nav-label">Parceiros</span></a>
-      <a class="nav-item" href="configuracoes.html"><i class="bi bi-gear-fill"></i><span
-          class="nav-label">Configurações</span></a>
-    </div>
-
-    <div class="sidebar-stats">
-      <div class="stat-row"><span class="stat-label">Vendas hoje</span><span class="stat-val g"
-          id="stat-vendas">0</span></div>
-      <div class="stat-row"><span class="stat-label">Faturamento</span><span class="stat-val g" id="stat-fat">R$
-          0</span></div>
-      <div class="stat-row"><span class="stat-label">Ticket médio</span><span class="stat-val b" id="stat-ticket">R$
-          0</span></div>
-    </div>
-
-    <div class="sidebar-user">
-      <div class="u-avatar">JD</div>
-      <div class="u-info">
-        <div class="u-name">João Desenvolvedor</div>
-        <div class="u-role">Operador de caixa</div>
-      </div>
-    </div>
-    <a class="nav-item" onclick="NexoAuth.confirmLogout()" style="cursor:pointer;color:var(--danger)">
-      <i class="bi bi-box-arrow-left"></i><span class="nav-label">Sair</span>
-    </a>
-  </aside>
-
   <!-- PDV MAIN -->
   <div class="pdv-main">
 
@@ -4864,6 +4824,9 @@
 
       <!-- topbar -->
       <div class="pdv-topbar">
+        <a class="btn-back" href="dashboard.html" title="Voltar ao sistema">
+          <i class="bi bi-arrow-left"></i> Sistema
+        </a>
         <div class="search-wrap">
           <i class="bi bi-search"></i>
           <input class="search-input" id="searchInput" type="text"
@@ -4895,6 +4858,10 @@
         <div class="sc-sep"></div>
         <div class="sc-item"><span class="sc-key">F5</span> Vendas</div>
         <div class="sc-sep"></div>
+        <div class="sc-item"><span class="sc-key">F6</span> Suspender</div>
+        <div class="sc-sep"></div>
+        <div class="sc-item"><span class="sc-key">F7</span> Suspensas</div>
+        <div class="sc-sep"></div>
         <div class="sc-item"><span class="sc-key">Enter</span> Adicionar</div>
         <div class="sc-sep"></div>
         <div class="sc-item"><span class="sc-key">ESC</span> Cancelar</div>
@@ -4912,13 +4879,10 @@
         </div>
       </div>
 
-      <!-- categorias -->
-      <div class="categorias-bar" id="categoriasBar"></div>
-
       <!-- grid -->
       <div class="produtos-grid-wrap" id="prodGridWrap">
-        <div class="grid-header" id="gridHeader">
-          <span class="grid-header-label" id="gridHeaderLabel">Todos</span>
+        <div class="grid-cat-row" id="gridHeader">
+          <div id="categoriasBar" style="display:contents"></div>
           <span class="grid-header-count" id="gridHeaderCount"></span>
         </div>
         <div class="produtos-grid" id="prodGrid">
@@ -4945,6 +4909,10 @@
           <span class="cart-count" id="cartCount">0</span>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
+          <div class="cart-suspend-btn" id="cartSuspendBtn" onclick="suspendBtnClick()" title="Suspender venda (F6)">
+            <i class="bi bi-pause-circle"></i>
+            <span class="cart-suspend-badge" id="suspendBadge" style="display:none">0</span>
+          </div>
           <div class="cart-clear" onclick="confirmClearCart()"><i class="bi bi-trash3"></i></div>
           <div class="cart-toggle-btn" onclick="toggleCart()" id="cartToggleBtn" title="Recolher carrinho">
             <i class="bi bi-chevron-right" id="cartToggleIcon"></i>
@@ -4974,6 +4942,13 @@
           </button>
         </div>
         <div class="cpf-nota-status" id="cpfStatus"></div>
+      </div>
+
+      <!-- faixa vendas suspensas -->
+      <div class="cart-suspended-bar" id="suspendedBar" onclick="openSuspendedPanel()">
+        <i class="bi bi-pause-circle-fill"></i>
+        <span class="csb-text" id="suspendedBarText">1 venda suspensa</span>
+        <span class="csb-retomar">Retomar <i class="bi bi-arrow-right"></i></span>
       </div>
 
       <!-- itens -->
@@ -5350,6 +5325,21 @@
               <span class="config-toggle-track"></span>
             </label>
           </div>
+          <div class="config-toggle-row">
+            <div>
+              <div class="config-toggle-label">Alerta de turno prolongado</div>
+              <div class="config-hint">Avisa quando o caixa ficar aberto por muito tempo</div>
+            </div>
+            <label class="config-toggle">
+              <input type="checkbox" id="cfgOvertimeEnabled" onchange="onCfgOvertimeChange()">
+              <span class="config-toggle-track"></span>
+            </label>
+          </div>
+          <div class="config-group" id="cfgOvertimeHoursGroup">
+            <label>Alertar após (horas)</label>
+            <input class="caixa-input" id="cfgOvertimeHours" type="number" min="1" max="72" placeholder="8"
+              title="Número de horas até o alerta aparecer">
+          </div>
         </div>
 
         <!-- Cupom -->
@@ -5556,6 +5546,40 @@
     </div>
   </div>
 
+  <!-- MODAL RÓTULO SUSPENSÃO -->
+  <div class="modal-overlay" id="suspendLabelOverlay" onclick="if(event.target===this)closeSuspendLabelModal()">
+    <div class="suspend-label-modal">
+      <h3><i class="bi bi-pause-circle" style="color:var(--accent2);margin-right:8px"></i>Suspender venda</h3>
+      <p>Adicione um rótulo para identificar esta venda depois (opcional).</p>
+      <input class="search-input" id="suspendLabelInput" type="text" placeholder="Ex: Cliente João, Aguardando troco..."
+        maxlength="40" onkeydown="if(event.key==='Enter')confirmarSuspensao()" autocomplete="off"
+        style="margin-bottom:16px">
+      <div style="display:flex;gap:8px">
+        <button class="btn-cancel-pay" onclick="closeSuspendLabelModal()">Cancelar</button>
+        <button class="btn-confirm-pay" onclick="confirmarSuspensao()" style="background:var(--accent2)">
+          <i class="bi bi-pause-circle"></i> Suspender
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL VENDAS SUSPENSAS -->
+  <div class="modal-overlay" id="suspendedOverlay" onclick="if(event.target===this)closeSuspendedPanel()">
+    <div class="suspended-modal">
+      <div class="pay-header">
+        <div>
+          <h2>Vendas Suspensas</h2>
+          <div class="pay-header-sub">Selecione uma venda para retomar</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="cart-count" id="suspendedCount" style="background:var(--accent2)">0</span>
+          <div class="modal-close" onclick="closeSuspendedPanel()"><i class="bi bi-x-lg"></i></div>
+        </div>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:16px 20px" id="suspendedList"></div>
+    </div>
+  </div>
+
   <!-- TOAST -->
   <div class="toast" id="toast"><i class="bi bi-check-circle-fill"></i><span id="toastMsg">—</span></div>
 
@@ -5582,6 +5606,8 @@
       taxaJurosMensal: 0.0299,
       exigirFundo: false,
       exigirOperador: false,
+      overtimeEnabled: true,
+      overtimeHours: 8,
       notasRapidas: [10, 20, 50, 100, 200],
       lojaNome: 'NEXO ERP',
       lojaCnpj: '00.000.000/0001-00',
@@ -5600,7 +5626,7 @@
     // ═══════════════════════════════════════════════
     // DATA
     // ═══════════════════════════════════════════════
-    const PRODUCTS = [
+    const PRODUCTS_DEFAULTS = [
       { id: 1, nome: 'Arroz Integral 1kg', sku: 'ALI-001', ean: '7891234560011', cat: 'Alimentos', preco: 8.90, estoque: 142, emoji: '🍎', promo: false, vendas: 320 },
       { id: 2, nome: 'Detergente Neutro 500ml', sku: 'LIM-002', ean: '7891234560028', cat: 'Limpeza', preco: 3.50, estoque: 87, emoji: '🧹', promo: false, vendas: 230 },
       { id: 3, nome: 'Parafuso 8mm cx100', sku: 'FER-003', ean: '7891234560035', cat: 'Ferramentas', preco: 24.90, estoque: 3, emoji: '🔩', promo: false, vendas: 98 },
@@ -5620,6 +5646,61 @@
       { id: 17, nome: 'Óleo de Soja 900ml', sku: 'ALI-012', ean: '7891234560172', cat: 'Alimentos', preco: 8.50, estoque: 78, emoji: '🫙', promo: false, vendas: 305 },
       { id: 18, nome: 'Sabão em Pó 1kg', sku: 'LIM-003', ean: '7891234560189', cat: 'Limpeza', preco: 11.90, estoque: 65, emoji: '🧺', promo: false, vendas: 245 },
     ];
+
+    // Carrega produtos do nexoerp.produtos (compartilhado com produtos.html).
+    // Fallback: demo hardcoded quando localStorage vazio.
+    let PRODUCTS = (function () {
+      try {
+        const raw = localStorage.getItem('nexoerp.produtos');
+        if (raw) {
+          const stored = JSON.parse(raw);
+          if (Array.isArray(stored) && stored.length) {
+            return stored
+              .filter(p => p.status !== 'inativo' && p.exibirPdv !== false)
+              .map(p => ({
+                id: p.id,
+                nome: p.nome || '—',
+                sku: p.sku || '',
+                ean: p.ean || '',
+                cat: p.cat || 'Outros',
+                preco: p.preco || 0,
+                estoque: p.estoque ?? 0,
+                emoji: p.emoji || '📦',
+                promo: !!p.destaque,
+                vendas: p.vendas || 0,
+                custo: p.custo,
+                estoqueMin: p.estoqueMin,
+                estoqueMax: p.estoqueMax,
+                deposito: p.deposito,
+                fornecedor: p.fornecedor,
+                ncm: p.ncm,
+                marca: p.marca,
+                unidade: p.unidade,
+                localizacao: p.posicao,
+                vendaSemEstoque: !!p.vendaSemEstoque,
+                controlEstoque: p.controlEstoque !== false,
+              }));
+          }
+        }
+      } catch (_) { }
+      return PRODUCTS_DEFAULTS.map(p => ({ ...p }));
+    })();
+
+    // Persiste alterações de estoque de volta em nexoerp.produtos.
+    // No-op quando estiver usando os dados demo (sem LS).
+    function _saveProdutos() {
+      try {
+        const raw = localStorage.getItem('nexoerp.produtos');
+        if (!raw) return;
+        const stored = JSON.parse(raw);
+        if (!Array.isArray(stored)) return;
+        PRODUCTS.forEach(pdvProd => {
+          const idx = stored.findIndex(p => p.id === pdvProd.id);
+          if (idx >= 0) stored[idx].estoque = pdvProd.estoque;
+        });
+        localStorage.setItem('nexoerp.produtos', JSON.stringify(stored));
+      } catch (_) { }
+    }
 
     let cart = [];
     let discType = '%';
@@ -5700,18 +5781,250 @@
       calcTroco();
     }
 
+    // ═══════════════════════════════════════════════
+    // VENDAS SUSPENSAS
+    // ═══════════════════════════════════════════════
+    let suspendedCarts = [];
+
+    function suspendBtnClick() {
+      if (cart.length) openSuspendLabelModal();
+      else if (suspendedCarts.length) openSuspendedPanel();
+      else showToast('⚠️ Carrinho vazio — nada para suspender.');
+    }
+
+    function openSuspendLabelModal() {
+      document.getElementById('suspendLabelInput').value = '';
+      document.getElementById('suspendLabelOverlay').classList.add('open');
+      setTimeout(() => document.getElementById('suspendLabelInput').focus(), 80);
+    }
+
+    function closeSuspendLabelModal() {
+      document.getElementById('suspendLabelOverlay').classList.remove('open');
+    }
+
+    function confirmarSuspensao() {
+      const label = document.getElementById('suspendLabelInput').value.trim() || 'Sem identificação';
+      const { total } = calcCart();
+      suspendedCarts.unshift({
+        id: Date.now(),
+        label,
+        items: cart.map(c => ({ ...c })),
+        discType,
+        discInput: document.getElementById('discInput').value,
+        cpf: cpfNota,
+        cpfInput: document.getElementById('cpfNotaInput').value,
+        cupom: cupomAtivo ? { ...cupomAtivo } : null,
+        total,
+        time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+        timestamp: Date.now(),
+      });
+      clearCart();
+      clearCpf();
+      document.getElementById('discInput').value = '';
+      cupomAtivo = null;
+      updateCupomBadge();
+      setDiscType('%');
+      closeSuspendLabelModal();
+      _updateSuspendUI();
+      showToast(`⏸️ Venda suspensa — "${label}"`);
+    }
+
+    function openSuspendedPanel() {
+      _renderSuspendedList();
+      document.getElementById('suspendedOverlay').classList.add('open');
+    }
+
+    function closeSuspendedPanel() {
+      document.getElementById('suspendedOverlay').classList.remove('open');
+    }
+
+    function retomarVenda(idx) {
+      const saved = suspendedCarts[idx];
+      if (!saved) return;
+      if (cart.length) {
+        showConfirm(
+          'Carrinho atual tem itens',
+          `Suspender a venda atual e retomar "${saved.label}"?`,
+          () => {
+            // Suspende o atual silenciosamente
+            const { total } = calcCart();
+            suspendedCarts.push({
+              id: Date.now(),
+              label: 'Venda em andamento',
+              items: cart.map(c => ({ ...c })),
+              discType,
+              discInput: document.getElementById('discInput').value,
+              cpf: cpfNota,
+              cpfInput: document.getElementById('cpfNotaInput').value,
+              cupom: cupomAtivo ? { ...cupomAtivo } : null,
+              total,
+              time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+              timestamp: Date.now(),
+            });
+            clearCart(); clearCpf();
+            document.getElementById('discInput').value = '';
+            cupomAtivo = null; updateCupomBadge(); setDiscType('%');
+            // Agora retoma — re-busca o índice pois array mudou
+            const newIdx = suspendedCarts.findIndex(s => s.id === saved.id);
+            _carregarSuspensa(newIdx);
+          },
+          { confirmText: 'Suspender e Retomar', icon: '⏸️' }
+        );
+        return;
+      }
+      _carregarSuspensa(idx);
+    }
+
+    function _carregarSuspensa(idx) {
+      const saved = suspendedCarts.splice(idx, 1)[0];
+      cart = saved.items;
+      discType = saved.discType;
+      document.getElementById('discInput').value = saved.discInput;
+      setDiscType(saved.discType);
+      if (saved.cpf) {
+        document.getElementById('cpfNotaInput').value = saved.cpfInput;
+        cpfNota = saved.cpf;
+        setCpfStatus('ok', '✓ CPF válido');
+        document.getElementById('cpfClearBtn').classList.add('visible');
+      }
+      cupomAtivo = saved.cupom || null;
+      updateCupomBadge();
+      renderCart();
+      renderProducts();
+      _updateSuspendUI();
+      closeSuspendedPanel();
+      showToast(`↩️ Venda retomada — "${saved.label}"`);
+    }
+
+    function descartarSuspensa(idx) {
+      const saved = suspendedCarts[idx];
+      if (!saved) return;
+      showConfirm(
+        'Descartar venda suspensa?',
+        `"${escapeHtml(saved.label)}" · ${saved.items.reduce((s, i) => s + i.qty, 0)} item(s) · R$ ${fmt(saved.total)}`,
+        () => {
+          suspendedCarts.splice(idx, 1);
+          _renderSuspendedList();
+          _updateSuspendUI();
+          if (!suspendedCarts.length) closeSuspendedPanel();
+          showToast('🗑️ Venda suspensa descartada');
+        },
+        { confirmText: 'Descartar', icon: '🗑️' }
+      );
+    }
+
+    function _renderSuspendedList() {
+      const list = document.getElementById('suspendedList');
+      const count = document.getElementById('suspendedCount');
+      if (count) count.textContent = suspendedCarts.length;
+      if (!suspendedCarts.length) {
+        list.innerHTML = `
+          <div style="text-align:center;padding:40px 20px;color:var(--muted)">
+            <i class="bi bi-pause-circle" style="font-size:40px;color:var(--border);display:block;margin-bottom:12px"></i>
+            Nenhuma venda suspensa no momento.
+          </div>`;
+        return;
+      }
+      list.innerHTML = suspendedCarts.map((s, i) => {
+        const qtyTotal = s.items.reduce((acc, it) => acc + it.qty, 0);
+        const elapsed = Math.floor((Date.now() - s.timestamp) / 60000);
+        const elapsedStr = elapsed < 1 ? 'agora mesmo' : elapsed === 1 ? 'há 1 min' : `há ${elapsed} min`;
+        return `
+          <div class="suspended-item">
+            <div class="suspended-item-top">
+              <div class="suspended-item-label">
+                <i class="bi bi-pause-circle-fill" style="color:var(--accent2);font-size:15px"></i>
+                ${escapeHtml(s.label)}
+              </div>
+              <span class="suspended-item-time">${escapeHtml(s.time)} · ${elapsedStr}</span>
+            </div>
+            <div class="suspended-item-info">
+              <span><i class="bi bi-box-seam"></i> ${qtyTotal} item${qtyTotal !== 1 ? 's' : ''}</span>
+              ${s.cpf ? `<span><i class="bi bi-person-vcard"></i> CPF: ${escapeHtml(s.cpf)}</span>` : ''}
+              ${s.cupom ? `<span><i class="bi bi-ticket-perforated-fill"></i> ${escapeHtml(s.cupom.codigo)}</span>` : ''}
+            </div>
+            <div class="suspended-item-total">R$ ${fmt(s.total)}</div>
+            <div class="suspended-item-btns" style="margin-top:10px">
+              <button class="btn-retomar" onclick="retomarVenda(${i})">
+                <i class="bi bi-play-circle-fill"></i> Retomar
+              </button>
+              <button class="btn-descartar-susp" onclick="descartarSuspensa(${i})">
+                <i class="bi bi-trash3"></i> Descartar
+              </button>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function _updateSuspendUI() {
+      const n = suspendedCarts.length;
+      const btn = document.getElementById('cartSuspendBtn');
+      const badge = document.getElementById('suspendBadge');
+      const bar = document.getElementById('suspendedBar');
+      const barText = document.getElementById('suspendedBarText');
+      if (btn) btn.classList.toggle('has-suspended', n > 0);
+      if (badge) { badge.textContent = n; badge.style.display = n > 0 ? 'flex' : 'none'; }
+      if (bar) bar.classList.toggle('show', n > 0);
+      if (barText) barText.textContent = `${n} venda${n !== 1 ? 's' : ''} suspensa${n !== 1 ? 's' : ''}`;
+    }
+
+    // Restaura vendas e stats do dia atual a partir de nexoerp.pdv.vendas
+    function _loadTodayData() {
+      try {
+        const raw = localStorage.getItem('nexoerp.pdv.vendas');
+        if (!raw) return;
+        const all = JSON.parse(raw);
+        if (!Array.isArray(all)) return;
+        const today = new Date().toLocaleDateString('pt-BR');
+        const hojeVendas = all.filter(v => v.dataStr === today && v.tipo === 'pdv');
+        if (!hojeVendas.length) return;
+
+        let count = 0, total = 0;
+        hojeVendas.forEach(v => {
+          if (v.status !== 'estornada') { count++; total += v.total || 0; }
+        });
+        todayStats = { count, total };
+
+        // Reconstrói salesHistory para o drawer funcionar após reload
+        salesHistory = hojeVendas.map(v => ({
+          id: v.id,
+          total: fmt(v.total || 0),
+          subtotal: v.subtotal || v.total || 0,
+          desconto: v.desconto || 0,
+          troco: 0,
+          method: v.metodo ? (v.metodo.charAt(0).toUpperCase() + v.metodo.slice(1)) : 'Dinheiro',
+          brand: null,
+          parcelas: null,
+          client: v.cliente || 'Venda Balcão',
+          cupom: null,
+          time: v.horaStr || '—',
+          items: (v.itens || []).reduce((s, i) => s + (i.qty || 0), 0),
+          cartSnapshot: (v.itens || []).map(i => ({
+            id: i.id,
+            nome: i.nome || '—',
+            emoji: i.emoji || '📦',
+            preco: i.preco || 0,
+            qty: i.qty || 0,
+          })),
+          estornada: v.status === 'estornada',
+        }));
+      } catch (_) { }
+    }
+
     function init() {
       NexoAuth.renderCurrentUser();
+      _loadTodayData();
       buildCategoriasBar();
       calcPageSize();
       renderProducts();
-      updateClock();
-      setInterval(updateClock, 1000);
       buildQuickCash();
       document.getElementById('payValueInput').value = '';
       document.addEventListener('keydown', handleKeys);
       updateStats();
       initCaixaUI();
+      // Verificar turno prolongado ao carregar e a cada hora
+      setTimeout(checkCaixaOvertime, 1000);
+      setInterval(checkCaixaOvertime, 60 * 60 * 1000);
       let _resizeRaf = null;
       const gridResizeObserver = new ResizeObserver(() => {
         if (_resizeRaf) cancelAnimationFrame(_resizeRaf);
@@ -5730,10 +6043,6 @@
       }[ch]));
     }
 
-    function updateClock() {
-      const now = new Date();
-      document.getElementById('caixaTime').textContent = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    }
 
     // ═══════════════════════════════════════════════
     // PRODUCTS
@@ -5761,8 +6070,6 @@
       return [...list].sort((a, b) => norm(a.nome).localeCompare(norm(b.nome)));
     }
 
-    const gridHeader = document.getElementById('gridHeader');
-    const gridHeaderLabel = document.getElementById('gridHeaderLabel');
     const gridHeaderCount = document.getElementById('gridHeaderCount');
 
     function renderProducts() {
@@ -5781,18 +6088,15 @@
         grid.innerHTML = '';
         grid.appendChild(emptyProdsEl);
         emptyProdsEl.classList.add('show');
-        gridHeader.style.display = 'none';
+        gridHeaderCount.textContent = '';
         pagination.classList.remove('show');
         return;
       }
       emptyProdsEl.classList.remove('show');
-      gridHeader.style.display = 'flex';
 
       if (q) {
-        gridHeaderLabel.textContent = `${allList.length} resultado${allList.length !== 1 ? 's' : ''}`;
-        gridHeaderCount.textContent = '';
+        gridHeaderCount.textContent = `${allList.length} resultado${allList.length !== 1 ? 's' : ''}`;
       } else {
-        gridHeaderLabel.textContent = activeCat || 'Todos';
         gridHeaderCount.textContent = `${allList.length} produto${allList.length !== 1 ? 's' : ''}`;
       }
 
@@ -6661,6 +6965,9 @@
       // Caixa — toggles
       document.getElementById('cfgExigirFundo').checked = cfg.exigirFundo;
       document.getElementById('cfgExigirOperador').checked = cfg.exigirOperador;
+      document.getElementById('cfgOvertimeEnabled').checked = cfg.overtimeEnabled;
+      document.getElementById('cfgOvertimeHours').value = cfg.overtimeHours;
+      onCfgOvertimeChange();
 
       // Notas rápidas
       document.getElementById('cfgNotasGrid').innerHTML = ALL_NOTES.map(n => `
@@ -6693,6 +7000,11 @@
       termId.placeholder = isDemo ? 'Não aplicável no modo demonstração' : 'Informe o ID do terminal';
     }
 
+    function onCfgOvertimeChange() {
+      const enabled = document.getElementById('cfgOvertimeEnabled').checked;
+      document.getElementById('cfgOvertimeHoursGroup').style.display = enabled ? '' : 'none';
+    }
+
     function savePdvConfig() {
       const taxa = parseFloat(document.getElementById('cfgTaxaJuros').value) || 0;
       const notas = [...document.querySelectorAll('.config-note-chip.active')]
@@ -6710,6 +7022,8 @@
         taxaJurosMensal: taxa / 100,
         exigirFundo: document.getElementById('cfgExigirFundo').checked,
         exigirOperador: document.getElementById('cfgExigirOperador').checked,
+        overtimeEnabled: document.getElementById('cfgOvertimeEnabled').checked,
+        overtimeHours: Math.max(1, parseInt(document.getElementById('cfgOvertimeHours').value) || 8),
         notasRapidas: notas.length ? notas : [10, 20, 50, 100, 200],
         lojaNome: document.getElementById('cfgLojaNome').value.trim(),
         lojaCnpj: document.getElementById('cfgLojaCnpj').value.trim(),
@@ -6927,27 +7241,28 @@
           operador,
           metodo: selectedMethod || 'dinheiro',
           itens: (sale.cartSnapshot || []).map(c => ({
-            nome:     c.nome || '',
-            emoji:    c.emoji || '📦',
-            preco:    c.preco,
-            qty:      c.qty,
+            id: c.id,
+            nome: c.nome || '',
+            emoji: c.emoji || '📦',
+            preco: c.preco,
+            qty: c.qty,
             subtotal: c.preco * c.qty,
           })),
-          subtotal:      sale.subtotal,
-          desconto:      sale.desconto || 0,
+          subtotal: sale.subtotal,
+          desconto: sale.desconto || 0,
           total,
-          status:        'concluida',
-          dataISO:       now.toISOString(),
-          dataStr:       now.toLocaleDateString('pt-BR'),
-          horaStr:       sale.time || now.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' }),
+          status: 'concluida',
+          dataISO: now.toISOString(),
+          dataStr: now.toLocaleDateString('pt-BR'),
+          horaStr: sale.time || now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
           estornoMotivo: '',
-          tipo:          'pdv',
+          tipo: 'pdv',
         };
         const raw = localStorage.getItem('nexoerp.pdv.vendas');
         const lista = raw ? JSON.parse(raw) : [];
         lista.unshift(venda);
         localStorage.setItem('nexoerp.pdv.vendas', JSON.stringify(lista));
-      } catch(e) {}
+      } catch (e) { }
     }
 
     function _mostrarSucesso(sale, total) {
@@ -6966,6 +7281,13 @@
       _registrarVenda(sale, total);
       closePayModal();
       _mostrarSucesso(sale, total);
+      cart.forEach(item => {
+        const prod = PRODUCTS.find(p => p.id === item.id);
+        if (prod && prod.controlEstoque !== false) {
+          prod.estoque = Math.max(0, prod.estoque - item.qty);
+        }
+      });
+      _saveProdutos();
       clearCart();
     }
 
@@ -6978,11 +7300,7 @@
       renderProducts();
     }
 
-    function updateStats() {
-      document.getElementById('stat-vendas').textContent = todayStats.count;
-      document.getElementById('stat-fat').textContent = `R$ ${fmt(todayStats.total)}`;
-      document.getElementById('stat-ticket').textContent = todayStats.count > 0 ? `R$ ${fmt(todayStats.total / todayStats.count)}` : 'R$ 0';
-    }
+    function updateStats() { /* stats exibidos no drawer de turno */ }
 
     // ═══════════════════════════════════════════════
     // DRAWER — HISTÓRICO
@@ -7060,6 +7378,15 @@
         `${sale.id} · R$ ${sale.total} · ${sale.method}. O estoque será devolvido e o valor subtraído do turno.`,
         () => {
           sale.estornada = true;
+          // Persiste status de estorno no nexoerp.pdv.vendas
+          try {
+            const rawV = localStorage.getItem('nexoerp.pdv.vendas');
+            if (rawV) {
+              const lista = JSON.parse(rawV);
+              const vi = lista.findIndex(v => v.id === sale.id);
+              if (vi >= 0) { lista[vi].status = 'estornada'; localStorage.setItem('nexoerp.pdv.vendas', JSON.stringify(lista)); }
+            }
+          } catch (_) { }
           const val = parseFloat(String(sale.total).replace(/\./g, '').replace(',', '.')) || 0;
           todayStats.count = Math.max(0, todayStats.count - 1);
           todayStats.total = Math.max(0, todayStats.total - val);
@@ -7067,6 +7394,7 @@
             const prod = PRODUCTS.find(p => p.id === item.id);
             if (prod) prod.estoque += item.qty;
           });
+          _saveProdutos();
           updateStats();
           renderProducts();
           renderDrawer();
@@ -7122,6 +7450,10 @@
       if (e.key === 'F2') { e.preventDefault(); if (cart.length) openPayModal(); return; }
       // F5 — últimas vendas
       if (e.key === 'F5') { e.preventDefault(); openDrawer(); return; }
+      // F6 — suspender venda / abrir suspensas
+      if (e.key === 'F6') { e.preventDefault(); suspendBtnClick(); return; }
+      // F7 — painel de vendas suspensas
+      if (e.key === 'F7') { e.preventDefault(); if (suspendedCarts.length) openSuspendedPanel(); else showToast('Nenhuma venda suspensa.'); return; }
       // F8 — estoque simplificado
       if (e.key === 'F8') { e.preventDefault(); openEstoqueModal(); return; }
       // DEL — remove último item / Ctrl+DEL — limpa carrinho
@@ -7135,6 +7467,8 @@
       // ESC — fechar modais
       if (e.key === 'Escape') {
         if (document.getElementById('estoqueOverlay').classList.contains('open')) { closeEstoqueModal(); return; }
+        if (document.getElementById('suspendedOverlay').classList.contains('open')) { closeSuspendedPanel(); return; }
+        if (document.getElementById('suspendLabelOverlay').classList.contains('open')) { closeSuspendLabelModal(); return; }
         closePayModal(); closeDrawer();
         document.getElementById('successOverlay').classList.remove('show');
         document.getElementById('aiPanel').classList.remove('show'); aiVisible = false;
@@ -7156,25 +7490,13 @@
     function initCaixaUI() {
       const btn = document.getElementById('caixaBtn');
       const label = document.getElementById('caixaBtnLabel');
-      const dot = document.getElementById('caixaDot');
-      const dotLabel = document.getElementById('caixaLabel');
-      const statusBox = document.getElementById('caixaStatus');
-      const timeEl = document.getElementById('caixaTime');
       if (isCaixaAberto()) {
         const nome = caixaState.operador || 'Operador';
         btn && btn.classList.remove('fechado');
         if (label) label.textContent = `Caixa — ${nome}`;
-        if (dot) { dot.style.background = 'var(--accent)'; dot.style.boxShadow = '0 0 6px var(--accent)'; }
-        if (dotLabel) dotLabel.textContent = 'Caixa aberto';
-        if (statusBox) statusBox.classList.add('aberto');
-        if (timeEl && caixaState.aberturaStr) timeEl.textContent = caixaState.aberturaStr;
       } else {
         btn && btn.classList.add('fechado');
         if (label) label.textContent = 'Abrir Caixa';
-        if (dot) { dot.style.background = 'var(--danger)'; dot.style.boxShadow = '0 0 6px var(--danger)'; }
-        if (dotLabel) dotLabel.textContent = 'Caixa fechado';
-        if (statusBox) statusBox.classList.remove('aberto');
-        if (timeEl) timeEl.textContent = '--:--';
       }
     }
 
@@ -7189,12 +7511,14 @@
     }
 
     function renderAberturaCaixa() {
+      const _sess = NexoAuth.getSession();
+      const _nomeOp = escapeHtml(_sess?.user?.name || '');
       document.getElementById('caixaModalTitle').textContent = 'Abrir Caixa';
       document.getElementById('caixaModalBody').innerHTML = `
         <p style="color:var(--muted);font-size:13px;margin-bottom:18px">Informe o fundo de troco para iniciar o turno.</p>
         <div class="caixa-input-group">
           <label>Operador</label>
-          <input class="caixa-input" id="caixaOperador" type="text" value="João Desenvolvedor" placeholder="Nome">
+          <input class="caixa-input" id="caixaOperador" type="text" value="${_nomeOp}" placeholder="Nome">
         </div>
         <div class="caixa-input-group">
           <label>Fundo de troco (R$)</label>
@@ -7339,8 +7663,113 @@
     function confirmarFechamentoCaixa() {
       caixaState.aberto = false;
       caixaState.fechamento = new Date().toISOString();
+      _overtimeShown = false;
+      _overtimeLastShown = 0;
       saveCaixa(); initCaixaUI(); closeCaixa();
       showToast(`🔒 Caixa fechado · ${todayStats.count} venda${todayStats.count !== 1 ? 's' : ''} · R$ ${fmt(todayStats.total)}`);
+    }
+
+    // ═══════════════════════════════════════════════
+    // CAIXA OVERTIME — alerta de turno prolongado
+    // ═══════════════════════════════════════════════
+    const CAIXA_OVERTIME_HOURS = 8;
+    let _overtimeShown = false;    // "não mostrar mais" marcado pelo usuário
+    let _overtimeLastShown = 0;    // timestamp da última exibição
+
+    function checkCaixaOvertime() {
+      if (!PDV_CONFIG.overtimeEnabled) return;
+      if (_overtimeShown) return;
+      if (!isCaixaAberto() || !caixaState.abertura) return;
+      if (_overtimeLastShown && Date.now() - _overtimeLastShown < 60 * 60 * 1000) return;
+      const elapsed = Date.now() - new Date(caixaState.abertura).getTime();
+      const totalMin = Math.floor(elapsed / 60000);
+      const hours = Math.floor(totalMin / 60);
+      const minutes = totalMin % 60;
+      if (hours < PDV_CONFIG.overtimeHours) return;
+      _overtimeLastShown = Date.now();
+      _showCaixaOvertimeAlert(hours, minutes);
+    }
+
+    function _showCaixaOvertimeAlert(hours, minutes) {
+      const existing = document.getElementById('caixaOvertimeOverlay');
+      if (existing) existing.remove();
+
+      const timeStr = minutes > 0 ? `${hours}h ${String(minutes).padStart(2, '0')}min` : `${hours}h`;
+      const operador = caixaState.operador || 'Operador';
+      const aberturaStr = caixaState.aberturaStr || '—';
+
+      const overlay = document.createElement('div');
+      overlay.id = 'caixaOvertimeOverlay';
+      overlay.className = 'caixa-overtime-overlay';
+      overlay.innerHTML = `
+        <div class="caixa-overtime-card">
+          <div class="cot-icon">⏰</div>
+          <div class="cot-title">Turno prolongado</div>
+          <div class="cot-time">${timeStr}</div>
+          <div class="cot-desc">
+            O caixa foi aberto por <strong style="color:var(--text)">${escapeHtml(operador)}</strong> às <strong style="color:var(--text)">${escapeHtml(aberturaStr)}</strong> e ainda está aberto.<br><br>
+            Recomendamos fechar o caixa atual e iniciar um novo turno para manter o controle correto por operador.
+          </div>
+          <div class="cot-btns">
+            <button class="cot-btn-fechar" onclick="_overtimeFechaCaixa()">
+              <i class="bi bi-lock-fill"></i> Fechar Caixa
+            </button>
+            <button class="cot-btn-continuar" onclick="_overtimeContinuar()">
+              Continuar
+            </button>
+          </div>
+          <label style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:18px;cursor:pointer;font-size:12px;color:var(--muted);user-select:none">
+            <input type="checkbox" id="overtimeDontShow" style="accent-color:var(--accent);width:14px;height:14px;cursor:pointer">
+            Não mostrar novamente neste turno
+          </label>
+        </div>`;
+      document.body.appendChild(overlay);
+    }
+
+    function _overtimeContinuar() {
+      const check = document.getElementById('overtimeDontShow');
+      if (check && check.checked) _overtimeShown = true;
+      document.getElementById('caixaOvertimeOverlay')?.remove();
+    }
+
+    function _overtimeFechaCaixa() {
+      document.getElementById('caixaOvertimeOverlay')?.remove();
+      document.getElementById('caixaOverlay').classList.add('open');
+      renderFechamentoCaixa();
+    }
+
+    // ── Aviso de caixa aberto ao tentar fazer logout ──
+    function _checkCaixaBeforeLogout() {
+      if (!isCaixaAberto()) { NexoAuth.confirmLogout(); return; }
+
+      const existing = document.getElementById('logoutCaixaAlert');
+      if (existing) { existing.remove(); return; }
+
+      const el = document.createElement('div');
+      el.id = 'logoutCaixaAlert';
+      el.className = 'caixa-fechado-alert';
+      el.style.borderColor = 'rgba(255,107,53,.3)';
+      el.innerHTML = `
+        <div class="cfa-icon" style="background:rgba(255,107,53,.12);color:var(--warn)">
+          <i class="bi bi-lock-fill"></i>
+        </div>
+        <div class="cfa-text">
+          <strong>Caixa ainda aberto</strong>
+          <span>Feche o caixa antes de sair para manter o controle do turno.</span>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="cfa-btn"
+            onclick="openCaixa();document.getElementById('logoutCaixaAlert')?.remove()">
+            Fechar Caixa
+          </button>
+          <button class="cfa-btn"
+            style="background:var(--card);border:1px solid var(--border);color:var(--muted)"
+            onclick="document.getElementById('logoutCaixaAlert')?.remove();NexoAuth.confirmLogout()">
+            Ignorar e Sair
+          </button>
+        </div>`;
+      document.body.appendChild(el);
+      setTimeout(() => el.parentNode && el.remove(), 10000);
     }
 
     // ═══════════════════════════════════════════════
@@ -7576,10 +8005,10 @@
 
     function renderEstoqueProd(p) {
       const ex = ESTOQUE_EXTRA[p.id] || {};
-      const custo = ex.custo || (p.preco * 0.55);
+      const custo = p.custo ?? ex.custo ?? (p.preco * 0.55);
       const margem = ((p.preco - custo) / custo * 100);
-      const estoqueMin = ex.estoqueMin || 0;
-      const estoqueMax = ex.estoqueMax || 100;
+      const estoqueMin = p.estoqueMin ?? ex.estoqueMin ?? 0;
+      const estoqueMax = p.estoqueMax ?? ex.estoqueMax ?? 100;
       const disponivel = Math.max(0, p.estoque - Math.floor(p.estoque * 0.05));
       const pct = estoqueMax > 0 ? Math.min(100, Math.round((p.estoque / estoqueMax) * 100)) : 0;
       const barColor = p.estoque === 0 ? 'var(--danger)' : p.estoque <= estoqueMin ? 'var(--warn)' : 'var(--accent)';
@@ -7600,7 +8029,7 @@
             <div class="em-prod-meta">
               <span><i class="bi bi-upc"></i> ${p.sku}</span>
               <span><i class="bi bi-qr-code"></i> EAN: ${p.ean || '—'}</span>
-              ${ex.ncm ? `<span><i class="bi bi-file-earmark-text"></i> NCM: ${ex.ncm}</span>` : ''}
+              ${(p.ncm || ex.ncm) ? `<span><i class="bi bi-file-earmark-text"></i> NCM: ${p.ncm || ex.ncm}</span>` : ''}
             </div>
           </div>
         </div>
@@ -7656,15 +8085,15 @@
           </div>
           <div class="em-detail-item">
             <i class="bi bi-building em-detail-icon"></i>
-            <div><div class="em-detail-lbl">Depósito</div><div class="em-detail-val">${ex.deposito || '—'}</div></div>
+            <div><div class="em-detail-lbl">Depósito</div><div class="em-detail-val">${p.deposito || ex.deposito || '—'}</div></div>
           </div>
           <div class="em-detail-item">
             <i class="bi bi-geo-alt em-detail-icon"></i>
-            <div><div class="em-detail-lbl">Localização</div><div class="em-detail-val">${ex.localizacao || '—'}</div></div>
+            <div><div class="em-detail-lbl">Localização</div><div class="em-detail-val">${p.localizacao || ex.localizacao || '—'}</div></div>
           </div>
           <div class="em-detail-item">
             <i class="bi bi-truck em-detail-icon"></i>
-            <div><div class="em-detail-lbl">Fornecedor</div><div class="em-detail-val">${ex.fornecedor || '—'}</div></div>
+            <div><div class="em-detail-lbl">Fornecedor</div><div class="em-detail-val">${p.fornecedor || ex.fornecedor || '—'}</div></div>
           </div>
           <div class="em-detail-item">
             <i class="bi bi-calendar2 em-detail-icon"></i>
@@ -7672,7 +8101,7 @@
           </div>
           <div class="em-detail-item">
             <i class="bi bi-rulers em-detail-icon"></i>
-            <div><div class="em-detail-lbl">Unidade / Peso</div><div class="em-detail-val">${ex.unidade || 'UN'} · ${ex.peso || '—'}</div></div>
+            <div><div class="em-detail-lbl">Unidade / Peso</div><div class="em-detail-val">${p.unidade || ex.unidade || 'UN'} · ${ex.peso || '—'}</div></div>
           </div>
           <div class="em-detail-item">
             <i class="bi bi-arrow-repeat em-detail-icon"></i>
@@ -7688,7 +8117,7 @@
           </div>
           <div class="em-detail-item">
             <i class="bi bi-shop em-detail-icon"></i>
-            <div><div class="em-detail-lbl">Marca</div><div class="em-detail-val">${ex.marca || '—'}</div></div>
+            <div><div class="em-detail-lbl">Marca</div><div class="em-detail-val">${p.marca || ex.marca || '—'}</div></div>
           </div>
         </div>
       `;
