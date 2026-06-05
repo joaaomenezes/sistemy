@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <title>Sistemy — Carregar Dados Demo</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -260,7 +261,25 @@
   const session  = { user:{ id:demoUser.id, name:demoUser.name, username:demoUser.username, email:demoUser.email, role:demoUser.role, company:demoUser.company }, createdAt: new Date().toISOString(), expiresAt: Date.now() + 1000*60*60*24*30 };
 
   const steps = [
-    { pct:10,  fn: ()=>{ localStorage.setItem('nexoerp.users',     JSON.stringify([demoUser])); localStorage.setItem('nexoerp.session', JSON.stringify(session)); addLog('✅ Sessão criada (login automático)', 'ok'); }},
+    { pct:10,  fn: ()=>{
+      // Preserva sessão real caso já exista; só aplica demo se não houver usuário real logado
+      let existingSession = null;
+      try { existingSession = JSON.parse(localStorage.getItem('nexoerp.session')); } catch(_){}
+      const hasRealSession = existingSession && existingSession.user && existingSession.user.id !== 'demo-admin' && Date.now() < Number(existingSession.expiresAt || 0);
+      // Preserva usuários reais e adiciona demo se ainda não estiver lá
+      let existingUsers = [];
+      try { existingUsers = JSON.parse(localStorage.getItem('nexoerp.users') || '[]'); } catch(_){}
+      const demoAlreadyIn = existingUsers.some(u => u.id === demoUser.id);
+      if (!demoAlreadyIn) existingUsers.unshift(demoUser);
+      localStorage.setItem('nexoerp.users', JSON.stringify(existingUsers));
+      if (!hasRealSession) {
+        localStorage.setItem('nexoerp.session', JSON.stringify(session));
+        localStorage.removeItem('nexoerp.demo_removed');
+        addLog('✅ Sessão criada (login automático como demo)', 'ok');
+      } else {
+        addLog('✅ Dados demo carregados — sessão real preservada', 'ok');
+      }
+    }},
     { pct:25,  fn: ()=>{ localStorage.setItem('nexoerp.produtos',   JSON.stringify(produtos));   addLog(`✅ ${produtos.length} produtos salvos`, 'ok'); }},
     { pct:45,  fn: ()=>{ localStorage.setItem('nexoerp.clientes',   JSON.stringify(clientes));   addLog(`✅ ${clientes.length} clientes salvos`, 'ok'); }},
     { pct:65,  fn: ()=>{ localStorage.setItem('nexoerp.vendas',     JSON.stringify(vendas));     addLog(`✅ ${vendas.length} vendas salvas`, 'ok'); }},

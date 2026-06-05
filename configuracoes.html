@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistemy — Configurações</title>
   <link rel="stylesheet" href="global.css">
@@ -475,59 +476,6 @@ font-size: 13px;
       background: rgba(0, 200, 150, .15);
     }
 
-    /* permissões */
-    .perm-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .perm-table th {
-      padding: 10px 14px;
-      text-align: left;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      color: var(--muted);
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .perm-table th:not(:first-child) {
-      text-align: center;
-    }
-
-    .perm-table td {
-      padding: 12px 14px;
-      border-bottom: 1px solid rgba(30, 42, 58, .5);
-      font-size: 13px;
-    }
-
-    .perm-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    .perm-table td:not(:first-child) {
-      text-align: center;
-    }
-
-    .perm-check {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--accent);
-      cursor: pointer;
-    }
-
-    .perm-module {
-      font-weight: 500;
-    }
-
-    .perm-sub {
-      color: var(--muted);
-      font-size: 11px;
-      margin-top: 2px;
-    }
-
     /* notificações */
     .notif-section {
       margin-bottom: 20px;
@@ -799,8 +747,7 @@ font-size: 12px;
           <div class="config-nav-divider"></div>
           <div class="config-nav-item" onclick="switchPanel(this,'p-usuarios')"><i class="bi bi-people"></i> Usuários
           </div>
-          <div class="config-nav-item" onclick="switchPanel(this,'p-permissoes')"><i class="bi bi-shield-check"></i>
-            Permissões</div>
+
           <div class="config-nav-divider"></div>
           <div class="config-nav-item" onclick="switchPanel(this,'p-notificacoes')"><i class="bi bi-bell"></i>
             Notificações</div>
@@ -821,7 +768,7 @@ font-size: 12px;
                 <div class="cfg-group">
                   <label class="lbl">Idioma</label>
                   <div class="inp-wrap"><i class="bi bi-translate pre"></i>
-                    <select class="field" onchange="markDirty()">
+                    <select class="field" data-cfg="idioma" onchange="markDirty()">
                       <option selected>🇧🇷 Português (Brasil)</option>
                       <option>🇺🇸 English (US)</option>
                       <option>🇪🇸 Español</option>
@@ -831,7 +778,7 @@ font-size: 12px;
                 <div class="cfg-group">
                   <label class="lbl">Moeda padrão</label>
                   <div class="inp-wrap"><i class="bi bi-currency-dollar pre"></i>
-                    <select class="field" onchange="markDirty()">
+                    <select class="field" data-cfg="moeda" onchange="markDirty()">
                       <option selected>R$ — Real Brasileiro</option>
                       <option>US$ — Dólar Americano</option>
                       <option>€ — Euro</option>
@@ -841,7 +788,7 @@ font-size: 12px;
                 <div class="cfg-group">
                   <label class="lbl">Formato de data</label>
                   <div class="inp-wrap"><i class="bi bi-calendar pre"></i>
-                    <select class="field" onchange="markDirty()">
+                    <select class="field" data-cfg="fmtData" onchange="markDirty()">
                       <option selected>DD/MM/AAAA</option>
                       <option>MM/DD/AAAA</option>
                       <option>AAAA-MM-DD</option>
@@ -851,7 +798,7 @@ font-size: 12px;
                 <div class="cfg-group">
                   <label class="lbl">Fuso horário</label>
                   <div class="inp-wrap"><i class="bi bi-clock pre"></i>
-                    <select class="field" onchange="markDirty()">
+                    <select class="field" data-cfg="fusoHorario" onchange="markDirty()">
                       <option selected>(UTC-03:00) Brasília</option>
                       <option>(UTC-04:00) Manaus</option>
                       <option>(UTC-05:00) Acre</option>
@@ -862,7 +809,7 @@ font-size: 12px;
                 <div class="cfg-group">
                   <label class="lbl">Itens por página</label>
                   <div class="inp-wrap"><i class="bi bi-list-ol pre"></i>
-                    <select class="field" onchange="markDirty()">
+                    <select class="field" data-cfg="itensPagina" onchange="markDirty()">
                       <option>10</option>
                       <option selected>25</option>
                       <option>50</option>
@@ -873,7 +820,7 @@ font-size: 12px;
                 <div class="cfg-group">
                   <label class="lbl">Casas decimais</label>
                   <div class="inp-wrap"><i class="bi bi-123 pre"></i>
-                    <select class="field" onchange="markDirty()">
+                    <select class="field" data-cfg="casasDecimais" onchange="markDirty()">
                       <option>0 casas (R$ 1.234)</option>
                       <option selected>2 casas (R$ 1.234,56)</option>
                       <option>3 casas (R$ 1.234,567)</option>
@@ -893,35 +840,35 @@ font-size: 12px;
                   <div class="toggle-label">Confirmação de ações importantes</div>
                   <div class="toggle-sub">Pedir confirmação antes de excluir ou estornar</div>
                 </div>
-                <div class="toggle on" onclick="this.classList.toggle('on');markDirty()"></div>
+                <div class="toggle on" data-cfg="togConfAcoes" onclick="this.classList.toggle('on');markDirty()"></div>
               </div>
               <div class="toggle-row">
                 <div class="toggle-info">
                   <div class="toggle-label">Exibir dicas rápidas</div>
                   <div class="toggle-sub">Mostrar tooltips e atalhos nas telas</div>
                 </div>
-                <div class="toggle on" onclick="this.classList.toggle('on');markDirty()"></div>
+                <div class="toggle on" data-cfg="togDicasRapidas" onclick="this.classList.toggle('on');markDirty()"></div>
               </div>
               <div class="toggle-row">
                 <div class="toggle-info">
                   <div class="toggle-label">Modo compacto nas tabelas</div>
                   <div class="toggle-sub">Reduzir espaçamento para exibir mais dados</div>
                 </div>
-                <div class="toggle" onclick="this.classList.toggle('on');markDirty()"></div>
+                <div class="toggle" data-cfg="togModoCompacto" onclick="this.classList.toggle('on');markDirty()"></div>
               </div>
               <div class="toggle-row">
                 <div class="toggle-info">
                   <div class="toggle-label">Alertas de estoque baixo</div>
                   <div class="toggle-sub">Notificar quando produto atingir estoque mínimo</div>
                 </div>
-                <div class="toggle on" onclick="this.classList.toggle('on');markDirty()"></div>
+                <div class="toggle on" data-cfg="togAlertasEstoque" onclick="this.classList.toggle('on');markDirty()"></div>
               </div>
               <div class="toggle-row">
                 <div class="toggle-info">
                   <div class="toggle-label">Vencimento de títulos</div>
                   <div class="toggle-sub">Alertar sobre duplicatas próximas do vencimento</div>
                 </div>
-                <div class="toggle on" onclick="this.classList.toggle('on');markDirty()"></div>
+                <div class="toggle on" data-cfg="togVencTitulos" onclick="this.classList.toggle('on');markDirty()"></div>
               </div>
             </div>
           </div>
@@ -953,52 +900,52 @@ font-size: 12px;
                 <div class="cfg-group full">
                   <label class="lbl">Razão Social *</label>
                   <div class="inp-wrap"><i class="bi bi-building pre"></i>
-                    <input class="field" type="text" placeholder="Nome completo da empresa" id="razaoSocial"
+                    <input class="field" type="text" placeholder="Nome completo da empresa" id="razaoSocial" data-cfg="razaoSocial"
                       oninput="markDirty()">
                   </div>
                 </div>
                 <div class="cfg-group full">
                   <label class="lbl">Nome Fantasia</label>
                   <div class="inp-wrap"><i class="bi bi-shop pre"></i>
-                    <input class="field" type="text" placeholder="Nome pelo qual a empresa é conhecida"
+                    <input class="field" type="text" placeholder="Nome pelo qual a empresa é conhecida" data-cfg="nomeFantasia"
                       oninput="markDirty()">
                   </div>
                 </div>
                 <div class="cfg-group">
                   <label class="lbl">CNPJ *</label>
                   <div class="inp-wrap"><i class="bi bi-card-text pre"></i>
-                    <input class="field" type="text" placeholder="00.000.000/0001-00"
+                    <input class="field" type="text" placeholder="00.000.000/0001-00" data-cfg="cnpj"
                       oninput="maskCNPJ(this);markDirty()">
                   </div>
                 </div>
                 <div class="cfg-group">
                   <label class="lbl">Inscrição Estadual</label>
                   <div class="inp-wrap"><i class="bi bi-file-earmark-text pre"></i>
-                    <input class="field" type="text" placeholder="000.000.000.000" oninput="markDirty()">
+                    <input class="field" type="text" placeholder="000.000.000.000" data-cfg="inscEstadual" oninput="markDirty()">
                   </div>
                 </div>
                 <div class="cfg-group">
                   <label class="lbl">Telefone</label>
                   <div class="inp-wrap"><i class="bi bi-telephone pre"></i>
-                    <input class="field" type="tel" placeholder="(00) 0000-0000" oninput="maskPhone(this);markDirty()">
+                    <input class="field" type="tel" placeholder="(00) 0000-0000" data-cfg="telEmpresa" oninput="maskPhone(this);markDirty()">
                   </div>
                 </div>
                 <div class="cfg-group">
                   <label class="lbl">E-mail</label>
                   <div class="inp-wrap"><i class="bi bi-envelope pre"></i>
-                    <input class="field" type="email" placeholder="contato@empresa.com.br" oninput="markDirty()">
+                    <input class="field" type="email" placeholder="contato@empresa.com.br" data-cfg="emailEmpresa" oninput="markDirty()">
                   </div>
                 </div>
                 <div class="cfg-group">
                   <label class="lbl">Site</label>
                   <div class="inp-wrap"><i class="bi bi-globe pre"></i>
-                    <input class="field" type="text" placeholder="www.empresa.com.br" oninput="markDirty()">
+                    <input class="field" type="text" placeholder="www.empresa.com.br" data-cfg="site" oninput="markDirty()">
                   </div>
                 </div>
                 <div class="cfg-group">
                   <label class="lbl">Regime Tributário</label>
                   <div class="inp-wrap"><i class="bi bi-receipt pre"></i>
-                    <select class="field" onchange="markDirty()">
+                    <select class="field" data-cfg="regimeTrib" onchange="markDirty()">
                       <option selected>Simples Nacional</option>
                       <option>Lucro Presumido</option>
                       <option>Lucro Real</option>
@@ -1101,7 +1048,7 @@ font-size: 12px;
                 <div class="cfg-group">
                   <label class="lbl">Nome do sistema</label>
                   <div class="inp-wrap"><i class="bi bi-type pre"></i>
-                    <input class="field" type="text" id="nomeSystem" value="Sistemy ERP"
+                    <input class="field" type="text" id="nomeSystem" data-cfg="nomeSystem" value="Sistemy ERP"
                       oninput="markDirty();updatePreview()">
                   </div>
                 </div>
@@ -1148,30 +1095,6 @@ font-size: 12px;
             </div>
           </div>
 
-          <!-- ══ PERMISSÕES ══ -->
-          <div class="config-panel" id="p-permissoes">
-            <div class="cfg-section">
-              <div class="cfg-section-header">
-                <div class="cfg-section-title">Permissões por Perfil</div>
-                <div class="cfg-section-sub">Defina o que cada perfil pode acessar e fazer.</div>
-              </div>
-              <div style="overflow-x:auto">
-                <table class="perm-table">
-                  <thead>
-                    <tr>
-                      <th style="width:240px">Módulo</th>
-                      <th>Admin</th>
-                      <th>Gerente</th>
-                      <th>Vendedor</th>
-                      <th>Caixa</th>
-                    </tr>
-                  </thead>
-                  <tbody id="permTable"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
           <!-- ══ NOTIFICAÇÕES ══ -->
           <div class="config-panel" id="p-notificacoes">
             <div class="cfg-section">
@@ -1187,14 +1110,14 @@ font-size: 12px;
                     <div class="toggle-label">Estoque abaixo do mínimo</div>
                     <div class="toggle-sub">Alertar quando produto atingir o mínimo configurado</div>
                   </div>
-                  <div class="toggle on" onclick="this.classList.toggle('on');markDirty()"></div>
+                  <div class="toggle on" data-cfg="togNotifEstoqueMin" onclick="this.classList.toggle('on');markDirty()"></div>
                 </div>
                 <div class="toggle-row">
                   <div class="toggle-info">
                     <div class="toggle-label">Produto zerado</div>
                     <div class="toggle-sub">Notificar imediatamente quando o estoque zerar</div>
                   </div>
-                  <div class="toggle on" onclick="this.classList.toggle('on');markDirty()"></div>
+                  <div class="toggle on" data-cfg="togNotifEstoqueZero" onclick="this.classList.toggle('on');markDirty()"></div>
                 </div>
               </div>
 
@@ -1205,21 +1128,21 @@ font-size: 12px;
                     <div class="toggle-label">Vencimento de duplicatas</div>
                     <div class="toggle-sub">Alertar X dias antes do vencimento</div>
                   </div>
-                  <div class="toggle on" onclick="this.classList.toggle('on');markDirty()"></div>
+                  <div class="toggle on" data-cfg="togNotifVencDup" onclick="this.classList.toggle('on');markDirty()"></div>
                 </div>
                 <div class="toggle-row">
                   <div class="toggle-info">
                     <div class="toggle-label">Títulos em atraso</div>
                     <div class="toggle-sub">Notificar quando uma duplicata vencer sem pagamento</div>
                   </div>
-                  <div class="toggle on" onclick="this.classList.toggle('on');markDirty()"></div>
+                  <div class="toggle on" data-cfg="togNotifAtraso" onclick="this.classList.toggle('on');markDirty()"></div>
                 </div>
                 <div class="toggle-row">
                   <div class="toggle-info">
                     <div class="toggle-label">Metas do dia atingidas</div>
                     <div class="toggle-sub">Notificar quando a meta diária de vendas for atingida</div>
                   </div>
-                  <div class="toggle" onclick="this.classList.toggle('on');markDirty()"></div>
+                  <div class="toggle" data-cfg="togNotifMetas" onclick="this.classList.toggle('on');markDirty()"></div>
                 </div>
               </div>
 
@@ -1230,21 +1153,21 @@ font-size: 12px;
                     <div class="toggle-label">Novo pedido B2B recebido</div>
                     <div class="toggle-sub">Notificar ao chegar um novo pedido pendente</div>
                   </div>
-                  <div class="toggle on" onclick="this.classList.toggle('on');markDirty()"></div>
+                  <div class="toggle on" data-cfg="togNotifNovoPedido" onclick="this.classList.toggle('on');markDirty()"></div>
                 </div>
                 <div class="toggle-row">
                   <div class="toggle-info">
                     <div class="toggle-label">Pedido aprovado</div>
                     <div class="toggle-sub">Notificar o vendedor quando o pedido for aprovado</div>
                   </div>
-                  <div class="toggle on" onclick="this.classList.toggle('on');markDirty()"></div>
+                  <div class="toggle on" data-cfg="togNotifPedidoAprov" onclick="this.classList.toggle('on');markDirty()"></div>
                 </div>
                 <div class="toggle-row">
                   <div class="toggle-info">
                     <div class="toggle-label">Venda de alto valor</div>
                     <div class="toggle-sub">Alertar quando uma venda superar R$ 5.000</div>
                   </div>
-                  <div class="toggle" onclick="this.classList.toggle('on');markDirty()"></div>
+                  <div class="toggle" data-cfg="togNotifAltaValor" onclick="this.classList.toggle('on');markDirty()"></div>
                 </div>
               </div>
 
@@ -1254,13 +1177,13 @@ font-size: 12px;
                   <div class="cfg-group">
                     <label class="lbl">Dias antes do vencimento</label>
                     <div class="inp-wrap"><i class="bi bi-calendar-check pre"></i>
-                      <input class="field" type="number" value="3" min="1" max="30" oninput="markDirty()">
+                      <input class="field" type="number" data-cfg="diasAntesVenc" value="3" min="1" max="30" oninput="markDirty()">
                     </div>
                   </div>
                   <div class="cfg-group">
                     <label class="lbl">Estoque mínimo (% do máximo)</label>
                     <div class="inp-wrap"><i class="bi bi-percent pre"></i>
-                      <input class="field" type="number" value="20" min="5" max="50" oninput="markDirty()">
+                      <input class="field" type="number" data-cfg="pctEstoqueMin" value="20" min="5" max="50" oninput="markDirty()">
                     </div>
                   </div>
                 </div>
@@ -1353,12 +1276,12 @@ font-size: 12px;
 
   <!-- MODAL USUÁRIO -->
   <div class="modal-overlay" id="userModalOverlay" onclick="handleUserOverlay(event)">
-    <div class="modal">
+    <div class="modal" style="max-width:520px">
       <div class="modal-header">
         <h2 id="userModalTitle">Novo Usuário</h2>
         <div class="modal-close" onclick="closeUserModal()"><i class="bi bi-x-lg"></i></div>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" style="overflow-y:auto;max-height:70vh">
         <div style="display:flex;flex-direction:column;gap:14px">
           <div class="cfg-group">
             <label class="lbl">Nome completo *</label>
@@ -1373,27 +1296,31 @@ font-size: 12px;
             </div>
           </div>
           <div class="cfg-group">
-            <label class="lbl">Perfil de acesso</label>
-            <div class="inp-wrap"><i class="bi bi-shield pre"></i>
-              <select class="field" id="u-perfil">
-                <option value="admin">Administrador</option>
-                <option value="gerente">Gerente</option>
-                <option value="vendedor" selected>Vendedor</option>
-                <option value="caixa">Operador de Caixa</option>
-              </select>
+            <label class="lbl">Login (usuário) *</label>
+            <div class="inp-wrap"><i class="bi bi-at pre"></i>
+              <input class="field" type="text" id="u-login" placeholder="joaosilva" autocomplete="off"
+                oninput="this.value=this.value.replace(/\s/g,'').toLowerCase()">
             </div>
+            <span style="font-size:11px;color:var(--muted);margin-top:4px;display:block">Usado para entrar no sistema. Sem espaços.</span>
           </div>
-          <div class="cfg-group">
-            <label class="lbl">Senha provisória</label>
+          <div class="cfg-group" id="u-senha-wrap">
+            <label class="lbl">Senha *</label>
             <div class="inp-wrap"><i class="bi bi-lock pre"></i>
-              <input class="field" type="text" id="u-senha" placeholder="O usuário deverá alterar no primeiro acesso">
+              <input class="field" type="password" id="u-senha" placeholder="Senha de acesso do usuário">
             </div>
+            <span style="font-size:11px;color:var(--muted);margin-top:4px;display:block" id="u-senha-hint">Deixe em branco para manter a senha atual ao editar.</span>
+          </div>
+
+          <!-- Checklist de permissões -->
+          <div class="cfg-group">
+            <label class="lbl" style="margin-bottom:10px">Acesso aos módulos</label>
+            <div id="u-perms-list" style="display:flex;flex-direction:column;gap:6px"></div>
           </div>
         </div>
       </div>
       <div class="modal-footer">
         <button class="btn-cancel-m" onclick="closeUserModal()">Cancelar</button>
-        <button class="btn-save-m" onclick="saveUser()"><i class="bi bi-check2"></i> Criar usuário</button>
+        <button class="btn-save-m" id="btnSaveUser" onclick="saveUser()"><i class="bi bi-check2"></i> Salvar usuário</button>
       </div>
     </div>
   </div>
@@ -1405,6 +1332,7 @@ font-size: 12px;
   <script src="auth.js"></script>
   <script>
     NexoAuth.requireAuth();
+    requirePermission();
 
     // ═══════════════════════════════════════════════
     // STATE
@@ -1423,17 +1351,18 @@ font-size: 12px;
       { hex: '#f59e0b', label: 'Âmbar' },
     ];
 
-    const PERMISSOES = [
-      { modulo: 'Dashboard', sub: 'Visão geral do sistema', admin: true, gerente: true, vendedor: true, caixa: false },
-      { modulo: 'PDV / Caixa', sub: 'Realizar vendas no caixa', admin: true, gerente: true, vendedor: true, caixa: true },
-      { modulo: 'Pedidos de Venda', sub: 'Criar e aprovar pedidos', admin: true, gerente: true, vendedor: true, caixa: false },
-      { modulo: 'Vendas', sub: 'Ver histórico de vendas', admin: true, gerente: true, vendedor: true, caixa: false },
-      { modulo: 'Clientes', sub: 'Cadastrar e editar', admin: true, gerente: true, vendedor: true, caixa: false },
-      { modulo: 'Produtos', sub: 'Gerenciar catálogo', admin: true, gerente: true, vendedor: false, caixa: false },
-      { modulo: 'Estoque', sub: 'Movimentações e ajustes', admin: true, gerente: true, vendedor: false, caixa: false },
-      { modulo: 'Financeiro', sub: 'Contas e fluxo de caixa', admin: true, gerente: true, vendedor: false, caixa: false },
-      { modulo: 'Relatórios', sub: 'Ver relatórios gerenciais', admin: true, gerente: true, vendedor: false, caixa: false },
-      { modulo: 'Configurações', sub: 'Alterar configurações', admin: true, gerente: false, vendedor: false, caixa: false },
+    // Definição dos módulos para o checklist
+    const MODULOS = [
+      { key: 'dashboard',     label: 'Dashboard',         sub: 'Visão geral e KPIs' },
+      { key: 'pdv',           label: 'PDV / Caixa',       sub: 'Realizar vendas no caixa' },
+      { key: 'pedidos',       label: 'Pedidos de Venda',  sub: 'Criar e aprovar pedidos' },
+      { key: 'vendas',        label: 'Vendas',            sub: 'Histórico de vendas' },
+      { key: 'clientes',      label: 'Clientes',          sub: 'Cadastrar e editar parceiros' },
+      { key: 'produtos',      label: 'Produtos',          sub: 'Gerenciar catálogo' },
+      { key: 'estoque',       label: 'Estoque',           sub: 'Movimentações e ajustes' },
+      { key: 'financeiro',    label: 'Financeiro',        sub: 'Contas e fluxo de caixa' },
+      { key: 'relatorios',    label: 'Relatórios',        sub: 'Relatórios gerenciais' },
+      { key: 'configuracoes', label: 'Configurações',     sub: 'Gerenciar usuários e sistema' },
     ];
 
     let usuarios = [];
@@ -1444,10 +1373,10 @@ font-size: 12px;
     // ═══════════════════════════════════════════════
     function init() {
       buildColorSwatches();
-      buildPermTable();
       loadUsers();
       renderUsers();
       NexoAuth.renderCurrentUser();
+      loadSettings();
     }
 
     // ═══════════════════════════════════════════════
@@ -1468,15 +1397,87 @@ font-size: 12px;
       isDirty = true;
       document.getElementById('saveBar').classList.add('show');
     }
-    function saveChanges() {
-      isDirty = false;
-      document.getElementById('saveBar').classList.remove('show');
-      showToast('Configurações salvas com sucesso!');
+
+    function _collectConfig() {
+      const cfg = {};
+      // Campos input/select/textarea com data-cfg
+      document.querySelectorAll('[data-cfg]').forEach(el => {
+        const key = el.dataset.cfg;
+        if (el.classList.contains('toggle')) {
+          cfg[key] = el.classList.contains('on');
+        } else {
+          cfg[key] = el.value;
+        }
+      });
+      // Cor de destaque (gerenciada por var JS, não por campo)
+      cfg._corSel = corSel;
+      // Logo (base64 do src, se houver)
+      const logo = document.getElementById('logoPreview');
+      if (logo && logo.tagName === 'IMG') cfg._logo = logo.src;
+      return cfg;
     }
+
+    function _applyConfig(cfg) {
+      if (!cfg) return;
+      document.querySelectorAll('[data-cfg]').forEach(el => {
+        const key = el.dataset.cfg;
+        if (!(key in cfg)) return;
+        if (el.classList.contains('toggle')) {
+          el.classList.toggle('on', !!cfg[key]);
+        } else {
+          el.value = cfg[key];
+        }
+      });
+      if (cfg._corSel) {
+        corSel = cfg._corSel;
+        document.querySelectorAll('.color-swatch').forEach(s => {
+          s.classList.toggle('sel', s.style.backgroundColor === hexToRgb(corSel) ||
+            s.title.toLowerCase().includes(corSel.toLowerCase()) ||
+            s.getAttribute('onclick')?.includes(corSel));
+        });
+      }
+      if (cfg._logo) {
+        const logo = document.getElementById('logoPreview');
+        if (logo) { logo.innerHTML = ''; const img = document.createElement('img'); img.src = cfg._logo; img.style.cssText = 'width:100%;height:100%;object-fit:contain;border-radius:8px'; logo.appendChild(img); }
+      }
+      if (cfg.nomeSystem) updatePreview();
+    }
+
+    function hexToRgb(hex) {
+      const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    function saveChanges() {
+      const cfg = _collectConfig();
+      try {
+        localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+        isDirty = false;
+        document.getElementById('saveBar').classList.remove('show');
+        // Aplica tema imediatamente na página atual
+        if (cfg._corSel && /^#[0-9a-f]{6}$/i.test(cfg._corSel)) {
+          document.documentElement.style.setProperty('--accent', cfg._corSel);
+        }
+        showToast('✅ Configurações salvas! Acesse outros módulos para ver a nova cor.');
+      } catch (err) {
+        if (err.name === 'QuotaExceededError') showToast('❌ Armazenamento local cheio.', 'error');
+        else showToast('❌ Erro ao salvar. Tente novamente.', 'error');
+      }
+    }
+
     function discardChanges() {
+      const saved = localStorage.getItem(CFG_KEY);
+      _applyConfig(saved ? JSON.parse(saved) : null);
       isDirty = false;
       document.getElementById('saveBar').classList.remove('show');
       showToast('Alterações descartadas.');
+    }
+
+    function loadSettings() {
+      try {
+        const raw = localStorage.getItem(CFG_KEY);
+        if (raw) _applyConfig(JSON.parse(raw));
+      } catch (_) {}
     }
 
     // ═══════════════════════════════════════════════
@@ -1524,22 +1525,6 @@ font-size: 12px;
     }
 
     // ═══════════════════════════════════════════════
-    // PERMISSÕES
-    // ═══════════════════════════════════════════════
-    function buildPermTable() {
-      const body = document.getElementById('permTable');
-      body.innerHTML = PERMISSOES.map(p => `
-    <tr>
-      <td><div class="perm-module">${p.modulo}</div><div class="perm-sub">${p.sub}</div></td>
-      <td><input class="perm-check" type="checkbox" ${p.admin ? 'checked' : ''} onchange="markDirty()"></td>
-      <td><input class="perm-check" type="checkbox" ${p.gerente ? 'checked' : ''} onchange="markDirty()"></td>
-      <td><input class="perm-check" type="checkbox" ${p.vendedor ? 'checked' : ''} onchange="markDirty()"></td>
-      <td><input class="perm-check" type="checkbox" ${p.caixa ? 'checked' : ''} onchange="markDirty()"></td>
-    </tr>`
-      ).join('');
-    }
-
-    // ═══════════════════════════════════════════════
     // USUÁRIOS
     // ═══════════════════════════════════════════════
     const AVATAR_COLORS = [
@@ -1549,105 +1534,176 @@ font-size: 12px;
     function avatarColor(name) {
       return AVATAR_COLORS[(name.charCodeAt(0) || 0) % AVATAR_COLORS.length];
     }
-    const perfilLabels = { admin: 'Administrador', gerente: 'Gerente', vendedor: 'Vendedor', caixa: 'Caixa' };
+    // ── Usuários ──────────────────────────────────────────
 
     function loadUsers() {
-      const session = NexoAuth.getSession();
       try {
-        const raw = localStorage.getItem('nexoerp.users');
-        const all = raw ? JSON.parse(raw) : [];
+        const all = JSON.parse(localStorage.getItem('nexoerp.users') || '[]');
         usuarios = all.map(u => ({
-          id: u.id,
-          nome: u.name || u.username,
-          email: u.email,
-          perfil: u.role === 'Administrador' ? 'admin' : 'vendedor',
-          role: u.role || 'Vendedor',
+          id:          u.id,
+          nome:        u.name || u.username || u.email,
+          username:    u.username || '',
+          email:       u.email,
+          isDono:      !!u.isDono,
+          permissions: u.permissions ?? null,
         }));
-      } catch (e) {
-        usuarios = [{ id: 'demo', nome: session?.user?.name || 'Admin', email: session?.user?.email || 'admin@sistemy.com', perfil: 'admin', role: 'Administrador' }];
-      }
+      } catch (_) { usuarios = []; }
     }
 
     function renderUsers() {
+      const session  = NexoAuth.getSession();
+      const meuId    = session?.user?.id;
+      const euSouDono = session?.user?.isDono || session?.user?.permissions === null;
+
       const list = document.getElementById('userList');
       if (!usuarios.length) {
         list.innerHTML = `<div style="color:var(--muted);text-align:center;padding:24px">Nenhum usuário cadastrado.</div>`;
         return;
       }
+
       list.innerHTML = usuarios.map(u => {
         const [bg, fg] = avatarColor(u.nome);
-        const perfilClass = u.perfil === 'admin' ? 'admin' : u.perfil === 'gerente' ? 'admin' : u.perfil === 'vendedor' ? 'vendedor' : 'caixa';
+        const isMe     = u.id === meuId;
+
+        // Badge: Dono ou número de módulos habilitados
+        let badgeHTML;
+        if (u.isDono || u.permissions === null) {
+          badgeHTML = `<span class="uc-role admin">Dono</span>`;
+        } else {
+          const count = Object.values(u.permissions || {}).filter(Boolean).length;
+          badgeHTML = `<span class="uc-role vendedor">${count} módulo${count !== 1 ? 's' : ''}</span>`;
+        }
+
+        // Só o Dono pode editar sub-usuários; ninguém edita o Dono por esta rota
+        const podeEditar = euSouDono && !u.isDono && !isMe;
+        const canDelete  = euSouDono && !u.isDono;
+
+        const editBtn   = podeEditar
+          ? `<div class="uc-btn" title="Editar" onclick="editUser('${escapeHTML(u.id)}')"><i class="bi bi-pencil"></i></div>`
+          : `<div class="uc-btn" title="Sem permissão" style="opacity:.3;cursor:not-allowed"><i class="bi bi-pencil"></i></div>`;
+        const deleteBtn = canDelete
+          ? `<div class="uc-btn danger" title="Remover" onclick="removeUser('${escapeHTML(u.id)}')"><i class="bi bi-trash3"></i></div>`
+          : '';
+        const meBadge   = isMe ? `<span style="font-size:10px;color:var(--accent);font-weight:700;margin-left:4px">(você)</span>` : '';
+
         return `<div class="user-card">
-      <div class="uc-avatar" style="background:${bg};color:${fg}">${initials(u.nome)}</div>
-      <div class="uc-info">
-        <div class="uc-name">${u.nome}</div>
-        <div class="uc-email">${u.email}</div>
-      </div>
-      <span class="uc-role ${perfilClass}">${perfilLabels[u.perfil] || u.role}</span>
-      <div class="uc-actions">
-        <div class="uc-btn" title="Editar" onclick="editUser('${u.id}')"><i class="bi bi-pencil"></i></div>
-        <div class="uc-btn danger" title="Remover" onclick="removeUser('${u.id}')"><i class="bi bi-trash3"></i></div>
-      </div>
-    </div>`;
+          <div class="uc-avatar" style="background:${bg};color:${fg}">${initials(u.nome)}</div>
+          <div class="uc-info">
+            <div class="uc-name">${escapeHTML(u.nome)}${meBadge}</div>
+            <div class="uc-email">${escapeHTML(u.email)}</div>
+          </div>
+          ${badgeHTML}
+          <div class="uc-actions">${editBtn}${deleteBtn}</div>
+        </div>`;
       }).join('');
+    }
+
+    function _buildPermChecklist(existingPerms) {
+      // Permissões do usuário logado — define quais checkboxes ele pode marcar
+      const session    = NexoAuth.getSession();
+      const myPerms    = session?.user?.permissions ?? null;
+      const souDono    = session?.user?.isDono || myPerms === null;
+
+      return MODULOS.map(m => {
+        const checked    = existingPerms ? !!existingPerms[m.key] : false;
+        // Se não sou Dono e não tenho esta permissão, não posso concedê-la
+        const possoConc  = souDono || (myPerms && myPerms[m.key]);
+        const disabled   = possoConc ? '' : 'disabled';
+        const title      = possoConc ? '' : 'title="Você não tem acesso a este módulo"';
+
+        return `<label style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:${possoConc?'pointer':'not-allowed'};background:${checked?'rgba(0,200,150,.06)':'transparent'};border:1px solid ${checked?'rgba(0,200,150,.2)':'transparent'};transition:all .15s" ${title}>
+          <input type="checkbox" name="perm-${m.key}" value="${m.key}" ${checked ? 'checked' : ''} ${disabled}
+            style="accent-color:var(--accent);width:15px;height:15px;flex-shrink:0;cursor:${possoConc?'pointer':'not-allowed'}"
+            onchange="this.closest('label').style.background=this.checked?'rgba(0,200,150,.06)':'transparent';this.closest('label').style.border=this.checked?'1px solid rgba(0,200,150,.2)':'1px solid transparent'">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:${possoConc?'var(--text)':'var(--muted)'}">${m.label}</div>
+            <div style="font-size:11px;color:var(--muted)">${m.sub}</div>
+          </div>
+        </label>`;
+      }).join('');
+    }
+
+    function _getModalPerms() {
+      const perms = {};
+      MODULOS.forEach(m => {
+        const cb = document.querySelector(`input[name="perm-${m.key}"]`);
+        perms[m.key] = cb ? cb.checked : false;
+      });
+      return perms;
     }
 
     function openUserModal(id = null) {
       editingUserId = id;
-      document.getElementById('userModalTitle').textContent = id ? 'Editar Usuário' : 'Novo Usuário';
-      document.getElementById('u-nome').value = '';
+      const isEdit  = !!id;
+      document.getElementById('userModalTitle').textContent = isEdit ? 'Editar Usuário' : 'Novo Usuário';
+      document.getElementById('u-nome').value  = '';
       document.getElementById('u-email').value = '';
+      document.getElementById('u-login').value = '';
       document.getElementById('u-senha').value = '';
-      document.getElementById('u-perfil').value = 'vendedor';
-      if (id) {
+      document.getElementById('u-senha-hint').style.display = isEdit ? 'block' : 'none';
+      document.getElementById('btnSaveUser').innerHTML = `<i class="bi bi-check2"></i> ${isEdit ? 'Salvar alterações' : 'Criar usuário'}`;
+
+      let existingPerms = null;
+      if (isEdit) {
         const u = usuarios.find(x => x.id === id);
-        if (u) { document.getElementById('u-nome').value = u.nome; document.getElementById('u-email').value = u.email; document.getElementById('u-perfil').value = u.perfil; }
+        if (u) {
+          document.getElementById('u-nome').value  = u.nome;
+          document.getElementById('u-email').value = u.email;
+          document.getElementById('u-login').value = u.username;
+          existingPerms = u.permissions;
+        }
       }
+      document.getElementById('u-perms-list').innerHTML = _buildPermChecklist(existingPerms);
       document.getElementById('userModalOverlay').classList.add('open');
     }
+
     function closeUserModal() { document.getElementById('userModalOverlay').classList.remove('open'); }
     function handleUserOverlay(e) { if (e.target === document.getElementById('userModalOverlay')) closeUserModal(); }
 
-    function persistUsers() {
-      const raw = JSON.parse(localStorage.getItem('nexoerp.users') || '[]');
-      usuarios.forEach(u => {
-        const idx = raw.findIndex(r => r.id === u.id);
-        if (idx >= 0) {
-          raw[idx].name  = u.nome;
-          raw[idx].email = u.email;
-          raw[idx].role  = u.role || perfilLabels[u.perfil];
-        } else {
-          raw.unshift({ id: u.id, name: u.nome, username: u.email.split('@')[0], email: u.email, password: u._pw || '', role: u.role || perfilLabels[u.perfil], createdAt: new Date().toISOString() });
-        }
-      });
-      const ids = new Set(usuarios.map(u => u.id));
-      const final = raw.filter(r => ids.has(r.id));
-      localStorage.setItem('nexoerp.users', JSON.stringify(final));
+    async function saveUser() {
+      const nome     = document.getElementById('u-nome').value.trim();
+      const email    = document.getElementById('u-email').value.trim();
+      const username = document.getElementById('u-login').value.trim().toLowerCase();
+      const senha    = document.getElementById('u-senha').value.trim();
+      const perms    = _getModalPerms();
+
+      if (!nome || !email || !username) { showToast('⚠️ Preencha nome, e-mail e login.', 'warning'); return; }
+
+      const btn = document.getElementById('btnSaveUser');
+      btn.disabled = true;
+      btn.textContent = 'Salvando…';
+
+      let result;
+      if (editingUserId) {
+        result = await NexoAuth.updateSubUser(editingUserId, { name: nome, email, username, password: senha || undefined, permissions: perms });
+      } else {
+        if (!senha) { showToast('⚠️ Informe uma senha para o novo usuário.', 'warning'); btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2"></i> Criar usuário'; return; }
+        result = await NexoAuth.addSubUser({ name: nome, email, username, password: senha, permissions: perms });
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = `<i class="bi bi-check2"></i> ${editingUserId ? 'Salvar alterações' : 'Criar usuário'}`;
+
+      if (!result.ok) { showToast('❌ ' + result.message, 'error'); return; }
+
+      loadUsers();
+      closeUserModal();
+      renderUsers();
+      showToast(editingUserId ? '✅ Usuário atualizado!' : '✅ Usuário criado com sucesso!');
     }
 
-    function saveUser() {
-      const nome  = document.getElementById('u-nome').value.trim();
-      const email = document.getElementById('u-email').value.trim();
-      const senha = document.getElementById('u-senha').value.trim();
-      const perfil = document.getElementById('u-perfil').value;
-      if (!nome || !email) { showToast('Preencha nome e e-mail!'); return; }
-      if (editingUserId) {
-        const u = usuarios.find(x => x.id === editingUserId);
-        if (u) { u.nome = nome; u.email = email; u.perfil = perfil; u.role = perfilLabels[perfil]; }
-      } else {
-        usuarios.push({ id: `u-${Date.now()}`, nome, email, perfil, role: perfilLabels[perfil], _pw: senha });
-      }
-      persistUsers();
-      closeUserModal(); renderUsers(); markDirty();
-      showToast(editingUserId ? 'Usuário atualizado!' : 'Usuário criado com sucesso!');
-    }
     function editUser(id) { openUserModal(id); }
+
     function removeUser(id) {
-      if (!confirm('Remover este usuário?')) return;
-      if (id === 'demo-admin') localStorage.setItem('nexoerp.demo_removed', 'true');
-      usuarios = usuarios.filter(u => u.id !== id);
-      persistUsers();
-      renderUsers(); markDirty();
+      const u = usuarios.find(x => x.id === id);
+      if (!u) return;
+      if (u.isDono || u.permissions === null) { showToast('⚠️ O Dono não pode ser removido.', 'warning'); return; }
+      if (!confirm(`Remover o usuário "${u.nome}"? Esta ação não pode ser desfeita.`)) return;
+      const all = JSON.parse(localStorage.getItem('nexoerp.users') || '[]');
+      const updated = all.filter(x => x.id !== id);
+      localStorage.setItem('nexoerp.users', JSON.stringify(updated));
+      loadUsers();
+      renderUsers();
       showToast('Usuário removido.');
     }
 

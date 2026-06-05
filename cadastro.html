@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistemy — Criar Conta</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1062,6 +1063,42 @@
   <script src="utils.js"></script>
   <script src="auth.js"></script>
   <script>
+    // Se já está logado, mostra aviso com opções em vez de redirecionar silenciosamente
+    (function() {
+      const session = NexoAuth.getSession();
+      if (!session) return;
+      const firstName = session.user.name.split(' ')[0];
+      const overlay = document.createElement('div');
+      overlay.style.cssText = `
+        position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
+        z-index:9999;display:flex;align-items:center;justify-content:center;
+        font-family:'Inter',sans-serif;
+      `;
+      overlay.innerHTML = `
+        <div style="background:#10151e;border:1px solid #1e2a3a;border-radius:20px;padding:36px 32px;max-width:400px;width:90%;text-align:center">
+          <div style="width:52px;height:52px;border-radius:14px;background:rgba(0,200,150,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:22px;color:#00c896">
+            <i class="bi bi-person-check-fill"></i>
+          </div>
+          <h3 style="font-size:18px;font-weight:800;color:#e8edf5;margin-bottom:8px">Você já está logado</h3>
+          <p style="color:#6b7f96;font-size:14px;line-height:1.6;margin-bottom:28px">
+            Conta ativa: <strong style="color:#e8edf5">${session.user.name}</strong><br>
+            Para criar uma nova conta, você precisa sair primeiro.
+          </p>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <a href="dashboard.html"
+               style="padding:12px;border-radius:10px;background:#00c896;color:#021c14;font-weight:700;font-size:14px;text-decoration:none;display:block">
+              Ir ao painel (${firstName})
+            </a>
+            <button onclick="NexoAuth.logout('cadastro.html')"
+               style="padding:12px;border-radius:10px;border:1px solid #1e2a3a;background:none;color:#e8edf5;font-weight:600;font-size:14px;cursor:pointer;font-family:'Inter',sans-serif">
+              Sair e criar nova conta
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+    })();
+
     let currentStep = 1;
     const totalSteps = 4;
     const progPcts = ['25%', '50%', '75%', '100%'];
@@ -1146,11 +1183,13 @@
       updateTracker(currentStep);
     }
 
-    function finalizar() {
+    async function finalizar() {
       const nome = document.getElementById('primeiroNome').value || 'Usuario';
       const sobrenome = document.getElementById('sobrenome').value || '';
       const email = document.getElementById('email').value || '';
-      const result = NexoAuth.registerUser({
+      const btn = document.getElementById('btnFinalizar');
+      if (btn) { btn.disabled = true; btn.textContent = 'Criando conta…'; }
+      const result = await NexoAuth.registerUser({
         name: `${nome} ${sobrenome}`.trim(),
         username: document.getElementById('usuario').value,
         email,
@@ -1160,6 +1199,7 @@
         tipo: tipoSelecionado,
         plan: document.querySelector('.plan-option.selected strong')?.textContent.trim() || 'Padrao'
       });
+      if (btn) { btn.disabled = false; btn.textContent = 'Criar conta'; }
 
       if (!result.ok) {
         const err = document.getElementById('err-usuario');

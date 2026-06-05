@@ -74,6 +74,32 @@ function maskCPF(el) {
   el.value = v;
 }
 
+// ── Validação CPF / CNPJ ─────────────────────────────
+function validarCPF(cpf) {
+  const n = cpf.replace(/\D/g, '');
+  if (n.length !== 11 || /^(\d)\1{10}$/.test(n)) return false;
+  let s = 0;
+  for (let i = 0; i < 9; i++) s += +n[i] * (10 - i);
+  let r = (s * 10) % 11; if (r === 10 || r === 11) r = 0;
+  if (r !== +n[9]) return false;
+  s = 0;
+  for (let i = 0; i < 10; i++) s += +n[i] * (11 - i);
+  r = (s * 10) % 11; if (r === 10 || r === 11) r = 0;
+  return r === +n[10];
+}
+
+function validarCNPJ(cnpj) {
+  const n = cnpj.replace(/\D/g, '');
+  if (n.length !== 14 || /^(\d)\1{13}$/.test(n)) return false;
+  const calc = (len) => {
+    let s = 0, p = len - 7;
+    for (let i = 0; i < len; i++) { s += +n[i] * p--; if (p < 2) p = 9; }
+    const r = s % 11;
+    return r < 2 ? 0 : 11 - r;
+  };
+  return calc(12) === +n[12] && calc(13) === +n[13];
+}
+
 // ── Sanitização XSS ──────────────────────────────────
 function escapeHTML(str) {
   const d = document.createElement('div');
@@ -86,4 +112,64 @@ function initials(name) {
   const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
   if (!parts.length) return 'NX';
   return (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase();
+}
+
+// ── Controle de acesso por permissão individual ───────
+// Mapa: página → chave de permissão no objeto user.permissions
+const _PAGE_PERM_KEY = {
+  'dashboard.html':     'dashboard',
+  'pdv.html':           'pdv',
+  'pedidos.html':       'pedidos',
+  'vendas.html':        'vendas',
+  'clientes.html':      'clientes',
+  'produtos.html':      'produtos',
+  'estoque.html':       'estoque',
+  'financeiro.html':    'financeiro',
+  'relatorios.html':    'relatorios',
+  'configuracoes.html': 'configuracoes',
+};
+
+// Chame após NexoAuth.requireAuth(). Redireciona para dashboard se acesso negado.
+function requirePermission() {
+  const page    = location.pathname.split('/').pop() || 'dashboard.html';
+  const permKey = _PAGE_PERM_KEY[page];
+  if (!permKey) return; // página não mapeada: acesso livre
+
+  let session = null;
+  try { session = JSON.parse(localStorage.getItem('nexoerp.session') || 'null'); } catch(_) {}
+  if (!session || !session.user) return; // requireAuth já redireciona
+
+  // Dono (isDono = true OU permissions = null) → acesso total irrestrito
+  if (session.user.isDono || session.user.permissions === null) return;
+
+  const perms = session.user.permissions || {};
+  if (!perms[permKey]) {
+    location.href = 'dashboard.html?denied=' + encodeURIComponent(page);
+  }
+}
+
+// ── Tema dinâmico ─────────────────────────────────────
+// Lê nexoerp.config e aplica --accent ao :root assim que utils.js carrega.
+// Executado imediatamente (não precisa de DOMContentLoaded) porque só mexe em CSS vars.
+(function applyTheme() {
+  try {
+    const cfg = JSON.parse(localStorage.getItem('nexoerp.config') || '{}');
+    if (cfg._corSel && /^#[0-9a-f]{6}$/i.test(cfg._corSel)) {
+      document.documentElement.style.setProperty('--accent', cfg._corSel);
+      // Deriva variações mais claras para hover e bg states
+      document.documentElement.style.setProperty('--accent2', cfg._corSel);
+    }
+  } catch (_) {}
+})();
+
+// ── Export CSV ────────────────────────────────────────
+function downloadCSV(filename, header, rows) {
+  const escape = v => `"${String(v == null ? '' : v).replace(/"/g, '""')}"`;
+  const lines = [header, ...rows].map(r => r.map(escape).join(','));
+  const blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+  if (typeof showToast === 'function') showToast('✅ CSV exportado com sucesso!');
 }

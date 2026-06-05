@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistemy — Dashboard</title>
   <link rel="stylesheet" href="global.css">  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
@@ -1565,7 +1566,20 @@ transition: var(--ease);
   <script src="auth.js"></script>
   <script>
     NexoAuth.requireAuth();
+    requirePermission();
     NexoAuth.renderCurrentUser();
+    // Avisa acesso negado redirecionado de outro módulo
+    (function() {
+      const denied = new URLSearchParams(location.search).get('denied');
+      if (denied) {
+        const names = { 'produtos.html':'Produtos', 'estoque.html':'Estoque', 'financeiro.html':'Financeiro',
+          'relatorios.html':'Relatorios', 'configuracoes.html':'Configuracoes',
+          'pedidos.html':'Pedidos', 'vendas.html':'Vendas', 'clientes.html':'Clientes' };
+        const modulo = names[denied] || denied;
+        setTimeout(function(){ showToast('Sem permissao para acessar ' + modulo + '.', 'warning'); }, 300);
+        history.replaceState(null, '', location.pathname);
+      }
+    })();
 
     // ── Data atual ────────────────────────────────────────────
     (function () {

@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistemy — Entrar</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -187,6 +188,69 @@
       .left-panel { display: none; }
       .right-panel { width: 100%; padding: 40px 24px; }
     }
+
+    /* ── Modal Recuperação ── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.6);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #10151e;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 28px;
+      width: 100%;
+      max-width: 380px;
+      animation: fadeUp .25s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .modal-box h3 { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+    .modal-box p  { color: var(--muted); font-size: 13px; line-height: 1.6; margin-bottom: 20px; }
+    .modal-box label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-bottom: 8px; }
+    .modal-box input {
+      width: 100%; padding: 11px 14px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-size: 14px; font-family: 'Inter', sans-serif;
+      outline: none; transition: border-color .2s;
+      margin-bottom: 16px;
+    }
+    .modal-box input:focus { border-color: var(--accent); }
+    .modal-actions { display: flex; gap: 8px; }
+    .btn-modal-cancel {
+      flex: 1; padding: 11px; border-radius: 10px;
+      border: 1px solid var(--border); background: none;
+      color: var(--muted); font-size: 14px; font-weight: 600; cursor: pointer;
+      transition: border-color .2s;
+    }
+    .btn-modal-cancel:hover { border-color: var(--accent); color: var(--text); }
+    .btn-modal-ok {
+      flex: 2; padding: 11px; border-radius: 10px;
+      border: none; background: var(--accent);
+      color: #021c14; font-size: 14px; font-weight: 700; cursor: pointer;
+      transition: opacity .2s;
+    }
+    .btn-modal-ok:hover { opacity: .85; }
+    .modal-success {
+      display: none; text-align: center;
+      padding: 8px 0 4px;
+    }
+    .modal-success i { font-size: 40px; color: var(--accent); margin-bottom: 12px; display: block; }
+    .modal-success p { color: var(--text); font-size: 14px; margin: 0; }
+    .rec-error {
+      display: none; background: rgba(255,71,87,.1);
+      border: 1px solid rgba(255,71,87,.25); border-radius: 8px;
+      padding: 9px 12px; color: #ff4757; font-size: 13px;
+      margin-bottom: 14px;
+    }
+    .rec-error.show { display: block; }
   </style>
 </head>
 <body>
@@ -198,10 +262,10 @@
       <h2 class="panel-tagline">Gestão inteligente<br>para o seu negócio.</h2>
       <p class="panel-sub">Controle total de vendas, estoque, financeiro e clientes numa plataforma moderna e integrada.</p>
       <div class="feature-list">
-        <div class="feature-item"><i class="bi bi-check2-circle"></i> PDV completo com emissão fiscal</div>
+        <div class="feature-item"><i class="bi bi-check2-circle"></i> PDV completo com multi-pagamento</div>
         <div class="feature-item"><i class="bi bi-check2-circle"></i> Gestão financeira em tempo real</div>
         <div class="feature-item"><i class="bi bi-check2-circle"></i> CRM e histórico de clientes</div>
-        <div class="feature-item"><i class="bi bi-check2-circle"></i> Relatórios com inteligência artificial</div>
+        <div class="feature-item"><i class="bi bi-check2-circle"></i> Relatórios e dashboards gerenciais</div>
       </div>
       <div class="mini-preview">
         <div class="mp-title">Resumo de hoje</div>
@@ -247,7 +311,7 @@
         <label class="remember">
           <input type="checkbox" id="remember"> Lembrar de mim
         </label>
-        <a href="#" class="forgot">Esqueceu a senha?</a>
+        <a href="#" class="forgot" onclick="openRecovery();return false">Esqueceu a senha?</a>
       </div>
 
       <button class="btn-login" onclick="entrar()">
@@ -259,6 +323,41 @@
 
       <div class="signup-link">
         Ainda não tem conta? <a href="cadastro.html">Cadastre-se grátis</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL RECUPERAÇÃO DE SENHA -->
+  <div class="modal-overlay" id="recoveryOverlay" onclick="if(event.target===this)closeRecovery()">
+    <div class="modal-box">
+      <div id="recStep1">
+        <h3>Recuperar acesso</h3>
+        <p>Digite o e-mail ou usuário cadastrado. Como os dados ficam no seu navegador, a nova senha será definida aqui mesmo.</p>
+        <div class="rec-error" id="recError"></div>
+        <label for="recIdentifier">E-mail ou usuário</label>
+        <input type="text" id="recIdentifier" placeholder="seunome@empresa.com" onkeydown="if(event.key==='Enter')recStep2()">
+        <div class="modal-actions">
+          <button class="btn-modal-cancel" onclick="closeRecovery()">Cancelar</button>
+          <button class="btn-modal-ok" onclick="recStep2()">Continuar</button>
+        </div>
+      </div>
+      <div id="recStep2" style="display:none">
+        <h3>Nova senha</h3>
+        <p id="recUserLabel" style="margin-bottom:16px;color:var(--text);font-size:13px"></p>
+        <label for="recNewPwd">Nova senha</label>
+        <input type="password" id="recNewPwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')recConfirm()">
+        <label for="recNewPwd2">Confirmar senha</label>
+        <input type="password" id="recNewPwd2" placeholder="••••••••" onkeydown="if(event.key==='Enter')recConfirm()">
+        <div class="rec-error" id="recError2"></div>
+        <div class="modal-actions">
+          <button class="btn-modal-cancel" onclick="document.getElementById('recStep2').style.display='none';document.getElementById('recStep1').style.display='block'">Voltar</button>
+          <button class="btn-modal-ok" onclick="recConfirm()">Redefinir senha</button>
+        </div>
+      </div>
+      <div class="modal-success" id="recSuccess">
+        <i class="bi bi-check-circle-fill"></i>
+        <p><strong>Senha redefinida!</strong><br>Você já pode entrar com sua nova senha.</p>
+        <button class="btn-modal-ok" style="width:100%;margin-top:20px" onclick="closeRecovery()">Fechar</button>
       </div>
     </div>
   </div>
@@ -277,18 +376,21 @@
       }
     }
 
-    function entrar() {
+    async function entrar() {
       const u = document.getElementById('usuario').value.trim();
       const s = document.getElementById('senha').value.trim();
+      const btn = document.querySelector('.btn-login');
       const err = document.getElementById('errorMsg');
       if (!u || !s) {
-        err.querySelector('span') && null;
-        err.textContent = '⚠ Preencha o usuário e a senha.';
         err.className = 'error-msg show';
         err.innerHTML = '<i class="bi bi-exclamation-circle"></i> Preencha o usuário e a senha.';
         return;
       }
-      const result = NexoAuth.login(u, s, document.getElementById('remember').checked);
+      btn.disabled = true;
+      btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Entrando…';
+      const result = await NexoAuth.login(u, s, document.getElementById('remember').checked);
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> Entrar';
       if (!result.ok) {
         err.className = 'error-msg show';
         err.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${result.message}`;
@@ -304,8 +406,68 @@
     }
 
     document.addEventListener('keydown', e => {
-      if (e.key === 'Enter') entrar();
+      if (e.key === 'Enter' && !document.getElementById('recoveryOverlay').classList.contains('open')) entrar();
     });
+
+    // ── Recuperação de senha ────────────────────────────
+    let _recUserId = null;
+
+    function openRecovery() {
+      _recUserId = null;
+      document.getElementById('recIdentifier').value = '';
+      document.getElementById('recNewPwd').value = '';
+      document.getElementById('recNewPwd2').value = '';
+      document.getElementById('recError').className = 'rec-error';
+      document.getElementById('recError2').className = 'rec-error';
+      document.getElementById('recStep1').style.display = 'block';
+      document.getElementById('recStep2').style.display = 'none';
+      document.getElementById('recSuccess').style.display = 'none';
+      document.getElementById('recoveryOverlay').classList.add('open');
+      setTimeout(() => document.getElementById('recIdentifier').focus(), 100);
+    }
+
+    function closeRecovery() {
+      document.getElementById('recoveryOverlay').classList.remove('open');
+    }
+
+    function recStep2() {
+      const id = document.getElementById('recIdentifier').value.trim();
+      const err = document.getElementById('recError');
+      if (!id) { err.textContent = 'Preencha o e-mail ou usuário.'; err.className = 'rec-error show'; return; }
+      const users = NexoAuth.getUsers();
+      const needle = id.toLowerCase();
+      const user = users.find(u => (u.email||'').toLowerCase() === needle || (u.username||'').toLowerCase() === needle);
+      if (!user) { err.textContent = 'Nenhuma conta encontrada com esse e-mail ou usuário.'; err.className = 'rec-error show'; return; }
+      _recUserId = user.id;
+      document.getElementById('recUserLabel').textContent = `Conta encontrada: ${user.name} (${user.email})`;
+      document.getElementById('recStep1').style.display = 'none';
+      document.getElementById('recStep2').style.display = 'block';
+      setTimeout(() => document.getElementById('recNewPwd').focus(), 100);
+    }
+
+    async function recConfirm() {
+      const p1 = document.getElementById('recNewPwd').value;
+      const p2 = document.getElementById('recNewPwd2').value;
+      const err = document.getElementById('recError2');
+      if (!p1 || p1.length < 4) { err.textContent = 'A senha deve ter ao menos 4 caracteres.'; err.className = 'rec-error show'; return; }
+      if (p1 !== p2) { err.textContent = 'As senhas não conferem.'; err.className = 'rec-error show'; return; }
+
+      // Atualiza hash no localStorage
+      const USERS_KEY = 'nexoerp.users';
+      let users = [];
+      try { users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]'); } catch(_) {}
+      const idx = users.findIndex(u => u.id === _recUserId);
+      if (idx < 0) { err.textContent = 'Erro interno. Tente novamente.'; err.className = 'rec-error show'; return; }
+
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(p1));
+      const hash = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+      users[idx].passwordHash = hash;
+      delete users[idx].password;
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+
+      document.getElementById('recStep2').style.display = 'none';
+      document.getElementById('recSuccess').style.display = 'block';
+    }
   </script>
 </body>
 </html>

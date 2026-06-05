@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistemy — Sistema de Gestão Inteligente</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -614,7 +615,7 @@
       <li><a href="#pricing">Planos</a></li>
       <li><a href="#contact">Contato</a></li>
     </ul>
-    <div class="nav-cta">
+    <div class="nav-cta" id="navCta">
       <a href="login.html" class="btn-ghost">Entrar</a>
       <a href="cadastro.html" class="btn-primary">Teste Grátis</a>
     </div>
@@ -627,7 +628,7 @@
       <div class="hero-content">
         <div class="hero-badge reveal">
           <i class="bi bi-stars"></i>
-          Novo — IA integrada ao ERP
+          Novo — PDV avançado com multi-pagamento
         </div>
         <h1 class="reveal">
           Gestão completa.<br>
@@ -753,7 +754,7 @@
       <div class="feat-card reveal">
         <div class="feat-icon"><i class="bi bi-cart4"></i></div>
         <h3>Ponto de Venda</h3>
-        <p>PDV completo com suporte a NFC-e, emissão fiscal automática e integração com múltiplos meios de pagamento.</p>
+        <p>PDV completo com caixa integrado, múltiplos meios de pagamento (PIX, dinheiro, crédito, débito) e histórico de vendas em tempo real.</p>
       </div>
       <div class="feat-card reveal">
         <div class="feat-icon blue"><i class="bi bi-people-fill"></i></div>
@@ -772,13 +773,13 @@
       </div>
       <div class="feat-card reveal">
         <div class="feat-icon blue"><i class="bi bi-receipt"></i></div>
-        <h3>Emissão Fiscal</h3>
-        <p>NF-e, NFC-e e NFS-e totalmente integradas, com transmissão automática para a SEFAZ e gestão de XML.</p>
+        <h3>Emissão Fiscal <span style="font-size:11px;font-weight:700;background:rgba(255,107,53,.15);color:#ff6b35;border-radius:6px;padding:2px 8px;vertical-align:middle">Em breve</span></h3>
+        <p>NF-e, NFC-e e NFS-e integradas com transmissão automática para a SEFAZ. Módulo fiscal em desenvolvimento.</p>
       </div>
       <div class="feat-card reveal">
         <div class="feat-icon orange"><i class="bi bi-cpu"></i></div>
-        <h3>IA & Relatórios</h3>
-        <p>Dashboards personalizáveis, previsão de demanda por IA e insights automáticos para decisões mais rápidas.</p>
+        <h3>Relatórios & Dashboards</h3>
+        <p>Dashboards personalizáveis com KPIs em tempo real, histórico de vendas, ranking de produtos e DRE simplificado.</p>
       </div>
     </div>
   </section>
@@ -979,7 +980,22 @@
     </div>
   </footer>
 
+  <script src="auth.js"></script>
   <script>
+    // Detecta sessão ativa e adapta a navbar
+    (function() {
+      const session = NexoAuth.getSession();
+      if (session && session.user) {
+        const firstName = session.user.name.split(' ')[0];
+        document.getElementById('navCta').innerHTML = `
+          <a href="dashboard.html" class="btn-ghost" style="display:flex;align-items:center;gap:7px">
+            <i class="bi bi-grid-1x2-fill"></i> Painel (${firstName})
+          </a>
+          <button onclick="NexoAuth.logout('landing.html')" class="btn-primary" style="border:none;cursor:pointer">Sair</button>
+        `;
+      }
+    })();
+
     // Scroll reveal
     const observer = new IntersectionObserver(entries => {
       entries.forEach(e => {
