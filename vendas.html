@@ -679,7 +679,7 @@
           <div class="empty-state" id="emptyState">
             <i class="bi bi-receipt"></i>
             <h3>Nenhuma venda encontrada</h3>
-            <p>Ajuste os filtros ou realize vendas pelo PDV.</p>
+            <p id="emptyStateMsg">Ajuste os filtros ou realize vendas pelo PDV.</p>
           </div>
         </div>
         <div class="table-footer">
@@ -720,7 +720,6 @@
     </div>
     <div class="dp-actions">
       <button class="dp-btn primary" onclick="printVenda()"><i class="bi bi-printer"></i> Imprimir</button>
-      <button class="dp-btn ghost" onclick="repetirVenda()"><i class="bi bi-arrow-repeat"></i> Repetir no PDV</button>
       <button class="dp-btn danger" id="btnEstornar" onclick="openEstornoModal()"><i
           class="bi bi-arrow-counterclockwise"></i> Estornar</button>
     </div>
@@ -872,6 +871,9 @@
       const isPdv = section === 'pdv';
       document.getElementById('sec-pdv').classList.toggle('active', isPdv);
       document.getElementById('sec-pedidos').classList.toggle('active', !isPdv);
+      document.getElementById('emptyStateMsg').textContent = isPdv
+        ? 'Ajuste os filtros ou realize vendas pelo PDV.'
+        : 'Ajuste os filtros ou fature pedidos em Pedidos de Venda.';
       vendas = carregarVendas(isPdv ? PDV_VENDAS_KEY : VENDAS_KEY);
       filtered = [...vendas];
       currentFilter = 'todos';
@@ -1150,11 +1152,6 @@
       if (!v) return;
       showToast(`Imprimindo ${v.id}...`);
     }
-    function repetirVenda() {
-      showToast('Abrindo PDV com os itens da venda...');
-      setTimeout(() => window.location.href = 'pdv.html', 1200);
-    }
-
     // ═══════════════════════════════════════════════
     // EXPORT CSV
     // ═══════════════════════════════════════════════
@@ -1170,9 +1167,8 @@
         v.dataStr, v.horaStr, v.operador || ''
       ]);
       const d = new Date();
-      const dt = ${d.getFullYear()};
-      downloadCSV(
-exoerp_vendas_.csv, header, rows);
+      const dt = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+      downloadCSV(`nexoerp_vendas_${dt}.csv`, header, rows);
     }
 
     // ═══════════════════════════════════════════════

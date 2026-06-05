@@ -716,7 +716,6 @@ font-weight: 800;
           <p>Gerencie orçamentos, pedidos B2B, duplicatas e faturamento.</p>
         </div>
         <div class="header-actions">
-          <button class="btn-sm btn-ghost-sm" onclick="exportar()"><i class="bi bi-download"></i> Exportar</button>
           <button class="btn-sm btn-primary-sm" onclick="openModal()"><i class="bi bi-plus-lg"></i> Novo Pedido</button>
         </div>
       </div>
@@ -1283,13 +1282,13 @@ font-weight: 800;
         const o = document.createElement('option'); o.value = c.id; o.textContent = c.nome; fc.appendChild(o);
       });
 
-      // ── Select de vendedor no modal (usuários do sistema)
+      // ── Select de vendedor no modal (nexoerp.vendedores)
       const fv = document.getElementById('f-vendedor');
       try {
-        const users = JSON.parse(localStorage.getItem('nexoerp.users') || '[]');
+        const vends = JSON.parse(localStorage.getItem('nexoerp.vendedores') || '[]');
         fv.innerHTML = '<option value="">Selecione o vendedor...</option>';
-        users.forEach(u => {
-          const o = document.createElement('option'); o.value = u.id; o.textContent = u.name; fv.appendChild(o);
+        vends.filter(v => v.status === 'ativo').forEach(v => {
+          const o = document.createElement('option'); o.value = v.id; o.textContent = v.nome; fv.appendChild(o);
         });
       } catch(_) {}
 
@@ -1572,19 +1571,33 @@ font-weight: 800;
         const raw = localStorage.getItem('nexoerp.financeiro');
         const lancamentos = raw ? JSON.parse(raw) : [];
         const now = new Date();
-        lancamentos.unshift({
-          id: Date.now(),
-          tipo: 'receita',
-          categoria: 'Vendas',
-          descricao: `Pedido ${p.id} — ${p.cliente}`,
-          valor: p.total,
-          vencimento: now.toISOString().slice(0, 10),
-          status: 'pendente',
-          forma_pgto: p.forma || '',
-          data: now.toLocaleDateString('pt-BR'),
-          pedido_id: p.id,
-          cliente_id: p.cliente_id || null,
-          origem: 'pedido',
+        const parcelas = p.parcelas && p.parcelas.length
+          ? p.parcelas
+          : [{ valor: p.total, dataISO: now.toISOString().slice(0, 10), data: now.toLocaleDateString('pt-BR'), status: 'A vencer' }];
+
+        parcelas.forEach((parcela, idx) => {
+          const vencimento = parcela.dataISO || (() => {
+            const parts = (parcela.data || '').split('/');
+            return parts.length === 3
+              ? `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`
+              : now.toISOString().slice(0, 10);
+          })();
+          lancamentos.unshift({
+            id: Date.now() + idx,
+            tipo: 'receita',
+            categoria: 'Vendas',
+            descricao: `Pedido ${p.id} — ${p.cliente}${parcelas.length > 1 ? ` (${idx + 1}/${parcelas.length})` : ''}`,
+            valor: parcela.valor,
+            vencimento,
+            status: 'pendente',
+            forma_pgto: p.forma || '',
+            data: now.toLocaleDateString('pt-BR'),
+            pedido_id: p.id,
+            cliente_id: p.cliente_id || null,
+            origem: 'pedido',
+            parcela_idx: idx + 1,
+            parcelas_total: parcelas.length,
+          });
         });
         localStorage.setItem('nexoerp.financeiro', JSON.stringify(lancamentos));
       } catch (_) { }
@@ -1595,11 +1608,14 @@ font-weight: 800;
         const raw = localStorage.getItem('nexoerp.financeiro');
         if (!raw) return;
         const lancamentos = JSON.parse(raw);
-        const idx = lancamentos.findIndex(l => l.pedido_id === pedidoId);
-        if (idx >= 0) {
-          lancamentos[idx].status = 'cancelado';
-          localStorage.setItem('nexoerp.financeiro', JSON.stringify(lancamentos));
-        }
+        let changed = false;
+        lancamentos.forEach(l => {
+          if (l.pedido_id === pedidoId && l.status !== 'cancelado') {
+            l.status = 'cancelado';
+            changed = true;
+          }
+        });
+        if (changed) localStorage.setItem('nexoerp.financeiro', JSON.stringify(lancamentos));
       } catch (_) { }
     }
 
@@ -1615,7 +1631,9 @@ font-weight: 800;
           id: `#V${String(5000 + Math.floor(Math.random() * 999)).padStart(4, '0')}`,
           pedidoRef: p.id,
           cliente: p.cliente,
+          cliente_id: p.cliente_id || null,
           operador: p.vendedor,
+          operador_id: p.vendedor_id || null,
           metodo: p.forma || 'Boleto bancário',
           itens: p.itens,
           subtotal: p.subtotal,
@@ -1711,13 +1729,13 @@ font-weight: 800;
       const parcelas = [];
       if (cond === 'avista') {
         const dt = new Date(d); dt.setDate(dt.getDate() + 1);
-        parcelas.push({ valor: total, data: dt.toLocaleDateString('pt-BR'), status: 'A vencer' });
+        parcelas.push({ valor: total, dataISO: dt.toISOString().slice(0, 10), data: dt.toLocaleDateString('pt-BR'), status: 'A vencer' });
       } else {
         const dias = cond.split('-').map(Number);
         const val = total / dias.length;
         dias.forEach(d2 => {
           const dt = new Date(d); dt.setDate(dt.getDate() + d2);
-          parcelas.push({ valor: val, data: dt.toLocaleDateString('pt-BR'), status: 'A vencer' });
+          parcelas.push({ valor: val, dataISO: dt.toISOString().slice(0, 10), data: dt.toLocaleDateString('pt-BR'), status: 'A vencer' });
         });
       }
       return parcelas;
@@ -1843,8 +1861,6 @@ font-weight: 800;
       document.getElementById('listView').classList.toggle('show', mode === 'list');
       renderAll();
     }
-    function exportar() { showToast('Exportando pedidos...'); }
-
     // ═══════════════════════════════════════════════
     // HELPERS
     // ═══════════════════════════════════════════════

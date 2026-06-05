@@ -686,6 +686,99 @@
       opacity: .88;
     }
 
+    /* ══ XML NF-e IMPORT ══ */
+    .mode-toggle {
+      display: flex;
+      gap: 4px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 4px;
+    }
+
+    .mode-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 7px;
+      border: none;
+      background: none;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .18s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .mode-btn.active {
+      background: var(--card);
+      color: var(--text);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .25);
+    }
+
+    .xml-dropzone {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 36px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .2s;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .xml-dropzone:hover,
+    .xml-dropzone.dragover {
+      border-color: var(--accent);
+      background: rgba(0, 200, 150, .04);
+      color: var(--text);
+    }
+
+    .nf-summary {
+      background: rgba(0, 200, 150, .06);
+      border: 1px solid rgba(0, 200, 150, .2);
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 20px;
+      font-size: 12px;
+      margin-bottom: 16px;
+    }
+
+    .xml-review-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .xml-review-table thead th {
+      padding: 8px 10px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      white-space: nowrap;
+    }
+
+    .xml-review-table tbody td {
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(30, 42, 58, .5);
+      vertical-align: middle;
+    }
+
+    .xml-review-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
     @media(max-width:1100px) {
       .dep-grid {
         grid-template-columns: 1fr 1fr;
@@ -955,6 +1048,15 @@
               class="bi bi-arrow-left-right"></i><span>Transferência</span></div>
         </div>
 
+        <!-- modo entrada -->
+        <div id="entradaModeRow" style="display:none;margin-bottom:16px">
+          <div class="mode-toggle">
+            <button class="mode-btn active" id="btnModeManual" onclick="setEntradaMode('manual')"><i class="bi bi-pencil-fill"></i> Manual</button>
+            <button class="mode-btn" id="btnModeXml" onclick="setEntradaMode('xml')"><i class="bi bi-file-earmark-code-fill"></i> Importar XML (NF-e)</button>
+          </div>
+        </div>
+
+        <div id="manualForm">
         <!-- produto preview -->
         <div class="prod-preview" id="prodPreview" style="display:none">
           <div class="pp-emoji" id="ppEmoji">📦</div>
@@ -1029,11 +1131,56 @@
             <input class="field" type="text" id="movObs" placeholder="Nota fiscal, referência, detalhe...">
           </div>
         </div>
+        </div><!-- /manualForm -->
 
-      </div>
+        <!-- XML Panel -->
+        <div id="xmlPanel" style="display:none">
+          <div id="xmlDropzoneArea">
+            <div class="xml-dropzone" id="xmlDropzone">
+              <input type="file" id="xmlFileInput" accept=".xml" style="display:none" onchange="handleXmlFile(this.files[0])">
+              <i class="bi bi-file-earmark-arrow-up" style="font-size:36px;color:var(--accent)"></i>
+              <div style="font-size:14px;font-weight:600;color:var(--text)">Arraste o XML da NF-e aqui</div>
+              <div style="font-size:12px">ou clique para selecionar arquivo</div>
+            </div>
+          </div>
+
+          <div id="nfSummary" style="display:none">
+            <div class="nf-summary" id="nfSummaryContent"></div>
+          </div>
+
+          <div id="xmlReviewPanel" style="display:none">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <span style="font-size:13px;font-weight:700">Produtos da Nota</span>
+              <button onclick="resetXml()" style="font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;transition:color .15s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
+                <i class="bi bi-arrow-counterclockwise"></i> Outro XML
+              </button>
+            </div>
+            <div style="max-height:220px;overflow-y:auto;border-radius:10px;border:1px solid var(--border)">
+              <table class="xml-review-table">
+                <thead><tr>
+                  <th>Produto (XML)</th>
+                  <th>Produto ERP</th>
+                  <th style="text-align:center">Qtd</th>
+                  <th style="text-align:center">Custo</th>
+                  <th style="text-align:center">Pular</th>
+                </tr></thead>
+                <tbody id="xmlItemsBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top:14px">
+            <label class="lbl">Depósito de destino</label>
+            <div class="inp-wrap"><i class="bi bi-building pre"></i>
+              <select class="field" id="movDepositoXml"></select>
+            </div>
+          </div>
+        </div><!-- /xmlPanel -->
+
+      </div><!-- /modal-body -->
       <div class="modal-footer">
         <button class="btn-cancel" onclick="closeMov()">Cancelar</button>
-        <button class="btn-save" onclick="saveMov()"><i class="bi bi-check2"></i> Registrar</button>
+        <button class="btn-save" id="btnSaveMov" onclick="handleSave()"><i class="bi bi-check2"></i> Registrar</button>
       </div>
     </div>
   </div>
@@ -1124,6 +1271,7 @@
       renderAlertas();
       updateKPIs();
       populateProdSelect();
+      initXmlDrop();
     }
 
     // ═══════════════════════════════════════════════
@@ -1407,9 +1555,11 @@
       const sel  = document.getElementById('movDeposito');
       const dest = document.getElementById('movDepDestino');
       const filt = document.getElementById('depFilter');
-      if (sel)  sel.innerHTML  = opts;
-      if (dest) dest.innerHTML = opts;
-      if (filt) filt.innerHTML = '<option value="">Todos os depósitos</option>' + opts;
+      const xmlDep = document.getElementById('movDepositoXml');
+      if (sel)    sel.innerHTML    = opts;
+      if (dest)   dest.innerHTML   = opts;
+      if (filt)   filt.innerHTML   = '<option value="">Todos os depósitos</option>' + opts;
+      if (xmlDep) xmlDep.innerHTML = opts;
     }
 
     // ═══════════════════════════════════════════════
@@ -1448,6 +1598,9 @@
       btns.forEach((b, i) => b.classList.toggle('sel', typeMap[i] === movType));
 
       document.getElementById('movDepDestinoGrp').style.display = movType === 'transferencia' ? 'block' : 'none';
+      document.getElementById('entradaModeRow').style.display = movType === 'entrada' ? 'block' : 'none';
+      resetXml();
+      setEntradaMode('manual');
       document.getElementById('movQty').value = 1;
       document.getElementById('movObs').value = '';
 
@@ -1471,6 +1624,8 @@
       document.getElementById('movModalTitle').textContent = movTitles[tipo];
       document.getElementById('movModalSub').textContent = movSubs[tipo];
       document.getElementById('movDepDestinoGrp').style.display = tipo === 'transferencia' ? 'block' : 'none';
+      document.getElementById('entradaModeRow').style.display = tipo === 'entrada' ? 'block' : 'none';
+      if (tipo !== 'entrada') setEntradaMode('manual');
     }
 
     function onProdutoChange() {
@@ -1519,13 +1674,14 @@
       const dataStr = `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
       const qtyFinal = movType === 'ajuste' ? qty : movType === 'saida' ? -qty : qty;
       movimentacoes.unshift({
-        id: movimentacoes.length + 1,
+        id: Date.now() + Math.random(),
         tipo: movType,
         prodId, produto: p.nome, qty: qtyFinal,
         deposito: dep,
         destino: movType === 'transferencia' ? document.getElementById('movDepDestino').value : '',
         motivo: obs || motivo,
         operador: (NexoAuth.getSession()?.user?.name || 'Sistema').split(' ').slice(0, 2).join(' '),
+        dataISO: now.toISOString(),
         data: dataStr,
       });
 
@@ -1551,6 +1707,204 @@
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
       el.classList.add('active');
       document.getElementById(panelId).classList.add('active');
+    }
+
+    // ═══════════════════════════════════════════════
+    // XML NF-e IMPORT
+    // ═══════════════════════════════════════════════
+    let entradaMode = 'manual';
+    let xmlItems = [];
+    let nfInfo = {};
+
+    function initXmlDrop() {
+      const zone = document.getElementById('xmlDropzone');
+      zone.addEventListener('click', () => document.getElementById('xmlFileInput').click());
+      zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+      zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+      zone.addEventListener('drop', e => {
+        e.preventDefault();
+        zone.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file && file.name.toLowerCase().endsWith('.xml')) handleXmlFile(file);
+        else showToast('Selecione um arquivo .xml válido.');
+      });
+    }
+
+    function setEntradaMode(mode) {
+      entradaMode = mode;
+      document.getElementById('btnModeManual').classList.toggle('active', mode === 'manual');
+      document.getElementById('btnModeXml').classList.toggle('active', mode === 'xml');
+      document.getElementById('manualForm').style.display = mode === 'manual' ? 'block' : 'none';
+      document.getElementById('xmlPanel').style.display = mode === 'xml' ? 'block' : 'none';
+      const btn = document.getElementById('btnSaveMov');
+      btn.innerHTML = mode === 'xml' && xmlItems.length
+        ? '<i class="bi bi-check2"></i> Confirmar Importação'
+        : '<i class="bi bi-check2"></i> Registrar';
+    }
+
+    function resetXml() {
+      xmlItems = [];
+      nfInfo = {};
+      const da = document.getElementById('xmlDropzoneArea');
+      const ns = document.getElementById('nfSummary');
+      const rp = document.getElementById('xmlReviewPanel');
+      const fi = document.getElementById('xmlFileInput');
+      if (da) da.style.display = 'block';
+      if (ns) ns.style.display = 'none';
+      if (rp) rp.style.display = 'none';
+      if (fi) fi.value = '';
+    }
+
+    function handleXmlFile(file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        try { parseNFe(e.target.result); }
+        catch (err) { showToast('❌ Erro no XML: ' + err.message); }
+      };
+      reader.readAsText(file, 'UTF-8');
+    }
+
+    function nfeTag(node, name) {
+      let list = node.getElementsByTagNameNS('http://www.portalfiscal.inf.br/nfe', name);
+      if (!list.length) list = node.getElementsByTagName(name);
+      return list;
+    }
+    function nfeVal(node, name) {
+      const l = nfeTag(node, name);
+      return l.length ? l[0].textContent.trim() : '';
+    }
+
+    function parseNFe(xmlStr) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(xmlStr, 'text/xml');
+      if (doc.querySelector('parsererror')) throw new Error('Arquivo XML inválido ou corrompido');
+
+      nfInfo = {
+        numero: nfeVal(doc, 'nNF'),
+        serie: nfeVal(doc, 'serie'),
+        dataRaw: nfeVal(doc, 'dhEmi') || nfeVal(doc, 'dEmi'),
+        fornecedor: nfeVal(doc, 'xNome'),
+        total: parseFloat(nfeVal(doc, 'vNF')) || 0,
+      };
+      if (nfInfo.dataRaw) {
+        const d = new Date(nfInfo.dataRaw);
+        nfInfo.dataFmt = isNaN(d) ? nfInfo.dataRaw.slice(0, 10) : d.toLocaleDateString('pt-BR');
+      } else {
+        nfInfo.dataFmt = '—';
+      }
+
+      const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+      const dets = nfeTag(doc, 'det');
+      if (!dets.length) throw new Error('Nenhum produto (det) encontrado no XML');
+
+      xmlItems = Array.from(dets).map(det => {
+        const cEAN = nfeVal(det, 'cEAN');
+        const xProd = nfeVal(det, 'xProd');
+        const qCom = parseFloat(nfeVal(det, 'qCom').replace(',', '.')) || 1;
+        const vUnCom = parseFloat(nfeVal(det, 'vUnCom').replace(',', '.')) || 0;
+        const cProd = nfeVal(det, 'cProd');
+
+        let matched = null;
+        if (cEAN && cEAN !== 'SEM GTIN') matched = products.find(p => p.codigoBarras === cEAN);
+        if (!matched) matched = products.find(p => norm(p.nome) === norm(xProd));
+        if (!matched) {
+          const words = norm(xProd).split(' ').filter(w => w.length > 3);
+          if (words.length) matched = products.find(p => words.every(w => norm(p.nome).includes(w)));
+        }
+        return { cEAN, xProd, qCom, vUnCom, cProd, matchedId: matched ? matched.id : null, skip: false };
+      });
+
+      renderXmlReview();
+    }
+
+    function renderXmlReview() {
+      document.getElementById('xmlDropzoneArea').style.display = 'none';
+      document.getElementById('nfSummary').style.display = 'block';
+      document.getElementById('xmlReviewPanel').style.display = 'block';
+
+      const found = xmlItems.filter(i => i.matchedId).length;
+      document.getElementById('nfSummaryContent').innerHTML =
+        `<span><strong>Fornecedor:</strong> ${nfInfo.fornecedor || '—'}</span>` +
+        `<span><strong>NF:</strong> ${nfInfo.numero || '—'} · Série ${nfInfo.serie || '—'}</span>` +
+        `<span><strong>Data:</strong> ${nfInfo.dataFmt}</span>` +
+        `<span><strong>Total:</strong> <span style="color:var(--accent);font-weight:700">R$ ${fmt(nfInfo.total)}</span></span>` +
+        `<span style="margin-left:auto;color:var(--muted)">${found}/${xmlItems.length} produtos vinculados</span>`;
+
+      document.getElementById('xmlItemsBody').innerHTML = xmlItems.map((item, idx) => {
+        const icon = item.matchedId ? '✅' : '⚠️';
+        const opts = `<option value="">— Criar produto —</option>` +
+          products.map(p => `<option value="${p.id}"${p.id === item.matchedId ? ' selected' : ''}>${p.emoji} ${p.nome}</option>`).join('');
+        return `<tr>
+          <td style="font-size:12px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${item.xProd}">${icon} ${item.xProd}</td>
+          <td><select class="field" style="font-size:11px;padding:5px 8px;width:100%" onchange="xmlItems[${idx}].matchedId=this.value?parseInt(this.value):null;renderXmlReview()">${opts}</select></td>
+          <td style="text-align:center;font-weight:800;font-size:14px">${item.qCom}</td>
+          <td style="text-align:center;font-size:12px;white-space:nowrap">R$ ${fmt(item.vUnCom)}</td>
+          <td style="text-align:center"><input type="checkbox"${item.skip ? ' checked' : ''} onchange="xmlItems[${idx}].skip=this.checked"></td>
+        </tr>`;
+      }).join('');
+
+      // update button label
+      const btn = document.getElementById('btnSaveMov');
+      if (btn) btn.innerHTML = '<i class="bi bi-check2"></i> Confirmar Importação';
+    }
+
+    function handleSave() {
+      if (movType === 'entrada' && entradaMode === 'xml') saveXmlMov();
+      else saveMov();
+    }
+
+    function saveXmlMov() {
+      if (!xmlItems.length) { showToast('Importe um arquivo XML primeiro.'); return; }
+      const dep = document.getElementById('movDepositoXml').value;
+      const active = xmlItems.filter(i => !i.skip);
+      if (!active.length) { showToast('Nenhum produto selecionado para importar.'); return; }
+
+      const now = new Date();
+      const dataStr = `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+      const operador = (NexoAuth.getSession()?.user?.name || 'Sistema').split(' ').slice(0, 2).join(' ');
+      const motivo = `NF-e ${nfInfo.numero || ''}/${nfInfo.serie || ''} — ${nfInfo.fornecedor || 'XML'}`;
+
+      let criados = 0;
+      active.forEach(item => {
+        if (!item.matchedId) {
+          const maxId = products.reduce((m, p) => Math.max(m, p.id || 0), 0);
+          const newP = {
+            id: maxId + 1, nome: item.xProd,
+            sku: item.cProd || ('XML' + Date.now()),
+            emoji: '📦', categoria: 'Importado',
+            deposito: dep, estoque: 0,
+            estoqueMin: 0, estoqueMax: 9999,
+            custo: item.vUnCom,
+            preco: parseFloat((item.vUnCom * 1.3).toFixed(2)),
+            fornecedor: nfInfo.fornecedor || '',
+            ultimaEntrada: now.toLocaleDateString('pt-BR'),
+            codigoBarras: (item.cEAN && item.cEAN !== 'SEM GTIN') ? item.cEAN : '',
+          };
+          products.push(newP);
+          item.matchedId = newP.id;
+          criados++;
+        }
+        const p = products.find(x => x.id === item.matchedId);
+        if (!p) return;
+        p.estoque += item.qCom;
+        p.custo = item.vUnCom;
+        p.ultimaEntrada = now.toLocaleDateString('pt-BR');
+        if (nfInfo.fornecedor) p.fornecedor = nfInfo.fornecedor;
+        movimentacoes.unshift({
+          id: Date.now() + Math.random(), tipo: 'entrada',
+          prodId: p.id, produto: p.nome, qty: item.qCom,
+          deposito: dep, destino: '', motivo, operador,
+          dataISO: now.toISOString(), data: dataStr,
+        });
+      });
+
+      saveProducts(); saveMovs();
+      populateProdSelect(); closeMov();
+      applyFilters(); renderMovs(); renderDepositos(); renderAlertas(); updateKPIs();
+      const msg = criados > 0
+        ? `✅ ${active.length} produto(s) importados (${criados} criados)`
+        : `✅ ${active.length} produto(s) importados da NF-e`;
+      showToast(msg);
     }
 
     // ═══════════════════════════════════════════════

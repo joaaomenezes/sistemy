@@ -3,7 +3,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistemy — PDV</title>
 
@@ -650,7 +651,12 @@
       padding: 8px 12px;
       margin: 0 20px 12px;
     }
-    .pay-obs-wrap i { color: var(--muted); font-size: 14px; }
+
+    .pay-obs-wrap i {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
     .pay-obs-input {
       flex: 1;
       background: none;
@@ -659,8 +665,14 @@
       color: inherit;
       font-size: 13px;
     }
-    .pay-obs-input::placeholder { color: var(--muted); }
-    .pay-obs-wrap:focus-within { border-color: var(--accent); }
+
+    .pay-obs-input::placeholder {
+      color: var(--muted);
+    }
+
+    .pay-obs-wrap:focus-within {
+      border-color: var(--accent);
+    }
 
     /* itens */
     .cart-items {
@@ -758,6 +770,7 @@
       align-items: center;
       gap: 3px;
     }
+
     .ci-price-edit {
       width: 54px;
       background: none;
@@ -769,11 +782,26 @@
       text-align: right;
       padding: 0 1px;
     }
-    .ci-price-edit:focus { border-bottom-color: var(--accent); color: var(--text); }
+
+    .ci-price-edit:focus {
+      border-bottom-color: var(--accent);
+      color: var(--text);
+    }
+
     .ci-price-edit::-webkit-inner-spin-button,
-    .ci-price-edit::-webkit-outer-spin-button { -webkit-appearance: none; appearance: none; }
-    .ci-price-edit[type=number] { -moz-appearance: textfield; appearance: textfield; }
-    .ci-price-negociado { color: var(--warn) !important; }
+    .ci-price-edit::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .ci-price-edit[type=number] {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    .ci-price-negociado {
+      color: var(--warn) !important;
+    }
 
     .ci-subtotal {
       font-family: 'Inter', sans-serif;
@@ -822,10 +850,21 @@
       padding: 1px 2px;
       outline: none;
     }
+
     .qty-val::-webkit-inner-spin-button,
-    .qty-val::-webkit-outer-spin-button { -webkit-appearance: none; appearance: none; }
-    .qty-val[type=number] { -moz-appearance: textfield; appearance: textfield; }
-    .qty-val:focus { border-color: var(--accent); }
+    .qty-val::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .qty-val[type=number] {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    .qty-val:focus {
+      border-color: var(--accent);
+    }
 
     .ci-remove {
       color: var(--muted);
@@ -2724,12 +2763,16 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,.55);
+      background: rgba(0, 0, 0, .55);
       z-index: 9999;
       align-items: center;
       justify-content: center;
     }
-    .atalhos-overlay.open { display: flex; }
+
+    .atalhos-overlay.open {
+      display: flex;
+    }
+
     .atalhos-box {
       background: var(--card);
       border: 1px solid var(--border);
@@ -2738,6 +2781,7 @@
       width: 340px;
       max-width: 95vw;
     }
+
     .atalhos-title {
       font-size: 15px;
       font-weight: 700;
@@ -2746,11 +2790,30 @@
       align-items: center;
       gap: 8px;
     }
-    .atalhos-table { width: 100%; border-collapse: collapse; }
-    .atalhos-table tr td { padding: 5px 4px; font-size: 13px; }
-    .atalhos-table tr td:first-child { white-space: nowrap; }
-    .atalhos-table tr td:last-child { color: var(--muted); padding-left: 12px; }
-    .atalhos-table tr + tr td { border-top: 1px solid var(--border); }
+
+    .atalhos-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .atalhos-table tr td {
+      padding: 5px 4px;
+      font-size: 13px;
+    }
+
+    .atalhos-table tr td:first-child {
+      white-space: nowrap;
+    }
+
+    .atalhos-table tr td:last-child {
+      color: var(--muted);
+      padding-left: 12px;
+    }
+
+    .atalhos-table tr+tr td {
+      border-top: 1px solid var(--border);
+    }
+
     .atalhos-key {
       display: inline-block;
       background: var(--surface);
@@ -2761,6 +2824,7 @@
       font-weight: 700;
       font-family: monospace;
     }
+
     .atalhos-close {
       margin-top: 18px;
       width: 100%;
@@ -2772,7 +2836,11 @@
       cursor: pointer;
       font-size: 13px;
     }
-    .atalhos-close:hover { border-color: var(--accent); color: var(--accent); }
+
+    .atalhos-close:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
 
 
     /* ══ MODAL CAIXA ══ */
@@ -3580,6 +3648,82 @@
     }
 
     .cfa-btn:hover {
+      opacity: .85;
+    }
+
+    .caixa-fechado-alert.onboarding {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+      max-width: 400px;
+      padding: 24px;
+      top: 50%;
+      bottom: auto;
+      transform: translate(-50%, -50%);
+      border-color: rgba(0, 200, 150, .25);
+    }
+
+    .caixa-fechado-alert.onboarding .cfa-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .caixa-fechado-alert.onboarding .cfa-icon {
+      background: rgba(0, 200, 150, .12);
+      color: var(--accent);
+    }
+
+    .cfa-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, .04);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, .06);
+    }
+
+    .cfa-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--sub);
+    }
+
+    .cfa-step-num {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(0, 200, 150, .15);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .cfa-btn-full {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      background: var(--accent);
+      color: #021c14;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: opacity .15s;
+    }
+
+    .cfa-btn-full:hover {
       opacity: .85;
     }
 
@@ -4955,7 +5099,8 @@
 
       <!-- atalhos rápidos + toggle view -->
       <div class="shortcuts-bar">
-        <span class="sc-label" style="cursor:pointer" onclick="openAtalhos()"><span class="sc-key">F1</span> Atalhos</span>
+        <span class="sc-label" style="cursor:pointer" onclick="openAtalhos()"><span class="sc-key">F1</span>
+          Atalhos</span>
         <div class="sc-sep"></div>
         <div class="sc-item"><span class="sc-key">F2</span> Finalizar</div>
         <div class="sc-sep"></div>
@@ -5267,9 +5412,8 @@
 
       <div class="pay-obs-wrap">
         <i class="bi bi-chat-left-text"></i>
-        <input class="pay-obs-input" id="vendaObsInput" type="text"
-          placeholder="Observação / nota (opcional)" maxlength="120"
-          oninput="vendaObs = this.value.trim()">
+        <input class="pay-obs-input" id="vendaObsInput" type="text" placeholder="Observação / nota (opcional)"
+          maxlength="120" oninput="vendaObs = this.value.trim()">
       </div>
 
       <div class="pay-footer">
@@ -5328,18 +5472,54 @@
     <div class="atalhos-box">
       <div class="atalhos-title"><i class="bi bi-keyboard"></i> Atalhos do teclado</div>
       <table class="atalhos-table">
-        <tr><td><span class="atalhos-key">F1</span> <span class="atalhos-key">?</span></td><td>Esta ajuda</td></tr>
-        <tr><td><span class="atalhos-key">F2</span></td><td>Finalizar venda</td></tr>
-        <tr><td><span class="atalhos-key">F3</span></td><td>Focar busca</td></tr>
-        <tr><td><span class="atalhos-key">F4</span></td><td>CPF na nota</td></tr>
-        <tr><td><span class="atalhos-key">F5</span></td><td>Histórico de vendas</td></tr>
-        <tr><td><span class="atalhos-key">F6</span></td><td>Suspender venda</td></tr>
-        <tr><td><span class="atalhos-key">F7</span></td><td>Vendas suspensas</td></tr>
-        <tr><td><span class="atalhos-key">F8</span></td><td>Consultar estoque</td></tr>
-        <tr><td><span class="atalhos-key">Enter</span></td><td>Adicionar produto único</td></tr>
-        <tr><td><span class="atalhos-key">ESC</span></td><td>Fechar modal / painel</td></tr>
-        <tr><td><span class="atalhos-key">DEL</span></td><td>Remover último item</td></tr>
-        <tr><td><span class="atalhos-key">Ctrl</span>+<span class="atalhos-key">DEL</span></td><td>Limpar carrinho</td></tr>
+        <tr>
+          <td><span class="atalhos-key">F1</span> <span class="atalhos-key">?</span></td>
+          <td>Esta ajuda</td>
+        </tr>
+        <tr>
+          <td><span class="atalhos-key">F2</span></td>
+          <td>Finalizar venda</td>
+        </tr>
+        <tr>
+          <td><span class="atalhos-key">F3</span></td>
+          <td>Focar busca</td>
+        </tr>
+        <tr>
+          <td><span class="atalhos-key">F4</span></td>
+          <td>CPF na nota</td>
+        </tr>
+        <tr>
+          <td><span class="atalhos-key">F5</span></td>
+          <td>Histórico de vendas</td>
+        </tr>
+        <tr>
+          <td><span class="atalhos-key">F6</span></td>
+          <td>Suspender venda</td>
+        </tr>
+        <tr>
+          <td><span class="atalhos-key">F7</span></td>
+          <td>Vendas suspensas</td>
+        </tr>
+        <tr>
+          <td><span class="atalhos-key">F8</span></td>
+          <td>Consultar estoque</td>
+        </tr>
+        <tr>
+          <td><span class="atalhos-key">Enter</span></td>
+          <td>Adicionar produto único</td>
+        </tr>
+        <tr>
+          <td><span class="atalhos-key">ESC</span></td>
+          <td>Fechar modal / painel</td>
+        </tr>
+        <tr>
+          <td><span class="atalhos-key">DEL</span></td>
+          <td>Remover último item</td>
+        </tr>
+        <tr>
+          <td><span class="atalhos-key">Ctrl</span>+<span class="atalhos-key">DEL</span></td>
+          <td>Limpar carrinho</td>
+        </tr>
       </table>
       <button class="atalhos-close" onclick="closeAtalhos()">Fechar — ESC</button>
     </div>
@@ -5832,7 +6012,7 @@
         items.forEach(item => {
           const prod = prods.find(p => p.id === item.id);
           movs.unshift({
-            id: movs.length + 1,
+            id: Date.now() + Math.random(),
             tipo,
             prodId: item.id,
             produto: prod?.nome || item.nome || '',
@@ -5841,6 +6021,7 @@
             destino: '',
             motivo,
             operador,
+            dataISO: now.toISOString(),
             data: dataStr,
           });
         });
@@ -6397,26 +6578,62 @@
 
       const el = document.createElement('div');
       el.id = 'caixaFechadoAlert';
-      el.className = 'caixa-fechado-alert';
-      el.innerHTML = `
-        <div class="cfa-icon"><i class="bi bi-lock-fill"></i></div>
-        <div class="cfa-text">
-          <strong>Caixa fechado</strong>
-          <span>Abra o caixa para adicionar produtos.</span>
-        </div>
-        <button class="cfa-btn" onclick="openCaixa();document.getElementById('caixaFechadoAlert').remove()">
-          Abrir Caixa
-        </button>`;
+
+      const isFirstTime = !caixaState;
+
+      if (isFirstTime) {
+        el.className = 'caixa-fechado-alert onboarding';
+        el.innerHTML = `
+          <div class="cfa-header">
+            <div class="cfa-icon"><i class="bi bi-cash-register"></i></div>
+            <div class="cfa-text">
+              <strong>Antes de vender, abra o caixa</strong>
+              <span>O caixa registra o início do turno e controla o fluxo de dinheiro.</span>
+            </div>
+          </div>
+          <div class="cfa-steps">
+            <div class="cfa-step"><span class="cfa-step-num">1</span>Clique em <b style="color:var(--text);margin:0 3px">Abrir Caixa</b> abaixo</div>
+            <div class="cfa-step"><span class="cfa-step-num">2</span>Informe o valor inicial em caixa</div>
+            <div class="cfa-step"><span class="cfa-step-num">3</span>Pronto — comece a vender</div>
+          </div>
+          <button class="cfa-btn-full" onclick="openCaixa();document.getElementById('caixaFechadoAlert').remove()">
+            <i class="bi bi-unlock-fill"></i> Abrir Caixa agora
+          </button>`;
+      } else {
+        el.className = 'caixa-fechado-alert';
+        el.innerHTML = `
+          <div class="cfa-icon"><i class="bi bi-lock-fill"></i></div>
+          <div class="cfa-text">
+            <strong>Caixa fechado</strong>
+            <span>Abra o caixa para adicionar produtos.</span>
+          </div>
+          <button class="cfa-btn" onclick="openCaixa();document.getElementById('caixaFechadoAlert').remove()">
+            Abrir Caixa
+          </button>`;
+        setTimeout(() => { if (el.parentNode) el.remove(); }, 4000);
+      }
+
       document.body.appendChild(el);
-      setTimeout(() => { if (el.parentNode) el.remove(); }, 4000);
+    }
+
+    function _primeiraPagemAcessivel() {
+      try {
+        const session = JSON.parse(localStorage.getItem('nexoerp.session') || '{}');
+        const user = session?.user;
+        if (!user || user.isDono || user.permissions === null) return 'dashboard.html';
+        const perms = user.permissions || {};
+        const fallback = Object.keys(_PAGE_PERM_KEY).find(p => p !== 'pdv.html' && perms[_PAGE_PERM_KEY[p]]);
+        return fallback || 'dashboard.html';
+      } catch (_) { return 'dashboard.html'; }
     }
 
     function voltarSistema() {
-      if (!cart.length) { window.location.href = 'dashboard.html'; return; }
+      const destino = _primeiraPagemAcessivel();
+      if (!cart.length) { window.location.href = destino; return; }
       showConfirm(
         'Voltar ao sistema?',
         `Há ${cart.length} item(s) no carrinho. Todos serão perdidos.`,
-        () => { window.location.href = 'dashboard.html'; },
+        () => { window.location.href = destino; },
         { confirmText: 'Sair assim mesmo', icon: '⚠️' }
       );
     }
@@ -7539,8 +7756,8 @@
       // ── Persistência em nexoerp.pdv.vendas ──
       try {
         const session = JSON.parse(localStorage.getItem('nexoerp.session') || '{}');
-        const operador    = session?.user?.name || 'PDV';
-        const operador_id = session?.user?.id   || null;
+        const operador = session?.user?.name || 'PDV';
+        const operador_id = session?.user?.id || null;
         const now = new Date();
         const venda = {
           id: `#PDV${now.getTime().toString().slice(-6)}`,
@@ -7619,12 +7836,12 @@
     function _methodBadge(method) {
       const m = (method || '').toLowerCase();
       let icon = 'bi-wallet2', color = 'var(--muted)';
-      if (m.includes('dinheiro'))                              { icon = 'bi-cash-coin';          color = '#00c896'; }
-      else if (m.includes('pix'))                             { icon = 'bi-qr-code';             color = '#00b4ff'; }
-      else if (m.includes('créd') || m.includes('cred'))     { icon = 'bi-credit-card-fill';    color = '#a78bfa'; }
-      else if (m.includes('déb')  || m.includes('deb'))      { icon = 'bi-credit-card';         color = '#818cf8'; }
-      else if (m.includes('voucher'))                         { icon = 'bi-ticket-perforated';   color = '#fb923c'; }
-      else if (m.includes('split'))                           { icon = 'bi-intersect';           color = '#94a3b8'; }
+      if (m.includes('dinheiro')) { icon = 'bi-cash-coin'; color = '#00c896'; }
+      else if (m.includes('pix')) { icon = 'bi-qr-code'; color = '#00b4ff'; }
+      else if (m.includes('créd') || m.includes('cred')) { icon = 'bi-credit-card-fill'; color = '#a78bfa'; }
+      else if (m.includes('déb') || m.includes('deb')) { icon = 'bi-credit-card'; color = '#818cf8'; }
+      else if (m.includes('voucher')) { icon = 'bi-ticket-perforated'; color = '#fb923c'; }
+      else if (m.includes('split')) { icon = 'bi-intersect'; color = '#94a3b8'; }
       return `<i class="bi ${icon}" style="color:${color}"></i> <span style="color:${color};font-weight:600">${escapeHtml(method)}</span>`;
     }
 

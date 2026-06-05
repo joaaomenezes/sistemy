@@ -1197,7 +1197,11 @@
         company: document.getElementById('nomeEmpresa').value,
         segment: document.getElementById('segmento').value,
         tipo: tipoSelecionado,
-        plan: document.querySelector('.plan-option.selected strong')?.textContent.trim() || 'Padrao'
+        plan: document.querySelector('.plan-option.selected strong')?.firstChild?.textContent.trim() || 'Padrao',
+        telefone: document.getElementById('telefone')?.value || '',
+        cargo: document.getElementById('cargo')?.value || '',
+        cidade: document.getElementById('cidade')?.value || '',
+        funcionarios: document.getElementById('funcionarios')?.value || ''
       });
       if (btn) { btn.disabled = false; btn.textContent = 'Criar conta'; }
 

@@ -108,19 +108,14 @@
   function ensureDemoUser() {
     const users = readJSON(USERS_KEY, []);
     const demoRemoved = localStorage.getItem(DEMO_REMOVED_KEY) === 'true';
-    const idx = users.findIndex(u => u.id === demoUser.id || normalize(u.email) === normalize(demoUser.email));
     if (!demoRemoved) {
+      const idx = users.findIndex(u => u.id === demoUser.id || normalize(u.email) === normalize(demoUser.email));
       if (idx < 0) {
         users.unshift(demoUser);
         writeJSON(USERS_KEY, users);
-      } else {
-        // Atualiza campos desatualizados (hash, isDono, permissions)
-        let changed = false;
-        if (users[idx].passwordHash !== demoUser.passwordHash) { users[idx].passwordHash = demoUser.passwordHash; changed = true; }
-        if (!users[idx].isDono) { users[idx].isDono = true; changed = true; }
-        if (!('permissions' in users[idx])) { users[idx].permissions = null; changed = true; }
-        if (changed) writeJSON(USERS_KEY, users);
       }
+      // Nunca sobrescreve dados de um usuário já existente (senha, nome, permissões)
+      // para não reverter mudanças feitas pelo próprio usuário (ex: troca de senha).
     }
     return users;
   }
@@ -196,9 +191,13 @@
       passwordHash,
       isDono:      true,   // quem registra via página pública é o Dono
       permissions: null,   // null = acesso total irrestrito
-      company:  data.company || '',
-      segment:  data.segment || '',
-      plan:     data.plan || '',
+      company:     data.company     || '',
+      segment:     data.segment     || '',
+      plan:        data.plan        || '',
+      telefone:    data.telefone    || '',
+      cargo:       data.cargo       || '',
+      cidade:      data.cidade      || '',
+      funcionarios: data.funcionarios || '',
       createdAt: new Date().toISOString()
     };
 

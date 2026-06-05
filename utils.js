@@ -144,7 +144,11 @@ function requirePermission() {
 
   const perms = session.user.permissions || {};
   if (!perms[permKey]) {
-    location.href = 'dashboard.html?denied=' + encodeURIComponent(page);
+    // Encontra a primeira página acessível para evitar loop infinito em dashboard.html
+    const fallback = Object.keys(_PAGE_PERM_KEY).find(p => p !== page && perms[_PAGE_PERM_KEY[p]]);
+    location.href = fallback
+      ? fallback + '?denied=' + encodeURIComponent(page)
+      : 'login.html?reason=no-access';
   }
 }
 

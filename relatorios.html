@@ -252,6 +252,9 @@
       .rel-grid { grid-template-columns: 1fr 1fr; }
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 
 <body>
@@ -374,11 +377,11 @@
             <button class="rel-fmt-btn active" id="fmt-csv" onclick="setFmt('csv')">
               <i class="bi bi-filetype-csv"></i> CSV
             </button>
-            <button class="rel-fmt-btn disabled" title="Disponível em breve">
-              <i class="bi bi-file-earmark-pdf"></i> PDF <span style="font-size:9px;margin-left:4px;opacity:.6">Em breve</span>
+            <button class="rel-fmt-btn" id="fmt-pdf" onclick="setFmt('pdf')">
+              <i class="bi bi-file-earmark-pdf"></i> PDF
             </button>
-            <button class="rel-fmt-btn disabled" title="Disponível em breve">
-              <i class="bi bi-file-earmark-excel"></i> Excel <span style="font-size:9px;margin-left:4px;opacity:.6">Em breve</span>
+            <button class="rel-fmt-btn" id="fmt-excel" onclick="setFmt('excel')">
+              <i class="bi bi-file-earmark-excel"></i> Excel
             </button>
           </div>
         </div>
@@ -697,9 +700,48 @@
       document.getElementById('rel-dp-end').value   = hoje.toISOString().slice(0, 10);
     }
 
+    let currentFmt = 'csv';
+
     function setFmt(fmt) {
-      document.querySelectorAll('.rel-fmt-btn:not(.disabled)').forEach(b => b.classList.remove('active'));
+      currentFmt = fmt;
+      document.querySelectorAll('.rel-fmt-btn').forEach(b => b.classList.remove('active'));
       document.getElementById(`fmt-${fmt}`)?.classList.add('active');
+    }
+
+    function downloadData(filename, rows) {
+      if (currentFmt === 'pdf')   downloadPDF(filename, rows);
+      else if (currentFmt === 'excel') downloadExcel(filename, rows);
+      else downloadCSV(filename, rows);
+    }
+
+    function downloadPDF(filename, rows) {
+      try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: rows[0].length > 7 ? 'landscape' : 'portrait' });
+        const title = filename.replace(/_\d{4}-\d{2}-\d{2}\.csv$/, '').replace(/_/g, ' ');
+        doc.setFontSize(13); doc.setFont('helvetica', 'bold');
+        doc.text(title.charAt(0).toUpperCase() + title.slice(1), 14, 16);
+        doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+        doc.text(`Gerado em ${new Date().toLocaleString('pt-BR')}`, 14, 22);
+        doc.autoTable({
+          head: [rows[0]],
+          body: rows.slice(1),
+          startY: 28,
+          styles: { fontSize: 8, cellPadding: 3 },
+          headStyles: { fillColor: [0, 200, 150], textColor: [2, 28, 20], fontStyle: 'bold' },
+          alternateRowStyles: { fillColor: [245, 250, 248] },
+        });
+        doc.save(filename.replace('.csv', '.pdf'));
+      } catch(e) { showToast('Erro ao gerar PDF. Tente novamente.', 'error'); }
+    }
+
+    function downloadExcel(filename, rows) {
+      try {
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Relatório');
+        XLSX.writeFile(wb, filename.replace('.csv', '.xlsx'));
+      } catch(e) { showToast('Erro ao gerar Excel. Tente novamente.', 'error'); }
     }
 
     // ── Helpers ──────────────────────────────────────────────
@@ -765,7 +807,7 @@
           if (filtroStatus !== 'Todos') vendas = vendas.filter(v => v.status === filtroStatus);
           if (filtroMetodo !== 'Todos') vendas = vendas.filter(v => v.metodo === filtroMetodo);
           const h = ['Nº Venda','Cliente','Operador','Método','Subtotal','Desconto','Total','Status','Data','Hora','Fonte'];
-          downloadCSV(`vendas_historico_${today}.csv`, [h, ...vendas.map(v=>[v.id,v.cliente,v.operador,v.metodo,fmtVal(v.subtotal),fmtVal(v.desconto),fmtVal(v.total),v.status,v.dataStr,v.horaStr,v.fonte])]);
+          downloadData(`vendas_historico_${today}.csv`, [h, ...vendas.map(v=>[v.id,v.cliente,v.operador,v.metodo,fmtVal(v.subtotal),fmtVal(v.desconto),fmtVal(v.total),v.status,v.dataStr,v.horaStr,v.fonte])]);
           break;
         }
 
@@ -779,7 +821,7 @@
             rank[item.nome].total += item.subtotal || 0;
           }));
           const sorted = Object.values(rank).sort((a,b) => b.qty - a.qty);
-          downloadCSV(`ranking_produtos_${today}.csv`, [['Produto','Qtd Vendida','Faturamento'], ...sorted.map(r=>[r.nome, r.qty, fmtVal(r.total)])]);
+          downloadData(`ranking_produtos_${today}.csv`, [['Produto','Qtd Vendida','Faturamento'], ...sorted.map(r=>[r.nome, r.qty, fmtVal(r.total)])]);
           break;
         }
 
@@ -788,7 +830,7 @@
           vendas = filterByPeriod(vendas, dr).filter(v => v.status === 'concluida');
           const totalFat = vendas.reduce((s,v) => s+(v.total||0), 0);
           const ticket   = vendas.length ? totalFat/vendas.length : 0;
-          downloadCSV(`ticket_medio_${today}.csv`, [
+          downloadData(`ticket_medio_${today}.csv`, [
             ['Período','Total de Vendas','Faturamento','Ticket Médio'],
             [dr.label, vendas.length, fmtVal(totalFat), fmtVal(ticket)],
           ]);
@@ -800,7 +842,7 @@
           const catF = document.getElementById('rf-cat-est')?.value || 'Todas';
           if (catF !== 'Todas') produtos = produtos.filter(p => p.cat === catF);
           const h = ['SKU','Nome','Categoria','Unidade','Estoque Atual','Estoque Mín.','Preço Venda','Custo','Valor em Estoque','Depósito','Status'];
-          downloadCSV(`posicao_estoque_${today}.csv`, [h, ...produtos.map(p=>[
+          downloadData(`posicao_estoque_${today}.csv`, [h, ...produtos.map(p=>[
             p.sku, p.nome, p.cat, p.unidade, p.estoque, p.estoqueMin,
             fmtVal(p.preco), fmtVal(p.custo), fmtVal((p.estoque||0)*(p.custo||0)),
             p.deposito, p.status,
@@ -811,7 +853,7 @@
         case 'estoque-critico': {
           const criticos = load(KEYS.produtos).filter(p => p.estoque <= (p.estoqueMin||0));
           const h = ['SKU','Nome','Categoria','Estoque Atual','Estoque Mín.','Situação','Fornecedor'];
-          downloadCSV(`estoque_critico_${today}.csv`, [h, ...criticos.map(p=>[
+          downloadData(`estoque_critico_${today}.csv`, [h, ...criticos.map(p=>[
             p.sku, p.nome, p.cat, p.estoque, p.estoqueMin,
             p.estoque === 0 ? 'Zerado' : 'Abaixo do mínimo',
             p.fornecedor || '—',
@@ -824,7 +866,7 @@
           const tipoF = document.getElementById('rf-tipo-mov')?.value || 'Todos';
           if (tipoF !== 'Todos') movs = movs.filter(m => m.tipo === tipoF);
           const h = ['Data','Produto','Tipo','Quantidade','Depósito Origem','Depósito Destino','Operador','Observação'];
-          downloadCSV(`movimentacoes_${today}.csv`, [h, ...movs.map(m=>[
+          downloadData(`movimentacoes_${today}.csv`, [h, ...movs.map(m=>[
             m.dataStr||m.data||'—', m.produto||'—', m.tipo, m.quantidade,
             m.depositoOrigem||'—', m.depositoDestino||'—', m.operador||'—', m.obs||'—',
           ])]);
@@ -836,7 +878,7 @@
           const stF = document.getElementById('rf-status-prod')?.value || 'Todos';
           if (stF !== 'Todos') produtos = produtos.filter(p => p.status === stF);
           const h = ['SKU','EAN','Nome','Categoria','Marca','Unidade','Preço Venda','Custo','Margem %','Estoque','Status','Cadastro'];
-          downloadCSV(`catalogo_${today}.csv`, [h, ...produtos.map(p=>{
+          downloadData(`catalogo_${today}.csv`, [h, ...produtos.map(p=>{
             const mg = p.preco>0&&p.custo>0 ? ((p.preco-p.custo)/p.preco*100).toFixed(1)+'%' : '—';
             return [p.sku,p.ean||'—',p.nome,p.cat,p.marca||'—',p.unidade,fmtVal(p.preco),fmtVal(p.custo),mg,p.estoque,p.status,p.cadastro||'—'];
           })]);
@@ -847,7 +889,7 @@
           const produtos = load(KEYS.produtos).filter(p=>p.preco>0&&p.custo>0)
             .sort((a,b)=>((b.preco-b.custo)/b.preco)-((a.preco-a.custo)/a.preco));
           const h = ['Nome','Categoria','Preço Venda','Custo','Margem R$','Margem %'];
-          downloadCSV(`margem_${today}.csv`, [h, ...produtos.map(p=>{
+          downloadData(`margem_${today}.csv`, [h, ...produtos.map(p=>{
             const mgR = p.preco-p.custo;
             return [p.nome, p.cat, fmtVal(p.preco), fmtVal(p.custo), fmtVal(mgR), (mgR/p.preco*100).toFixed(1)+'%'];
           })]);
@@ -857,7 +899,7 @@
         case 'fin-fluxo': {
           const lancamentos = filterByPeriod(load(KEYS.financeiro), dr);
           const h = ['Data','Descrição','Tipo','Categoria','Valor','Status'];
-          downloadCSV(`fluxo_caixa_${today}.csv`, [h, ...lancamentos.map(l=>[l.venc||'—',l.desc||'—',l.tipo||'—',l.categ||'—',fmtVal(l.valor),l.status||'—'])]);
+          downloadData(`fluxo_caixa_${today}.csv`, [h, ...lancamentos.map(l=>[l.venc||'—',l.desc||'—',l.tipo||'—',l.categ||'—',fmtVal(l.valor),l.status||'—'])]);
           break;
         }
 
@@ -865,7 +907,7 @@
           let desp = filterByPeriod(load(KEYS.financeiro).filter(l=>l.tipo==='despesa'), dr);
           const stF = document.getElementById('rf-status-fin')?.value || 'Todos';
           if (stF !== 'Todos') desp = desp.filter(l => l.status === stF);
-          downloadCSV(`contas_pagar_${today}.csv`, [['Vencimento','Descrição','Categoria','Valor','Status'], ...desp.map(l=>[l.venc,l.desc,l.categ,fmtVal(l.valor),l.status||'—'])]);
+          downloadData(`contas_pagar_${today}.csv`, [['Vencimento','Descrição','Categoria','Valor','Status'], ...desp.map(l=>[l.venc,l.desc,l.categ,fmtVal(l.valor),l.status||'—'])]);
           break;
         }
 
@@ -873,7 +915,7 @@
           let rec = filterByPeriod(load(KEYS.financeiro).filter(l=>l.tipo==='receita'), dr);
           const stF = document.getElementById('rf-status-rec')?.value || 'Todos';
           if (stF !== 'Todos') rec = rec.filter(l => l.status === stF);
-          downloadCSV(`contas_receber_${today}.csv`, [['Vencimento','Descrição','Categoria','Valor','Status'], ...rec.map(l=>[l.venc,l.desc,l.categ,fmtVal(l.valor),l.status||'—'])]);
+          downloadData(`contas_receber_${today}.csv`, [['Vencimento','Descrição','Categoria','Valor','Status'], ...rec.map(l=>[l.venc,l.desc,l.categ,fmtVal(l.valor),l.status||'—'])]);
           break;
         }
 
@@ -882,7 +924,7 @@
           const receitas = lancs.filter(l=>l.tipo==='receita').reduce((s,l)=>s+(l.valor||0),0);
           const despesas = lancs.filter(l=>l.tipo==='despesa').reduce((s,l)=>s+(l.valor||0),0);
           const resultado = receitas - despesas;
-          downloadCSV(`dre_${today}.csv`, [
+          downloadData(`dre_${today}.csv`, [
             ['Descrição','Valor'],
             ['Receita Total', fmtVal(receitas)],
             ['Despesas Totais', fmtVal(despesas)],
@@ -894,7 +936,7 @@
 
         case 'fin-custos': {
           const custos = filterByPeriod(load(KEYS.custos), dr).filter(c=>(c.tipo||'custo')==='custo');
-          downloadCSV(`custos_operacionais_${today}.csv`, [
+          downloadData(`custos_operacionais_${today}.csv`, [
             ['Data','Descrição','Categoria','Fornecedor','Valor','Observação'],
             ...custos.map(c=>[c.data||'—',c.desc,c.categoria,c.fornecedor||'—',fmtVal(c.valor),c.obs||'—']),
           ]);
@@ -903,7 +945,7 @@
 
         case 'fin-despesas': {
           const despesas = filterByPeriod(load(KEYS.custos), dr).filter(c=>(c.tipo||'custo')==='despesa');
-          downloadCSV(`despesas_operacionais_${today}.csv`, [
+          downloadData(`despesas_operacionais_${today}.csv`, [
             ['Data','Descrição','Categoria','Fornecedor','Valor','Observação'],
             ...despesas.map(c=>[c.data||'—',c.desc,c.categoria,c.fornecedor||'—',fmtVal(c.valor),c.obs||'—']),
           ]);

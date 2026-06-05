@@ -398,16 +398,80 @@
       }
 
       const params = new URLSearchParams(window.location.search);
-      window.location.href = params.get('next') || 'dashboard.html';
+      const next = params.get('next');
+      if (next) { window.location.href = next; return; }
+
+      const sessionUser = result.session?.user;
+      if (sessionUser && !sessionUser.isDono && sessionUser.permissions !== null) {
+        const PAGE_ORDER = [
+          ['dashboard.html',     'dashboard'],
+          ['pdv.html',           'pdv'],
+          ['pedidos.html',       'pedidos'],
+          ['vendas.html',        'vendas'],
+          ['clientes.html',      'clientes'],
+          ['produtos.html',      'produtos'],
+          ['estoque.html',       'estoque'],
+          ['financeiro.html',    'financeiro'],
+          ['relatorios.html',    'relatorios'],
+          ['configuracoes.html', 'configuracoes'],
+        ];
+        const perms = sessionUser.permissions || {};
+        const firstPage = PAGE_ORDER.find(([, perm]) => perms[perm]);
+        window.location.href = firstPage ? firstPage[0] : 'login.html?reason=no-access';
+      } else {
+        window.location.href = 'dashboard.html';
+      }
     }
 
     if (NexoAuth.getSession()) {
       window.location.href = 'dashboard.html';
     }
 
+    // Exibe mensagem quando sub-usuário não tem nenhuma permissão concedida
+    (function() {
+      const reason = new URLSearchParams(window.location.search).get('reason');
+      if (reason === 'no-access') {
+        const err = document.getElementById('errorMsg');
+        if (err) {
+          err.innerHTML = '<i class="bi bi-shield-x"></i> Sua conta não tem acesso a nenhum módulo. Contate o administrador.';
+          err.className = 'error-msg show';
+        }
+        history.replaceState(null, '', location.pathname);
+      }
+    })();
+
     document.addEventListener('keydown', e => {
       if (e.key === 'Enter' && !document.getElementById('recoveryOverlay').classList.contains('open')) entrar();
     });
+
+    // ── Diagnóstico e recuperação de emergência (console) ──
+    // Digite no console do navegador: NexoDebug.diagnostico() ou NexoDebug.resetDemo()
+    window.NexoDebug = {
+      diagnostico() {
+        const USERS_KEY   = 'nexoerp.users';
+        const SESSION_KEY = 'nexoerp.session';
+        const DEMO_KEY    = 'nexoerp.demo_removed';
+        const users   = JSON.parse(localStorage.getItem(USERS_KEY)   || '[]');
+        const session = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
+        const demoRem = localStorage.getItem(DEMO_KEY);
+        console.group('🔍 NexoERP — Diagnóstico de autenticação');
+        console.log('demo_removed:', demoRem);
+        console.log('nexoerp.users (' + users.length + '):', users.map(u => ({ id: u.id, username: u.username, email: u.email, isDono: u.isDono, hasHash: !!u.passwordHash })));
+        console.log('nexoerp.session:', session ? { userId: session.user?.id, username: session.user?.username, expires: new Date(session.expiresAt).toLocaleString() } : null);
+        console.groupEnd();
+        return { users, session, demoRemoved: demoRem };
+      },
+      resetDemo() {
+        if (!confirm('Isso vai redefinir o usuário demo (admin / admin123) como único usuário. Dados de negócio NÃO são apagados. Continuar?')) return;
+        const demoHash = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+        const demo = { id: 'demo-admin', name: 'Joao Desenvolvedor', username: 'admin', email: 'admin@nexoerp.com', passwordHash: demoHash, isDono: true, permissions: null, company: 'NexoERP Demo', createdAt: new Date().toISOString() };
+        localStorage.setItem('nexoerp.users', JSON.stringify([demo]));
+        localStorage.removeItem('nexoerp.demo_removed');
+        localStorage.removeItem('nexoerp.session');
+        console.log('✅ Demo restaurado. Entre com admin / admin123');
+        alert('Pronto! Entre com:\nUsuário: admin\nSenha: admin123');
+      },
+    };
 
     // ── Recuperação de senha ────────────────────────────
     let _recUserId = null;

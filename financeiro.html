@@ -1550,32 +1550,32 @@ transition: border-color .15s;
         <div class="dre-kpi">
           <div class="dre-kpi-icon" style="background:rgba(0,208,132,.1);color:var(--accent)"><i class="bi bi-graph-up-arrow"></i></div>
           <div class="dre-kpi-label">Receita Líquida</div>
-          <div class="dre-kpi-val">R$ 1.245.750</div>
-          <div class="dre-kpi-delta up"><i class="bi bi-arrow-up-short"></i>15,8% vs período anterior</div>
+          <div class="dre-kpi-val" id="dre-rec-liq-val">R$ 0</div>
+          <div class="dre-kpi-delta" id="dre-rec-liq-delta">—</div>
         </div>
         <div class="dre-kpi">
           <div class="dre-kpi-icon" style="background:rgba(47,128,255,.1);color:var(--accent2)"><i class="bi bi-bar-chart-line-fill"></i></div>
           <div class="dre-kpi-label">Lucro Bruto</div>
-          <div class="dre-kpi-val">R$ 532.450</div>
-          <div class="dre-kpi-delta up"><i class="bi bi-arrow-up-short"></i>12,3% vs período anterior</div>
+          <div class="dre-kpi-val" id="dre-luc-bruto-val">R$ 0</div>
+          <div class="dre-kpi-delta" id="dre-luc-bruto-delta">—</div>
         </div>
         <div class="dre-kpi">
           <div class="dre-kpi-icon" style="background:rgba(167,139,250,.1);color:var(--purple, #a78bfa)"><i class="bi bi-percent"></i></div>
           <div class="dre-kpi-label">Margem Bruta</div>
-          <div class="dre-kpi-val">42,78%</div>
-          <div class="dre-kpi-delta down"><i class="bi bi-arrow-down-short"></i>2,1 p.p. vs período anterior</div>
+          <div class="dre-kpi-val" id="dre-marg-bruta-val">0,00%</div>
+          <div class="dre-kpi-delta" id="dre-marg-bruta-delta">—</div>
         </div>
         <div class="dre-kpi">
           <div class="dre-kpi-icon" style="background:rgba(0,208,132,.1);color:var(--accent)"><i class="bi bi-currency-dollar"></i></div>
           <div class="dre-kpi-label">Lucro Líquido</div>
-          <div class="dre-kpi-val">R$ 198.720</div>
-          <div class="dre-kpi-delta up"><i class="bi bi-arrow-up-short"></i>18,6% vs período anterior</div>
+          <div class="dre-kpi-val" id="dre-luc-liq-val">R$ 0</div>
+          <div class="dre-kpi-delta" id="dre-luc-liq-delta">—</div>
         </div>
         <div class="dre-kpi">
           <div class="dre-kpi-icon" style="background:rgba(255,140,66,.1);color:var(--warn, #ff8c42)"><i class="bi bi-award-fill"></i></div>
           <div class="dre-kpi-label">Margem Líquida</div>
-          <div class="dre-kpi-val">15,96%</div>
-          <div class="dre-kpi-delta up"><i class="bi bi-arrow-up-short"></i>1,2 p.p. vs período anterior</div>
+          <div class="dre-kpi-val" id="dre-marg-liq-val">0,00%</div>
+          <div class="dre-kpi-delta" id="dre-marg-liq-delta">—</div>
         </div>
       </div>
 
@@ -1592,151 +1592,13 @@ transition: border-color .15s;
             <thead>
               <tr>
                 <th style="width:45%">Descrição</th>
-                <th>Jan–Mai 2026 (Atual)</th>
-                <th>Jan–Mai 2025 (Anterior)</th>
+                <th id="dreTh1">Período Atual</th>
+                <th id="dreTh2">Período Anterior</th>
                 <th>Variação (%)</th>
               </tr>
             </thead>
-            <tbody>
-              <!-- RECEITA BRUTA -->
-              <tr class="dre-row-group first-group">
-                <td colspan="4" style="color:var(--accent)">▸ RECEITA OPERACIONAL BRUTA</td>
-              </tr>
-              <tr class="dre-row-sub">
-                <td>Vendas de Produtos</td>
-                <td class="dre-pos">R$ 1.250.800</td>
-                <td>R$ 1.085.600</td>
-                <td class="dre-var-up">▲ 15,22%</td>
-              </tr>
-              <tr class="dre-row-sub">
-                <td>Vendas de Serviços</td>
-                <td class="dre-pos">R$ 207.700</td>
-                <td>R$ 173.700</td>
-                <td class="dre-var-up">▲ 19,57%</td>
-              </tr>
-              <tr class="dre-row-total">
-                <td>RECEITA BRUTA TOTAL</td>
-                <td class="dre-pos">R$ 1.458.500</td>
-                <td>R$ 1.259.300</td>
-                <td class="dre-var-up">▲ 15,82%</td>
-              </tr>
-
-              <!-- DEDUÇÕES -->
-              <tr class="dre-row-group">
-                <td colspan="4" style="color:var(--danger)">▸ DEDUÇÕES DA RECEITA</td>
-              </tr>
-              <tr class="dre-row-sub">
-                <td>Impostos sobre Vendas</td>
-                <td class="dre-neg">-R$ 165.300</td>
-                <td class="dre-neg">-R$ 146.200</td>
-                <td class="dre-var-down">▼ 13,06%</td>
-              </tr>
-              <tr class="dre-row-sub">
-                <td>Devoluções e Cancelamentos</td>
-                <td class="dre-neg">-R$ 47.450</td>
-                <td class="dre-neg">-R$ 41.700</td>
-                <td class="dre-var-down">▼ 13,79%</td>
-              </tr>
-              <tr class="dre-row-total">
-                <td>RECEITA LÍQUIDA</td>
-                <td class="dre-pos">R$ 1.245.750</td>
-                <td>R$ 1.071.400</td>
-                <td class="dre-var-up">▲ 16,27%</td>
-              </tr>
-
-              <!-- CPV -->
-              <tr class="dre-row-group">
-                <td colspan="4" style="color:var(--danger)">▸ CUSTO DOS PRODUTOS/SERVIÇOS</td>
-              </tr>
-              <tr class="dre-row-sub">
-                <td>Custo de Mercadorias Vendidas</td>
-                <td class="dre-neg">-R$ 580.400</td>
-                <td class="dre-neg">-R$ 490.100</td>
-                <td class="dre-var-down">▼ 18,43%</td>
-              </tr>
-              <tr class="dre-row-sub">
-                <td>Custo de Serviços Prestados</td>
-                <td class="dre-neg">-R$ 132.900</td>
-                <td class="dre-neg">-R$ 114.700</td>
-                <td class="dre-var-down">▼ 15,87%</td>
-              </tr>
-              <tr class="dre-row-total">
-                <td>LUCRO BRUTO</td>
-                <td class="dre-pos">R$ 532.450</td>
-                <td>R$ 466.600</td>
-                <td class="dre-var-up">▲ 14,12%</td>
-              </tr>
-
-              <!-- DESPESAS OPERACIONAIS -->
-              <tr class="dre-row-group">
-                <td colspan="4" style="color:var(--danger)">▸ DESPESAS OPERACIONAIS</td>
-              </tr>
-              <tr class="dre-row-sub">
-                <td>Despesas com Vendas</td>
-                <td class="dre-neg">-R$ 148.200</td>
-                <td class="dre-neg">-R$ 122.500</td>
-                <td class="dre-var-down">▼ 20,98%</td>
-              </tr>
-              <tr class="dre-row-sub">
-                <td>Despesas Administrativas</td>
-                <td class="dre-neg">-R$ 108.480</td>
-                <td class="dre-neg">-R$ 95.900</td>
-                <td class="dre-var-down">▼ 13,11%</td>
-              </tr>
-              <tr class="dre-row-total">
-                <td>RESULTADO OPERACIONAL (EBIT)</td>
-                <td class="dre-pos">R$ 275.770</td>
-                <td>R$ 248.200</td>
-                <td class="dre-var-up">▲ 11,10%</td>
-              </tr>
-
-              <!-- RESULTADO FINANCEIRO -->
-              <tr class="dre-row-group">
-                <td colspan="4" style="color:var(--accent2)">▸ RESULTADO FINANCEIRO</td>
-              </tr>
-              <tr class="dre-row-sub">
-                <td>Receitas Financeiras</td>
-                <td class="dre-pos">R$ 32.600</td>
-                <td>R$ 25.100</td>
-                <td class="dre-var-up">▲ 29,88%</td>
-              </tr>
-              <tr class="dre-row-sub">
-                <td>Despesas Financeiras</td>
-                <td class="dre-neg">-R$ 14.350</td>
-                <td class="dre-neg">-R$ 12.700</td>
-                <td class="dre-var-down">▼ 12,99%</td>
-              </tr>
-              <tr class="dre-row-total">
-                <td>RESULTADO ANTES DOS IMPOSTOS</td>
-                <td class="dre-pos">R$ 294.020</td>
-                <td>R$ 260.600</td>
-                <td class="dre-var-up">▲ 12,82%</td>
-              </tr>
-
-              <!-- IMPOSTOS -->
-              <tr class="dre-row-group">
-                <td colspan="4" style="color:var(--danger)">▸ IMPOSTO DE RENDA E CSLL</td>
-              </tr>
-              <tr class="dre-row-sub">
-                <td>IRPJ (15% + adicional)</td>
-                <td class="dre-neg">-R$ 62.400</td>
-                <td class="dre-neg">-R$ 55.200</td>
-                <td class="dre-var-down">▼ 13,04%</td>
-              </tr>
-              <tr class="dre-row-sub">
-                <td>CSLL (9%)</td>
-                <td class="dre-neg">-R$ 32.900</td>
-                <td class="dre-neg">-R$ 29.400</td>
-                <td class="dre-var-down">▼ 11,90%</td>
-              </tr>
-
-              <!-- RESULTADO FINAL -->
-              <tr class="dre-row-final">
-                <td>💰 LUCRO LÍQUIDO DO EXERCÍCIO</td>
-                <td class="dre-pos">R$ 198.720</td>
-                <td style="color:var(--text)">R$ 176.000</td>
-                <td class="dre-var-up">▲ 12,90%</td>
-              </tr>
+            <tbody id="dreTbody">
+              <tr><td colspan="4" style="text-align:center;padding:28px;color:var(--muted);font-size:13px">Carregando…</td></tr>
             </tbody>
           </table>
         </div>
@@ -1754,48 +1616,8 @@ transition: border-color .15s;
               </div>
             </div>
             <div class="dre-side-body">
-              <svg class="dre-line-chart" viewBox="0 0 320 130" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id="dreGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#00D084" stop-opacity=".25"/>
-                    <stop offset="100%" stop-color="#00D084" stop-opacity="0"/>
-                  </linearGradient>
-                </defs>
-                <!-- grid -->
-                <line x1="0" y1="110" x2="320" y2="110" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
-                <line x1="0" y1="80"  x2="320" y2="80"  stroke="rgba(255,255,255,.04)" stroke-width=".5" stroke-dasharray="4,3"/>
-                <line x1="0" y1="50"  x2="320" y2="50"  stroke="rgba(255,255,255,.04)" stroke-width=".5" stroke-dasharray="4,3"/>
-                <line x1="0" y1="20"  x2="320" y2="20"  stroke="rgba(255,255,255,.04)" stroke-width=".5" stroke-dasharray="4,3"/>
-                <!-- labels -->
-                <text x="0" y="126" fill="rgba(148,163,184,.4)" font-size="8">50k</text>
-                <text x="0" y="96"  fill="rgba(148,163,184,.4)" font-size="8">100k</text>
-                <text x="0" y="66"  fill="rgba(148,163,184,.4)" font-size="8">150k</text>
-                <text x="0" y="36"  fill="rgba(148,163,184,.4)" font-size="8">200k</text>
-                <!-- area fill -->
-                <path d="M32,90 L84,78 L136,72 L188,58 L240,52 L292,18 L292,110 L32,110 Z"
-                      fill="url(#dreGrad)"/>
-                <!-- line -->
-                <polyline points="32,90 84,78 136,72 188,58 240,52 292,18"
-                          fill="none" stroke="#00D084" stroke-width="2.5"
-                          stroke-linecap="round" stroke-linejoin="round"/>
-                <!-- dots -->
-                <circle cx="32"  cy="90" r="4" fill="#00D084" stroke="#0B1220" stroke-width="2"/>
-                <circle cx="84"  cy="78" r="4" fill="#00D084" stroke="#0B1220" stroke-width="2"/>
-                <circle cx="136" cy="72" r="4" fill="#00D084" stroke="#0B1220" stroke-width="2"/>
-                <circle cx="188" cy="58" r="4" fill="#00D084" stroke="#0B1220" stroke-width="2"/>
-                <circle cx="240" cy="52" r="4" fill="#00D084" stroke="#0B1220" stroke-width="2"/>
-                <circle cx="292" cy="18" r="5" fill="#00D084" stroke="#0B1220" stroke-width="2"/>
-                <!-- value labels -->
-                <text x="32"  y="84" text-anchor="middle" fill="rgba(148,163,184,.6)" font-size="7.5">120k</text>
-                <text x="84"  y="72" text-anchor="middle" fill="rgba(148,163,184,.6)" font-size="7.5">150k</text>
-                <text x="136" y="66" text-anchor="middle" fill="rgba(148,163,184,.6)" font-size="7.5">150k</text>
-                <text x="188" y="52" text-anchor="middle" fill="rgba(148,163,184,.6)" font-size="7.5">185k</text>
-                <text x="240" y="46" text-anchor="middle" fill="rgba(148,163,184,.6)" font-size="7.5">180k</text>
-                <text x="292" y="12" text-anchor="middle" fill="rgba(0,208,132,.9)"   font-size="7.5" font-weight="700">198k</text>
-              </svg>
-              <div class="dre-line-xlbl">
-                <span>Jan</span><span>Fev</span><span>Mar</span><span>Abr</span><span>Mai</span>
-              </div>
+              <svg class="dre-line-chart" id="dreLineChartSvg" viewBox="0 0 320 130" xmlns="http://www.w3.org/2000/svg"></svg>
+              <div class="dre-line-xlbl" id="dreLineXlbl"></div>
             </div>
           </div>
 
@@ -1807,33 +1629,8 @@ transition: border-color .15s;
             <div class="dre-side-body">
               <div class="dre-donut-wrap">
                 <!-- Donut SVG: circ 2π×50 ≈ 314 -->
-                <svg viewBox="0 0 120 120" style="width:110px;height:110px;flex-shrink:0">
-                  <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="14"/>
-                  <!-- CPV 57.2% → 179.7 -->
-                  <circle cx="60" cy="60" r="50" fill="none" stroke="#2F80FF" stroke-width="14"
-                    stroke-dasharray="179.7 314" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
-                  <!-- Desp Op 20.6% → 64.7 -->
-                  <circle cx="60" cy="60" r="50" fill="none" stroke="#FF8C42" stroke-width="14"
-                    stroke-dasharray="64.7 314" stroke-dashoffset="-179.7" transform="rotate(-90 60 60)"/>
-                  <!-- Impostos 7.6% → 23.9 -->
-                  <circle cx="60" cy="60" r="50" fill="none" stroke="#F5B700" stroke-width="14"
-                    stroke-dasharray="23.9 314" stroke-dashoffset="-244.4" transform="rotate(-90 60 60)"/>
-                  <!-- Res Fin 1.5% → 4.7 -->
-                  <circle cx="60" cy="60" r="50" fill="none" stroke="#A78BFA" stroke-width="14"
-                    stroke-dasharray="4.7 314" stroke-dashoffset="-268.3" transform="rotate(-90 60 60)"/>
-                  <!-- Lucro 15.9% → 49.9 -->
-                  <circle cx="60" cy="60" r="50" fill="none" stroke="#00D084" stroke-width="14"
-                    stroke-dasharray="49.9 314" stroke-dashoffset="-273" transform="rotate(-90 60 60)"/>
-                  <text x="60" y="55" text-anchor="middle" fill="#FFF" font-size="10" font-weight="800" font-family="Syne,sans-serif">R$ 198k</text>
-                  <text x="60" y="68" text-anchor="middle" fill="rgba(148,163,184,.55)" font-size="7.5">Lucro Líquido</text>
-                </svg>
-                <div class="dre-donut-legend">
-                  <div class="dre-leg-row"><div class="dre-leg-dot" style="background:#2F80FF"></div>CPV<span class="dre-leg-pct">57,2%</span></div>
-                  <div class="dre-leg-row"><div class="dre-leg-dot" style="background:#FF8C42"></div>Desp. Op.<span class="dre-leg-pct">20,6%</span></div>
-                  <div class="dre-leg-row"><div class="dre-leg-dot" style="background:#F5B700"></div>Impostos<span class="dre-leg-pct">7,6%</span></div>
-                  <div class="dre-leg-row"><div class="dre-leg-dot" style="background:#A78BFA"></div>Res. Fin.<span class="dre-leg-pct">1,5%</span></div>
-                  <div class="dre-leg-row"><div class="dre-leg-dot" style="background:#00D084"></div>Lucro Líq.<span class="dre-leg-pct">15,9%</span></div>
-                </div>
+                <svg viewBox="0 0 120 120" style="width:110px;height:110px;flex-shrink:0" id="dreDonutSvg"></svg>
+                <div class="dre-donut-legend" id="dreDonutLegend"></div>
               </div>
             </div>
           </div>
@@ -1844,34 +1641,7 @@ transition: border-color .15s;
               <h4>Margens</h4>
             </div>
             <div class="dre-side-body">
-              <div class="dre-margin-row">
-                <div class="dre-margin-label">Margem Bruta</div>
-                <div class="dre-margin-bar-wrap">
-                  <div class="dre-margin-bar" style="width:85.56%;background:var(--accent)"></div>
-                </div>
-                <div class="dre-margin-pct">42,78%</div>
-              </div>
-              <div class="dre-margin-row">
-                <div class="dre-margin-label">Margem Operacional</div>
-                <div class="dre-margin-bar-wrap">
-                  <div class="dre-margin-bar" style="width:44.28%;background:var(--accent2)"></div>
-                </div>
-                <div class="dre-margin-pct">22,14%</div>
-              </div>
-              <div class="dre-margin-row">
-                <div class="dre-margin-label">Margem Líquida</div>
-                <div class="dre-margin-bar-wrap">
-                  <div class="dre-margin-bar" style="width:31.92%;background:#A78BFA"></div>
-                </div>
-                <div class="dre-margin-pct">15,96%</div>
-              </div>
-              <div class="dre-margin-row">
-                <div class="dre-margin-label">Margem EBITDA</div>
-                <div class="dre-margin-bar-wrap">
-                  <div class="dre-margin-bar" style="width:46%;background:var(--warn,#ff8c42)"></div>
-                </div>
-                <div class="dre-margin-pct">23,00%</div>
-              </div>
+              <div id="dreMargins"></div>
             </div>
           </div>
 
@@ -2147,8 +1917,28 @@ transition: border-color .15s;
     // ═══════════════════════════════════════════════
     // KPI / CHART / DONUT — calculados a partir de nexoerp.financeiro
     // ═══════════════════════════════════════════════
+
+    // Migra registros legados (desc/venc/categ) para o schema canônico (descricao/vencimento/categoria).
+    function _normalizeLancamentos(list) {
+      let dirty = false;
+      const result = list.map(l => {
+        if (!('descricao' in l) || !('vencimento' in l) || !('categoria' in l)) {
+          dirty = true;
+          const { desc, venc, categ, ...rest } = l;
+          return {
+            ...rest,
+            descricao:  rest.descricao  ?? desc  ?? '',
+            vencimento: rest.vencimento ?? venc  ?? '',
+            categoria:  rest.categoria  ?? categ ?? '',
+          };
+        }
+        return l;
+      });
+      return { list: result, dirty };
+    }
+
     function _parseLancDate(l) {
-      const raw = l.data || l.vencimento || l.venc || '';
+      const raw = l.data || l.vencimento || '';
       if (!raw) return null;
       if (typeof raw === 'string' && raw.includes('/')) {
         const p = raw.split(/[\s\/]/);
@@ -2241,7 +2031,12 @@ transition: border-color .15s;
       return { receber, receberVenc, receberFut, pagar, pagarVenc, pagarFut, vencidosCount };
     }
 
-    let lancamentos = JSON.parse(localStorage.getItem('nexoerp.financeiro') || '[]');
+    let lancamentos = (() => {
+      const raw = JSON.parse(localStorage.getItem('nexoerp.financeiro') || '[]');
+      const { list, dirty } = _normalizeLancamentos(raw);
+      if (dirty) localStorage.setItem('nexoerp.financeiro', JSON.stringify(list));
+      return list;
+    })();
 
     // Deriva RECEBER e PAGAR a partir dos lançamentos reais
     function buildReceberPagar() {
@@ -2250,19 +2045,19 @@ transition: border-color .15s;
         .filter(l => l.tipo === 'receita' && l.status !== 'pago' && l.status !== 'cancelado' && l.status !== 'estornado')
         .slice(0, 10)
         .map(l => {
-          const venc = l.vencimento || l.venc || l.data || '';
+          const venc = l.vencimento || l.data || '';
           const vencDate = venc ? new Date(venc.includes('/') ? venc.split('/').reverse().join('-') : venc) : null;
           const status = l.status === 'pago' ? 'pago' : (vencDate && vencDate < hoje) ? 'vencida' : 'avencer';
-          return { venc: vencDate ? vencDate.toLocaleDateString('pt-BR') : venc, cliente: l.parte || l.descricao || '—', desc: l.descricao || l.desc || '', valor: l.valor || 0, status };
+          return { venc: vencDate ? vencDate.toLocaleDateString('pt-BR') : venc, cliente: l.parte || l.descricao || '—', desc: l.descricao || '', valor: l.valor || 0, status };
         });
       const PAGAR = lancamentos
         .filter(l => l.tipo === 'despesa' && l.status !== 'pago' && l.status !== 'cancelado')
         .slice(0, 10)
         .map(l => {
-          const venc = l.vencimento || l.venc || l.data || '';
+          const venc = l.vencimento || l.data || '';
           const vencDate = venc ? new Date(venc.includes('/') ? venc.split('/').reverse().join('-') : venc) : null;
           const status = l.status === 'pago' ? 'pago' : (vencDate && vencDate < hoje) ? 'vencida' : 'avencer';
-          return { venc: vencDate ? vencDate.toLocaleDateString('pt-BR') : venc, fornec: l.parte || l.descricao || '—', desc: l.descricao || l.desc || '', valor: l.valor || 0, status };
+          return { venc: vencDate ? vencDate.toLocaleDateString('pt-BR') : venc, fornec: l.parte || l.descricao || '—', desc: l.descricao || '', valor: l.valor || 0, status };
         });
       return { RECEBER, PAGAR };
     }
@@ -2348,7 +2143,8 @@ transition: border-color .15s;
     // ═══════════════════════════════════════════════
     function renderDonut() {
       const { receber, pagar, receberVenc, receberFut, pagarVenc, pagarFut, vencidosCount } = buildDonutData();
-      const total = receber + pagar || 1;
+      const totalReal = receber + pagar;
+      const total = totalReal || 1; // evita divisão por zero no cálculo do SVG
       const cx = 85, cy = 85, r = 62, stroke = 22;
       const circum = 2 * Math.PI * r;
 
@@ -2378,7 +2174,7 @@ transition: border-color .15s;
     `;
       document.getElementById('donutSvg').innerHTML = svg;
 
-      document.getElementById('donutTotal').textContent = `R$ ${fmt(total)}`;
+      document.getElementById('donutTotal').textContent = `R$ ${fmt(totalReal)}`;
       document.getElementById('donutReceber').textContent = `R$ ${fmt(receber)}`;
       document.getElementById('donutPagar').textContent = `R$ ${fmt(pagar)}`;
       document.getElementById('donutReceberVenc').textContent = `R$ ${fmt(receberVenc)}`;
@@ -2434,7 +2230,7 @@ transition: border-color .15s;
       const _hoje = new Date(); _hoje.setHours(0,0,0,0);
       const _stLanc = l => {
         if (l.status === 'pago') return 'pago';
-        const raw = l.vencimento || l.venc || l.data || '';
+        const raw = l.vencimento || l.data || '';
         if (!raw) return 'avencer';
         const d = new Date(raw.includes('/') ? raw.split('/').reverse().join('-') : raw);
         return isNaN(d) ? 'avencer' : d < _hoje ? 'vencida' : 'avencer';
@@ -2450,9 +2246,9 @@ transition: border-color .15s;
         const rows = lancamentos.filter(l => l.tipo === 'despesa' && l.status !== 'cancelado');
         tblPD.innerHTML = rows.length
           ? rows.map(l => { const st = _stLanc(l); return `<tr>
-              <td>${escapeHTML(_fmtD(l.vencimento || l.venc || l.data || ''))}</td>
+              <td>${escapeHTML(_fmtD(l.vencimento || l.data || ''))}</td>
               <td class="u-fw-500">${escapeHTML(l.parte || '—')}</td>
-              <td class="u-muted">${escapeHTML(l.descricao || l.desc || '')}</td>
+              <td class="u-muted">${escapeHTML(l.descricao || '')}</td>
               <td class="${st === 'pago' ? '' : 'val-negativo'}" style="${st === 'pago' ? 'color:var(--muted)' : ''}">R$ ${fmt(l.valor || 0)}</td>
               <td>${pillHtml(st)}</td><td></td>
             </tr>`; }).join('')
@@ -2464,9 +2260,9 @@ transition: border-color .15s;
         const rows = lancamentos.filter(l => l.tipo === 'receita' && l.status !== 'cancelado' && l.status !== 'estornado');
         tblRD.innerHTML = rows.length
           ? rows.map(l => { const st = _stLanc(l); return `<tr>
-              <td>${escapeHTML(_fmtD(l.vencimento || l.venc || l.data || ''))}</td>
-              <td class="u-fw-500">${escapeHTML(l.parte || l.descricao || l.desc || '—')}</td>
-              <td class="u-muted">${escapeHTML(l.descricao || l.desc || '')}</td>
+              <td>${escapeHTML(_fmtD(l.vencimento || l.data || ''))}</td>
+              <td class="u-fw-500">${escapeHTML(l.parte || l.descricao || '—')}</td>
+              <td class="u-muted">${escapeHTML(l.descricao || '')}</td>
               <td class="${st === 'pago' ? '' : st === 'vencida' ? 'val-negativo' : 'val-positivo'}" style="${st === 'pago' ? 'color:var(--muted)' : ''}">R$ ${fmt(l.valor || 0)}</td>
               <td>${pillHtml(st)}</td><td></td>
             </tr>`; }).join('')
@@ -2476,12 +2272,12 @@ transition: border-color .15s;
       const tblMov = document.getElementById('tblMovim');
       if (tblMov) {
         const movs = [...lancamentos].sort((a, b) =>
-          (b.data || b.vencimento || b.venc || '').localeCompare(a.data || a.vencimento || a.venc || ''));
+          (b.data || b.vencimento || '').localeCompare(a.data || a.vencimento || ''));
         tblMov.innerHTML = movs.length
           ? movs.map(l => `<tr>
-              <td>${escapeHTML(_fmtD(l.data || l.vencimento || l.venc || ''))}</td>
-              <td class="u-fw-500">${escapeHTML(l.descricao || l.desc || '—')}</td>
-              <td class="u-muted">${escapeHTML(l.categoria || l.categ || '—')}</td>
+              <td>${escapeHTML(_fmtD(l.data || l.vencimento || ''))}</td>
+              <td class="u-fw-500">${escapeHTML(l.descricao || '—')}</td>
+              <td class="u-muted">${escapeHTML(l.categoria || '—')}</td>
               <td>${l.tipo === 'receita' ? '<span class="vencer-pill ok">Entrada</span>' : '<span class="vencer-pill vencida">Saída</span>'}</td>
               <td class="${l.tipo === 'receita' ? 'val-positivo' : 'val-negativo'}">${l.tipo === 'receita' ? '+' : '-'} R$ ${fmt(l.valor || 0)}</td>
             </tr>`).join('')
@@ -2526,10 +2322,10 @@ transition: border-color .15s;
       const lancamento = {
         id: Date.now(),
         tipo: tipoAtual,
-        desc,
+        descricao: desc,
         valor: parseFloat(valor),
-        venc,
-        categ,
+        vencimento: venc,
+        categoria: categ,
         parte: document.getElementById('fParte').value.trim(),
         status: document.getElementById('fStatus').value,
         obs: document.getElementById('fObs').value.trim(),
@@ -2572,6 +2368,265 @@ transition: border-color .15s;
       document.getElementById('topbarSub').textContent = title;
       closeMais();
       if (panelId === 'centro-custo') renderCustosPanel();
+      if (panelId === 'dre') renderDRE();
+    }
+
+    // ═══════════════════════════════════════════════
+    // DRE — Demonstração do Resultado do Exercício
+    // ═══════════════════════════════════════════════
+    function _dreGetPeriod() {
+      const s = document.getElementById('finDpStart').value;
+      const e = document.getElementById('finDpEnd').value;
+      const start = s ? new Date(s + 'T00:00:00') : new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+      const end   = e ? new Date(e + 'T23:59:59') : new Date();
+      return { start, end };
+    }
+
+    function _dreInPeriod(l, start, end) {
+      const d = _parseLancDate(l);
+      return d && d >= start && d <= end;
+    }
+
+    function calcDRE(start, end) {
+      let movs = [], products = [];
+      try { movs     = JSON.parse(localStorage.getItem('nexoerp.movimentacoes') || '[]'); } catch(_) {}
+      try { products = JSON.parse(localStorage.getItem('nexoerp.produtos')      || '[]'); } catch(_) {}
+
+      const inL = l => _dreInPeriod(l, start, end);
+      const inC = c => { const d = new Date(c.data); return !isNaN(d) && d >= start && d <= end; };
+      const inM = m => {
+        if (m.dataISO) { const d = new Date(m.dataISO); return !isNaN(d) && d >= start && d <= end; }
+        return _dreInPeriod({ data: m.data }, start, end);
+      };
+
+      // ── RECEITA BRUTA
+      const recPagas  = lancamentos.filter(l => l.tipo === 'receita' && l.status === 'pago' && inL(l));
+      const isServico = l => /servi[cç]/i.test(l.categoria || '');
+      const recVendas   = recPagas.filter(l => !isServico(l)).reduce((s,l) => s + l.valor, 0);
+      const recServicos = recPagas.filter(l =>  isServico(l)).reduce((s,l) => s + l.valor, 0);
+      const recBruta    = recVendas + recServicos;
+
+      // ── DEDUÇÕES
+      const isDeduc = l => /^(imposto|iss|icms|pis|cofins|dedu[cç]|devolu)/i.test((l.categoria||'') + (l.descricao||''));
+      const deducoes = lancamentos.filter(l => l.tipo === 'despesa' && l.status === 'pago' && inL(l) && isDeduc(l))
+        .reduce((s,l) => s + l.valor, 0);
+      const recLiquida = recBruta - deducoes;
+
+      // ── CMV: custosData tipo='custo' + saídas de estoque × custo
+      const cmvCC = custosData.filter(c => c.tipo === 'custo' && inC(c)).reduce((s,c) => s + c.valor, 0);
+      let cmvEstoque = 0;
+      movs.filter(m => m.tipo === 'saida' && inM(m)).forEach(m => {
+        const p = products.find(x => x.id === m.prodId);
+        cmvEstoque += Math.abs(m.qty) * (p?.custo || 0);
+      });
+      const cmvTotal   = cmvCC + cmvEstoque;
+      const lucroBruto = recLiquida - cmvTotal;
+      const margBruta  = recLiquida > 0 ? lucroBruto / recLiquida * 100 : 0;
+
+      // ── DESPESAS OPERACIONAIS
+      const isVendas = l => /venda|marketing|comercial|publicidade|comiss[aã]o/i.test(l.categoria || '');
+      const despLanc = lancamentos.filter(l => l.tipo === 'despesa' && l.status === 'pago' && inL(l) && !isDeduc(l));
+      const despVendas = despLanc.filter(l =>  isVendas(l)).reduce((s,l) => s + l.valor, 0);
+      const despCC     = custosData.filter(c => c.tipo === 'despesa' && inC(c)).reduce((s,c) => s + c.valor, 0);
+      const despAdmin  = despCC + despLanc.filter(l => !isVendas(l)).reduce((s,l) => s + l.valor, 0);
+      const despTotal  = despVendas + despAdmin;
+      const ebit       = lucroBruto - despTotal;
+      const margOp     = recLiquida > 0 ? ebit / recLiquida * 100 : 0;
+
+      // ── RESULTADO FINANCEIRO
+      const isRecFin  = l => /juros|aplicac[aã]o|rendimento|financ.*rec/i.test((l.categoria||'')+(l.descricao||''));
+      const isDespFin = l => /juros|encargo|multa|empr[eé]stimo|financ.*desp/i.test((l.categoria||'')+(l.descricao||''));
+      const recFin  = lancamentos.filter(l => l.tipo === 'receita' && l.status === 'pago' && inL(l) && isRecFin(l)).reduce((s,l) => s + l.valor, 0);
+      const despFin = lancamentos.filter(l => l.tipo === 'despesa' && l.status === 'pago' && inL(l) && isDespFin(l)).reduce((s,l) => s + l.valor, 0);
+      const resFin  = recFin - despFin;
+      const lair    = ebit + resFin;
+
+      const lucroLiq = lair;
+      const margLiq  = recLiquida > 0 ? lucroLiq / recLiquida * 100 : 0;
+
+      return { recVendas, recServicos, recBruta, deducoes, recLiquida, cmvCC, cmvEstoque, cmvTotal, lucroBruto, margBruta, despVendas, despAdmin, despTotal, ebit, margOp, recFin, despFin, resFin, lair, lucroLiq, margLiq };
+    }
+
+    function renderDRE() {
+      const { start, end } = _dreGetPeriod();
+      const prevStart = new Date(start); prevStart.setFullYear(prevStart.getFullYear() - 1);
+      const prevEnd   = new Date(end);   prevEnd.setFullYear(prevEnd.getFullYear() - 1);
+
+      const curr = calcDRE(start, end);
+      const prev = calcDRE(prevStart, prevEnd);
+
+      const lbl = d => _finFmtD(d);
+      document.getElementById('dreTh1').textContent = lbl(start) + ' – ' + lbl(end) + ' (Atual)';
+      document.getElementById('dreTh2').textContent = lbl(prevStart) + ' – ' + lbl(prevEnd) + ' (Anterior)';
+
+      _dreUpdateTable(curr, prev);
+      _dreUpdateKPIs(curr, prev);
+      _dreUpdateSide(curr, start, end);
+    }
+
+    function _dreFmt(v) { return 'R$ ' + fmt(Math.abs(v)); }
+
+    function _dreVar(curr, prev, inverted) {
+      if (Math.abs(prev) < 0.01) return '<span style="color:var(--muted);font-size:11px">—</span>';
+      const pct = ((curr - prev) / Math.abs(prev)) * 100;
+      const positive = inverted ? pct <= 0 : pct >= 0;
+      const cls = positive ? 'dre-var-up' : 'dre-var-down';
+      return `<span class="${cls}">${pct >= 0 ? '▲' : '▼'} ${Math.abs(pct).toFixed(2)}%</span>`;
+    }
+
+    function _dreRow(label, cVal, pVal, isNeg, isTotal, isFinal) {
+      const trCls = isFinal ? 'dre-row-final' : isTotal ? 'dre-row-total' : 'dre-row-sub';
+      const cCls  = cVal >= 0 ? 'dre-pos' : 'dre-neg';
+      const sign  = v => v < 0 ? '-' : '';
+      return `<tr class="${trCls}">
+        <td>${label}</td>
+        <td class="${cCls}">${sign(cVal)}${_dreFmt(cVal)}</td>
+        <td style="color:var(--${isFinal?'text':'sub'})">${sign(pVal)}${_dreFmt(pVal)}</td>
+        <td>${_dreVar(cVal, pVal, isNeg)}</td>
+      </tr>`;
+    }
+
+    function _dreGroup(label, color, first) {
+      return `<tr class="dre-row-group${first?' first-group':''}"><td colspan="4" style="color:${color}">▸ ${label}</td></tr>`;
+    }
+
+    function _dreUpdateTable(c, p) {
+      let h = '';
+      h += _dreGroup('RECEITA OPERACIONAL BRUTA', 'var(--accent)', true);
+      h += _dreRow('Vendas de Produtos',      c.recVendas,   p.recVendas);
+      if (c.recServicos > 0 || p.recServicos > 0)
+        h += _dreRow('Prestação de Serviços', c.recServicos, p.recServicos);
+      h += _dreRow('RECEITA BRUTA TOTAL',     c.recBruta,    p.recBruta,  false, true);
+
+      h += _dreGroup('DEDUÇÕES DA RECEITA', 'var(--danger)');
+      h += _dreRow('Impostos e Deduções', -c.deducoes, -p.deducoes, true);
+      h += _dreRow('RECEITA LÍQUIDA',      c.recLiquida, p.recLiquida, false, true);
+
+      h += _dreGroup('CUSTO DOS PRODUTOS/SERVIÇOS', 'var(--danger)');
+      if (c.cmvEstoque > 0 || p.cmvEstoque > 0)
+        h += _dreRow('Custo de Mercadorias (Estoque)', -c.cmvEstoque, -p.cmvEstoque, true);
+      if (c.cmvCC > 0 || p.cmvCC > 0)
+        h += _dreRow('Custos Operacionais (C. Custo)', -c.cmvCC, -p.cmvCC, true);
+      h += _dreRow('LUCRO BRUTO', c.lucroBruto, p.lucroBruto, false, true);
+
+      h += _dreGroup('DESPESAS OPERACIONAIS', 'var(--danger)');
+      if (c.despVendas > 0 || p.despVendas > 0)
+        h += _dreRow('Despesas de Vendas',         -c.despVendas, -p.despVendas, true);
+      h += _dreRow('Despesas Administrativas', -c.despAdmin,  -p.despAdmin, true);
+      h += _dreRow('RESULTADO OPERACIONAL (EBIT)', c.ebit, p.ebit, false, true);
+
+      if (c.recFin > 0 || c.despFin > 0 || p.recFin > 0 || p.despFin > 0) {
+        h += _dreGroup('RESULTADO FINANCEIRO', 'var(--accent2)');
+        if (c.recFin  > 0 || p.recFin  > 0) h += _dreRow('Receitas Financeiras',  c.recFin,   p.recFin);
+        if (c.despFin > 0 || p.despFin > 0) h += _dreRow('Despesas Financeiras',  -c.despFin, -p.despFin, true);
+        h += _dreRow('RESULTADO ANTES DOS IMPOSTOS', c.lair, p.lair, false, true);
+      }
+
+      h += _dreRow('💰 LUCRO LÍQUIDO DO EXERCÍCIO', c.lucroLiq, p.lucroLiq, false, false, true);
+
+      document.getElementById('dreTbody').innerHTML = h ||
+        '<tr><td colspan="4" style="text-align:center;padding:28px;color:var(--muted);font-size:13px">Sem lançamentos para o período selecionado.</td></tr>';
+    }
+
+    function _dreUpdateKPIs(c, p) {
+      const setKpi = (valId, deltaId, val, prevVal, isPct) => {
+        const ve = document.getElementById(valId);
+        const de = document.getElementById(deltaId);
+        if (ve) ve.textContent = isPct ? val.toFixed(2).replace('.',',') + '%' : 'R$ ' + fmt(Math.abs(val));
+        if (!de) return;
+        if (Math.abs(prevVal) < 0.01) { de.textContent = '—'; de.className = 'dre-kpi-delta'; return; }
+        const pct = ((val - prevVal) / Math.abs(prevVal)) * 100;
+        const up = pct >= 0;
+        de.className = 'dre-kpi-delta ' + (up ? 'up' : 'down');
+        de.innerHTML = `<i class="bi bi-arrow-${up?'up':'down'}-short"></i>${Math.abs(pct).toFixed(1)}% vs período anterior`;
+      };
+      setKpi('dre-rec-liq-val',   'dre-rec-liq-delta',   c.recLiquida, p.recLiquida);
+      setKpi('dre-luc-bruto-val', 'dre-luc-bruto-delta', c.lucroBruto, p.lucroBruto);
+      setKpi('dre-marg-bruta-val','dre-marg-bruta-delta', c.margBruta, p.margBruta, true);
+      setKpi('dre-luc-liq-val',   'dre-luc-liq-delta',   c.lucroLiq,  p.lucroLiq);
+      setKpi('dre-marg-liq-val',  'dre-marg-liq-delta',  c.margLiq,   p.margLiq, true);
+    }
+
+    function _dreUpdateSide(c, start, end) {
+      // ── Linha: Lucro Líquido mês a mês no período
+      const months = [];
+      const cur = new Date(start.getFullYear(), start.getMonth(), 1);
+      const mEnd = new Date(end.getFullYear(), end.getMonth(), 1);
+      while (cur <= mEnd) {
+        const mS = new Date(cur.getFullYear(), cur.getMonth(), 1);
+        const mE = new Date(cur.getFullYear(), cur.getMonth() + 1, 0, 23, 59, 59);
+        months.push({ label: cur.toLocaleDateString('pt-BR',{month:'short'}).replace('.',''), value: calcDRE(mS, mE).lucroLiq });
+        cur.setMonth(cur.getMonth() + 1);
+      }
+      const W = 320, H = 110, pad = 16;
+      const maxV  = Math.max(...months.map(m => Math.abs(m.value)), 1);
+      const pts   = months.map((m, i) => ({
+        x: pad + (months.length < 2 ? (W - pad*2)/2 : (i / (months.length - 1)) * (W - pad*2)),
+        y: H - pad - (Math.max(m.value, 0) / maxV) * (H - pad * 2),
+        v: m.value, label: m.label,
+      }));
+      const ptStr = pts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+      const fill  = pts.length > 1
+        ? `M${pts.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' L')} L${pts[pts.length-1].x.toFixed(1)},${H-pad} L${pts[0].x.toFixed(1)},${H-pad} Z`
+        : '';
+
+      const svgContent = `
+        <defs><linearGradient id="dreGrad2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#00D084" stop-opacity=".25"/>
+          <stop offset="100%" stop-color="#00D084" stop-opacity="0"/>
+        </linearGradient></defs>
+        <line x1="0" y1="${H-pad}" x2="${W}" y2="${H-pad}" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+        ${fill ? `<path d="${fill}" fill="url(#dreGrad2)"/>` : ''}
+        ${pts.length > 1 ? `<polyline points="${ptStr}" fill="none" stroke="#00D084" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>` : ''}
+        ${pts.map((p, i) => `
+          <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${i===pts.length-1?'5':'4'}" fill="#00D084" stroke="#0B1220" stroke-width="2"/>
+          <text x="${p.x.toFixed(1)}" y="${(p.y-7).toFixed(1)}" text-anchor="middle" fill="rgba(148,163,184,.7)" font-size="7.5">${Math.abs(p.v)>=1000?(p.v/1000).toFixed(0)+'k':fmt(p.v)}</text>
+        `).join('')}`;
+      document.getElementById('dreLineChartSvg').innerHTML = svgContent;
+      document.getElementById('dreLineXlbl').innerHTML = pts.map(p => `<span>${p.label}</span>`).join('');
+
+      // ── Donut: composição da Receita Líquida
+      const total = c.recLiquida;
+      const slices = [
+        { label: 'CPV',        pct: total > 0 ? c.cmvTotal  / total : 0, color: '#2F80FF' },
+        { label: 'Desp. Op.',  pct: total > 0 ? c.despTotal / total : 0, color: '#FF8C42' },
+        { label: 'Res. Fin.',  pct: total > 0 ? Math.abs(c.resFin) / total : 0, color: '#A78BFA' },
+        { label: 'Lucro Líq.', pct: total > 0 ? Math.max(c.lucroLiq, 0) / total : 0, color: '#00D084' },
+      ].filter(s => s.pct > 0.001);
+
+      const circ = 314;
+      let offset = 0;
+      const circles = slices.map(s => {
+        const len = s.pct * circ;
+        const el = `<circle cx="60" cy="60" r="50" fill="none" stroke="${s.color}" stroke-width="14" stroke-dasharray="${len.toFixed(1)} ${circ}" stroke-dashoffset="${(-offset).toFixed(1)}" transform="rotate(-90 60 60)"/>`;
+        offset += len;
+        return el;
+      }).join('');
+
+      const liqLabel = Math.abs(c.lucroLiq) >= 1000 ? 'R$ ' + (c.lucroLiq/1000).toFixed(0)+'k' : 'R$ '+fmt(c.lucroLiq);
+      document.getElementById('dreDonutSvg').innerHTML =
+        `<circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="14"/>
+        ${circles}
+        <text x="60" y="55" text-anchor="middle" fill="#FFF" font-size="10" font-weight="800" font-family="Syne,sans-serif">${liqLabel}</text>
+        <text x="60" y="68" text-anchor="middle" fill="rgba(148,163,184,.55)" font-size="7.5">Lucro Líquido</text>`;
+      document.getElementById('dreDonutLegend').innerHTML = slices.map(s =>
+        `<div class="dre-leg-row"><div class="dre-leg-dot" style="background:${s.color}"></div>${s.label}<span class="dre-leg-pct">${(s.pct*100).toFixed(1)}%</span></div>`
+      ).join('');
+
+      // ── Margens
+      const mB = Math.max(c.margBruta, 0);
+      const mO = Math.max(c.margOp,    0);
+      const mL = Math.max(c.margLiq,   0);
+      const scale = Math.max(mB, 100);
+      document.getElementById('dreMargins').innerHTML = [
+        { label: 'Margem Bruta',        val: mB, color: 'var(--accent)' },
+        { label: 'Margem Operacional',  val: mO, color: 'var(--accent2)' },
+        { label: 'Margem Líquida',      val: mL, color: '#A78BFA' },
+      ].map(m => `<div class="dre-margin-row">
+        <div class="dre-margin-label">${m.label}</div>
+        <div class="dre-margin-bar-wrap"><div class="dre-margin-bar" style="width:${(m.val/scale*100).toFixed(1)}%;background:${m.color}"></div></div>
+        <div class="dre-margin-pct">${m.val.toFixed(2).replace('.',',')}%</div>
+      </div>`).join('');
     }
 
     function toggleMais() {
@@ -2630,7 +2685,22 @@ transition: border-color .15s;
     }
 
     function filterVencidas() {
-      showToast('Filtrando títulos vencidos…');
+      const hoje = new Date(); hoje.setHours(0,0,0,0);
+      const parseVenc = v => { if (!v) return null; const d = new Date(v.includes('/') ? v.split('/').reverse().join('-') : v); return isNaN(d) ? null : d; };
+      const isVencido = l => { const d = parseVenc(l.vencimento || l.data); return d && d < hoje; };
+      const vPagar   = lancamentos.filter(l => l.tipo === 'despesa' && l.status !== 'pago' && l.status !== 'cancelado' && isVencido(l));
+      const vReceber = lancamentos.filter(l => l.tipo === 'receita' && l.status !== 'pago' && l.status !== 'cancelado' && l.status !== 'estornado' && isVencido(l));
+      const total = vPagar.length + vReceber.length;
+      if (total === 0) { showToast('Nenhum título vencido em aberto.'); return; }
+      // Navega para a aba com mais vencidos
+      const ir = vPagar.length >= vReceber.length ? 'contas-pagar' : 'contas-receber';
+      const tabEl = document.querySelector(`.fin-tab[onclick*="${ir}"]`);
+      if (tabEl) tabEl.click();
+      setTimeout(() => {
+        const tbl = document.getElementById(ir === 'contas-pagar' ? 'tblPagarDetalhe' : 'tblReceberDetalhe');
+        tbl?.closest('.card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 150);
+      showToast(`${total} título${total !== 1 ? 's' : ''} vencido${total !== 1 ? 's' : ''}: ${vPagar.length} a pagar · ${vReceber.length} a receber`, 'warning');
     }
 
     function exportar() {
@@ -2701,6 +2771,7 @@ transition: border-color .15s;
       document.getElementById('finDpEnd').value = hoje.toISOString().split('T')[0];
       _finUpdateLabelStr(el.textContent.trim());
       document.getElementById('finDpDrop').style.display = 'none';
+      if (document.getElementById('panel-dre')?.classList.contains('active')) renderDRE();
     }
 
     function finUpdateCustomLabel() {
@@ -2720,6 +2791,7 @@ transition: border-color .15s;
       _finUpdateLabelStr(_finFmt(s) + ' – ' + _finFmt(e));
       document.getElementById('finDpDrop').style.display = 'none';
       showToast('Período atualizado: ' + _finFmt(s) + ' – ' + _finFmt(e));
+      if (document.getElementById('panel-dre')?.classList.contains('active')) renderDRE();
     }
 
     function _finUpdateLabel(ini, fim) {

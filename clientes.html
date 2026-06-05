@@ -496,6 +496,7 @@
       <div class="section-tabs">
         <button class="sec-tab active" id="sec-clientes" onclick="switchSection('clientes')"><i class="bi bi-people-fill"></i> Clientes</button>
         <button class="sec-tab" id="sec-fornecedores" onclick="switchSection('fornecedores')"><i class="bi bi-truck"></i> Fornecedores</button>
+        <button class="sec-tab" id="sec-vendedores" onclick="switchSection('vendedores')"><i class="bi bi-person-badge-fill"></i> Vendedores</button>
       </div>
 
       <!-- KPIs -->
@@ -555,10 +556,10 @@
           <table id="clientTable">
             <thead>
               <tr>
-                <th onclick="sortTable('nome')">Cliente <span class="sort-icon">↕</span></th>
+                <th id="th-nome" onclick="sortTable('nome')">Cliente <span class="sort-icon">↕</span></th>
                 <th>Tipo</th>
-                <th onclick="sortTable('cidade')">Cidade <span class="sort-icon">↕</span></th>
-                <th>Telefone</th>
+                <th id="th-col3" onclick="sortTable('cidade')">Cidade <span class="sort-icon">↕</span></th>
+                <th id="th-col4">Telefone</th>
                 <th onclick="sortTable('compras')" id="th-compras">Compras <span class="sort-icon">↕</span></th>
                 <th>Status</th>
                 <th>Cadastro</th>
@@ -577,6 +578,63 @@
           <span id="tableInfo">Mostrando 0 clientes</span>
           <div class="pagination" id="pagination"></div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL VENDEDOR -->
+  <div class="modal-overlay" id="vendedorModalOverlay" onclick="handleVendedorOverlayClick(event)">
+    <div class="modal" style="max-width:480px;border-radius:16px;overflow:hidden">
+      <div class="modal-header" style="padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div class="modal-title" id="vendedorModalTitle" style="font-size:16px;font-weight:700;color:var(--text)">Novo Vendedor</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">Preencha os dados do vendedor</div>
+        </div>
+        <button class="modal-close" onclick="closeVendedorModal()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div style="padding:20px 24px;display:flex;flex-direction:column;gap:14px">
+        <!-- Tipo -->
+        <div class="radio-row" style="display:flex;gap:8px">
+          <div class="radio-opt sel" onclick="selectVendTipo(this,'pf')" id="vend-tipo-pf" style="flex:1;justify-content:center"><i class="bi bi-person"></i> Pessoa Física</div>
+          <div class="radio-opt"    onclick="selectVendTipo(this,'pj')" id="vend-tipo-pj"  style="flex:1;justify-content:center"><i class="bi bi-building"></i> Pessoa Jurídica</div>
+        </div>
+        <!-- Nome -->
+        <div class="form-group">
+          <label class="lbl" id="vend-lbl-nome">Nome *</label>
+          <div class="inp-wrap"><i class="bi bi-person pre"></i><input class="field" type="text" id="vf-nome" placeholder="Nome completo"></div>
+          <span class="field-err" id="ve-nome">Informe o nome.</span>
+        </div>
+        <!-- CPF/CNPJ -->
+        <div class="form-group">
+          <label class="lbl" id="vend-lbl-doc">CPF *</label>
+          <div class="inp-wrap"><i class="bi bi-card-text pre"></i><input class="field" type="text" id="vf-doc" placeholder="000.000.000-00" oninput="maskVendDoc(this)" maxlength="14"></div>
+          <span class="field-err" id="ve-doc">Informe o documento.</span>
+        </div>
+        <!-- Telefone -->
+        <div class="form-group">
+          <label class="lbl">Telefone *</label>
+          <div class="inp-wrap"><i class="bi bi-telephone pre"></i><input class="field" type="tel" id="vf-tel" placeholder="(11) 99999-9999" oninput="maskPhone(this)"></div>
+          <span class="field-err" id="ve-tel">Informe o telefone.</span>
+        </div>
+        <!-- Email -->
+        <div class="form-group">
+          <label class="lbl">E-mail</label>
+          <div class="inp-wrap"><i class="bi bi-envelope pre"></i><input class="field" type="email" id="vf-email" placeholder="email@exemplo.com"></div>
+        </div>
+        <!-- Status -->
+        <div class="form-group">
+          <label class="lbl">Status</label>
+          <div class="inp-wrap"><i class="bi bi-toggle-on pre"></i>
+            <select class="field" id="vf-status">
+              <option value="ativo">Ativo</option>
+              <option value="inativo">Inativo</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div style="padding:14px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end">
+        <button class="btn-sm btn-ghost-sm" onclick="closeVendedorModal()">Cancelar</button>
+        <button class="btn-sm btn-primary-sm" onclick="saveVendedor()"><i class="bi bi-check2"></i> Salvar</button>
       </div>
     </div>
   </div>
@@ -990,6 +1048,7 @@
     // ─── STORAGE ─────────────────────────────────────────────
     const CLIENTES_KEY     = 'nexoerp.clientes';
     const FORNECEDORES_KEY = 'nexoerp.fornecedores';
+    const VENDEDORES_KEY   = 'nexoerp.vendedores';
 
     function loadData(key) {
       try { const raw = localStorage.getItem(key); if (raw) return JSON.parse(raw); } catch(_) {}
@@ -1010,8 +1069,9 @@
       return COLORS[idx];
     }
 
-    let clients     = loadData(CLIENTES_KEY);
+    let clients      = loadData(CLIENTES_KEY);
     let fornecedores = loadData(FORNECEDORES_KEY);
+    let vendedores   = loadData(VENDEDORES_KEY);
     let currentSection = 'clientes';
     let filtered = [];
     let currentFilter = 'todos';
@@ -1020,30 +1080,41 @@
     let editingId = null;
     let currentDetailId = null;
 
-    function activeData()      { return currentSection === 'clientes' ? clients : fornecedores; }
-    function setActiveData(d)  { if (currentSection === 'clientes') clients = d; else fornecedores = d; }
-    function saveActive()      { saveData(currentSection === 'clientes' ? CLIENTES_KEY : FORNECEDORES_KEY, activeData()); }
-    function entityLabel()     { return currentSection === 'clientes' ? 'Cliente' : 'Fornecedor'; }
+    function activeData()     { return currentSection === 'clientes' ? clients : currentSection === 'fornecedores' ? fornecedores : vendedores; }
+    function setActiveData(d) { if (currentSection === 'clientes') clients = d; else if (currentSection === 'fornecedores') fornecedores = d; else vendedores = d; }
+    function saveActive()     { saveData(currentSection === 'clientes' ? CLIENTES_KEY : currentSection === 'fornecedores' ? FORNECEDORES_KEY : VENDEDORES_KEY, activeData()); }
+    function entityLabel()    { return currentSection === 'clientes' ? 'Cliente' : currentSection === 'fornecedores' ? 'Fornecedor' : 'Vendedor'; }
 
     // ─── SECTION SWITCH ──────────────────────────────────────
     function switchSection(section) {
       currentSection = section;
-      const isCli = section === 'clientes';
+      const isCli  = section === 'clientes';
+      const isVend = section === 'vendedores';
       document.getElementById('sec-clientes').classList.toggle('active', isCli);
-      document.getElementById('sec-fornecedores').classList.toggle('active', !isCli);
-      document.getElementById('btn-novo-label').textContent    = isCli ? 'Novo Cliente' : 'Novo Fornecedor';
-      document.getElementById('page-h1').textContent           = isCli ? 'Clientes' : 'Fornecedores';
-      document.getElementById('page-sub').textContent          = isCli
+      document.getElementById('sec-fornecedores').classList.toggle('active', section === 'fornecedores');
+      document.getElementById('sec-vendedores').classList.toggle('active', isVend);
+      document.getElementById('btn-novo-label').textContent = isCli ? 'Novo Cliente' : isVend ? 'Novo Vendedor' : 'Novo Fornecedor';
+      document.getElementById('page-h1').textContent        = isCli ? 'Clientes' : isVend ? 'Vendedores' : 'Fornecedores';
+      document.getElementById('page-sub').textContent       = isCli
         ? 'Gerencie seu cadastro de clientes, histórico e relacionamento.'
+        : isVend
+        ? 'Gerencie seus vendedores e representantes comerciais.'
         : 'Gerencie seus fornecedores, contatos e condições comerciais.';
-      document.getElementById('kpi-total-lbl').textContent     = isCli ? 'Total de clientes' : 'Total de fornecedores';
-      document.getElementById('kpi-mes-lbl').textContent       = 'Novos este mês';
-      document.getElementById('breadcrumb-cur').textContent    = isCli ? 'Clientes' : 'Fornecedores';
-      document.getElementById('th-compras').firstChild.textContent = isCli ? 'Compras ' : 'Pedidos ';
-      document.getElementById('empty-h3').textContent          = isCli ? 'Nenhum cliente encontrado' : 'Nenhum fornecedor encontrado';
-      document.getElementById('empty-p').textContent           = isCli
+      document.getElementById('kpi-total-lbl').textContent  = isCli ? 'Total de clientes' : isVend ? 'Total de vendedores' : 'Total de fornecedores';
+      document.getElementById('kpi-mes-lbl').textContent    = 'Novos este mês';
+      document.getElementById('breadcrumb-cur').textContent = isCli ? 'Clientes' : isVend ? 'Vendedores' : 'Fornecedores';
+      document.getElementById('empty-h3').textContent       = isCli ? 'Nenhum cliente encontrado' : isVend ? 'Nenhum vendedor encontrado' : 'Nenhum fornecedor encontrado';
+      document.getElementById('empty-p').textContent        = isCli
         ? 'Tente ajustar os filtros ou cadastre um novo cliente.'
+        : isVend
+        ? 'Tente ajustar os filtros ou cadastre um novo vendedor.'
         : 'Tente ajustar os filtros ou cadastre um novo fornecedor.';
+      // Ajuste de colunas da tabela
+      document.getElementById('th-nome').firstChild.textContent  = isCli ? 'Cliente ' : isVend ? 'Vendedor ' : 'Fornecedor ';
+      document.getElementById('th-col3').firstChild.textContent  = isVend ? 'Telefone ' : 'Cidade ';
+      document.getElementById('th-col4').textContent             = isVend ? 'E-mail' : 'Telefone';
+      document.getElementById('th-compras').style.display        = isVend ? 'none' : '';
+      if (!isVend) document.getElementById('th-compras').firstChild.textContent = isCli ? 'Compras ' : 'Pedidos ';
       currentFilter = 'todos';
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       document.querySelector('.filter-btn[onclick*="todos"]').classList.add('active');
@@ -1064,11 +1135,30 @@
       if (!total) { body.innerHTML = ''; empty.classList.add('show'); }
       else empty.classList.remove('show');
 
+      const isVend = currentSection === 'vendedores';
       body.innerHTML = slice.map(c => {
         const [bg, fg]  = colorFor(c.nome);
         const typeLabel = c.tipo === 'pf' ? 'Pessoa Física' : c.tipo === 'pj' ? 'Pessoa Jurídica' : 'MEI';
         const statusLabel = c.status === 'ativo' ? 'Ativo' : c.status === 'inativo' ? 'Inativo' : 'Bloqueado';
         const statusClass = c.status === 'ativo' ? 'ativo' : c.status === 'inativo' ? 'inativo' : 'bloq';
+        if (isVend) {
+          return `<tr onclick="openVendedorEdit(${c.id})">
+            <td><div class="client-cell">
+              <div class="client-avatar" style="background:${bg};color:${fg}">${initials(c.nome)}</div>
+              <div><div class="client-name">${escapeHTML(c.nome)}</div><div class="client-doc">${c.doc}</div></div>
+            </div></td>
+            <td><span class="client-type ${c.tipo}">${typeLabel}</span></td>
+            <td style="color:var(--muted);font-size:13px">${c.tel || '—'}</td>
+            <td style="font-size:13px">${c.email || '—'}</td>
+            <td style="display:none"></td>
+            <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
+            <td style="color:var(--muted);font-size:12px">${c.cadastro}</td>
+            <td><div class="action-cell" onclick="event.stopPropagation()">
+              <div class="act-btn" title="Editar" onclick="openVendedorEdit(${c.id})"><i class="bi bi-pencil"></i></div>
+              <div class="act-btn del" title="Excluir" onclick="deleteEntity(${c.id})"><i class="bi bi-trash3"></i></div>
+            </div></td>
+          </tr>`;
+        }
         const movVal = isCli ? (c.compras || 0) : (c.pedidos || 0);
         return `<tr onclick="openDetail(${c.id})">
           <td><div class="client-cell">
@@ -1088,7 +1178,7 @@
         </tr>`;
       }).join('');
 
-      const noun = isCli ? 'clientes' : 'fornecedores';
+      const noun = isCli ? 'clientes' : isVend ? 'vendedores' : 'fornecedores';
       document.getElementById('tableInfo').textContent =
         `Mostrando ${Math.min(start + 1, total)}–${Math.min(start + perPage, total)} de ${total} ${noun}`;
       renderPagination(total);
@@ -1170,6 +1260,7 @@
     let tipoSel = 'pf';
 
     function openModal(reset = true) {
+      if (currentSection === 'vendedores') { openVendedorModal(); return; }
       editingId = null;
       document.getElementById('modalTitle').textContent = `Novo ${entityLabel()}`;
       document.getElementById('modalSub').textContent   = `Preencha os dados do ${entityLabel().toLowerCase()}`;
@@ -1276,7 +1367,8 @@
         limite:      (parseFloat(document.getElementById('f-limite').value.replace(/\D/g,'') || '0') / 100).toFixed(2),
         desconto:    document.getElementById('f-desconto').value.trim() || '0',
         condicao:    document.getElementById('f-condicao').value || 'À vista',
-        vendedor:    document.getElementById('f-vendedor').value || '',
+        vendedor:    document.getElementById('f-vendedor').options[document.getElementById('f-vendedor').selectedIndex]?.text || '',
+        vendedor_id: document.getElementById('f-vendedor').value || null,
         grupo:       document.getElementById('f-grupo').value,
         origem:      document.getElementById('f-origem').value,
         tags:        document.getElementById('f-tags').value.trim(),
@@ -1323,7 +1415,9 @@
       document.getElementById('f-desconto').value = c.desconto && c.desconto !== '0' ? c.desconto : '';
       setSelectVal('f-genero', c.genero);
       setSelectVal('f-estado', c.estado);   setSelectVal('f-status', c.status);
-      setSelectVal('f-condicao', c.condicao); setSelectVal('f-vendedor', c.vendedor);
+      setSelectVal('f-condicao', c.condicao);
+      if (c.vendedor_id) setSelectVal('f-vendedor', c.vendedor_id);
+      else setSelectVal('f-vendedor', c.vendedor);
       setSelectVal('f-grupo', c.grupo);     setSelectVal('f-origem', c.origem);
       const tipoEl = document.getElementById(`tipo-${c.tipo}`);
       if (tipoEl) selectTipo(tipoEl, c.tipo);
@@ -1395,7 +1489,7 @@
       tipoSel = tipo;
       document.querySelectorAll('.radio-opt').forEach(o => o.classList.remove('sel'));
       el.classList.add('sel');
-      const isPJ = tipo === 'pj';
+      const isPJ = tipo === 'pj' || tipo === 'mei';
       document.getElementById('dados-title').textContent  = isPJ ? 'Dados da Empresa' : 'Dados Pessoais';
       document.getElementById('lbl-doc').textContent      = isPJ ? 'CNPJ *' : 'CPF *';
       document.getElementById('lbl-rg').textContent       = isPJ ? 'Inscrição Estadual' : 'RG';
@@ -1476,15 +1570,100 @@
       const sel = document.getElementById('f-vendedor');
       if (!sel) return;
       const cur = sel.value;
-      try {
-        const raw = localStorage.getItem('nexoerp.users');
-        const users = raw ? JSON.parse(raw) : [];
-        sel.innerHTML = '<option value="">Sem vendedor</option>' +
-          users.map(u => `<option value="${u.name}">${u.name}</option>`).join('');
-      } catch (_) {
-        sel.innerHTML = '<option value="">Sem vendedor</option>';
-      }
+      sel.innerHTML = '<option value="">Sem vendedor</option>' +
+        vendedores.filter(v => v.status === 'ativo').map(v => `<option value="${v.id}">${v.nome}</option>`).join('');
       if (cur) setSelectVal('f-vendedor', cur);
+    }
+
+    // ─── MODAL VENDEDOR ───────────────────────────────────────
+    let vendTipoSel = 'pf';
+    let editingVendId = null;
+
+    function openVendedorModal() {
+      editingVendId = null;
+      document.getElementById('vendedorModalTitle').textContent = 'Novo Vendedor';
+      resetVendForm();
+      document.getElementById('vendedorModalOverlay').classList.add('open');
+    }
+    function closeVendedorModal() {
+      document.getElementById('vendedorModalOverlay').classList.remove('open');
+    }
+    function handleVendedorOverlayClick(e) {
+      if (e.target === document.getElementById('vendedorModalOverlay')) closeVendedorModal();
+    }
+    function resetVendForm() {
+      vendTipoSel = 'pf';
+      ['vf-nome','vf-doc','vf-tel','vf-email'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      document.getElementById('vf-status').value = 'ativo';
+      selectVendTipo(document.getElementById('vend-tipo-pf'), 'pf');
+      document.querySelectorAll('[id^="ve-"]').forEach(e => e.classList.remove('show'));
+    }
+    function selectVendTipo(el, tipo) {
+      vendTipoSel = tipo;
+      document.querySelectorAll('#vendedorModalOverlay .radio-opt').forEach(o => o.classList.remove('sel'));
+      el.classList.add('sel');
+      const isPJ = tipo === 'pj';
+      document.getElementById('vend-lbl-nome').textContent = isPJ ? 'Razão Social *' : 'Nome *';
+      document.getElementById('vend-lbl-doc').textContent  = isPJ ? 'CNPJ *' : 'CPF *';
+      document.getElementById('vf-doc').placeholder = isPJ ? '00.000.000/0001-00' : '000.000.000-00';
+      document.getElementById('vf-doc').maxLength   = isPJ ? 18 : 14;
+      document.getElementById('vf-doc').value = '';
+    }
+    function maskVendDoc(el) {
+      if (vendTipoSel === 'pj') {
+        let v = el.value.replace(/\D/g,'');
+        v = v.replace(/^(\d{2})(\d)/,'$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3')
+             .replace(/\.(\d{3})(\d)/,'.$1/$2').replace(/(\d{4})(\d)/,'$1-$2');
+        el.value = v.slice(0,18);
+      } else {
+        let v = el.value.replace(/\D/g,'');
+        v = v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})\.(\d{3})(\d)/,'$1.$2.$3')
+             .replace(/(\d{3})\.(\d{3})\.(\d{3})(\d)/,'$1.$2.$3-$4');
+        el.value = v.slice(0,14);
+      }
+    }
+    function saveVendedor() {
+      const nome = document.getElementById('vf-nome').value.trim();
+      const doc  = document.getElementById('vf-doc').value.trim();
+      const tel  = document.getElementById('vf-tel').value.trim();
+      let ok = true;
+      if (!nome) { document.getElementById('ve-nome').classList.add('show'); ok = false; } else document.getElementById('ve-nome').classList.remove('show');
+      if (!doc)  { document.getElementById('ve-doc').classList.add('show');  ok = false; } else document.getElementById('ve-doc').classList.remove('show');
+      if (!tel)  { document.getElementById('ve-tel').classList.add('show');  ok = false; } else document.getElementById('ve-tel').classList.remove('show');
+      if (!ok) return;
+      const entry = {
+        id:       editingVendId || Date.now(),
+        nome,
+        tipo:     vendTipoSel,
+        doc,
+        tel,
+        email:    document.getElementById('vf-email').value.trim(),
+        status:   document.getElementById('vf-status').value,
+        cadastro: editingVendId ? (vendedores.find(v => v.id === editingVendId)?.cadastro || new Date().toLocaleDateString('pt-BR')) : new Date().toLocaleDateString('pt-BR'),
+      };
+      if (editingVendId) { const idx = vendedores.findIndex(v => v.id === editingVendId); if (idx >= 0) vendedores[idx] = entry; }
+      else vendedores.unshift(entry);
+      saveData(VENDEDORES_KEY, vendedores);
+      populateVendedorSelect();
+      closeVendedorModal();
+      applyFilters();
+      showToast(editingVendId ? 'Vendedor atualizado com sucesso!' : 'Vendedor cadastrado com sucesso!');
+      editingVendId = null;
+    }
+    function openVendedorEdit(id) {
+      const v = vendedores.find(x => x.id === id);
+      if (!v) return;
+      editingVendId = id;
+      document.getElementById('vendedorModalTitle').textContent = 'Editar Vendedor';
+      const tipoEl = document.getElementById(`vend-tipo-${v.tipo}`);
+      if (tipoEl) selectVendTipo(tipoEl, v.tipo);
+      document.getElementById('vf-nome').value  = v.nome;
+      document.getElementById('vf-doc').value   = v.doc;
+      document.getElementById('vf-tel').value   = v.tel;
+      document.getElementById('vf-email').value = v.email || '';
+      document.getElementById('vf-status').value = v.status;
+      document.querySelectorAll('[id^="ve-"]').forEach(e => e.classList.remove('show'));
+      document.getElementById('vendedorModalOverlay').classList.add('open');
     }
 
     // ─── INIT ─────────────────────────────────────────────────

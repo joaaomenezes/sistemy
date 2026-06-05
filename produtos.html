@@ -1320,10 +1320,15 @@
         <div class="tab-panel" id="t-fotos">
           <div class="form-section">
             <div class="form-section-title">Imagens do produto</div>
-            <div class="upload-zone" onclick="showToast('📸 Upload de imagens disponível em breve.')">
+            <input type="file" id="imgInput" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
+            <div class="upload-zone" onclick="document.getElementById('imgInput').click()">
               <i class="bi bi-cloud-upload"></i>
               <p>Arraste imagens aqui ou <span>clique para selecionar</span></p>
-              <p style="margin-top:6px;font-size:11px">PNG, JPG, WEBP até 5MB · Recomendado: 800×800px</p>
+              <p style="margin-top:6px;font-size:11px">PNG, JPG, WEBP até 2MB · Recomendado: 800×800px</p>
+            </div>
+            <div id="imgPreviewWrap" style="display:none;margin-top:14px;position:relative;width:fit-content">
+              <img id="imgPreview" src="" style="width:120px;height:120px;object-fit:cover;border-radius:10px;border:1px solid var(--border)">
+              <button onclick="removeImage()" style="position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:var(--danger);border:none;color:#fff;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;line-height:1">×</button>
             </div>
           </div>
           <div class="form-section">
@@ -1490,6 +1495,27 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
     let selectedCat = null;
     let selectedEmoji = '📦';
     let selectedColor = '#1e2a3a';
+    let selectedImage = null;
+
+    function handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      if (file.size > 2 * 1024 * 1024) { showToast('Imagem muito grande. Máximo 2MB.', 'warning'); return; }
+      const reader = new FileReader();
+      reader.onload = e => {
+        selectedImage = e.target.result;
+        document.getElementById('imgPreview').src = selectedImage;
+        document.getElementById('imgPreviewWrap').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeImage() {
+      selectedImage = null;
+      document.getElementById('imgPreview').src = '';
+      document.getElementById('imgPreviewWrap').style.display = 'none';
+      document.getElementById('imgInput').value = '';
+    }
     let currentDetailId = null;
     let sortDir = 1;
     let sortKey = null;
@@ -1770,6 +1796,10 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
       document.getElementById('f-dt-fabricacao').value = '';
       document.getElementById('f-dt-vencimento').value = '';
       document.getElementById('f-lote').value = '';
+      selectedImage = null;
+      document.getElementById('imgPreviewWrap').style.display = 'none';
+      document.getElementById('imgPreview').src = '';
+      document.getElementById('imgInput').value = '';
     }
 
     function calcMargem() {
@@ -1825,6 +1855,7 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
         destaque: document.getElementById('tog-destaque').classList.contains('on'),
         emoji: selectedEmoji,
         cor: selectedColor,
+        imagem: selectedImage || existing?.imagem || null,
         cadastro: existing?.cadastro || new Date().toLocaleDateString('pt-BR'),
       };
 
@@ -1866,6 +1897,11 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
       populateDepositoSelect(); setSelectVal('f-deposito', p.deposito);
       populateFornecedorSelect(); setSelectVal('f-fornecedor', p.fornecedor);
       selectedEmoji = p.emoji; selectedColor = p.cor;
+      selectedImage = p.imagem || null;
+      if (p.imagem) {
+        document.getElementById('imgPreview').src = p.imagem;
+        document.getElementById('imgPreviewWrap').style.display = 'block';
+      }
       document.getElementById('emojiDisplay').textContent = p.emoji;
       buildEmojiGrid(); buildColorSwatches();
       document.getElementById('tog-ativo').classList.toggle('on', p.status === 'ativo');
