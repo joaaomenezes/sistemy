@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistemy — Parceiros</title>
   <link rel="stylesheet" href="global.css">
@@ -486,7 +487,7 @@
           <p id="page-sub">Gerencie seu cadastro de clientes, histórico e relacionamento.</p>
         </div>
         <div class="header-actions">
-          <button class="btn-sm btn-ghost-sm"><i class="bi bi-download"></i> Exportar</button>
+          <button class="btn-sm btn-ghost-sm" onclick="exportCSV()"><i class="bi bi-download"></i> Exportar CSV</button>
           <button class="btn-sm btn-primary-sm" onclick="openModal()"><i class="bi bi-plus-lg"></i> <span id="btn-novo-label">Novo Cliente</span></button>
         </div>
       </div>
@@ -832,12 +833,7 @@
               <div class="form-group">
                 <label class="lbl">Vendedor responsável</label>
                 <div class="inp-wrap"><i class="bi bi-person-badge pre"></i>
-                  <select class="field" id="f-vendedor">
-                    <option value="">Sem vendedor</option>
-                    <option>Lucas Andrade</option>
-                    <option>Maria Ferreira</option>
-                    <option>Carlos Souza</option>
-                  </select>
+                  <select class="field" id="f-vendedor"></select>
                 </div>
               </div>
               <div class="form-group">
@@ -989,6 +985,7 @@
   <script src="auth.js"></script>
   <script>
     NexoAuth.requireAuth();
+    requirePermission();
 
     // ─── STORAGE ─────────────────────────────────────────────
     const CLIENTES_KEY     = 'nexoerp.clientes';
@@ -1183,6 +1180,7 @@
     function handleOverlayClick(e) { if (e.target===document.getElementById('modalOverlay')) closeModal(); }
 
     function resetForm() {
+      populateVendedorSelect();
       ['f-nome','f-cpf','f-rg','f-nasc','f-tel','f-email','f-cep','f-logradouro',
        'f-numero','f-complemento','f-bairro','f-cidade','f-pais','f-tel2','f-site',
        'f-limite','f-desconto','f-obs','f-tags'].forEach(id => {
@@ -1228,6 +1226,25 @@
         if (!el.value.trim()) { el.classList.add('err'); er.classList.add('show'); ok = false; }
         else { el.classList.remove('err'); er.classList.remove('show'); }
       });
+
+      // Validação de dígito verificador CPF/CNPJ
+      const docEl = document.getElementById('f-cpf');
+      const docEr = document.getElementById('e-cpf');
+      const docVal = docEl.value.trim();
+      if (docVal && ok) {
+        const digits = docVal.replace(/\D/g, '');
+        const isPF = tipoSel === 'pf';
+        const isMEI = tipoSel === 'mei';
+        const isPJ = tipoSel === 'pj' || isMEI;
+        const valido = isPF ? validarCPF(docVal) : (isPJ ? validarCNPJ(docVal) : true);
+        if (!valido && digits.length > 0) {
+          docEl.classList.add('err');
+          const docLabel = isPF ? 'CPF inválido' : 'CNPJ inválido';
+          docEr.textContent = docLabel;
+          docEr.classList.add('show');
+          ok = false;
+        }
+      }
       return ok;
     }
 
@@ -1235,28 +1252,36 @@
       const data     = activeData();
       const existing = editingId ? data.find(x => x.id===editingId) : null;
       const entry = {
-        id:         editingId || Date.now(),
-        nome:       document.getElementById('f-nome').value.trim(),
-        tipo:       tipoSel,
-        doc:        document.getElementById('f-cpf').value.trim(),
-        tel:        document.getElementById('f-tel').value.trim(),
-        email:      document.getElementById('f-email').value.trim(),
-        cidade:     document.getElementById('f-cidade').value.trim() || '—',
-        estado:     document.getElementById('f-estado').value || 'SP',
-        status:     document.getElementById('f-status').value || 'ativo',
-        compras:    existing?.compras  || 0,
-        pedidos:    existing?.pedidos  || 0,
-        limite:     document.getElementById('f-limite').value.replace(/\D/g,'') || '0',
-        condicao:   document.getElementById('f-condicao').value || 'À vista',
-        vendedor:   document.getElementById('f-vendedor').value || '',
-        cadastro:   existing?.cadastro || new Date().toLocaleDateString('pt-BR'),
-        logradouro: document.getElementById('f-logradouro').value,
-        numero:     document.getElementById('f-numero').value,
-        bairro:     document.getElementById('f-bairro').value,
-        cep:        document.getElementById('f-cep').value,
-        obs:        document.getElementById('f-obs').value,
-        grupo:      document.getElementById('f-grupo').value,
-        origem:     document.getElementById('f-origem').value,
+        id:          editingId || Date.now(),
+        nome:        document.getElementById('f-nome').value.trim(),
+        tipo:        tipoSel,
+        doc:         document.getElementById('f-cpf').value.trim(),
+        rg:          document.getElementById('f-rg').value.trim(),
+        nascimento:  document.getElementById('f-nasc').value.trim(),
+        genero:      document.getElementById('f-genero').value,
+        tel:         document.getElementById('f-tel').value.trim(),
+        tel2:        document.getElementById('f-tel2').value.trim(),
+        email:       document.getElementById('f-email').value.trim(),
+        site:        document.getElementById('f-site').value.trim(),
+        cep:         document.getElementById('f-cep').value.trim(),
+        logradouro:  document.getElementById('f-logradouro').value.trim(),
+        numero:      document.getElementById('f-numero').value.trim(),
+        complemento: document.getElementById('f-complemento').value.trim(),
+        bairro:      document.getElementById('f-bairro').value.trim(),
+        cidade:      document.getElementById('f-cidade').value.trim() || '—',
+        estado:      document.getElementById('f-estado').value || 'SP',
+        status:      document.getElementById('f-status').value || 'ativo',
+        compras:     existing?.compras  || 0,
+        pedidos:     existing?.pedidos  || 0,
+        limite:      (parseFloat(document.getElementById('f-limite').value.replace(/\D/g,'') || '0') / 100).toFixed(2),
+        desconto:    document.getElementById('f-desconto').value.trim() || '0',
+        condicao:    document.getElementById('f-condicao').value || 'À vista',
+        vendedor:    document.getElementById('f-vendedor').value || '',
+        grupo:       document.getElementById('f-grupo').value,
+        origem:      document.getElementById('f-origem').value,
+        tags:        document.getElementById('f-tags').value.trim(),
+        obs:         document.getElementById('f-obs').value,
+        cadastro:    existing?.cadastro || new Date().toLocaleDateString('pt-BR'),
       };
       if (editingId) { const idx = data.findIndex(x => x.id===editingId); if (idx>=0) data[idx]=entry; }
       else data.unshift(entry);
@@ -1275,23 +1300,31 @@
       document.getElementById('modalTitle').textContent = `Editar ${entityLabel()}`;
       document.getElementById('modalSub').textContent   = c.nome;
       resetForm();
-      document.getElementById('f-nome').value      = c.nome;
-      document.getElementById('f-cpf').value       = c.doc;
-      document.getElementById('f-tel').value       = c.tel;
-      document.getElementById('f-email').value     = c.email;
-      document.getElementById('f-cidade').value    = c.cidade !== '—' ? c.cidade : '';
-      document.getElementById('f-logradouro').value = c.logradouro || '';
-      document.getElementById('f-numero').value    = c.numero || '';
-      document.getElementById('f-bairro').value    = c.bairro || '';
-      document.getElementById('f-cep').value       = c.cep || '';
-      document.getElementById('f-obs').value       = c.obs || '';
+      document.getElementById('f-nome').value        = c.nome;
+      document.getElementById('f-cpf').value         = c.doc || '';
+      document.getElementById('f-rg').value          = c.rg || '';
+      document.getElementById('f-nasc').value        = c.nascimento || '';
+      document.getElementById('f-tel').value         = c.tel || '';
+      document.getElementById('f-tel2').value        = c.tel2 || '';
+      document.getElementById('f-email').value       = c.email || '';
+      document.getElementById('f-site').value        = c.site || '';
+      document.getElementById('f-cep').value         = c.cep || '';
+      document.getElementById('f-logradouro').value  = c.logradouro || '';
+      document.getElementById('f-numero').value      = c.numero || '';
+      document.getElementById('f-complemento').value = c.complemento || '';
+      document.getElementById('f-bairro').value      = c.bairro || '';
+      document.getElementById('f-cidade').value      = c.cidade !== '—' ? (c.cidade || '') : '';
+      document.getElementById('f-obs').value         = c.obs || '';
+      document.getElementById('f-tags').value        = c.tags || '';
       if (c.limite) {
-        const v = (parseFloat(c.limite)/100).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+        const v = parseFloat(c.limite).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
         document.getElementById('f-limite').value = v;
       }
-      setSelectVal('f-estado',c.estado); setSelectVal('f-status',c.status);
-      setSelectVal('f-condicao',c.condicao); setSelectVal('f-vendedor',c.vendedor);
-      setSelectVal('f-grupo',c.grupo);
+      document.getElementById('f-desconto').value = c.desconto && c.desconto !== '0' ? c.desconto : '';
+      setSelectVal('f-genero', c.genero);
+      setSelectVal('f-estado', c.estado);   setSelectVal('f-status', c.status);
+      setSelectVal('f-condicao', c.condicao); setSelectVal('f-vendedor', c.vendedor);
+      setSelectVal('f-grupo', c.grupo);     setSelectVal('f-origem', c.origem);
       const tipoEl = document.getElementById(`tipo-${c.tipo}`);
       if (tipoEl) selectTipo(tipoEl, c.tipo);
       wizardGoTo(1);
@@ -1418,8 +1451,45 @@
       document.getElementById('cep-loading').style.display='none';
     }
 
+    // ─── EXPORT CSV ──────────────────────────────────────────
+    function exportCSV() {
+      const isCli = currentSection === 'clientes';
+      const label = isCli ? 'clientes' : 'fornecedores';
+      const header = ['Nome', 'Tipo', 'CPF/CNPJ', 'Telefone', 'E-mail', 'Cidade', 'Estado', 'Status', 'Cadastro'];
+      const rows = filtered.map(c => [
+        c.nome,
+        c.tipo === 'pf' ? 'Pessoa Física' : c.tipo === 'pj' ? 'Pessoa Jurídica' : 'MEI',
+        c.doc, c.tel, c.email || '',
+        c.cidade !== '—' ? c.cidade : '', c.estado || '',
+        c.status === 'ativo' ? 'Ativo' : c.status === 'inativo' ? 'Inativo' : 'Bloqueado',
+        c.cadastro
+      ]);
+      downloadCSV(`nexoerp_${label}_${_csvDate()}.csv`, header, rows);
+    }
+
+    function _csvDate() {
+      const d = new Date();
+      return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function populateVendedorSelect() {
+      const sel = document.getElementById('f-vendedor');
+      if (!sel) return;
+      const cur = sel.value;
+      try {
+        const raw = localStorage.getItem('nexoerp.users');
+        const users = raw ? JSON.parse(raw) : [];
+        sel.innerHTML = '<option value="">Sem vendedor</option>' +
+          users.map(u => `<option value="${u.name}">${u.name}</option>`).join('');
+      } catch (_) {
+        sel.innerHTML = '<option value="">Sem vendedor</option>';
+      }
+      if (cur) setSelectVal('f-vendedor', cur);
+    }
+
     // ─── INIT ─────────────────────────────────────────────────
     NexoAuth.renderCurrentUser();
+    populateVendedorSelect();
     filtered = [...clients];
     applyFilters();
   </script>

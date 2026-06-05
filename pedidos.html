@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistemy — Pedidos de Venda</title>
   <link rel="stylesheet" href="global.css">
@@ -951,12 +952,6 @@ font-weight: 800;
                 <div class="inp-wrap"><i class="bi bi-building pre"></i>
                   <select class="field" id="f-cliente">
                     <option value="">Selecione o cliente...</option>
-                    <option>Posto Panorama Ltda.</option>
-                    <option>Farmácia São José</option>
-                    <option>Distribuidora Alfa ME</option>
-                    <option>Auto Peças SP Ltda.</option>
-                    <option>Construfácil EIRELI</option>
-                    <option>Mercado Central</option>
                   </select>
                 </div>
               </div>
@@ -964,10 +959,7 @@ font-weight: 800;
                 <label class="lbl">Vendedor</label>
                 <div class="inp-wrap"><i class="bi bi-person-badge pre"></i>
                   <select class="field" id="f-vendedor">
-                    <option>Lucas Andrade</option>
-                    <option>Maria Ferreira</option>
-                    <option>Carlos Souza</option>
-                    <option>João Desenvolvedor</option>
+                    <option value="">Selecione o vendedor...</option>
                   </select>
                 </div>
               </div>
@@ -1169,6 +1161,7 @@ font-weight: 800;
   <script src="auth.js"></script>
   <script>
     NexoAuth.requireAuth();
+    requirePermission();
 
     // ═══════════════════════════════════════════════
     // CONSTANTS
@@ -1176,23 +1169,19 @@ font-weight: 800;
     const PEDIDOS_KEY = 'nexoerp.pedidos';
     const VENDAS_KEY = 'nexoerp.vendas';
 
-    const PRODUTOS_MOCK = [
-      { id: 1, nome: 'Arroz Integral 1kg', emoji: '🍎', preco: 8.90 },
-      { id: 2, nome: 'Detergente Neutro 500ml', emoji: '🧹', preco: 3.50 },
-      { id: 3, nome: 'Parafuso Sextavado 8mm', emoji: '🔩', preco: 24.90 },
-      { id: 4, nome: 'Smartphone Samsung A15', emoji: '📱', preco: 1299.00 },
-      { id: 5, nome: 'Ibuprofeno 600mg cx30', emoji: '💊', preco: 18.90 },
-      { id: 6, nome: 'Notebook Dell Inspiron', emoji: '💻', preco: 3499.00 },
-      { id: 7, nome: 'Água Mineral 500ml', emoji: '💧', preco: 2.50 },
-      { id: 8, nome: 'Café Torrado 500g', emoji: '☕', preco: 14.50 },
-      { id: 9, nome: 'Shampoo 400ml', emoji: '🧴', preco: 12.90 },
-      { id: 10, nome: 'Refrigerante 2L', emoji: '🥤', preco: 8.90 },
-    ];
+    let PRODUTOS_MOCK = [];
+    let CLIENTES_DATA = []; // { id, nome }
 
-    const CLIENTES = [
-      'Posto Panorama Ltda.', 'Farmácia São José', 'Distribuidora Alfa ME',
-      'Auto Peças SP Ltda.', 'Construfácil EIRELI', 'Mercado Central',
-    ];
+    function loadDataSources() {
+      try {
+        const rawP = localStorage.getItem('nexoerp.produtos');
+        PRODUTOS_MOCK = rawP ? JSON.parse(rawP).filter(p => p.status !== 'inativo') : [];
+      } catch(_) { PRODUTOS_MOCK = []; }
+      try {
+        const rawC = localStorage.getItem('nexoerp.clientes');
+        CLIENTES_DATA = rawC ? JSON.parse(rawC).filter(c => c.status !== 'inativo' && c.status !== 'bloq') : [];
+      } catch(_) { CLIENTES_DATA = []; }
+    }
 
     const STATUS_LABELS = {
       orcamento: 'Orçamento', pendente: 'Pendente', aprovado: 'Aprovado',
@@ -1223,6 +1212,7 @@ font-weight: 800;
       } catch (e) { return null; }
     }
     function seedPedidos() {
+      return [];
       const hoje = new Date();
       const seed = [];
       const statuses = ['orcamento', 'pendente', 'aprovado', 'aprovado', 'faturado', 'concluido'];
@@ -1265,6 +1255,7 @@ font-weight: 800;
     // INIT
     // ═══════════════════════════════════════════════
     function init() {
+      loadDataSources();
       pedidos = carregar() || seedPedidos();
       salvar();
       populateSelects();
@@ -1278,12 +1269,36 @@ font-weight: 800;
     }
 
     function populateSelects() {
-      // cliente filter
+      // ── Filtro de clientes (barra de pesquisa)
       const cf = document.getElementById('clienteFilter');
-      CLIENTES.forEach(c => { const o = document.createElement('option'); o.textContent = c; cf.appendChild(o); });
-      // item select no modal
+      cf.innerHTML = '<option value="">Todos os clientes</option>';
+      CLIENTES_DATA.forEach(c => {
+        const o = document.createElement('option'); o.value = c.id; o.textContent = c.nome; cf.appendChild(o);
+      });
+
+      // ── Select de cliente no modal
+      const fc = document.getElementById('f-cliente');
+      fc.innerHTML = '<option value="">Selecione o cliente...</option>';
+      CLIENTES_DATA.forEach(c => {
+        const o = document.createElement('option'); o.value = c.id; o.textContent = c.nome; fc.appendChild(o);
+      });
+
+      // ── Select de vendedor no modal (usuários do sistema)
+      const fv = document.getElementById('f-vendedor');
+      try {
+        const users = JSON.parse(localStorage.getItem('nexoerp.users') || '[]');
+        fv.innerHTML = '<option value="">Selecione o vendedor...</option>';
+        users.forEach(u => {
+          const o = document.createElement('option'); o.value = u.id; o.textContent = u.name; fv.appendChild(o);
+        });
+      } catch(_) {}
+
+      // ── Select de produto no modal
       const is = document.getElementById('itemSelect');
-      PRODUTOS_MOCK.forEach(p => { const o = document.createElement('option'); o.value = p.id; o.textContent = `${p.emoji} ${p.nome} — R$ ${fmt(p.preco)}`; is.appendChild(o); });
+      is.innerHTML = '<option value="">Selecione um produto...</option>';
+      PRODUTOS_MOCK.forEach(p => {
+        const o = document.createElement('option'); o.value = p.id; o.textContent = `${p.emoji || '📦'} ${p.nome} — R$ ${fmt(p.preco)}`; is.appendChild(o);
+      });
     }
 
     // ═══════════════════════════════════════════════
@@ -1296,7 +1311,7 @@ font-weight: 800;
       return pedidos.filter(p => {
         const matchQ = !q || p.id.toLowerCase().includes(q) || p.cliente.toLowerCase().includes(q);
         const matchS = currentStatus === 'todos' || p.status === currentStatus;
-        const matchCl = !cl || p.cliente === cl;
+        const matchCl = !cl || String(p.cliente_id) === cl || p.cliente === cl;
         const matchCo = !co || p.condicaoLabel === co;
         return matchQ && matchS && matchCl && matchCo;
       });
@@ -1474,8 +1489,9 @@ font-weight: 800;
     function faturar(id) {
       const p = pedidos.find(x => x.id === id); if (!p) return;
       p.status = 'faturado'; salvar();
-      // registra em vendas
       registrarVenda(p);
+      _ajustarEstoque(p.itens, 'saida', `Faturamento ${p.id}`);
+      _criarLancamentoPedido(p);
       renderAll();
       if (currentPedidoId === id) openDetail(id);
       showToast(`Pedido ${id} faturado e lançado em Vendas!`);
@@ -1488,8 +1504,13 @@ font-weight: 800;
     }
     function cancelar(id) {
       const p = pedidos.find(x => x.id === id); if (!p) return;
+      const statusAnterior = p.status;
       openConfirm(`Pedido ${id} — ${p.cliente}`, () => {
         p.status = 'cancelado'; salvar(); renderAll(); closeDetail();
+        if (['faturado', 'concluido'].includes(statusAnterior)) {
+          _ajustarEstoque(p.itens, 'entrada', `Cancelamento ${p.id}`);
+          _cancelarLancamentoPedido(p.id);
+        }
         showToast('Pedido cancelado.');
       });
     }
@@ -1500,6 +1521,87 @@ font-weight: 800;
     }
     function closeConfirm() { document.getElementById('confirmOverlay').classList.remove('open'); confirmCb = null; }
     function doConfirm()    { if (confirmCb) confirmCb(); closeConfirm(); }
+
+    // ═══════════════════════════════════════════════
+    // INTEGRAÇÃO COM ESTOQUE
+    // ═══════════════════════════════════════════════
+    // Ajusta nexoerp.produtos e grava em nexoerp.movimentacoes.
+    // tipo: 'saida' (faturamento) | 'entrada' (cancelamento de pedido faturado)
+    function _ajustarEstoque(itens, tipo, motivo) {
+      try {
+        const session = JSON.parse(localStorage.getItem('nexoerp.session') || '{}');
+        const operador = session?.user?.name || 'Sistema';
+        const prodRaw = localStorage.getItem('nexoerp.produtos');
+        if (!prodRaw) return;
+        const prods = JSON.parse(prodRaw);
+        if (!Array.isArray(prods)) return;
+        const movRaw = localStorage.getItem('nexoerp.movimentacoes');
+        const movs = movRaw ? JSON.parse(movRaw) : [];
+        const now = new Date();
+        const dataStr = `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+        itens.forEach(item => {
+          const prodId = item.produto_id || item.id;
+          const idx = prods.findIndex(p => p.id === prodId);
+          if (idx >= 0) {
+            if (tipo === 'saida') prods[idx].estoque = Math.max(0, (prods[idx].estoque || 0) - item.qty);
+            else                  prods[idx].estoque = (prods[idx].estoque || 0) + item.qty;
+          }
+          movs.unshift({
+            id: movs.length + 1,
+            tipo,
+            prodId,
+            produto: (idx >= 0 ? prods[idx].nome : '') || item.nome || '',
+            qty: tipo === 'saida' ? -item.qty : item.qty,
+            deposito: (idx >= 0 ? prods[idx].deposito : '') || 'Depósito Principal',
+            destino: '',
+            motivo,
+            operador,
+            data: dataStr,
+          });
+        });
+        localStorage.setItem('nexoerp.produtos', JSON.stringify(prods));
+        localStorage.setItem('nexoerp.movimentacoes', JSON.stringify(movs));
+      } catch (_) { }
+    }
+
+    // ═══════════════════════════════════════════════
+    // INTEGRAÇÃO FINANCEIRA
+    // ═══════════════════════════════════════════════
+    function _criarLancamentoPedido(p) {
+      try {
+        const raw = localStorage.getItem('nexoerp.financeiro');
+        const lancamentos = raw ? JSON.parse(raw) : [];
+        const now = new Date();
+        lancamentos.unshift({
+          id: Date.now(),
+          tipo: 'receita',
+          categoria: 'Vendas',
+          descricao: `Pedido ${p.id} — ${p.cliente}`,
+          valor: p.total,
+          vencimento: now.toISOString().slice(0, 10),
+          status: 'pendente',
+          forma_pgto: p.forma || '',
+          data: now.toLocaleDateString('pt-BR'),
+          pedido_id: p.id,
+          cliente_id: p.cliente_id || null,
+          origem: 'pedido',
+        });
+        localStorage.setItem('nexoerp.financeiro', JSON.stringify(lancamentos));
+      } catch (_) { }
+    }
+
+    function _cancelarLancamentoPedido(pedidoId) {
+      try {
+        const raw = localStorage.getItem('nexoerp.financeiro');
+        if (!raw) return;
+        const lancamentos = JSON.parse(raw);
+        const idx = lancamentos.findIndex(l => l.pedido_id === pedidoId);
+        if (idx >= 0) {
+          lancamentos[idx].status = 'cancelado';
+          localStorage.setItem('nexoerp.financeiro', JSON.stringify(lancamentos));
+        }
+      } catch (_) { }
+    }
 
     // ═══════════════════════════════════════════════
     // INTEGRAÇÃO COM VENDAS
@@ -1570,7 +1672,7 @@ font-weight: 800;
       if (!prod) return;
       const existing = itensPedido.find(x => x.id === id);
       if (existing) { existing.qty++; existing.subtotal = existing.preco * existing.qty; }
-      else itensPedido.push({ ...prod, qty: 1, descItem: 0, subtotal: prod.preco });
+      else itensPedido.push({ id: prod.id, produto_id: prod.id, nome: prod.nome, emoji: prod.emoji || '📦', preco: prod.preco, qty: 1, descItem: 0, subtotal: prod.preco });
       renderItens(); calcResumo();
     }
     function removeItem(id) { itensPedido = itensPedido.filter(x => x.id !== id); renderItens(); calcResumo(); }
@@ -1640,9 +1742,15 @@ font-weight: 800;
     }
 
     function savePedido() {
-      const cliente = document.getElementById('f-cliente').value;
-      if (!cliente) { showToast('Selecione um cliente!'); switchTab(document.querySelector('.m-tab'), 't-dados'); return; }
+      const fcEl = document.getElementById('f-cliente');
+      const cliente_id = fcEl.value ? Number(fcEl.value) : null;
+      const cliente    = fcEl.options[fcEl.selectedIndex]?.text || '';
+      if (!cliente_id) { showToast('Selecione um cliente!'); switchTab(document.querySelector('.m-tab'), 't-dados'); return; }
       if (!itensPedido.length) { showToast('Adicione pelo menos um item!'); switchTab(document.querySelectorAll('.m-tab')[1], 't-itens'); return; }
+
+      const fvEl = document.getElementById('f-vendedor');
+      const vendedor_id = fvEl.value || null;
+      const vendedor    = fvEl.options[fvEl.selectedIndex]?.text || '';
 
       const sub  = itensPedido.reduce((s, x) => s + x.subtotal, 0);
       const disc = sub * ((parseFloat(document.getElementById('f-desconto-geral').value) || 0) / 100);
@@ -1655,9 +1763,11 @@ font-weight: 800;
       const pedido = {
         id:           existing ? existing.id   : `#PV${String(1000 + pedidos.length + 1).padStart(4,'0')}`,
         num:          existing ? existing.num  : 1000 + pedidos.length + 1,
-        cliente,      vendedor: document.getElementById('f-vendedor').value,
+        cliente,      cliente_id,
+        vendedor,     vendedor_id,
         status:       existing ? existing.status : document.getElementById('f-status').value,
-        itens:        [...itensPedido], subtotal: sub, desconto: disc, total: tot,
+        itens:        itensPedido.map(i => ({ ...i, produto_id: i.id })),
+        subtotal: sub, desconto: disc, total: tot,
         condicao:     cond, condicaoLabel: condLabels[cond],
         forma:        document.getElementById('f-forma').value,
         dataISO:      now.toISOString(), dataStr: now.toLocaleDateString('pt-BR'),
@@ -1689,8 +1799,15 @@ font-weight: 800;
       editingId = id;
       itensPedido = p.itens.map(i => ({ ...i }));
       document.getElementById('modalTitle').textContent = `Editar Pedido ${id}`;
-      selVal('f-cliente', p.cliente);
-      selVal('f-vendedor', p.vendedor);
+      // Restaura cliente por ID; fallback por nome para pedidos antigos
+      const fcEl = document.getElementById('f-cliente');
+      fcEl.value = p.cliente_id || '';
+      if (!fcEl.value) selVal('f-cliente', p.cliente);
+
+      // Restaura vendedor por ID; fallback por nome para pedidos antigos
+      const fvEl = document.getElementById('f-vendedor');
+      fvEl.value = p.vendedor_id || '';
+      if (!fvEl.value) selVal('f-vendedor', p.vendedor);
       selVal('f-condicao', p.condicao);
       selVal('f-forma', p.forma);
       document.getElementById('f-data').value     = p.dataISO ? p.dataISO.slice(0,10) : '';

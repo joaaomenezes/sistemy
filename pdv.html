@@ -1,8 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistemy — PDV</title>
 
@@ -639,6 +640,28 @@
       display: block;
     }
 
+    .pay-obs-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 12px;
+      margin: 0 20px 12px;
+    }
+    .pay-obs-wrap i { color: var(--muted); font-size: 14px; }
+    .pay-obs-input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: inherit;
+      font-size: 13px;
+    }
+    .pay-obs-input::placeholder { color: var(--muted); }
+    .pay-obs-wrap:focus-within { border-color: var(--accent); }
+
     /* itens */
     .cart-items {
       flex: 1;
@@ -731,7 +754,26 @@
       font-size: 11px;
       color: var(--muted);
       margin-top: 1px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
     }
+    .ci-price-edit {
+      width: 54px;
+      background: none;
+      border: none;
+      border-bottom: 1px dashed var(--border);
+      outline: none;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: right;
+      padding: 0 1px;
+    }
+    .ci-price-edit:focus { border-bottom-color: var(--accent); color: var(--text); }
+    .ci-price-edit::-webkit-inner-spin-button,
+    .ci-price-edit::-webkit-outer-spin-button { -webkit-appearance: none; appearance: none; }
+    .ci-price-edit[type=number] { -moz-appearance: textfield; appearance: textfield; }
+    .ci-price-negociado { color: var(--warn) !important; }
 
     .ci-subtotal {
       font-family: 'Inter', sans-serif;
@@ -771,9 +813,19 @@
     .qty-val {
       font-weight: 700;
       font-size: 13px;
-      min-width: 20px;
+      width: 36px;
       text-align: center;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: transparent;
+      color: inherit;
+      padding: 1px 2px;
+      outline: none;
     }
+    .qty-val::-webkit-inner-spin-button,
+    .qty-val::-webkit-outer-spin-button { -webkit-appearance: none; appearance: none; }
+    .qty-val[type=number] { -moz-appearance: textfield; appearance: textfield; }
+    .qty-val:focus { border-color: var(--accent); }
 
     .ci-remove {
       color: var(--muted);
@@ -2666,6 +2718,61 @@
       font-weight: 700;
       color: var(--muted);
     }
+
+    /* modal de atalhos (F1) */
+    .atalhos-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    .atalhos-overlay.open { display: flex; }
+    .atalhos-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      width: 340px;
+      max-width: 95vw;
+    }
+    .atalhos-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .atalhos-table { width: 100%; border-collapse: collapse; }
+    .atalhos-table tr td { padding: 5px 4px; font-size: 13px; }
+    .atalhos-table tr td:first-child { white-space: nowrap; }
+    .atalhos-table tr td:last-child { color: var(--muted); padding-left: 12px; }
+    .atalhos-table tr + tr td { border-top: 1px solid var(--border); }
+    .atalhos-key {
+      display: inline-block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 2px 7px;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: monospace;
+    }
+    .atalhos-close {
+      margin-top: 18px;
+      width: 100%;
+      padding: 9px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .atalhos-close:hover { border-color: var(--accent); color: var(--accent); }
 
 
     /* ══ MODAL CAIXA ══ */
@@ -4824,7 +4931,7 @@
 
       <!-- topbar -->
       <div class="pdv-topbar">
-        <a class="btn-back" href="dashboard.html" title="Voltar ao sistema">
+        <a class="btn-back" href="#" onclick="voltarSistema()" title="Voltar ao sistema">
           <i class="bi bi-arrow-left"></i> Sistema
         </a>
         <div class="search-wrap">
@@ -4848,7 +4955,7 @@
 
       <!-- atalhos rápidos + toggle view -->
       <div class="shortcuts-bar">
-        <span class="sc-label">Atalhos</span>
+        <span class="sc-label" style="cursor:pointer" onclick="openAtalhos()"><span class="sc-key">F1</span> Atalhos</span>
         <div class="sc-sep"></div>
         <div class="sc-item"><span class="sc-key">F2</span> Finalizar</div>
         <div class="sc-sep"></div>
@@ -5158,6 +5265,13 @@
 
       </div>
 
+      <div class="pay-obs-wrap">
+        <i class="bi bi-chat-left-text"></i>
+        <input class="pay-obs-input" id="vendaObsInput" type="text"
+          placeholder="Observação / nota (opcional)" maxlength="120"
+          oninput="vendaObs = this.value.trim()">
+      </div>
+
       <div class="pay-footer">
         <button class="btn-cancel-pay" id="btnCancelPay" onclick="handleCancelPay()">Cancelar</button>
         <button class="btn-confirm-pay" id="btnConfirmPay" onclick="confirmPayment()">
@@ -5208,6 +5322,28 @@
 
   <!-- FRAME IMPRESSÃO -->
   <div id="printFrame"></div>
+
+  <!-- MODAL ATALHOS (F1) -->
+  <div class="atalhos-overlay" id="atalhosOverlay" onclick="if(event.target===this)closeAtalhos()">
+    <div class="atalhos-box">
+      <div class="atalhos-title"><i class="bi bi-keyboard"></i> Atalhos do teclado</div>
+      <table class="atalhos-table">
+        <tr><td><span class="atalhos-key">F1</span> <span class="atalhos-key">?</span></td><td>Esta ajuda</td></tr>
+        <tr><td><span class="atalhos-key">F2</span></td><td>Finalizar venda</td></tr>
+        <tr><td><span class="atalhos-key">F3</span></td><td>Focar busca</td></tr>
+        <tr><td><span class="atalhos-key">F4</span></td><td>CPF na nota</td></tr>
+        <tr><td><span class="atalhos-key">F5</span></td><td>Histórico de vendas</td></tr>
+        <tr><td><span class="atalhos-key">F6</span></td><td>Suspender venda</td></tr>
+        <tr><td><span class="atalhos-key">F7</span></td><td>Vendas suspensas</td></tr>
+        <tr><td><span class="atalhos-key">F8</span></td><td>Consultar estoque</td></tr>
+        <tr><td><span class="atalhos-key">Enter</span></td><td>Adicionar produto único</td></tr>
+        <tr><td><span class="atalhos-key">ESC</span></td><td>Fechar modal / painel</td></tr>
+        <tr><td><span class="atalhos-key">DEL</span></td><td>Remover último item</td></tr>
+        <tr><td><span class="atalhos-key">Ctrl</span>+<span class="atalhos-key">DEL</span></td><td>Limpar carrinho</td></tr>
+      </table>
+      <button class="atalhos-close" onclick="closeAtalhos()">Fechar — ESC</button>
+    </div>
+  </div>
 
   <!-- MODAL CONFIG PDV -->
   <div class="pdv-config-overlay" id="pdvConfigOverlay" onclick="if(event.target===this)closePdvConfig()">
@@ -5626,29 +5762,8 @@
     // ═══════════════════════════════════════════════
     // DATA
     // ═══════════════════════════════════════════════
-    const PRODUCTS_DEFAULTS = [
-      { id: 1, nome: 'Arroz Integral 1kg', sku: 'ALI-001', ean: '7891234560011', cat: 'Alimentos', preco: 8.90, estoque: 142, emoji: '🍎', promo: false, vendas: 320 },
-      { id: 2, nome: 'Detergente Neutro 500ml', sku: 'LIM-002', ean: '7891234560028', cat: 'Limpeza', preco: 3.50, estoque: 87, emoji: '🧹', promo: false, vendas: 230 },
-      { id: 3, nome: 'Parafuso 8mm cx100', sku: 'FER-003', ean: '7891234560035', cat: 'Ferramentas', preco: 24.90, estoque: 3, emoji: '🔩', promo: false, vendas: 98 },
-      { id: 4, nome: 'Smartphone Samsung A15', sku: 'ELE-004', ean: '7891234560042', cat: 'Eletrônicos', preco: 1299.00, estoque: 8, emoji: '📱', promo: false, vendas: 72 },
-      { id: 5, nome: 'Camiseta Polo M', sku: 'VES-005', ean: '7891234560059', cat: 'Vestuário', preco: 79.90, estoque: 0, emoji: '👕', promo: true, vendas: 120 },
-      { id: 6, nome: 'Ibuprofeno 600mg cx30', sku: 'MED-006', ean: '7891234560066', cat: 'Medicamentos', preco: 18.90, estoque: 54, emoji: '💊', promo: false, vendas: 145 },
-      { id: 7, nome: 'Notebook Dell Inspiron', sku: 'ELE-007', ean: '7891234560073', cat: 'Eletrônicos', preco: 3499.00, estoque: 2, emoji: '💻', promo: false, vendas: 35 },
-      { id: 8, nome: 'Café Torrado 500g', sku: 'ALI-008', ean: '7891234560080', cat: 'Alimentos', preco: 14.50, estoque: 61, emoji: '☕', promo: true, vendas: 380 },
-      { id: 9, nome: 'Água Mineral 500ml', sku: 'BEB-001', ean: '7891234560097', cat: 'Bebidas', preco: 2.50, estoque: 200, emoji: '💧', promo: false, vendas: 450 },
-      { id: 10, nome: 'Suco de Laranja 1L', sku: 'BEB-002', ean: '7891234560103', cat: 'Bebidas', preco: 7.90, estoque: 45, emoji: '🍊', promo: false, vendas: 182 },
-      { id: 11, nome: 'Shampoo 400ml', sku: 'HIG-001', ean: '7891234560110', cat: 'Higiene', preco: 12.90, estoque: 33, emoji: '🧴', promo: false, vendas: 160 },
-      { id: 12, nome: 'Sabonete Dove cx6', sku: 'HIG-002', ean: '7891234560127', cat: 'Higiene', preco: 19.90, estoque: 88, emoji: '🫧', promo: true, vendas: 198 },
-      { id: 13, nome: 'Biscoito Recheado 150g', sku: 'ALI-009', ean: '7891234560134', cat: 'Alimentos', preco: 4.50, estoque: 120, emoji: '🍪', promo: false, vendas: 290 },
-      { id: 14, nome: 'Refrigerante 2L', sku: 'BEB-003', ean: '7891234560141', cat: 'Bebidas', preco: 8.90, estoque: 76, emoji: '🥤', promo: false, vendas: 255 },
-      { id: 15, nome: 'Leite Integral 1L', sku: 'ALI-010', ean: '7891234560158', cat: 'Alimentos', preco: 5.90, estoque: 94, emoji: '🥛', promo: false, vendas: 270 },
-      { id: 16, nome: 'Macarrão 500g', sku: 'ALI-011', ean: '7891234560165', cat: 'Alimentos', preco: 3.90, estoque: 150, emoji: '🍝', promo: false, vendas: 215 },
-      { id: 17, nome: 'Óleo de Soja 900ml', sku: 'ALI-012', ean: '7891234560172', cat: 'Alimentos', preco: 8.50, estoque: 78, emoji: '🫙', promo: false, vendas: 305 },
-      { id: 18, nome: 'Sabão em Pó 1kg', sku: 'LIM-003', ean: '7891234560189', cat: 'Limpeza', preco: 11.90, estoque: 65, emoji: '🧺', promo: false, vendas: 245 },
-    ];
 
     // Carrega produtos do nexoerp.produtos (compartilhado com produtos.html).
-    // Fallback: demo hardcoded quando localStorage vazio.
     let PRODUCTS = (function () {
       try {
         const raw = localStorage.getItem('nexoerp.produtos');
@@ -5683,7 +5798,7 @@
           }
         }
       } catch (_) { }
-      return PRODUCTS_DEFAULTS.map(p => ({ ...p }));
+      return [];
     })();
 
     // Persiste alterações de estoque de volta em nexoerp.produtos.
@@ -5702,9 +5817,79 @@
       } catch (_) { }
     }
 
+    // Grava saídas/entradas em nexoerp.movimentacoes sem alterar estoque
+    // (o PDV já fez o ajuste via PRODUCTS antes de chamar esta função).
+    function _addMovimentacoes(items, tipo, motivo) {
+      try {
+        const session = JSON.parse(localStorage.getItem('nexoerp.session') || '{}');
+        const operador = session?.user?.name || 'PDV';
+        const raw = localStorage.getItem('nexoerp.movimentacoes');
+        const movs = raw ? JSON.parse(raw) : [];
+        const prodRaw = localStorage.getItem('nexoerp.produtos');
+        const prods = prodRaw ? JSON.parse(prodRaw) : [];
+        const now = new Date();
+        const dataStr = `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+        items.forEach(item => {
+          const prod = prods.find(p => p.id === item.id);
+          movs.unshift({
+            id: movs.length + 1,
+            tipo,
+            prodId: item.id,
+            produto: prod?.nome || item.nome || '',
+            qty: tipo === 'saida' ? -item.qty : item.qty,
+            deposito: prod?.deposito || 'Depósito Principal',
+            destino: '',
+            motivo,
+            operador,
+            data: dataStr,
+          });
+        });
+        localStorage.setItem('nexoerp.movimentacoes', JSON.stringify(movs));
+      } catch (_) { }
+    }
+
+    // Cria lançamento de receita em nexoerp.financeiro com referência ao id da venda PDV.
+    function _criarLancamentoFinanceiro(vendaId, total, metodo, cliente) {
+      try {
+        const raw = localStorage.getItem('nexoerp.financeiro');
+        const lancamentos = raw ? JSON.parse(raw) : [];
+        const now = new Date();
+        lancamentos.unshift({
+          id: Date.now(),
+          tipo: 'receita',
+          categoria: 'Vendas',
+          descricao: `Venda PDV ${vendaId} — ${cliente}`,
+          valor: total,
+          vencimento: now.toISOString().slice(0, 10),
+          pago_em: now.toISOString().slice(0, 10),
+          status: 'pago',
+          forma_pgto: metodo,
+          data: now.toLocaleDateString('pt-BR'),
+          venda_id: vendaId,
+          origem: 'pdv',
+        });
+        localStorage.setItem('nexoerp.financeiro', JSON.stringify(lancamentos));
+      } catch (_) { }
+    }
+
+    // Marca o lançamento financeiro de uma venda PDV como estornado.
+    function _estornarLancamentoFinanceiro(vendaId) {
+      try {
+        const raw = localStorage.getItem('nexoerp.financeiro');
+        if (!raw) return;
+        const lancamentos = JSON.parse(raw);
+        const idx = lancamentos.findIndex(l => l.venda_id === vendaId);
+        if (idx >= 0) {
+          lancamentos[idx].status = 'estornado';
+          localStorage.setItem('nexoerp.financeiro', JSON.stringify(lancamentos));
+        }
+      } catch (_) { }
+    }
+
     let cart = [];
     let discType = '%';
     let selectedMethod = 'dinheiro';
+    let vendaObs = '';
     let salesHistory = [];
     let todayStats = { count: 0, total: 0 };
     let aiVisible = false;
@@ -5773,6 +5958,16 @@
       const el = document.getElementById('discInput');
       el.value = el.value.replace(/[^\d,\.]/g, '');
       updateSummary();
+      if (discType === 'R$') {
+        const subtotal = cart.reduce((s, c) => s + (c.preco * c.qty), 0);
+        const val = parseFloat(el.value.replace(',', '.')) || 0;
+        const capped = val > subtotal && subtotal > 0;
+        el.style.color = capped ? 'var(--warn)' : '';
+        el.title = capped ? `Desconto limitado ao subtotal: R$ ${fmt(subtotal)}` : '';
+      } else {
+        el.style.color = '';
+        el.title = '';
+      }
     }
 
     function onPayValueInput() {
@@ -5785,6 +5980,17 @@
     // VENDAS SUSPENSAS
     // ═══════════════════════════════════════════════
     let suspendedCarts = [];
+    const _SUSP_KEY = 'nexoerp.pdv.suspendedCarts';
+
+    function _saveSuspended() {
+      try { localStorage.setItem(_SUSP_KEY, JSON.stringify(suspendedCarts)); } catch (e) { }
+    }
+    function _loadSuspended() {
+      try {
+        const raw = localStorage.getItem(_SUSP_KEY);
+        if (raw) suspendedCarts = JSON.parse(raw);
+      } catch (e) { }
+    }
 
     function suspendBtnClick() {
       if (cart.length) openSuspendLabelModal();
@@ -5825,6 +6031,7 @@
       updateCupomBadge();
       setDiscType('%');
       closeSuspendLabelModal();
+      _saveSuspended();
       _updateSuspendUI();
       showToast(`⏸️ Venda suspensa — "${label}"`);
     }
@@ -5891,6 +6098,7 @@
       updateCupomBadge();
       renderCart();
       renderProducts();
+      _saveSuspended();
       _updateSuspendUI();
       closeSuspendedPanel();
       showToast(`↩️ Venda retomada — "${saved.label}"`);
@@ -5904,6 +6112,7 @@
         `"${escapeHtml(saved.label)}" · ${saved.items.reduce((s, i) => s + i.qty, 0)} item(s) · R$ ${fmt(saved.total)}`,
         () => {
           suspendedCarts.splice(idx, 1);
+          _saveSuspended();
           _renderSuspendedList();
           _updateSuspendUI();
           if (!suspendedCarts.length) closeSuspendedPanel();
@@ -6013,6 +6222,7 @@
 
     function init() {
       NexoAuth.renderCurrentUser();
+      _loadSuspended();
       _loadTodayData();
       buildCategoriasBar();
       calcPageSize();
@@ -6053,6 +6263,8 @@
       if (list.length !== 1) return;
       addToCart(list[0].id);
       document.getElementById('searchInput').value = '';
+      activeCat = null;
+      buildCategoriasBar();
       renderProducts();
       document.getElementById('searchInput').focus();
     }
@@ -6087,6 +6299,10 @@
       if (!allList.length) {
         grid.innerHTML = '';
         grid.appendChild(emptyProdsEl);
+        const hasAnyProduct = PRODUCTS.length > 0;
+        emptyProdsEl.innerHTML = hasAnyProduct
+          ? '<i class="bi bi-search"></i><p>Nenhum produto encontrado.<br>Tente outro termo.</p>'
+          : '<i class="bi bi-box-seam"></i><p>Nenhum produto cadastrado.<br><a href="produtos.html" style="color:var(--accent)">Cadastre seus produtos</a> para começar a vender.</p>';
         emptyProdsEl.classList.add('show');
         gridHeaderCount.textContent = '';
         pagination.classList.remove('show');
@@ -6134,7 +6350,9 @@
     }
 
     function buildCategoriasBar() {
-      const cats = [...new Set(PRODUCTS.map(p => p.cat))].sort();
+      const catsComEstoque = new Set(PRODUCTS.filter(p => p.estoque > 0).map(p => p.cat));
+      if (activeCat && !catsComEstoque.has(activeCat)) activeCat = null;
+      const cats = [...catsComEstoque].sort();
       const bar = document.getElementById('categoriasBar');
       bar.innerHTML = [null, ...cats].map(cat =>
         `<button class="cat-chip${activeCat === cat ? ' active' : ''}" onclick="selectCat(${cat === null ? 'null' : `'${escapeHtml(cat)}'`})">${cat || 'Todos'}</button>`
@@ -6193,6 +6411,16 @@
       setTimeout(() => { if (el.parentNode) el.remove(); }, 4000);
     }
 
+    function voltarSistema() {
+      if (!cart.length) { window.location.href = 'dashboard.html'; return; }
+      showConfirm(
+        'Voltar ao sistema?',
+        `Há ${cart.length} item(s) no carrinho. Todos serão perdidos.`,
+        () => { window.location.href = 'dashboard.html'; },
+        { confirmText: 'Sair assim mesmo', icon: '⚠️' }
+      );
+    }
+
     function addToCart(id) {
       // Bloquear se caixa fechado
       if (!isCaixaAberto()) {
@@ -6201,15 +6429,17 @@
       }
 
       const p = PRODUCTS.find(x => x.id === id);
-      if (!p || p.estoque === 0) return;
+      if (!p || (p.estoque === 0 && !p.vendaSemEstoque)) return;
 
       if (cartCollapsed) {
         toggleCart();
       }
 
       const existing = cart.find(c => c.id === id);
-      if (existing) { existing.qty++; }
-      else { cart.push({ ...p, qty: 1 }); }
+      if (existing) {
+        if (existing.qty >= p.estoque) { showToast('⚠️ Estoque esgotado para esse produto'); return; }
+        existing.qty++;
+      } else { cart.push({ ...p, qty: 1 }); }
       // pulse animation
       const card = document.getElementById(`pc-${id}`);
       if (card) { card.classList.remove('added'); void card.offsetWidth; card.classList.add('added'); }
@@ -6227,9 +6457,34 @@
     function changeQty(id, delta) {
       const item = cart.find(c => c.id === id);
       if (!item) return;
+      if (delta > 0) {
+        const prod = PRODUCTS.find(p => p.id === id);
+        if (prod && item.qty >= prod.estoque) { showToast('⚠️ Estoque esgotado para esse produto'); return; }
+      }
       item.qty += delta;
       if (item.qty <= 0) removeFromCart(id);
       else { renderCart(); renderProducts(); }
+    }
+
+    function setQty(id, rawVal) {
+      const item = cart.find(c => c.id === id);
+      if (!item) return;
+      const prod = PRODUCTS.find(p => p.id === id);
+      const max = prod ? prod.estoque : item.estoque;
+      const qty = Math.max(1, Math.min(parseInt(rawVal) || 1, max));
+      if (qty !== parseInt(rawVal)) showToast('⚠️ Quantidade ajustada ao limite de estoque');
+      item.qty = qty;
+      renderCart();
+      renderProducts();
+    }
+
+    function setItemPrice(id, rawVal) {
+      const item = cart.find(c => c.id === id);
+      if (!item) return;
+      const price = Math.max(0, parseFloat(String(rawVal).replace(',', '.')) || 0);
+      item.preco = price;
+      item._precoNegociado = price !== (PRODUCTS.find(p => p.id === id) || {}).preco;
+      renderCart();
     }
 
     function confirmClearCart() {
@@ -6268,24 +6523,34 @@
       empty.style.display = 'none';
       document.getElementById('btnFinalizar').disabled = false;
 
-      container.innerHTML = cart.map(item => `
+      container.innerHTML = cart.map(item => {
+        const maxQty = (PRODUCTS.find(p => p.id === item.id) || item).estoque;
+        return `
     <div class="cart-item" id="ci-${item.id}">
       <div class="ci-emoji">${item.emoji}</div>
       <div class="ci-info">
         <div class="ci-name">${escapeHtml(item.nome)}</div>
-        <div class="ci-price">R$ ${fmt(item.preco)} un</div>
+        <div class="ci-price${item._precoNegociado ? ' ci-price-negociado' : ''}">
+          R$ <input class="ci-price-edit" type="number" min="0" step="0.01"
+            value="${item.preco.toFixed(2)}"
+            onchange="setItemPrice(${item.id}, this.value)"
+            onclick="this.select()" title="Clique para negociar o preço"
+            inputmode="decimal"> un
+        </div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
         <div class="ci-subtotal">R$ ${fmt(item.preco * item.qty)}</div>
         <div class="ci-qty">
           <div class="qty-btn" onclick="changeQty(${item.id},-1)">−</div>
-          <span class="qty-val">${item.qty}</span>
+          <input class="qty-val" type="number" min="1" max="${maxQty}" value="${item.qty}"
+            onchange="setQty(${item.id}, this.value)" onclick="this.select()" inputmode="numeric">
           <div class="qty-btn" onclick="changeQty(${item.id},1)">+</div>
         </div>
       </div>
       <div class="ci-remove" onclick="removeFromCart(${item.id})"><i class="bi bi-x"></i></div>
     </div>
-  `).join('');
+  `;
+      }).join('');
       container.appendChild(empty);
       updateSummary();
       syncCollapsedTab();
@@ -6402,6 +6667,9 @@
       resetPixPanel();
       resetTerminalPanel();
       splitItems = [];
+      vendaObs = '';
+      const obsEl = document.getElementById('vendaObsInput');
+      if (obsEl) obsEl.value = '';
     }
     function handlePayOverlay(e) { if (e.target === document.getElementById('payOverlay')) closePayModal(); }
     function handleCancelPay() {
@@ -6567,13 +6835,49 @@
     let pixSecondsLeft = PIX_TIMEOUT;
     let pixPago = false;
 
+    // ── helpers para geração de payload EMV-PIX ──────────────────────
+    function _pixField(id, value) {
+      const v = String(value);
+      return `${id}${v.length.toString().padStart(2, '0')}${v}`;
+    }
+    function _pixCRC16(str) {
+      let crc = 0xFFFF;
+      for (let i = 0; i < str.length; i++) {
+        crc ^= str.charCodeAt(i) << 8;
+        for (let j = 0; j < 8; j++) crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
+      }
+      return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+    }
+    function _buildPixPayload(chave, valor, nome, cidade) {
+      const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9 @.+\-_]/g, '').toUpperCase().trim();
+      const mai = _pixField('00', 'br.gov.bcb.pix') + _pixField('01', chave);
+      const body =
+        _pixField('00', '01') +
+        _pixField('26', mai) +
+        _pixField('52', '0000') +
+        _pixField('53', '986') +
+        _pixField('54', parseFloat(valor).toFixed(2)) +
+        _pixField('58', 'BR') +
+        _pixField('59', norm(nome).substring(0, 25)) +
+        _pixField('60', norm(cidade).substring(0, 15)) +
+        _pixField('62', _pixField('05', '***')) +
+        '6304';
+      return body + _pixCRC16(body);
+    }
+
     function gerarPixQR() {
       const total = getTotal();
       const chave = PDV_CONFIG.pixChave;
-      const benef = PDV_CONFIG.pixBeneficiario.substring(0, 25).toUpperCase();
-      const cidade = PDV_CONFIG.pixCidade.substring(0, 15).toUpperCase();
-      const valorStr = total.toFixed(2);
-      const payload = `00020126580014br.gov.bcb.pix0136${chave}5204000053039865404${valorStr}5913${benef}6009${cidade}62070503***6304ABCD`;
+      if (!chave || !chave.trim()) {
+        showToast('⚠️ Configure a chave PIX nas configurações antes de gerar o QR.');
+        return;
+      }
+      const payload = _buildPixPayload(
+        chave.trim(),
+        total,
+        PDV_CONFIG.pixBeneficiario || PDV_CONFIG.lojaNome || 'LOJA',
+        PDV_CONFIG.pixCidade || 'BRASIL'
+      );
 
       document.getElementById('pixGenBtn').style.display = 'none';
       document.getElementById('pixQrWrap').classList.add('show');
@@ -6904,6 +7208,7 @@
     }
 
     function addSplitItem() {
+      if (splitItems.length >= 5) { showToast('⚠️ Máximo de 5 parcelas no pagamento dividido.'); return; }
       splitItems.push({ method: 'Dinheiro', value: '', status: 'pendente' });
       renderSplitItems();
     }
@@ -7046,7 +7351,7 @@
         const total = getTotal();
         const paid = splitItems.reduce((s, x) => s + (parseFloat((x.value || '0').replace(',', '.')) || 0), 0);
         const rest = total - paid;
-        if (rest > 0.01) {
+        if (Math.round(rest * 100) > 0) {
           showToast(`⚠️ Faltam R$ ${fmt(rest)} para completar o pagamento.`);
           return;
         }
@@ -7149,7 +7454,7 @@
       setTerminalStatus('aprovado');
       showToast('✅ Pagamento aprovado pela operadora!');
       clearTimeout(_termTimeout);
-      _termTimeout = setTimeout(() => finalizarVenda(), 1200);
+      _termTimeout = setTimeout(() => { if (terminalAtivo) finalizarVenda(); }, 1200);
     }
 
     function simularRecusaTerminal() {
@@ -7216,6 +7521,7 @@
         parcelas: isCard ? (selectedMethod === 'debito' ? 1 : selectedParcela) : null,
         client: cpfNota ? `CPF: ${cpfNota}` : 'Venda Balcão',
         cupom: cupomAtivo ? cupomAtivo.codigo : null,
+        obs: vendaObs || null,
         time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
         items: cart.reduce((s, c) => s + c.qty, 0),
         cartSnapshot: cart.map(c => ({ ...c })),
@@ -7233,15 +7539,18 @@
       // ── Persistência em nexoerp.pdv.vendas ──
       try {
         const session = JSON.parse(localStorage.getItem('nexoerp.session') || '{}');
-        const operador = session?.user?.name || 'PDV';
+        const operador    = session?.user?.name || 'PDV';
+        const operador_id = session?.user?.id   || null;
         const now = new Date();
         const venda = {
           id: `#PDV${now.getTime().toString().slice(-6)}`,
           cliente: sale.client || 'Venda Balcão',
           operador,
+          operador_id,
           metodo: selectedMethod || 'dinheiro',
           itens: (sale.cartSnapshot || []).map(c => ({
             id: c.id,
+            produto_id: c.id,
             nome: c.nome || '',
             emoji: c.emoji || '📦',
             preco: c.preco,
@@ -7269,7 +7578,7 @@
       document.getElementById('successTotal').textContent = `R$ ${fmt(total)}`;
       document.getElementById('successSubtitle').textContent = `${sale.method} · ${sale.client}`;
       document.getElementById('successActions').innerHTML = `
-        <button class="suc-btn ghost" onclick="imprimirCupom(salesHistory[0])"><i class="bi bi-printer"></i> Imprimir</button>
+        <button class="suc-btn ghost" onclick="imprimirCupom(salesHistory.find(s=>s.id==='${sale.id}'))"><i class="bi bi-printer"></i> Imprimir</button>
         <button class="suc-btn primary" onclick="closeSuccess()"><i class="bi bi-plus-lg"></i> Nova Venda</button>
       `;
       document.getElementById('successOverlay').classList.add('show');
@@ -7288,6 +7597,8 @@
         }
       });
       _saveProdutos();
+      _addMovimentacoes(cart, 'saida', `Venda PDV ${sale.id}`);
+      _criarLancamentoFinanceiro(sale.id, total, selectedMethod, sale.client || 'Venda Balcão');
       clearCart();
     }
 
@@ -7305,6 +7616,18 @@
     // ═══════════════════════════════════════════════
     // DRAWER — HISTÓRICO
     // ═══════════════════════════════════════════════
+    function _methodBadge(method) {
+      const m = (method || '').toLowerCase();
+      let icon = 'bi-wallet2', color = 'var(--muted)';
+      if (m.includes('dinheiro'))                              { icon = 'bi-cash-coin';          color = '#00c896'; }
+      else if (m.includes('pix'))                             { icon = 'bi-qr-code';             color = '#00b4ff'; }
+      else if (m.includes('créd') || m.includes('cred'))     { icon = 'bi-credit-card-fill';    color = '#a78bfa'; }
+      else if (m.includes('déb')  || m.includes('deb'))      { icon = 'bi-credit-card';         color = '#818cf8'; }
+      else if (m.includes('voucher'))                         { icon = 'bi-ticket-perforated';   color = '#fb923c'; }
+      else if (m.includes('split'))                           { icon = 'bi-intersect';           color = '#94a3b8'; }
+      return `<i class="bi ${icon}" style="color:${color}"></i> <span style="color:${color};font-weight:600">${escapeHtml(method)}</span>`;
+    }
+
     function openDrawer() {
       renderDrawer();
       document.getElementById('salesDrawer').classList.add('open');
@@ -7354,7 +7677,7 @@
             </div>
             <div class="venda-info">
               <span><i class="bi bi-clock"></i> ${escapeHtml(v.time)}</span>
-              <span><i class="bi bi-credit-card"></i> ${escapeHtml(v.method)}</span>
+              <span>${_methodBadge(v.method)}</span>
               <span><i class="bi bi-person"></i> ${escapeHtml(v.client)}</span>
             </div>
             <div class="venda-items-list">${itens}${maisItens}</div>
@@ -7395,6 +7718,8 @@
             if (prod) prod.estoque += item.qty;
           });
           _saveProdutos();
+          _addMovimentacoes(sale.cartSnapshot || [], 'entrada', `Estorno PDV ${sale.id}`);
+          _estornarLancamentoFinanceiro(sale.id);
           updateStats();
           renderProducts();
           renderDrawer();
@@ -7442,6 +7767,8 @@
         }
       }
 
+      // F1 / ? — atalhos
+      if (e.key === 'F1' || e.key === '?') { e.preventDefault(); openAtalhos(); return; }
       // F3 — focus search
       if (e.key === 'F3') { e.preventDefault(); document.getElementById('searchInput').focus(); return; }
       // F4 — CPF na nota
@@ -7466,6 +7793,7 @@
       }
       // ESC — fechar modais
       if (e.key === 'Escape') {
+        if (document.getElementById('atalhosOverlay').classList.contains('open')) { closeAtalhos(); return; }
         if (document.getElementById('estoqueOverlay').classList.contains('open')) { closeEstoqueModal(); return; }
         if (document.getElementById('suspendedOverlay').classList.contains('open')) { closeSuspendedPanel(); return; }
         if (document.getElementById('suspendLabelOverlay').classList.contains('open')) { closeSuspendLabelModal(); return; }
@@ -7781,7 +8109,6 @@
       'FRETE': { tipo: 'R$', valor: 15, desc: 'R$ 15,00 de desconto' },
       'BEMVINDO': { tipo: '%', valor: 5, desc: '5% para novos clientes' },
       'VIP50': { tipo: 'R$', valor: 50, desc: 'R$ 50,00 VIP' },
-      'TESTE': { tipo: '%', valor: 100, desc: '100% — teste' },
     };
     let cupomAtivo = null;
 
@@ -7856,6 +8183,7 @@
         <div class="cp-sep"></div>
         <div class="cp-center" style="font-size:10px">Cliente: ${escapeHtml(sale.client)}</div>
         <div class="cp-center" style="font-size:10px">Operador: ${escapeHtml(caixaState && caixaState.operador ? caixaState.operador : 'Operador')}</div>
+        ${sale.obs ? `<div class="cp-sep"></div><div class="cp-center" style="font-size:10px;font-style:italic">Obs: ${escapeHtml(sale.obs)}</div>` : ''}
         <div class="cp-sep"></div>
         <div class="cp-footer">${escapeHtml(PDV_CONFIG.lojaRodape)}</div>
       </div>`;
@@ -7868,6 +8196,9 @@
       frame.style.display = 'block';
     }
     function fecharImpressao() { const f = document.getElementById('printFrame'); f.style.display = 'none'; f.innerHTML = ''; }
+
+    function openAtalhos() { document.getElementById('atalhosOverlay').classList.add('open'); }
+    function closeAtalhos() { document.getElementById('atalhosOverlay').classList.remove('open'); }
 
     // ═══════════════════════════════════════════════
     // LEITOR DE CÓDIGO DE BARRAS
@@ -7895,13 +8226,27 @@
       }, BARCODE_TIMEOUT);
     });
 
+    function _beep(freq = 1200, dur = 80, vol = 0.15) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(vol, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur / 1000);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + dur / 1000);
+      } catch (e) { }
+    }
+
     function processBarcode(code) {
       const ind = document.getElementById('barcodeIndicator');
       document.getElementById('barcodeVal').textContent = code;
       ind.classList.add('show'); setTimeout(() => ind.classList.remove('show'), 2000);
       const prod = PRODUCTS.find(p => p.sku.toLowerCase() === code.toLowerCase() || (p.ean && p.ean === code));
-      if (prod) { addToCart(prod.id); showToast('📦 ' + prod.nome + ' — ' + code); }
-      else { document.getElementById('searchInput').value = code; renderProducts(); showToast('🔍 Buscando: ' + code); }
+      if (prod) { _beep(1200, 80); addToCart(prod.id); showToast('📦 ' + prod.nome + ' — ' + code); }
+      else { _beep(400, 200); document.getElementById('searchInput').value = code; renderProducts(); showToast('🔍 Buscando: ' + code); }
     }
 
     // ═══════════════════════════════════════════════
@@ -7929,26 +8274,7 @@
     // ═══════════════════════════════════════════════
     // MODAL ESTOQUE SIMPLIFICADO (F8)
     // ═══════════════════════════════════════════════
-    const ESTOQUE_EXTRA = {
-      1: { custo: 5.20, estoqueMin: 20, estoqueMax: 300, deposito: 'Depósito Principal', fornecedor: 'Fornecedor A', ncm: '10063021', marca: 'Camil', unidade: 'UN', peso: '1,000 kg', localizacao: 'GALPÃO 01 / PRATELEIRA 02', ultimaEntrada: '20/05/2026' },
-      2: { custo: 1.80, estoqueMin: 15, estoqueMax: 200, deposito: 'Depósito Principal', fornecedor: 'Fornecedor B', ncm: '34022000', marca: 'Ypê', unidade: 'UN', peso: '0,500 kg', localizacao: 'GALPÃO 01 / PRATELEIRA 05', ultimaEntrada: '18/05/2026' },
-      3: { custo: 14.00, estoqueMin: 10, estoqueMax: 100, deposito: 'Depósito Principal', fornecedor: 'Fornecedor C', ncm: '73181500', marca: 'Ômega', unidade: 'CX', peso: '0,400 kg', localizacao: 'GALPÃO 02 / PRATELEIRA 01', ultimaEntrada: '10/04/2026' },
-      4: { custo: 890.00, estoqueMin: 3, estoqueMax: 30, deposito: 'Loja 1', fornecedor: 'Fornecedor A', ncm: '85171200', marca: 'Samsung', unidade: 'UN', peso: '0,200 kg', localizacao: 'LOJA 1 / VITRINE 03', ultimaEntrada: '15/05/2026' },
-      5: { custo: 35.00, estoqueMin: 5, estoqueMax: 50, deposito: 'Loja 1', fornecedor: 'Fornecedor B', ncm: '61051000', marca: 'Polo', unidade: 'UN', peso: '0,180 kg', localizacao: 'LOJA 1 / ARARA 02', ultimaEntrada: '02/03/2026' },
-      6: { custo: 9.50, estoqueMin: 10, estoqueMax: 200, deposito: 'Depósito Principal', fornecedor: 'Fornecedor C', ncm: '30049099', marca: 'EMS', unidade: 'CX', peso: '0,060 kg', localizacao: 'GALPÃO 01 / FARMÁCIA', ultimaEntrada: '22/05/2026' },
-      7: { custo: 2600.00, estoqueMin: 2, estoqueMax: 10, deposito: 'Loja 1', fornecedor: 'Fornecedor A', ncm: '84713019', marca: 'Dell', unidade: 'UN', peso: '1,800 kg', localizacao: 'LOJA 1 / VITRINE 01', ultimaEntrada: '14/04/2026' },
-      8: { custo: 8.90, estoqueMin: 20, estoqueMax: 150, deposito: 'Depósito Principal', fornecedor: 'Fornecedor B', ncm: '09011100', marca: '3 Corações', unidade: 'PC', peso: '0,500 kg', localizacao: 'GALPÃO 01 / PRATELEIRA 03', ultimaEntrada: '01/03/2026' },
-      9: { custo: 1.20, estoqueMin: 50, estoqueMax: 500, deposito: 'Depósito Principal', fornecedor: 'Fornecedor B', ncm: '22011000', marca: 'Crystal', unidade: 'UN', peso: '0,550 kg', localizacao: 'GALPÃO 01 / PRATELEIRA 04', ultimaEntrada: '25/05/2026' },
-      10: { custo: 4.50, estoqueMin: 20, estoqueMax: 120, deposito: 'Depósito Principal', fornecedor: 'Fornecedor C', ncm: '20094900', marca: 'Del Valle', unidade: 'UN', peso: '1,050 kg', localizacao: 'GALPÃO 01 / PRATELEIRA 04', ultimaEntrada: '20/05/2026' },
-      11: { custo: 7.20, estoqueMin: 10, estoqueMax: 80, deposito: 'Depósito Principal', fornecedor: 'Fornecedor A', ncm: '33051000', marca: 'Dove', unidade: 'UN', peso: '0,420 kg', localizacao: 'GALPÃO 01 / PRATELEIRA 06', ultimaEntrada: '12/05/2026' },
-      12: { custo: 11.00, estoqueMin: 20, estoqueMax: 200, deposito: 'Depósito Principal', fornecedor: 'Fornecedor A', ncm: '34011900', marca: 'Dove', unidade: 'CX', peso: '0,360 kg', localizacao: 'GALPÃO 01 / PRATELEIRA 06', ultimaEntrada: '10/05/2026' },
-      13: { custo: 2.50, estoqueMin: 30, estoqueMax: 300, deposito: 'Depósito Principal', fornecedor: 'Fornecedor B', ncm: '19053200', marca: 'Oreo', unidade: 'PC', peso: '0,150 kg', localizacao: 'GALPÃO 01 / PRATELEIRA 03', ultimaEntrada: '22/05/2026' },
-      14: { custo: 4.80, estoqueMin: 20, estoqueMax: 200, deposito: 'Depósito Principal', fornecedor: 'Fornecedor C', ncm: '22021000', marca: 'Coca-Cola', unidade: 'UN', peso: '2,100 kg', localizacao: 'GALPÃO 01 / PRATELEIRA 04', ultimaEntrada: '24/05/2026' },
-      15: { custo: 3.20, estoqueMin: 30, estoqueMax: 200, deposito: 'Depósito Principal', fornecedor: 'Fornecedor A', ncm: '04011000', marca: 'Italac', unidade: 'UN', peso: '1,030 kg', localizacao: 'GALPÃO 01 / PRATELEIRA 02', ultimaEntrada: '26/05/2026' },
-      16: { custo: 2.10, estoqueMin: 40, estoqueMax: 300, deposito: 'Depósito Principal', fornecedor: 'Fornecedor B', ncm: '19021900', marca: 'Barilla', unidade: 'PC', peso: '0,500 kg', localizacao: 'GALPÃO 01 / PRATELEIRA 02', ultimaEntrada: '23/05/2026' },
-      17: { custo: 4.90, estoqueMin: 20, estoqueMax: 150, deposito: 'Depósito Principal', fornecedor: 'Fornecedor C', ncm: '15071000', marca: 'Liza', unidade: 'UN', peso: '0,950 kg', localizacao: 'GALPÃO 01 / PRATELEIRA 02', ultimaEntrada: '21/05/2026' },
-      18: { custo: 6.50, estoqueMin: 20, estoqueMax: 150, deposito: 'Depósito Principal', fornecedor: 'Fornecedor B', ncm: '34013000', marca: 'OMO', unidade: 'PC', peso: '1,000 kg', localizacao: 'GALPÃO 01 / PRATELEIRA 05', ultimaEntrada: '19/05/2026' },
-    };
+    const ESTOQUE_EXTRA = {};
 
     function openEstoqueModal() {
       document.getElementById('estoqueOverlay').classList.add('open');

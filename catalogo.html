@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Catálogo de Produtos</title>
   <link id="font-heading" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&display=swap">
@@ -886,25 +887,9 @@
     return d.innerHTML;
   }
 
-  /* ═══════════════════════════════════════
-     DADOS DE EXEMPLO
-  ═══════════════════════════════════════ */
-  const EXEMPLO_PRODUTOS = [
-    { id: 1, nome: 'Camisa Social Oxford', categoria: 'Vestuário', preco: 159.90, estoque: 24, emoji: '👔', desc: 'Camisa slim fit em tecido oxford premium, disponível em P, M, G e GG.' },
-    { id: 2, nome: 'Tênis Runner Pro', categoria: 'Calçados', preco: 349.00, estoque: 12, emoji: '👟', desc: 'Solado de borracha EVA com amortecimento superior, ideal para corrida urbana.' },
-    { id: 3, nome: 'Mochila Executiva 20L', categoria: 'Acessórios', preco: 219.90, estoque: 8, emoji: '🎒', desc: 'Compartimento para notebook de até 15", material nylon resistente à água.' },
-    { id: 4, nome: 'Colar de Prata 925', categoria: 'Joias', preco: 89.90, estoque: 0, emoji: '📿', desc: 'Prata esterlina 925 com acabamento polido. Comprimento ajustável de 40–45 cm.' },
-    { id: 5, nome: 'Perfume Oud Intense', categoria: 'Perfumaria', preco: 299.00, estoque: 5, emoji: '🧴', desc: 'Fragrância oriental com notas de oud, âmbar e baunilha. 100 ml EDP.' },
-    { id: 6, nome: 'Relógio Minimalista', categoria: 'Acessórios', preco: 485.00, estoque: 3, emoji: '⌚', desc: 'Mostrador branco, pulseira de couro genuíno, mecanismo japonês Miyota.' },
-    { id: 7, nome: 'Óculos de Sol Retrô', categoria: 'Acessórios', preco: 127.50, estoque: 15, emoji: '🕶️', desc: 'Armação acetato, lentes polarizadas UV400. Inclui estojo rígido.' },
-    { id: 8, nome: 'Calça Chino Slim', categoria: 'Vestuário', preco: 189.90, estoque: 0, emoji: '👖', desc: 'Tecido sarja algodão stretch, corte slim, disponível em bege, marinho e verde.' },
-    { id: 9, nome: 'Carteira Bifold Couro', categoria: 'Acessórios', preco: 69.90, estoque: 20, emoji: '👛', desc: 'Couro legítimo curtido vegetal, 6 slots para cartão, porta-notas reforçado.' },
-    { id: 10, nome: 'Bandana Estampada', categoria: 'Vestuário', preco: 29.90, estoque: 40, emoji: '🧣', desc: 'Viscose suave 60×60 cm, estampas exclusivas de coleção limitada.' },
-  ];
-
   const produtos = (() => {
     try {
-      const raw = localStorage.getItem('nexoerp.produtos') || localStorage.getItem('sistemy.produtos');
+      const raw = localStorage.getItem('nexoerp.produtos');
       if (raw) {
         return JSON.parse(raw)
           .filter(p => p.status !== 'inativo')
@@ -919,7 +904,7 @@
           }));
       }
     } catch (_) {}
-    return EXEMPLO_PRODUTOS;
+    return [];
   })();
 
   /* ═══════════════════════════════════════
@@ -967,7 +952,10 @@
       filtered.length === 1 ? '1 produto encontrado' : `${filtered.length} produtos encontrados`;
 
     if (filtered.length === 0) {
-      grid.innerHTML = `<div class="empty-state"><div class="es-icon">🔍</div><p>Nenhum produto encontrado para os filtros aplicados.</p></div>`;
+      const semProdutos = produtos.length === 0;
+      grid.innerHTML = semProdutos
+        ? `<div class="empty-state"><div class="es-icon">📦</div><p>Nenhum produto cadastrado ainda.<br>Acesse <strong>Produtos</strong> no painel para cadastrar seus itens.</p></div>`
+        : `<div class="empty-state"><div class="es-icon">🔍</div><p>Nenhum produto encontrado para os filtros aplicados.</p></div>`;
       return;
     }
 

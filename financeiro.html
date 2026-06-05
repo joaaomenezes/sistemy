@@ -1,8 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistemy — Financeiro</title>
   <link rel="stylesheet" href="global.css">  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
@@ -1045,7 +1046,9 @@ transition: border-color .15s;
             <h1 id="finTitle">Visão Geral</h1>
             <p id="finDesc">Resumo financeiro do mês — receitas, despesas e fluxo de caixa.</p>
           </div>
-          <div class="header-actions"></div>
+          <div class="header-actions">
+            <button class="btn-sm btn-ghost-sm" onclick="exportar()"><i class="bi bi-download"></i> Exportar CSV</button>
+          </div>
         </div>
 
         <!-- ABAS HÍBRIDAS -->
@@ -1339,59 +1342,7 @@ transition: border-color .15s;
                   <th></th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>25/05/2025</td>
-                  <td class="u-fw-500">Fornecedor A Ltda</td>
-                  <td class="u-muted">NF 000123</td>
-                  <td class="val-negativo">R$ 1.250,00</td>
-                  <td><span class="vencer-pill avencer">A Vencer</span></td>
-                  <td>
-                    <div class="action-cell">
-                      <div class="act-btn ok"><i class="bi bi-check2"></i></div>
-                      <div class="act-btn"><i class="bi bi-pencil"></i></div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>26/05/2025</td>
-                  <td class="u-fw-500">Materiais B Ltda</td>
-                  <td class="u-muted">NF 000124</td>
-                  <td class="val-negativo">R$ 980,00</td>
-                  <td><span class="vencer-pill avencer">A Vencer</span></td>
-                  <td>
-                    <div class="action-cell">
-                      <div class="act-btn ok"><i class="bi bi-check2"></i></div>
-                      <div class="act-btn"><i class="bi bi-pencil"></i></div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>21/05/2025</td>
-                  <td class="u-fw-500">Fornecedor D Ltda</td>
-                  <td class="u-muted">NF 000126</td>
-                  <td class="val-negativo">R$ 1.150,00</td>
-                  <td><span class="vencer-pill vencida">Vencida</span></td>
-                  <td>
-                    <div class="action-cell">
-                      <div class="act-btn ok"><i class="bi bi-check2"></i></div>
-                      <div class="act-btn"><i class="bi bi-pencil"></i></div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>29/05/2025</td>
-                  <td class="u-fw-500">Transportes E Ltda</td>
-                  <td class="u-muted">NF 000127</td>
-                  <td class="u-muted">R$ 750,00</td>
-                  <td><span class="vencer-pill pago">Pago</span></td>
-                  <td>
-                    <div class="action-cell">
-                      <div class="act-btn"><i class="bi bi-pencil"></i></div>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
+              <tbody id="tblPagarDetalhe"></tbody>
             </table>
           </div>
         </div>
@@ -1418,47 +1369,7 @@ transition: border-color .15s;
                   <th></th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>25/05/2025</td>
-                  <td class="u-fw-500">Cliente Alfa Ltda</td>
-                  <td class="u-muted">Duplicata 001234-01</td>
-                  <td class="val-positivo">R$ 2.450,00</td>
-                  <td><span class="vencer-pill avencer">A Vencer</span></td>
-                  <td>
-                    <div class="action-cell">
-                      <div class="act-btn ok"><i class="bi bi-check2"></i></div>
-                      <div class="act-btn"><i class="bi bi-pencil"></i></div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>22/05/2025</td>
-                  <td class="u-fw-500">Distribuidora Delta</td>
-                  <td class="u-muted">Duplicata 001237-01</td>
-                  <td class="val-negativo">R$ 2.100,00</td>
-                  <td><span class="vencer-pill vencida">Vencida</span></td>
-                  <td>
-                    <div class="action-cell">
-                      <div class="act-btn ok"><i class="bi bi-check2"></i></div>
-                      <div class="act-btn"><i class="bi bi-pencil"></i></div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>29/05/2025</td>
-                  <td class="u-fw-500">Cliente Ômega Ltda</td>
-                  <td class="u-muted">Duplicata 001238-01</td>
-                  <td class="val-positivo">R$ 1.560,00</td>
-                  <td><span class="vencer-pill avencer">A Vencer</span></td>
-                  <td>
-                    <div class="action-cell">
-                      <div class="act-btn ok"><i class="bi bi-check2"></i></div>
-                      <div class="act-btn"><i class="bi bi-pencil"></i></div>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
+              <tbody id="tblReceberDetalhe"></tbody>
             </table>
           </div>
         </div>
@@ -1482,43 +1393,7 @@ transition: border-color .15s;
                   <th>Valor</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>28/05/2025</td>
-                  <td class="u-fw-500">Venda #4901</td>
-                  <td class="u-muted">Vendas</td>
-                  <td><span class="vencer-pill ok">Entrada</span></td>
-                  <td class="val-positivo">+ R$ 1.250,00</td>
-                </tr>
-                <tr>
-                  <td>27/05/2025</td>
-                  <td class="u-fw-500">Pagamento NF 000123</td>
-                  <td class="u-muted">Fornecedores</td>
-                  <td><span class="vencer-pill vencida">Saída</span></td>
-                  <td class="val-negativo">- R$ 980,00</td>
-                </tr>
-                <tr>
-                  <td>26/05/2025</td>
-                  <td class="u-fw-500">Duplicata 001234</td>
-                  <td class="u-muted">Recebimentos</td>
-                  <td><span class="vencer-pill ok">Entrada</span></td>
-                  <td class="val-positivo">+ R$ 2.450,00</td>
-                </tr>
-                <tr>
-                  <td>25/05/2025</td>
-                  <td class="u-fw-500">Folha de Pagamento</td>
-                  <td class="u-muted">RH</td>
-                  <td><span class="vencer-pill vencida">Saída</span></td>
-                  <td class="val-negativo">- R$ 8.500,00</td>
-                </tr>
-                <tr>
-                  <td>24/05/2025</td>
-                  <td class="u-fw-500">Venda #4898</td>
-                  <td class="u-muted">Vendas</td>
-                  <td><span class="vencer-pill ok">Entrada</span></td>
-                  <td class="val-positivo">+ R$ 3.200,00</td>
-                </tr>
-              </tbody>
+              <tbody id="tblMovim"></tbody>
             </table>
           </div>
         </div>
@@ -2267,70 +2142,130 @@ transition: border-color .15s;
   <script src="auth.js"></script>
   <script>
     NexoAuth.requireAuth();
+    requirePermission();
 
     // ═══════════════════════════════════════════════
-    // DADOS MOCK
+    // KPI / CHART / DONUT — calculados a partir de nexoerp.financeiro
     // ═══════════════════════════════════════════════
-    const KPI_DATA = {
-      receitas: 245780.50,
-      despesas: 178920.30,
-      resultado: 66860.20,
-      saldo: 152340.75,
-      fluxo: 89210.40,
-    };
+    function _parseLancDate(l) {
+      const raw = l.data || l.vencimento || l.venc || '';
+      if (!raw) return null;
+      if (typeof raw === 'string' && raw.includes('/')) {
+        const p = raw.split(/[\s\/]/);
+        const d = new Date(parseInt(p[2]), parseInt(p[1]) - 1, parseInt(p[0]));
+        return isNaN(d.getTime()) ? null : d;
+      }
+      const d = new Date(raw);
+      return isNaN(d.getTime()) ? null : d;
+    }
 
-    const CHART_DATA = {
-      mensal: [
-        { mes: 'Dez/24', entrada: 180000, saida: 140000 },
-        { mes: 'Jan/25', entrada: 195000, saida: 155000 },
-        { mes: 'Fev/25', entrada: 160000, saida: 170000 },
-        { mes: 'Mar/25', entrada: 210000, saida: 165000 },
-        { mes: 'Abr/25', entrada: 225000, saida: 182000 },
-        { mes: 'Mai/25', entrada: 245780, saida: 178920 },
-      ],
-      trimestral: [
-        { mes: 'T2/24', entrada: 520000, saida: 410000 },
-        { mes: 'T3/24', entrada: 590000, saida: 460000 },
-        { mes: 'T4/24', entrada: 640000, saida: 510000 },
-        { mes: 'T1/25', entrada: 565000, saida: 490000 },
-        { mes: 'T2/25', entrada: 670780, saida: 525920 },
-      ],
-      anual: [
-        { mes: '2021', entrada: 1800000, saida: 1500000 },
-        { mes: '2022', entrada: 2100000, saida: 1720000 },
-        { mes: '2023', entrada: 2450000, saida: 1980000 },
-        { mes: '2024', entrada: 2780000, saida: 2150000 },
-        { mes: '2025', entrada: 1330000, saida: 1020000 },
-      ],
-    };
+    function buildKPIs() {
+      const now = new Date();
+      const mesAtual = now.getFullYear() * 100 + now.getMonth();
+      let receitas = 0, despesas = 0, saldoRec = 0, saldoDes = 0, pendRec = 0, pendDes = 0;
+      lancamentos.forEach(l => {
+        if (l.status === 'cancelado' || l.status === 'estornado') return;
+        const v = l.valor || 0;
+        const d = _parseLancDate(l);
+        const isMes = d && (d.getFullYear() * 100 + d.getMonth()) === mesAtual;
+        if (l.tipo === 'receita') {
+          if (l.status === 'pago') { saldoRec += v; if (isMes) receitas += v; }
+          else pendRec += v;
+        } else {
+          if (l.status === 'pago') { saldoDes += v; if (isMes) despesas += v; }
+          else pendDes += v;
+        }
+      });
+      return { receitas, despesas, resultado: receitas - despesas, saldo: saldoRec - saldoDes, fluxo: pendRec - pendDes };
+    }
 
-    const DONUT_DATA = {
-      receber: 198540.60,
-      receberVenc: 32450.10,
-      receberFut: 166090.50,
-      pagar: 110120.30,
-      pagarVenc: 18230.40,
-      pagarFut: 91889.90,
-      vencidosCount: 12,
-    };
+    function buildChartData(period) {
+      const now = new Date();
+      let slots = [];
+      if (period === 'mensal') {
+        for (let i = 5; i >= 0; i--) {
+          const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+          const label = d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' })
+            .replace('.', '').replace(/^(\w)/, c => c.toUpperCase());
+          slots.push({ key: d.getFullYear() * 100 + d.getMonth(), mes: label, entrada: 0, saida: 0 });
+        }
+        lancamentos.forEach(l => {
+          if (l.status === 'cancelado' || l.status === 'estornado') return;
+          const d = _parseLancDate(l); if (!d) return;
+          const s = slots.find(x => x.key === d.getFullYear() * 100 + d.getMonth()); if (!s) return;
+          if (l.tipo === 'receita') s.entrada += (l.valor || 0); else s.saida += (l.valor || 0);
+        });
+      } else if (period === 'trimestral') {
+        for (let i = 4; i >= 0; i--) {
+          const totalQ = now.getFullYear() * 4 + Math.floor(now.getMonth() / 3) - i;
+          const y = Math.floor(totalQ / 4), q = ((totalQ % 4) + 4) % 4;
+          slots.push({ y, q, mes: `T${q + 1}/${String(y).slice(2)}`, entrada: 0, saida: 0 });
+        }
+        lancamentos.forEach(l => {
+          if (l.status === 'cancelado' || l.status === 'estornado') return;
+          const d = _parseLancDate(l); if (!d) return;
+          const s = slots.find(x => x.y === d.getFullYear() && x.q === Math.floor(d.getMonth() / 3)); if (!s) return;
+          if (l.tipo === 'receita') s.entrada += (l.valor || 0); else s.saida += (l.valor || 0);
+        });
+      } else {
+        for (let i = 4; i >= 0; i--) {
+          const y = now.getFullYear() - i;
+          slots.push({ y, mes: String(y), entrada: 0, saida: 0 });
+        }
+        lancamentos.forEach(l => {
+          if (l.status === 'cancelado' || l.status === 'estornado') return;
+          const d = _parseLancDate(l); if (!d) return;
+          const s = slots.find(x => x.y === d.getFullYear()); if (!s) return;
+          if (l.tipo === 'receita') s.entrada += (l.valor || 0); else s.saida += (l.valor || 0);
+        });
+      }
+      return slots;
+    }
 
-    const RECEBER = [
-      { venc: '25/05/2025', cliente: 'Cliente Alfa Ltda', desc: 'Duplicata 001234-01', valor: 2450.00, status: 'avencer' },
-      { venc: '26/05/2025', cliente: 'Comercial Beta', desc: 'Duplicata 001235-01', valor: 1890.00, status: 'avencer' },
-      { venc: '27/05/2025', cliente: 'Indústria Gama S.A.', desc: 'Duplicata 001236-01', valor: 3750.00, status: 'avencer' },
-      { venc: '22/05/2025', cliente: 'Distribuidora Delta', desc: 'Duplicata 001237-01', valor: 2100.00, status: 'vencida' },
-      { venc: '29/05/2025', cliente: 'Cliente Ômega Ltda', desc: 'Duplicata 001238-01', valor: 1560.00, status: 'avencer' },
-    ];
-
-    const PAGAR = [
-      { venc: '25/05/2025', fornec: 'Fornecedor A Ltda', desc: 'NF 000123', valor: 1250.00, status: 'avencer' },
-      { venc: '26/05/2025', fornec: 'Materiais B Ltda', desc: 'NF 000124', valor: 980.00, status: 'avencer' },
-      { venc: '27/05/2025', fornec: 'Serviços C Ltda', desc: 'NF 000125', valor: 2320.00, status: 'avencer' },
-      { venc: '21/05/2025', fornec: 'Fornecedor D Ltda', desc: 'NF 000126', valor: 1150.00, status: 'vencida' },
-      { venc: '29/05/2025', fornec: 'Transportes E Ltda', desc: 'NF 000127', valor: 750.00, status: 'pago' },
-    ];
+    function buildDonutData() {
+      const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+      let receber = 0, receberVenc = 0, receberFut = 0, pagar = 0, pagarVenc = 0, pagarFut = 0, vencidosCount = 0;
+      lancamentos.forEach(l => {
+        if (l.status === 'pago' || l.status === 'cancelado' || l.status === 'estornado') return;
+        const v = l.valor || 0;
+        const d = _parseLancDate(l);
+        const vencida = d && d < hoje;
+        if (l.tipo === 'receita') {
+          receber += v;
+          if (vencida) { receberVenc += v; vencidosCount++; } else receberFut += v;
+        } else {
+          pagar += v;
+          if (vencida) { pagarVenc += v; vencidosCount++; } else pagarFut += v;
+        }
+      });
+      return { receber, receberVenc, receberFut, pagar, pagarVenc, pagarFut, vencidosCount };
+    }
 
     let lancamentos = JSON.parse(localStorage.getItem('nexoerp.financeiro') || '[]');
+
+    // Deriva RECEBER e PAGAR a partir dos lançamentos reais
+    function buildReceberPagar() {
+      const hoje = new Date(); hoje.setHours(0,0,0,0);
+      const RECEBER = lancamentos
+        .filter(l => l.tipo === 'receita' && l.status !== 'pago' && l.status !== 'cancelado' && l.status !== 'estornado')
+        .slice(0, 10)
+        .map(l => {
+          const venc = l.vencimento || l.venc || l.data || '';
+          const vencDate = venc ? new Date(venc.includes('/') ? venc.split('/').reverse().join('-') : venc) : null;
+          const status = l.status === 'pago' ? 'pago' : (vencDate && vencDate < hoje) ? 'vencida' : 'avencer';
+          return { venc: vencDate ? vencDate.toLocaleDateString('pt-BR') : venc, cliente: l.parte || l.descricao || '—', desc: l.descricao || l.desc || '', valor: l.valor || 0, status };
+        });
+      const PAGAR = lancamentos
+        .filter(l => l.tipo === 'despesa' && l.status !== 'pago' && l.status !== 'cancelado')
+        .slice(0, 10)
+        .map(l => {
+          const venc = l.vencimento || l.venc || l.data || '';
+          const vencDate = venc ? new Date(venc.includes('/') ? venc.split('/').reverse().join('-') : venc) : null;
+          const status = l.status === 'pago' ? 'pago' : (vencDate && vencDate < hoje) ? 'vencida' : 'avencer';
+          return { venc: vencDate ? vencDate.toLocaleDateString('pt-BR') : venc, fornec: l.parte || l.descricao || '—', desc: l.descricao || l.desc || '', valor: l.valor || 0, status };
+        });
+      return { RECEBER, PAGAR };
+    }
     let tipoAtual = 'receita';
     let chartPeriod = 'mensal';
 
@@ -2338,19 +2273,24 @@ transition: border-color .15s;
     // KPIs
     // ═══════════════════════════════════════════════
     function renderKPIs() {
-      document.getElementById('kpiReceitas').textContent = `R$ ${fmt(KPI_DATA.receitas)}`;
-      document.getElementById('kpiDespesas').textContent = `R$ ${fmt(KPI_DATA.despesas)}`;
-      document.getElementById('kpiResultado').textContent = `R$ ${fmt(KPI_DATA.resultado)}`;
-      document.getElementById('kpiSaldo').textContent = `R$ ${fmt(KPI_DATA.saldo)}`;
-      document.getElementById('kpiFluxo').textContent = `R$ ${fmt(KPI_DATA.fluxo)}`;
+      const k = buildKPIs();
+      document.getElementById('kpiReceitas').textContent = `R$ ${fmt(k.receitas)}`;
+      document.getElementById('kpiDespesas').textContent = `R$ ${fmt(k.despesas)}`;
+      const resEl = document.getElementById('kpiResultado');
+      if (resEl) {
+        resEl.textContent = `${k.resultado < 0 ? '-' : ''}R$ ${fmt(Math.abs(k.resultado))}`;
+        resEl.style.color = k.resultado >= 0 ? 'var(--accent)' : 'var(--danger)';
+      }
+      document.getElementById('kpiSaldo').textContent = `R$ ${fmt(k.saldo)}`;
+      document.getElementById('kpiFluxo').textContent = `R$ ${fmt(k.fluxo)}`;
     }
 
     // ═══════════════════════════════════════════════
     // GRÁFICO FLUXO
     // ═══════════════════════════════════════════════
     function renderChart() {
-      const data = CHART_DATA[chartPeriod];
-      const max = Math.max(...data.map(d => d.entrada));
+      const data = buildChartData(chartPeriod);
+      const max = Math.max(...data.map(d => Math.max(d.entrada, d.saida)), 1);
       const H = 220;
       const wrap = document.getElementById('chartWrap');
 
@@ -2407,8 +2347,8 @@ transition: border-color .15s;
     // DONUT
     // ═══════════════════════════════════════════════
     function renderDonut() {
-      const { receber, pagar, receberVenc, receberFut, pagarVenc, pagarFut, vencidosCount } = DONUT_DATA;
-      const total = receber + pagar;
+      const { receber, pagar, receberVenc, receberFut, pagarVenc, pagarFut, vencidosCount } = buildDonutData();
+      const total = receber + pagar || 1;
       const cx = 85, cy = 85, r = 62, stroke = 22;
       const circum = 2 * Math.PI * r;
 
@@ -2467,23 +2407,86 @@ transition: border-color .15s;
     }
 
     function renderTabelas() {
-      document.getElementById('tblReceber').innerHTML = RECEBER.map(r => `
+      const { RECEBER, PAGAR } = buildReceberPagar();
+      const emptyRow = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Nenhum lançamento pendente</td></tr>';
+      document.getElementById('tblReceber').innerHTML = RECEBER.length
+        ? RECEBER.map(r => `
       <tr>
         <td>${escapeHTML(r.venc)}</td>
         <td class="u-fw-500">${escapeHTML(r.cliente)}</td>
         <td class="u-muted">${escapeHTML(r.desc)}</td>
         <td class="${r.status === 'vencida' ? 'val-negativo' : 'val-positivo'}">R$ ${fmt(r.valor)}</td>
         <td>${pillHtml(r.status)}</td>
-      </tr>`).join('');
+      </tr>`).join('')
+        : emptyRow;
 
-      document.getElementById('tblPagar').innerHTML = PAGAR.map(p => `
+      document.getElementById('tblPagar').innerHTML = PAGAR.length
+        ? PAGAR.map(p => `
       <tr>
         <td>${escapeHTML(p.venc)}</td>
         <td class="u-fw-500">${escapeHTML(p.fornec)}</td>
         <td class="u-muted">${escapeHTML(p.desc)}</td>
         <td class="${p.status === 'vencida' ? 'val-negativo' : (p.status === 'pago' ? '' : 'val-negativo')}" style="${p.status === 'pago' ? 'color:var(--muted)' : ''}">R$ ${fmt(p.valor)}</td>
         <td>${pillHtml(p.status)}</td>
-      </tr>`).join('');
+      </tr>`).join('')
+        : emptyRow;
+
+      const _hoje = new Date(); _hoje.setHours(0,0,0,0);
+      const _stLanc = l => {
+        if (l.status === 'pago') return 'pago';
+        const raw = l.vencimento || l.venc || l.data || '';
+        if (!raw) return 'avencer';
+        const d = new Date(raw.includes('/') ? raw.split('/').reverse().join('-') : raw);
+        return isNaN(d) ? 'avencer' : d < _hoje ? 'vencida' : 'avencer';
+      };
+      const _fmtD = raw => {
+        if (!raw) return '—';
+        const d = new Date(raw.includes('/') ? raw.split('/').reverse().join('-') : raw);
+        return isNaN(d) ? raw : d.toLocaleDateString('pt-BR');
+      };
+
+      const tblPD = document.getElementById('tblPagarDetalhe');
+      if (tblPD) {
+        const rows = lancamentos.filter(l => l.tipo === 'despesa' && l.status !== 'cancelado');
+        tblPD.innerHTML = rows.length
+          ? rows.map(l => { const st = _stLanc(l); return `<tr>
+              <td>${escapeHTML(_fmtD(l.vencimento || l.venc || l.data || ''))}</td>
+              <td class="u-fw-500">${escapeHTML(l.parte || '—')}</td>
+              <td class="u-muted">${escapeHTML(l.descricao || l.desc || '')}</td>
+              <td class="${st === 'pago' ? '' : 'val-negativo'}" style="${st === 'pago' ? 'color:var(--muted)' : ''}">R$ ${fmt(l.valor || 0)}</td>
+              <td>${pillHtml(st)}</td><td></td>
+            </tr>`; }).join('')
+          : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Nenhuma conta a pagar</td></tr>';
+      }
+
+      const tblRD = document.getElementById('tblReceberDetalhe');
+      if (tblRD) {
+        const rows = lancamentos.filter(l => l.tipo === 'receita' && l.status !== 'cancelado' && l.status !== 'estornado');
+        tblRD.innerHTML = rows.length
+          ? rows.map(l => { const st = _stLanc(l); return `<tr>
+              <td>${escapeHTML(_fmtD(l.vencimento || l.venc || l.data || ''))}</td>
+              <td class="u-fw-500">${escapeHTML(l.parte || l.descricao || l.desc || '—')}</td>
+              <td class="u-muted">${escapeHTML(l.descricao || l.desc || '')}</td>
+              <td class="${st === 'pago' ? '' : st === 'vencida' ? 'val-negativo' : 'val-positivo'}" style="${st === 'pago' ? 'color:var(--muted)' : ''}">R$ ${fmt(l.valor || 0)}</td>
+              <td>${pillHtml(st)}</td><td></td>
+            </tr>`; }).join('')
+          : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Nenhuma conta a receber</td></tr>';
+      }
+
+      const tblMov = document.getElementById('tblMovim');
+      if (tblMov) {
+        const movs = [...lancamentos].sort((a, b) =>
+          (b.data || b.vencimento || b.venc || '').localeCompare(a.data || a.vencimento || a.venc || ''));
+        tblMov.innerHTML = movs.length
+          ? movs.map(l => `<tr>
+              <td>${escapeHTML(_fmtD(l.data || l.vencimento || l.venc || ''))}</td>
+              <td class="u-fw-500">${escapeHTML(l.descricao || l.desc || '—')}</td>
+              <td class="u-muted">${escapeHTML(l.categoria || l.categ || '—')}</td>
+              <td>${l.tipo === 'receita' ? '<span class="vencer-pill ok">Entrada</span>' : '<span class="vencer-pill vencida">Saída</span>'}</td>
+              <td class="${l.tipo === 'receita' ? 'val-positivo' : 'val-negativo'}">${l.tipo === 'receita' ? '+' : '-'} R$ ${fmt(l.valor || 0)}</td>
+            </tr>`).join('')
+          : '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Nenhuma movimentação registrada</td></tr>';
+      }
     }
 
     // ═══════════════════════════════════════════════
@@ -2537,6 +2540,9 @@ transition: border-color .15s;
 
       showToast(`${tipoAtual === 'receita' ? '💰' : '📤'} Lançamento salvo com sucesso!`);
       closeModal();
+      renderKPIs();
+      renderDonut();
+      renderTabelas();
     }
 
     // ═══════════════════════════════════════════════
@@ -2587,8 +2593,8 @@ transition: border-color .15s;
     });
 
     function renderChartFluxo() {
-      const data = CHART_DATA[chartPeriod];
-      const max = Math.max(...data.map(d => d.entrada));
+      const data = buildChartData(chartPeriod);
+      const max = Math.max(...data.map(d => Math.max(d.entrada, d.saida)), 1);
       const H = 220;
       let html = `<div style="display:flex;gap:12px;align-items:flex-end;height:${H + 28}px;padding-bottom:24px;position:relative">`;
       [0, .25, .5, .75, 1].forEach(pct => {
@@ -2628,7 +2634,20 @@ transition: border-color .15s;
     }
 
     function exportar() {
-      showToast('Exportando relatório financeiro…');
+      const header = ['Tipo', 'Categoria', 'Descrição', 'Valor (R$)', 'Vencimento', 'Pago em', 'Status', 'Forma de Pagamento'];
+      const rows = lancamentos.map(l => [
+        l.tipo === 'receita' ? 'Receita' : 'Despesa',
+        l.categoria || '',
+        l.descricao || '',
+        String(l.valor || 0).replace('.', ','),
+        l.vencimento || l.data || '',
+        l.pago_em || '',
+        l.status === 'pago' ? 'Pago' : l.status === 'pendente' ? 'Pendente' : l.status || '',
+        l.forma_pgto || ''
+      ]);
+      const d = new Date();
+      const dt = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+      downloadCSV(`nexoerp_financeiro_${dt}.csv`, header, rows);
     }
 
     // ═══════════════════════════════════════════════

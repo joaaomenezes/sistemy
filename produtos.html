@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistemy — Produtos</title>
   <link rel="stylesheet" href="global.css">
@@ -884,7 +885,7 @@
           <p>Gerencie seu catálogo de produtos, preços e estoque.</p>
         </div>
         <div class="header-actions">
-          <button class="btn-sm btn-ghost-sm"><i class="bi bi-download"></i> Exportar</button>
+          <button class="btn-sm btn-ghost-sm" onclick="exportCSV()"><i class="bi bi-download"></i> Exportar CSV</button>
           <button class="btn-sm btn-ghost-sm"><i class="bi bi-upload"></i> Importar</button>
           <button class="btn-sm btn-primary-sm" onclick="openCatModal()"><i class="bi bi-plus-lg"></i>
             Categorias</button>
@@ -1245,10 +1246,6 @@
                 <label class="lbl">Depósito / Localização</label>
                 <div class="inp-wrap"><i class="bi bi-geo-alt pre"></i>
                   <select class="field" id="f-deposito">
-                    <option>Depósito Principal</option>
-                    <option>Loja 1</option>
-                    <option>Loja 2</option>
-                    <option>Galpão externo</option>
                   </select>
                 </div>
               </div>
@@ -1261,18 +1258,33 @@
               <div class="form-group">
                 <label class="lbl">Fornecedor principal</label>
                 <div class="inp-wrap"><i class="bi bi-truck pre"></i>
-                  <select class="field" id="f-fornecedor">
-                    <option value="">Sem fornecedor</option>
-                    <option>Fornecedor A</option>
-                    <option>Fornecedor B</option>
-                    <option>Fornecedor C</option>
-                  </select>
+                  <select class="field" id="f-fornecedor"></select>
                 </div>
               </div>
               <div class="form-group">
                 <label class="lbl">Prazo de reposição (dias)</label>
                 <div class="inp-wrap"><i class="bi bi-calendar-week pre"></i>
                   <input class="field" type="number" id="f-prazo" placeholder="7" min="0">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">Rastreabilidade / Lote</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="lbl">Data de Fabricação</label>
+                <input class="field" type="date" id="f-dt-fabricacao">
+              </div>
+              <div class="form-group">
+                <label class="lbl">Data de Vencimento</label>
+                <input class="field" type="date" id="f-dt-vencimento">
+              </div>
+              <div class="form-group">
+                <label class="lbl">Nº do Lote</label>
+                <div class="inp-wrap"><i class="bi bi-upc pre"></i>
+                  <input class="field" type="text" id="f-lote" placeholder="Ex: LOT-2024-001">
                 </div>
               </div>
             </div>
@@ -1438,6 +1450,7 @@
   <script src="auth.js"></script>
   <script>
     NexoAuth.requireAuth();
+    requirePermission();
 
     // ─── CONSTANTS ───────────────────────────────────────────
     const EMOJIS = ['📦', '🛒', '🔧', '🔩', '💊', '🧴', '🧹', '🍎', '🥤', '👕', '💻', '📱', '🔌', '🪑', '🛋', '🚗', '🔑', '📋', '🧰', '⚡', '🌿', '🧪', '🎯', '🏷️', '🪣', '🔦', '🧲', '📏', '🖨️', '📸'];
@@ -1486,6 +1499,8 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
       buildEmojiGrid();
       buildColorSwatches();
       populateCatSelect();
+      populateDepositoSelect();
+      populateFornecedorSelect();
       applyFilters();
       document.addEventListener('click', e => {
         const wrap = document.getElementById('catFilterWrap');
@@ -1738,10 +1753,12 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
         'f-descMax', 'f-ncm', 'f-cest', 'f-icms', 'f-pis', 'f-posicao', 'f-prazo'].forEach(id => {
           const el = document.getElementById(id); if (el) el.value = '';
         });
-      ['f-unidade', 'f-tabela', 'f-cfop', 'f-cst', 'f-deposito', 'f-fornecedor'].forEach(id => {
+      ['f-unidade', 'f-tabela', 'f-cfop', 'f-cst'].forEach(id => {
         const el = document.getElementById(id); if (el) el.selectedIndex = 0;
       });
       populateCatSelect();
+      populateDepositoSelect();
+      populateFornecedorSelect();
       document.getElementById('f-estoque').value = '0';
       document.getElementById('f-estoqueMin').value = '5';
       document.getElementById('f-estoqueMax').value = '100';
@@ -1750,6 +1767,9 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
       buildEmojiGrid(); buildColorSwatches();
       ['tog-estoque', 'tog-ativo', 'tog-pdv'].forEach(id => document.getElementById(id).classList.add('on'));
       ['tog-venda', 'tog-perecivel', 'tog-destaque'].forEach(id => document.getElementById(id).classList.remove('on'));
+      document.getElementById('f-dt-fabricacao').value = '';
+      document.getElementById('f-dt-vencimento').value = '';
+      document.getElementById('f-lote').value = '';
     }
 
     function calcMargem() {
@@ -1796,7 +1816,10 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
         prazo: parseInt(document.getElementById('f-prazo').value) || 0,
         controlEstoque: document.getElementById('tog-estoque').classList.contains('on'),
         vendaSemEstoque: document.getElementById('tog-venda').classList.contains('on'),
-        perecivel: document.getElementById('tog-perecivel').classList.contains('on'),
+        perecivel:       document.getElementById('tog-perecivel').classList.contains('on'),
+        dataFabricacao:  document.getElementById('f-dt-fabricacao').value || '',
+        dataVencimento:  document.getElementById('f-dt-vencimento').value || '',
+        lote:            document.getElementById('f-lote').value.trim() || '',
         status: document.getElementById('tog-ativo').classList.contains('on') ? 'ativo' : 'inativo',
         exibirPdv: document.getElementById('tog-pdv').classList.contains('on'),
         destaque: document.getElementById('tog-destaque').classList.contains('on'),
@@ -1840,7 +1863,8 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
       setSelectVal('f-cat', p.cat); setSelectVal('f-unidade', p.unidade);
       setSelectVal('f-tabela', p.tabela || 'Padrão');
       setSelectVal('f-cfop', p.cfop || ''); setSelectVal('f-cst', p.cst || '');
-      setSelectVal('f-deposito', p.deposito); setSelectVal('f-fornecedor', p.fornecedor);
+      populateDepositoSelect(); setSelectVal('f-deposito', p.deposito);
+      populateFornecedorSelect(); setSelectVal('f-fornecedor', p.fornecedor);
       selectedEmoji = p.emoji; selectedColor = p.cor;
       document.getElementById('emojiDisplay').textContent = p.emoji;
       buildEmojiGrid(); buildColorSwatches();
@@ -1848,6 +1872,9 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
       document.getElementById('tog-estoque').classList.toggle('on', p.controlEstoque !== false);
       document.getElementById('tog-venda').classList.toggle('on', !!p.vendaSemEstoque);
       document.getElementById('tog-perecivel').classList.toggle('on', !!p.perecivel);
+      document.getElementById('f-dt-fabricacao').value = p.dataFabricacao || '';
+      document.getElementById('f-dt-vencimento').value = p.dataVencimento || '';
+      document.getElementById('f-lote').value = p.lote || '';
       document.getElementById('tog-pdv').classList.toggle('on', p.exibirPdv !== false);
       document.getElementById('tog-destaque').classList.toggle('on', !!p.destaque);
       calcMargem();
@@ -1953,14 +1980,47 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
 
     // ─── CATEGORIES ───────────────────────────────────────────
     const CATS_KEY = 'nexoerp.categorias';
-    const DEFAULT_CATS = ['Alimentos', 'Bebidas', 'Limpeza', 'Higiene', 'Eletrônicos', 'Ferramentas', 'Vestuário', 'Medicamentos', 'Peças / Auto', 'Construção', 'Informática', 'Outros'];
 
     let categories = (() => {
-      try { const raw = localStorage.getItem(CATS_KEY); if (raw) return JSON.parse(raw); } catch (_) { }
-      return [...DEFAULT_CATS];
+      try {
+        const raw = localStorage.getItem(CATS_KEY);
+        if (raw !== null) return JSON.parse(raw) || [];
+      } catch (_) { }
+      // Conta nova: inicializa vazia e persiste para não cair no fallback toda vez
+      localStorage.setItem(CATS_KEY, JSON.stringify([]));
+      return [];
     })();
 
     function saveCats() { localStorage.setItem(CATS_KEY, JSON.stringify(categories)); }
+
+    function populateDepositoSelect(preserveVal = false) {
+      const sel = document.getElementById('f-deposito');
+      if (!sel) return;
+      const cur = preserveVal ? sel.value : '';
+      try {
+        const raw = localStorage.getItem('nexoerp.depositos');
+        const deps = raw ? JSON.parse(raw) : [{ nome: 'Depósito Principal' }];
+        sel.innerHTML = deps.map(d => `<option>${d.nome}</option>`).join('');
+      } catch (_) {
+        sel.innerHTML = '<option>Depósito Principal</option>';
+      }
+      if (cur) setSelectVal('f-deposito', cur);
+    }
+
+    function populateFornecedorSelect(preserveVal = false) {
+      const sel = document.getElementById('f-fornecedor');
+      if (!sel) return;
+      const cur = preserveVal ? sel.value : '';
+      try {
+        const raw = localStorage.getItem('nexoerp.fornecedores');
+        const forn = raw ? JSON.parse(raw).filter(f => f.status !== 'inativo' && f.status !== 'bloq') : [];
+        sel.innerHTML = '<option value="">Sem fornecedor</option>' +
+          forn.map(f => `<option>${f.nome}</option>`).join('');
+      } catch (_) {
+        sel.innerHTML = '<option value="">Sem fornecedor</option>';
+      }
+      if (cur) setSelectVal('f-fornecedor', cur);
+    }
 
     function populateCatSelect(preserveVal = false) {
       const sel = document.getElementById('f-cat');
@@ -2053,6 +2113,27 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
         renderCatList();
       });
       inp.focus(); inp.select();
+    }
+
+    // ─── EXPORT CSV ───────────────────────────────────────────
+    function exportCSV() {
+      const header = ['SKU', 'Nome', 'Categoria', 'Marca', 'Unidade', 'Preço Venda', 'Custo', 'Margem %', 'Estoque', 'Est. Mínimo', 'Est. Máximo', 'Status', 'Depósito', 'Fornecedor', 'EAN', 'NCM'];
+      const rows = filtered.map(p => {
+        const margem = p.custo > 0 ? (((p.preco - p.custo) / p.custo) * 100).toFixed(1) : '0.0';
+        return [
+          p.sku, p.nome, p.cat, p.marca, p.unidade,
+          String(p.preco).replace('.', ','),
+          String(p.custo).replace('.', ','),
+          margem,
+          p.estoque, p.estoqueMin, p.estoqueMax,
+          p.status === 'ativo' ? 'Ativo' : 'Inativo',
+          p.deposito || '', p.fornecedor || '',
+          p.ean || '', p.ncm || ''
+        ];
+      });
+      const d = new Date();
+      const dt = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+      downloadCSV(`nexoerp_produtos_${dt}.csv`, header, rows);
     }
 
     // ─── SIDEBAR ──────────────────────────────────────────────
