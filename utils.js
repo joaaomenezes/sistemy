@@ -166,6 +166,36 @@ function requirePermission() {
   } catch (_) {}
 })();
 
+// ── NexoConfig — formatadores que respeitam nexoerp.config ──
+window.NexoConfig = {
+  _read() {
+    try { return JSON.parse(localStorage.getItem('nexoerp.config') || '{}'); } catch(_) { return {}; }
+  },
+  formatCurrency(value) {
+    const cfg = this._read();
+    const casas = cfg.casasDecimais != null ? Number(cfg.casasDecimais) : 2;
+    const formatted = (value || 0).toFixed(casas)
+      .replace('.', ',')
+      .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    const symbols = { BRL: 'R$', USD: 'US$', EUR: '€' };
+    const symbol = symbols[cfg.moeda] || 'R$';
+    return `${symbol} ${formatted}`;
+  },
+  formatDate(dateStr) {
+    if (!dateStr) return '';
+    const cfg = this._read();
+    const d = new Date(String(dateStr).includes('T') ? dateStr : dateStr + 'T00:00:00');
+    const dd   = String(d.getDate()).padStart(2, '0');
+    const mm   = String(d.getMonth() + 1).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    switch (cfg.fmtData) {
+      case 'MM/DD/AAAA': return `${mm}/${dd}/${yyyy}`;
+      case 'AAAA-MM-DD': return `${yyyy}-${mm}-${dd}`;
+      default:           return `${dd}/${mm}/${yyyy}`;
+    }
+  },
+};
+
 // ── Export CSV ────────────────────────────────────────
 function downloadCSV(filename, header, rows) {
   const escape = v => `"${String(v == null ? '' : v).replace(/"/g, '""')}"`;

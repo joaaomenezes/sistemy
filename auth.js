@@ -201,6 +201,30 @@
     }
   }
 
+  async function updateMyProfile(data) {
+    try {
+      const result = await apiFetch('/auth/me', {
+        method: 'PATCH',
+        body: JSON.stringify({
+          ...(data.name     && { nome:     data.name }),
+          ...(data.username && { username: normalize(data.username) }),
+          ...(data.email    && { email:    normalize(data.email) }),
+          ...(data.password && { password: data.password }),
+        }),
+      });
+      if (!result.ok) return { ok: false, message: result.message || 'Erro ao atualizar perfil.' };
+      const session = getSession();
+      if (session) {
+        session.user = { ...session.user, ...normalizeUser(result.data) };
+        writeJSON(SESSION_KEY, session);
+      }
+      return { ok: true, user: result.data };
+    } catch (err) {
+      console.error('[NexoAuth] updateMyProfile:', err);
+      return { ok: false, message: 'Erro ao conectar com o servidor.' };
+    }
+  }
+
   async function removeSubUser(id) {
     try {
       const result = await apiFetch(`/usuarios/${id}`, { method: 'DELETE' });
@@ -328,6 +352,7 @@
     renderCurrentUser,
     addSubUser,
     updateSubUser,
+    updateMyProfile,
     removeSubUser,
     ALL_MODULES,
     apiFetch,

@@ -1312,7 +1312,7 @@ font-size: 12px;
           </div>
 
           <!-- Checklist de permissões -->
-          <div class="cfg-group">
+          <div class="cfg-group" id="u-perms-section">
             <label class="lbl" style="margin-bottom:10px">Acesso aos módulos</label>
             <div id="u-perms-list" style="display:flex;flex-direction:column;gap:6px"></div>
           </div>
@@ -1458,10 +1458,10 @@ font-size: 12px;
         if (cfg._corSel && /^#[0-9a-f]{6}$/i.test(cfg._corSel)) {
           document.documentElement.style.setProperty('--accent', cfg._corSel);
         }
-        showToast('✅ Configurações salvas! Acesse outros módulos para ver a nova cor.');
+        NexoToast.success('Configurações salvas! Acesse outros módulos para ver a nova cor.');
       } catch (err) {
-        if (err.name === 'QuotaExceededError') showToast('❌ Armazenamento local cheio.', 'error');
-        else showToast('❌ Erro ao salvar. Tente novamente.', 'error');
+        if (err.name === 'QuotaExceededError') NexoToast.error('Armazenamento local cheio.');
+        else NexoToast.error('Erro ao salvar. Tente novamente.');
       }
     }
 
@@ -1470,7 +1470,7 @@ font-size: 12px;
       _applyConfig(saved ? JSON.parse(saved) : null);
       isDirty = false;
       document.getElementById('saveBar').classList.remove('show');
-      showToast('Alterações descartadas.');
+      NexoToast.info('Alterações descartadas.');
     }
 
     function loadSettings() {
@@ -1495,7 +1495,7 @@ font-size: 12px;
       document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('sel'));
       el.classList.add('sel');
       markDirty();
-      showToast('Cor de destaque alterada! Salve para aplicar.');
+      NexoToast.info('Cor de destaque alterada! Salve para aplicar.');
     }
 
     // ═══════════════════════════════════════════════
@@ -1578,12 +1578,13 @@ font-size: 12px;
           badgeHTML = `<span class="uc-role vendedor">${count} módulo${count !== 1 ? 's' : ''}</span>`;
         }
 
-        // Só o Dono pode editar sub-usuários; ninguém edita o Dono por esta rota
-        const podeEditar = euSouDono && !u.isDono && !isMe;
+        // Dono pode editar sub-usuários e a si mesmo; ninguém edita outro Dono
+        const podeEditar = euSouDono && (!u.isDono || isMe);
         const canDelete  = euSouDono && !u.isDono;
 
+        const editTitle = isMe ? 'Editar meu perfil' : 'Editar';
         const editBtn   = podeEditar
-          ? `<div class="uc-btn" title="Editar" onclick="editUser('${escapeHTML(u.id)}')"><i class="bi bi-pencil"></i></div>`
+          ? `<div class="uc-btn" title="${editTitle}" onclick="editUser('${escapeHTML(u.id)}')"><i class="bi bi-pencil"></i></div>`
           : `<div class="uc-btn" title="Sem permissão" style="opacity:.3;cursor:not-allowed"><i class="bi bi-pencil"></i></div>`;
         const deleteBtn = canDelete
           ? `<div class="uc-btn danger" title="Remover" onclick="removeUser('${escapeHTML(u.id)}')"><i class="bi bi-trash3"></i></div>`
@@ -1638,14 +1639,22 @@ font-size: 12px;
 
     function openUserModal(id = null) {
       editingUserId = id;
-      const isEdit  = !!id;
-      document.getElementById('userModalTitle').textContent = isEdit ? 'Editar Usuário' : 'Novo Usuário';
+      const isEdit       = !!id;
+      const session      = NexoAuth.getSession();
+      const meuId        = session?.user?.id;
+      const isEditingSelf = isEdit && id === meuId;
+
+      const titulo = isEditingSelf ? 'Meu Perfil' : (isEdit ? 'Editar Usuário' : 'Novo Usuário');
+      document.getElementById('userModalTitle').textContent = titulo;
       document.getElementById('u-nome').value  = '';
       document.getElementById('u-email').value = '';
       document.getElementById('u-login').value = '';
       document.getElementById('u-senha').value = '';
       document.getElementById('u-senha-hint').style.display = isEdit ? 'block' : 'none';
-      document.getElementById('btnSaveUser').innerHTML = `<i class="bi bi-check2"></i> ${isEdit ? 'Salvar alterações' : 'Criar usuário'}`;
+      const btnLabel = isEditingSelf ? 'Salvar perfil' : (isEdit ? 'Salvar alterações' : 'Criar usuário');
+      document.getElementById('btnSaveUser').innerHTML = `<i class="bi bi-check2"></i> ${btnLabel}`;
+      // Esconde permissões ao editar o próprio perfil — dono tem acesso total
+      document.getElementById('u-perms-section').style.display = isEditingSelf ? 'none' : '';
 
       let existingPerms = null;
       if (isEdit) {
@@ -1657,7 +1666,7 @@ font-size: 12px;
           existingPerms = u.permissions;
         }
       }
-      document.getElementById('u-perms-list').innerHTML = _buildPermChecklist(existingPerms);
+      document.getElementById('u-perms-list').innerHTML = isEditingSelf ? '' : _buildPermChecklist(existingPerms);
       document.getElementById('userModalOverlay').classList.add('open');
     }
 
@@ -1669,31 +1678,44 @@ font-size: 12px;
       const email    = document.getElementById('u-email').value.trim();
       const username = document.getElementById('u-login').value.trim().toLowerCase();
       const senha    = document.getElementById('u-senha').value.trim();
-      const perms    = _getModalPerms();
 
-      if (!nome || !email || !username) { showToast('⚠️ Preencha nome, e-mail e login.', 'warning'); return; }
+      if (!nome || !email || !username) { NexoToast.warning('Preencha nome, e-mail e login.'); return; }
+
+      const session       = NexoAuth.getSession();
+      const meuId         = session?.user?.id;
+      const isEditingSelf = editingUserId === meuId;
 
       const btn = document.getElementById('btnSaveUser');
       btn.disabled = true;
       btn.textContent = 'Salvando…';
 
       let result;
-      if (editingUserId) {
+      if (isEditingSelf) {
+        result = await NexoAuth.updateMyProfile({ name: nome, email, username, password: senha || undefined });
+      } else if (editingUserId) {
+        const perms = _getModalPerms();
         result = await NexoAuth.updateSubUser(editingUserId, { name: nome, email, username, password: senha || undefined, permissions: perms });
       } else {
-        if (!senha) { showToast('⚠️ Informe uma senha para o novo usuário.', 'warning'); btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2"></i> Criar usuário'; return; }
+        if (!senha) { NexoToast.warning('Informe uma senha para o novo usuário.'); btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2"></i> Criar usuário'; return; }
+        const perms = _getModalPerms();
         result = await NexoAuth.addSubUser({ name: nome, email, username, password: senha, permissions: perms });
       }
 
       btn.disabled = false;
-      btn.innerHTML = `<i class="bi bi-check2"></i> ${editingUserId ? 'Salvar alterações' : 'Criar usuário'}`;
+      const btnLabel = isEditingSelf ? 'Salvar perfil' : (editingUserId ? 'Salvar alterações' : 'Criar usuário');
+      btn.innerHTML = `<i class="bi bi-check2"></i> ${btnLabel}`;
 
-      if (!result.ok) { showToast('❌ ' + result.message, 'error'); return; }
+      if (!result.ok) { NexoToast.error(result.message); return; }
 
       await loadUsers();
       closeUserModal();
       renderUsers();
-      showToast(editingUserId ? '✅ Usuário atualizado!' : '✅ Usuário criado com sucesso!');
+      if (isEditingSelf) {
+        NexoAuth.renderCurrentUser();
+        NexoToast.success('Perfil atualizado!');
+      } else {
+        NexoToast.success(editingUserId ? 'Usuário atualizado!' : 'Usuário criado com sucesso!');
+      }
     }
 
     function editUser(id) { openUserModal(id); }
@@ -1701,13 +1723,13 @@ font-size: 12px;
     async function removeUser(id) {
       const u = usuarios.find(x => x.id === id);
       if (!u) return;
-      if (u.isDono || u.permissions === null) { showToast('⚠️ O Dono não pode ser removido.', 'warning'); return; }
+      if (u.isDono || u.permissions === null) { NexoToast.warning('O Dono não pode ser removido.'); return; }
       if (!confirm(`Remover o usuário "${u.nome}"? Esta ação não pode ser desfeita.`)) return;
       const result = await NexoAuth.removeSubUser(id);
-      if (!result.ok) { showToast('❌ ' + result.message, 'error'); return; }
+      if (!result.ok) { NexoToast.error(result.message); return; }
       await loadUsers();
       renderUsers();
-      showToast('Usuário removido.');
+      NexoToast.success('Usuário removido.');
     }
 
     // ═══════════════════════════════════════════════
@@ -1739,7 +1761,7 @@ font-size: 12px;
         limpar: 'ATENÇÃO: Esta ação vai apagar TODOS os dados permanentemente. Tem certeza?',
         excluir: 'ATENÇÃO MÁXIMA: Sua conta será excluída sem possibilidade de recuperação. Confirma?',
       };
-      if (confirm(msgs[acao])) showToast('Ação registrada. Nossa equipe entrará em contato.');
+      if (confirm(msgs[acao])) NexoToast.info('Ação registrada. Nossa equipe entrará em contato.');
     }
 
     // ═══════════════════════════════════════════════
