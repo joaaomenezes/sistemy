@@ -775,87 +775,26 @@
     requirePermission();
 
     // ═══════════════════════════════════════════════
-    // DATA — vendas mockadas realistas
+    // DATA — carregado via API
     // ═══════════════════════════════════════════════
-    const CLIENTES = ['Posto Panorama Ltda.', 'Farmácia São José', 'João Pedro Almeida', 'Distribuidora Alfa ME', 'Maria Clara Souza', 'Auto Peças SP Ltda.', 'Construfácil EIRELI', 'Venda Balcão'];
-    const OPERADORES = ['João D.', 'Maria F.', 'Lucas A.', 'Carlos S.'];
-    const METODOS = ['dinheiro', 'pix', 'credito', 'debito', 'multiplo'];
-    const PRODUTOS_MOCK = [
-      { nome: 'Arroz Integral 1kg', emoji: '🍎', preco: 8.90 },
-      { nome: 'Detergente Neutro 500ml', emoji: '🧹', preco: 3.50 },
-      { nome: 'Ibuprofeno 600mg', emoji: '💊', preco: 18.90 },
-      { nome: 'Água Mineral 500ml', emoji: '💧', preco: 2.50 },
-      { nome: 'Refrigerante 2L', emoji: '🥤', preco: 8.90 },
-      { nome: 'Smartphone Samsung A15', emoji: '📱', preco: 1299.00 },
-      { nome: 'Notebook Dell', emoji: '💻', preco: 3499.00 },
-      { nome: 'Café Torrado 500g', emoji: '☕', preco: 14.50 },
-      { nome: 'Shampoo 400ml', emoji: '🧴', preco: 12.90 },
-      { nome: 'Biscoito Recheado', emoji: '🍪', preco: 4.50 },
-    ];
+    let currentSection = 'pdv';
 
-    const VENDAS_KEY     = 'nexoerp.vendas';
-    const PDV_VENDAS_KEY = 'nexoerp.pdv.vendas';
-    let currentSection   = 'pdv';
-
-    function gerarVendas() {
-      const vendas = [];
-      const hoje = new Date();
-      for (let i = 0; i < 48; i++) {
-        const d = new Date(hoje);
-        d.setDate(d.getDate() - Math.floor(i / 4));
-        d.setHours(8 + Math.floor(Math.random() * 10), Math.floor(Math.random() * 60), 0);
-
-        const qtdItens = Math.floor(Math.random() * 4) + 1;
-        const itens = [];
-        for (let j = 0; j < qtdItens; j++) {
-          const prod = PRODUTOS_MOCK[Math.floor(Math.random() * PRODUTOS_MOCK.length)];
-          const qty = Math.floor(Math.random() * 3) + 1;
-          itens.push({ ...prod, qty, subtotal: prod.preco * qty });
-        }
-        const subtotal = itens.reduce((s, x) => s + x.subtotal, 0);
-        const desconto = Math.random() > 0.7 ? parseFloat((subtotal * (Math.random() * 0.1)).toFixed(2)) : 0;
-        const total = subtotal - desconto;
-
-        const statusRand = Math.random();
-        const status = statusRand > 0.88 ? 'estornada' : statusRand > 0.82 ? 'cancelada' : 'concluida';
-
-        // salva data como string ISO pra sobreviver ao JSON
-        vendas.push({
-          id: `#V${String(4900 - i).padStart(4, '0')}`,
-          num: 4900 - i,
-          cliente: CLIENTES[Math.floor(Math.random() * CLIENTES.length)],
-          operador: OPERADORES[Math.floor(Math.random() * OPERADORES.length)],
-          metodo: METODOS[Math.floor(Math.random() * METODOS.length)],
-          itens,
-          subtotal,
-          desconto,
-          total,
-          status,
-          dataISO: d.toISOString(),
-          dataStr: d.toLocaleDateString('pt-BR'),
-          horaStr: d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-          estornoMotivo: status === 'estornada' ? 'Produto com defeito' : '',
-        });
-      }
-      return vendas.sort((a, b) => new Date(b.dataISO) - new Date(a.dataISO));
-    }
-
-    function salvarVendas(lista) {
-      const key = currentSection === 'pdv' ? PDV_VENDAS_KEY : VENDAS_KEY;
-      try { localStorage.setItem(key, JSON.stringify(lista)); } catch(e) {}
-    }
-
-    function carregarVendas(key) {
+    async function loadVendas(tipo) {
       try {
-        const raw = localStorage.getItem(key || PDV_VENDAS_KEY);
-        if (!raw) return [];
-        const lista = JSON.parse(raw);
-        lista.forEach(v => { v.data = new Date(v.dataISO); });
+        const r = await NexoAuth.apiFetch(`/vendas?tipo=${tipo}`);
+        if (!r.ok) return [];
+        const lista = r.data;
+        lista.forEach(v => {
+          v.data = new Date(v.dataISO);
+          // Deriva data/hora de exibição do dataISO quando o backend não os gravou
+          if (!v.dataStr) v.dataStr = v.data.toLocaleDateString('pt-BR');
+          if (!v.horaStr) v.horaStr = v.data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        });
         return lista;
-      } catch(e) { return []; }
+      } catch (_) { return []; }
     }
 
-    let vendas = carregarVendas(PDV_VENDAS_KEY);
+    let vendas = [];
     let filtered = [...vendas];
     let currentFilter = 'todos';
     let currentPage = 1;
@@ -866,7 +805,7 @@
     // ═══════════════════════════════════════════════
     // SECTION SWITCH
     // ═══════════════════════════════════════════════
-    function switchSection(section) {
+    async function switchSection(section) {
       currentSection = section;
       const isPdv = section === 'pdv';
       document.getElementById('sec-pdv').classList.toggle('active', isPdv);
@@ -874,14 +813,13 @@
       document.getElementById('emptyStateMsg').textContent = isPdv
         ? 'Ajuste os filtros ou realize vendas pelo PDV.'
         : 'Ajuste os filtros ou fature pedidos em Pedidos de Venda.';
-      vendas = carregarVendas(isPdv ? PDV_VENDAS_KEY : VENDAS_KEY);
+      vendas = await loadVendas(isPdv ? 'pdv' : 'pedido');
       filtered = [...vendas];
       currentFilter = 'todos';
       currentPage = 1;
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       document.querySelector('.filter-btn[onclick*="todos"]').classList.add('active');
       document.getElementById('searchInput').value = '';
-      // reset date picker para últimos 30 dias
       const hoje = new Date();
       const inicio = new Date(hoje); inicio.setDate(inicio.getDate() - 30);
       document.getElementById('dataInicio').value = inicio.toISOString().slice(0, 10);
@@ -892,13 +830,15 @@
     // ═══════════════════════════════════════════════
     // INIT
     // ═══════════════════════════════════════════════
-    function init() {
+    async function init() {
+      NexoAuth.renderCurrentUser();
       const hoje = new Date();
       const inicio = new Date(hoje); inicio.setDate(inicio.getDate() - 30);
       document.getElementById('dataInicio').value = inicio.toISOString().slice(0, 10);
       document.getElementById('dataFim').value = hoje.toISOString().slice(0, 10);
+      vendas = await loadVendas('pdv');
+      filtered = [...vendas];
       applyFilters();
-      NexoAuth.renderCurrentUser();
     }
 
     // ═══════════════════════════════════════════════
@@ -919,14 +859,15 @@
       const dFim = document.getElementById('dataFim').value;
 
       filtered = vendas.filter(v => {
-        const matchQ = !q || v.id.toLowerCase().includes(q) ||
-          v.cliente.toLowerCase().includes(q) ||
+        const matchQ = !q || (v.id || '').toLowerCase().includes(q) ||
+          (v.cliente || '').toLowerCase().includes(q) ||
           fmt(v.total).includes(q);
         const matchF = currentFilter === 'todos' || v.status === currentFilter;
         const matchM = !metodo || v.metodo === metodo;
         let matchD = true;
-        if (dIni) matchD = matchD && v.data >= new Date(dIni);
-        if (dFim) { const fim = new Date(dFim); fim.setHours(23, 59, 59); matchD = matchD && v.data <= fim; }
+        // Datas interpretadas no fuso local (anexar horário evita o parse UTC de "YYYY-MM-DD")
+        if (dIni) matchD = matchD && v.data >= new Date(dIni + 'T00:00:00');
+        if (dFim) matchD = matchD && v.data <= new Date(dFim + 'T23:59:59');
         return matchQ && matchF && matchM && matchD;
       });
 
@@ -958,7 +899,8 @@
       ['#a855f7', '#f3e8ff'], ['#ec4899', '#fce7f3'], ['#14b8a6', '#e0f7f5'],
     ];
     function colorFor(name) {
-      const idx = (name.charCodeAt(0) + (name.charCodeAt(1) || 0)) % COLORS.length;
+      const s = String(name || 'NX');
+      const idx = (s.charCodeAt(0) + (s.charCodeAt(1) || 0)) % COLORS.length;
       return COLORS[idx];
     }
     const methodIcons = {
@@ -989,15 +931,15 @@
         <div class="venda-data">${v.dataStr} · ${v.horaStr}</div>
       </td>
       <td><div class="client-cell">
-        <div class="client-av" style="background:${bg};color:${fg}">${initials(v.cliente)}</div>
-        <div class="client-name">${v.cliente}</div>
+        <div class="client-av" style="background:${bg};color:${fg}">${initials(v.cliente || 'Venda Balcão')}</div>
+        <div class="client-name">${v.cliente || 'Venda Balcão'}</div>
       </div></td>
       <td style="color:var(--muted);font-size:13px">${v.itens.length} ${v.itens.length === 1 ? 'item' : 'itens'}</td>
       <td><span class="method-badge ${v.metodo}"><i class="bi ${methodIcons[v.metodo]}"></i>${methodLabels[v.metodo]}</span></td>
       <td><span class="valor-cell ${isNeg ? 'neg' : 'pos'}">R$ ${fmt(v.total)}</span></td>
       <td><span class="status-pill ${v.status}">${statusLabels[v.status]}</span></td>
       <td style="color:var(--muted);font-size:12px">${v.dataStr}<br>${v.horaStr}</td>
-      <td style="color:var(--muted);font-size:12px">${v.operador}</td>
+      <td style="color:var(--muted);font-size:12px">${v.operador || '—'}</td>
       <td><div class="action-cell" onclick="event.stopPropagation()">
         <div class="act-btn" title="Ver detalhes" onclick="openDetail('${v.id}')"><i class="bi bi-eye"></i></div>
         <div class="act-btn" title="Imprimir" onclick="printVendaId('${v.id}')"><i class="bi bi-printer"></i></div>
@@ -1066,9 +1008,9 @@
 
       // info
       document.getElementById('dp-info').innerHTML = [
-        ['Cliente', v.cliente],
-        ['Operador', v.operador],
-        ['Data/Hora', `${v.dataStr} às ${v.horaStr}`],
+        ['Cliente', v.cliente || 'Venda Balcão'],
+        ['Operador', v.operador || '—'],
+        ['Data/Hora', (v.dataStr || v.horaStr) ? `${v.dataStr || ''} ${v.horaStr ? 'às ' + v.horaStr : ''}`.trim() : '—'],
         ['Status', statusLabels[v.status]],
         ['Método', methodLabels[v.metodo]],
         v.estornoMotivo ? ['Motivo estorno', v.estornoMotivo] : null,
@@ -1125,22 +1067,35 @@
     function closeEstornoModal() { document.getElementById('estornoOverlay').classList.remove('open'); }
     function handleEstornoOverlay(e) { if (e.target === document.getElementById('estornoOverlay')) closeEstornoModal(); }
 
-    function confirmarEstorno() {
+    async function confirmarEstorno() {
       const motivo = document.getElementById('estornoMotivo').value;
       if (!motivo) { showToast('Selecione o motivo do estorno.', 'warning'); return; }
 
       const v = vendas.find(x => x.id === currentVendaId);
       if (!v) return;
 
-      v.status = 'estornada';
-      v.estornoMotivo = motivo;
+      const btn = document.querySelector('#estornoOverlay .btn-confirm-m');
+      if (btn) btn.disabled = true;
 
-      salvarVendas(vendas); // persiste no localStorage
+      try {
+        const r = await NexoAuth.apiFetch(`/vendas/${v.id}`, {
+          method: 'PUT',
+          body: JSON.stringify({ status: 'estornada', estornoMotivo: motivo }),
+        });
+        if (!r.ok) { showToast(r.message || 'Erro ao estornar venda.', 'error'); return; }
 
-      closeEstornoModal();
-      applyFilters();
-      openDetail(currentVendaId);
-      showToast(`Venda ${v.id} estornada com sucesso.`);
+        v.status = 'estornada';
+        v.estornoMotivo = motivo;
+
+        closeEstornoModal();
+        applyFilters();
+        openDetail(currentVendaId);
+        showToast(`Venda ${v.id} estornada com sucesso.`);
+      } catch (_) {
+        showToast('Erro ao estornar. Tente novamente.', 'error');
+      } finally {
+        if (btn) btn.disabled = false;
+      }
     }
 
     // ═══════════════════════════════════════════════

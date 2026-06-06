@@ -1160,27 +1160,16 @@ font-weight: 800;
   <script src="auth.js"></script>
   <script>
     NexoAuth.requireAuth();
-    requirePermission();
 
     // ═══════════════════════════════════════════════
     // CONSTANTS
     // ═══════════════════════════════════════════════
-    const PEDIDOS_KEY = 'nexoerp.pedidos';
-    const VENDAS_KEY = 'nexoerp.vendas';
+    let PRODUTOS_MOCK   = [];
+    let CLIENTES_DATA   = [];
+    let VENDEDORES_DATA = [];
 
-    let PRODUTOS_MOCK = [];
-    let CLIENTES_DATA = []; // { id, nome }
-
-    function loadDataSources() {
-      try {
-        const rawP = localStorage.getItem('nexoerp.produtos');
-        PRODUTOS_MOCK = rawP ? JSON.parse(rawP).filter(p => p.status !== 'inativo') : [];
-      } catch(_) { PRODUTOS_MOCK = []; }
-      try {
-        const rawC = localStorage.getItem('nexoerp.clientes');
-        CLIENTES_DATA = rawC ? JSON.parse(rawC).filter(c => c.status !== 'inativo' && c.status !== 'bloq') : [];
-      } catch(_) { CLIENTES_DATA = []; }
-    }
+    const COND_LABELS = { avista:'À vista','7':'7 dias','14':'14 dias','30':'30 dias','30-60':'30/60 dias','30-60-90':'30/60/90 dias' };
+    function condLabel(c) { return COND_LABELS[c] || c || '—'; }
 
     const STATUS_LABELS = {
       orcamento: 'Orçamento', pendente: 'Pendente', aprovado: 'Aprovado',
@@ -1199,100 +1188,49 @@ font-weight: 800;
     let confirmCb = null;
 
     // ═══════════════════════════════════════════════
-    // STORAGE
-    // ═══════════════════════════════════════════════
-    function salvar() {
-      try { localStorage.setItem(PEDIDOS_KEY, JSON.stringify(pedidos)); } catch (e) { }
-    }
-    function carregar() {
-      try {
-        const raw = localStorage.getItem(PEDIDOS_KEY);
-        return raw ? JSON.parse(raw) : null;
-      } catch (e) { return null; }
-    }
-    function seedPedidos() {
-      return [];
-      const hoje = new Date();
-      const seed = [];
-      const statuses = ['orcamento', 'pendente', 'aprovado', 'aprovado', 'faturado', 'concluido'];
-      const conds = ['avista', '30', '30-60', '30-60-90', '7', '14'];
-      const condLabels = { avista: 'À vista', '7': '7 dias', '14': '14 dias', '30': '30 dias', '30-60': '30/60 dias', '30-60-90': '30/60/90 dias' };
-      const formas = ['Boleto bancário', 'Duplicata', 'Transferência / PIX'];
-      const vendedores = ['Lucas Andrade', 'Maria Ferreira', 'Carlos Souza'];
-
-      for (let i = 0; i < 12; i++) {
-        const d = new Date(hoje); d.setDate(d.getDate() - i * 2);
-        const itens = PRODUTOS_MOCK.slice(0, Math.floor(Math.random() * 3) + 1).map(p => ({
-          ...p, qty: Math.floor(Math.random() * 10) + 1, descItem: 0,
-          subtotal: p.preco * (Math.floor(Math.random() * 10) + 1)
-        }));
-        const subtotal = itens.reduce((s, x) => s + x.subtotal, 0);
-        const st = statuses[i % statuses.length];
-        const cond = conds[i % conds.length];
-        seed.push({
-          id: `#PV${String(1000 + i).padStart(4, '0')}`,
-          num: 1000 + i,
-          cliente: CLIENTES[i % CLIENTES.length],
-          vendedor: vendedores[i % vendedores.length],
-          status: st,
-          itens, subtotal,
-          desconto: 0, total: subtotal,
-          condicao: cond,
-          condicaoLabel: condLabels[cond],
-          forma: formas[i % formas.length],
-          dataISO: d.toISOString(),
-          dataStr: d.toLocaleDateString('pt-BR'),
-          entrega: '',
-          obsCliente: '', obsInterna: '', ref: '',
-          parcelas: gerarParcelasCalc(subtotal, cond, d),
-        });
-      }
-      return seed;
-    }
-
-    // ═══════════════════════════════════════════════
     // INIT
     // ═══════════════════════════════════════════════
-    function init() {
-      loadDataSources();
-      pedidos = carregar() || seedPedidos();
-      salvar();
+    async function init() {
+      const [rp, rc, rv, rped] = await Promise.all([
+        NexoAuth.apiFetch('/produtos?status=ativo'),
+        NexoAuth.apiFetch('/clientes?secao=clientes&status=ativo'),
+        NexoAuth.apiFetch('/vendedores?status=ativo'),
+        NexoAuth.apiFetch('/pedidos'),
+      ]);
+      if (rp.ok)   PRODUTOS_MOCK   = rp.data;
+      if (rc.ok)   CLIENTES_DATA   = rc.data;
+      if (rv.ok)   VENDEDORES_DATA = rv.data;
+      if (rped.ok) pedidos         = rped.data;
+
       populateSelects();
       renderAll();
-      // datas padrão no modal
-      const hoje = new Date().toISOString().slice(0, 10);
+
+      const hoje    = new Date().toISOString().slice(0, 10);
       const validade = new Date(Date.now() + 15 * 864e5).toISOString().slice(0, 10);
-      document.getElementById('f-data').value = hoje;
+      document.getElementById('f-data').value     = hoje;
       document.getElementById('f-validade').value = validade;
       NexoAuth.renderCurrentUser();
     }
 
     function populateSelects() {
-      // ── Filtro de clientes (barra de pesquisa)
       const cf = document.getElementById('clienteFilter');
       cf.innerHTML = '<option value="">Todos os clientes</option>';
       CLIENTES_DATA.forEach(c => {
         const o = document.createElement('option'); o.value = c.id; o.textContent = c.nome; cf.appendChild(o);
       });
 
-      // ── Select de cliente no modal
       const fc = document.getElementById('f-cliente');
       fc.innerHTML = '<option value="">Selecione o cliente...</option>';
       CLIENTES_DATA.forEach(c => {
         const o = document.createElement('option'); o.value = c.id; o.textContent = c.nome; fc.appendChild(o);
       });
 
-      // ── Select de vendedor no modal (nexoerp.vendedores)
       const fv = document.getElementById('f-vendedor');
-      try {
-        const vends = JSON.parse(localStorage.getItem('nexoerp.vendedores') || '[]');
-        fv.innerHTML = '<option value="">Selecione o vendedor...</option>';
-        vends.filter(v => v.status === 'ativo').forEach(v => {
-          const o = document.createElement('option'); o.value = v.id; o.textContent = v.nome; fv.appendChild(o);
-        });
-      } catch(_) {}
+      fv.innerHTML = '<option value="">Selecione o vendedor...</option>';
+      VENDEDORES_DATA.forEach(v => {
+        const o = document.createElement('option'); o.value = v.id; o.textContent = v.nome; fv.appendChild(o);
+      });
 
-      // ── Select de produto no modal
       const is = document.getElementById('itemSelect');
       is.innerHTML = '<option value="">Selecione um produto...</option>';
       PRODUTOS_MOCK.forEach(p => {
@@ -1304,14 +1242,14 @@ font-weight: 800;
     // RENDER
     // ═══════════════════════════════════════════════
     function getFiltered() {
-      const q = (document.getElementById('searchInput').value || '').toLowerCase();
+      const q  = (document.getElementById('searchInput').value || '').toLowerCase();
       const cl = document.getElementById('clienteFilter').value;
       const co = document.getElementById('condicaoFilter').value;
       return pedidos.filter(p => {
-        const matchQ = !q || p.id.toLowerCase().includes(q) || p.cliente.toLowerCase().includes(q);
-        const matchS = currentStatus === 'todos' || p.status === currentStatus;
-        const matchCl = !cl || String(p.cliente_id) === cl || p.cliente === cl;
-        const matchCo = !co || p.condicaoLabel === co;
+        const matchQ  = !q  || p.id.toLowerCase().includes(q) || (p.cliente||'').toLowerCase().includes(q);
+        const matchS  = currentStatus === 'todos' || p.status === currentStatus;
+        const matchCl = !cl || p.clienteId === cl;
+        const matchCo = !co || condLabel(p.condicao) === co;
         return matchQ && matchS && matchCl && matchCo;
       });
     }
@@ -1361,22 +1299,24 @@ font-weight: 800;
     }
 
     function cardHTML(p) {
-      const canEnviar = p.status === 'orcamento';
+      const canEnviar  = p.status === 'orcamento';
       const canApprove = p.status === 'pendente';
       const canFaturar = p.status === 'aprovado';
+      const dataFmt    = p.dataStr || new Date(p.dataISO).toLocaleDateString('pt-BR');
+      const itensArr   = p.itens || [];
       return `<div class="pedido-card" onclick="openDetail('${p.id}')">
     <div class="pc-top">
       <div class="pc-id">${p.id}</div>
-      <div class="pc-date">${p.dataStr}</div>
+      <div class="pc-date">${dataFmt}</div>
     </div>
-    <div class="pc-cliente"><i class="bi bi-building"></i>${p.cliente}</div>
-    <div class="pc-items">${p.itens.length} ${p.itens.length === 1 ? 'item' : 'itens'} · ${p.vendedor}</div>
+    <div class="pc-cliente"><i class="bi bi-building"></i>${p.cliente || '—'}</div>
+    <div class="pc-items">${itensArr.length} ${itensArr.length === 1 ? 'item' : 'itens'} · ${p.vendedor || '—'}</div>
     <div class="pc-footer">
       <div class="pc-total">R$ ${fmt(p.total)}</div>
-      <span class="pc-cond">${p.condicaoLabel}</span>
+      <span class="pc-cond">${condLabel(p.condicao)}</span>
     </div>
     <div class="pc-actions" onclick="event.stopPropagation()">
-      ${canEnviar ? `<button class="pc-btn approve" onclick="enviarPendente('${p.id}')"><i class="bi bi-send"></i> Enviar</button>` : ''}
+      ${canEnviar  ? `<button class="pc-btn approve" onclick="enviarPendente('${p.id}')"><i class="bi bi-send"></i> Enviar</button>` : ''}
       ${canApprove ? `<button class="pc-btn approve" onclick="aprovar('${p.id}')"><i class="bi bi-check2"></i> Aprovar</button>` : ''}
       ${canFaturar ? `<button class="pc-btn approve" onclick="faturar('${p.id}')"><i class="bi bi-receipt"></i> Faturar</button>` : ''}
       <button class="pc-btn" onclick="openDetail('${p.id}')"><i class="bi bi-eye"></i> Ver</button>
@@ -1388,23 +1328,27 @@ font-weight: 800;
     function renderList() {
       const filtered = getFiltered();
       const body = document.getElementById('listBody');
-      body.innerHTML = filtered.map(p => `<tr onclick="openDetail('${p.id}')">
+      body.innerHTML = filtered.map(p => {
+        const dataFmt  = p.dataStr || new Date(p.dataISO).toLocaleDateString('pt-BR');
+        const itensArr = p.itens || [];
+        return `<tr onclick="openDetail('${p.id}')">
     <td><span style="font-weight:700">${escapeHTML(p.id)}</span></td>
-    <td style="font-weight:500">${escapeHTML(p.cliente)}</td>
-    <td style="color:var(--muted)">${p.itens.length} itens</td>
-    <td style="font-size:12px;color:var(--muted)">${escapeHTML(p.condicaoLabel)}</td>
+    <td style="font-weight:500">${escapeHTML(p.cliente||'—')}</td>
+    <td style="color:var(--muted)">${itensArr.length} itens</td>
+    <td style="font-size:12px;color:var(--muted)">${escapeHTML(condLabel(p.condicao))}</td>
     <td><span style="font-weight:800;color:var(--accent)">R$ ${fmt(p.total)}</span></td>
     <td><span class="status-pill ${p.status}">${STATUS_LABELS[p.status]}</span></td>
-    <td style="color:var(--muted);font-size:12px">${escapeHTML(p.dataStr)}</td>
-    <td style="color:var(--muted);font-size:12px">${escapeHTML(p.vendedor)}</td>
+    <td style="color:var(--muted);font-size:12px">${escapeHTML(dataFmt)}</td>
+    <td style="color:var(--muted);font-size:12px">${escapeHTML(p.vendedor||'—')}</td>
     <td><div class="action-cell" onclick="event.stopPropagation()">
       <div class="act-btn" onclick="openDetail('${p.id}')"><i class="bi bi-eye"></i></div>
       ${p.status === 'orcamento' ? `<div class="act-btn ok" onclick="enviarPendente('${p.id}')"><i class="bi bi-send"></i></div>` : ''}
-      ${p.status === 'pendente' ? `<div class="act-btn ok" onclick="aprovar('${p.id}')"><i class="bi bi-check2"></i></div>` : ''}
-      ${p.status === 'aprovado' ? `<div class="act-btn ok" onclick="faturar('${p.id}')"><i class="bi bi-receipt"></i></div>` : ''}
+      ${p.status === 'pendente'  ? `<div class="act-btn ok" onclick="aprovar('${p.id}')"><i class="bi bi-check2"></i></div>` : ''}
+      ${p.status === 'aprovado'  ? `<div class="act-btn ok" onclick="faturar('${p.id}')"><i class="bi bi-receipt"></i></div>` : ''}
       <div class="act-btn danger" onclick="cancelar('${p.id}')"><i class="bi bi-x"></i></div>
     </div></td>
-  </tr>`).join('');
+  </tr>`;
+      }).join('');
       document.getElementById('listInfo').textContent = `${filtered.length} pedido${filtered.length !== 1 ? 's' : ''}`;
     }
 
@@ -1415,35 +1359,38 @@ font-weight: 800;
       const p = pedidos.find(x => x.id === id);
       if (!p) return;
       currentPedidoId = id;
-      document.getElementById('dp-id').textContent = p.id;
-      document.getElementById('dp-data').textContent = `${p.dataStr} · ${p.vendedor}`;
-      document.getElementById('dp-meta').innerHTML = `<span class="status-pill ${p.status}">${STATUS_LABELS[p.status]}</span>`;
+      const dataFmt = p.dataStr || new Date(p.dataISO).toLocaleDateString('pt-BR');
+      document.getElementById('dp-id').textContent    = p.id;
+      document.getElementById('dp-data').textContent  = `${dataFmt} · ${p.vendedor || '—'}`;
+      document.getElementById('dp-meta').innerHTML    = `<span class="status-pill ${p.status}">${STATUS_LABELS[p.status]}</span>`;
       document.getElementById('dp-total').textContent = `R$ ${fmt(p.total)}`;
 
       document.getElementById('dp-info').innerHTML = [
-        ['Cliente', p.cliente],
-        ['Vendedor', p.vendedor],
-        ['Condição', p.condicaoLabel],
-        ['Forma', p.forma || '—'],
-        ['Referência', p.ref || '—'],
-        ['Entrega', p.entrega || '—'],
+        ['Cliente',    p.cliente    || '—'],
+        ['Vendedor',   p.vendedor   || '—'],
+        ['Condição',   condLabel(p.condicao)],
+        ['Forma',      p.forma      || '—'],
+        ['Referência', p.ref        || '—'],
+        ['Entrega',    p.entrega    || '—'],
         p.obsCliente ? ['Obs. cliente', p.obsCliente] : null,
-      ].filter(Boolean).map(([l, v]) =>
+      ].filter(Boolean).map(([l,v]) =>
         `<div class="dp-row"><span class="dp-label">${escapeHTML(l)}</span><span>${escapeHTML(v)}</span></div>`
       ).join('');
 
-      document.getElementById('dp-itens').innerHTML = p.itens.map(item =>
+      const itens = p.itens || [];
+      document.getElementById('dp-itens').innerHTML = itens.map(item =>
         `<div class="item-row">
-      <div class="item-emoji">${escapeHTML(item.emoji)}</div>
+      <div class="item-emoji">${item.emoji || '📦'}</div>
       <div class="item-info"><div class="item-name">${escapeHTML(item.nome)}</div><div class="item-qty">${item.qty}x · R$ ${fmt(item.preco)}</div></div>
       <div class="item-total">R$ ${fmt(item.subtotal)}</div>
     </div>`
       ).join('');
 
-      document.getElementById('dp-parcelas').innerHTML = p.parcelas && p.parcelas.length
-        ? `<div class="parcelas-list">${p.parcelas.map((pc, i) => `
+      const parcelas = p.parcelas || [];
+      document.getElementById('dp-parcelas').innerHTML = parcelas.length
+        ? `<div class="parcelas-list">${parcelas.map((pc,i) => `
         <div class="parcela-item">
-          <div class="parcela-num">${i + 1}</div>
+          <div class="parcela-num">${i+1}</div>
           <div class="parcela-info">
             <div class="parcela-val">R$ ${fmt(pc.valor)}</div>
             <div class="parcela-data">Vencimento: ${pc.data}</div>
@@ -1452,17 +1399,16 @@ font-weight: 800;
         </div>`).join('')}</div>`
         : `<div style="color:var(--muted);font-size:13px">—</div>`;
 
-      // ações disponíveis por status
       const acts = [];
       if (!['concluido','cancelado','faturado'].includes(p.status))
         acts.push(`<button class="dp-btn ghost" onclick="openEdit('${p.id}');closeDetail()"><i class="bi bi-pencil"></i> Editar</button>`);
-      if (p.status === 'orcamento') acts.push(`<button class="dp-btn blue" onclick="enviarPendente('${p.id}')"><i class="bi bi-send"></i> Enviar para aprovação</button>`);
-      if (p.status === 'pendente') acts.push(`<button class="dp-btn primary" onclick="aprovar('${p.id}')"><i class="bi bi-check2"></i> Aprovar</button>`);
-      if (p.status === 'aprovado') acts.push(`<button class="dp-btn purple" onclick="faturar('${p.id}')"><i class="bi bi-receipt"></i> Faturar</button>`);
-      if (p.status === 'faturado') acts.push(`<button class="dp-btn primary" onclick="concluir('${p.id}')"><i class="bi bi-check2-circle"></i> Concluir</button>`);
-      acts.push(`<button class="dp-btn blue" onclick="showToast('Imprimindo...')"><i class="bi bi-printer"></i> Imprimir</button>`);
+      if (p.status === 'orcamento') acts.push(`<button class="dp-btn blue"   onclick="enviarPendente('${p.id}')"><i class="bi bi-send"></i> Enviar para aprovação</button>`);
+      if (p.status === 'pendente')  acts.push(`<button class="dp-btn primary" onclick="aprovar('${p.id}')"><i class="bi bi-check2"></i> Aprovar</button>`);
+      if (p.status === 'aprovado')  acts.push(`<button class="dp-btn purple"  onclick="faturar('${p.id}')"><i class="bi bi-receipt"></i> Faturar</button>`);
+      if (p.status === 'faturado')  acts.push(`<button class="dp-btn primary" onclick="concluir('${p.id}')"><i class="bi bi-check2-circle"></i> Concluir</button>`);
+      acts.push(`<button class="dp-btn blue"  onclick="showToast('Imprimindo...')"><i class="bi bi-printer"></i> Imprimir</button>`);
       acts.push(`<button class="dp-btn ghost" onclick="closeDetail()"><i class="bi bi-x"></i> Fechar</button>`);
-      if (!['concluido', 'cancelado'].includes(p.status))
+      if (!['concluido','cancelado'].includes(p.status))
         acts.push(`<button class="dp-btn danger" onclick="cancelar('${p.id}')"><i class="bi bi-x-circle"></i> Cancelar</button>`);
       document.getElementById('dp-actions').innerHTML = acts.join('');
 
@@ -1473,43 +1419,51 @@ font-weight: 800;
     // ═══════════════════════════════════════════════
     // AÇÕES DE STATUS
     // ═══════════════════════════════════════════════
-    function enviarPendente(id) {
-      const p = pedidos.find(x => x.id === id); if (!p) return;
-      p.status = 'pendente'; salvar(); renderAll();
+    async function enviarPendente(id) {
+      const res = await NexoAuth.apiFetch(`/pedidos/${id}`, { method: 'PUT', body: JSON.stringify({ status: 'pendente' }) });
+      if (!res.ok) { showToast('❌ ' + res.message); return; }
+      const idx = pedidos.findIndex(x => x.id === id);
+      if (idx >= 0) pedidos[idx] = res.data;
       if (currentPedidoId === id) openDetail(id);
+      renderAll();
       showToast(`Pedido ${id} enviado para aprovação!`);
     }
-    function aprovar(id) {
-      const p = pedidos.find(x => x.id === id); if (!p) return;
-      p.status = 'aprovado'; salvar(); renderAll();
+    async function aprovar(id) {
+      const res = await NexoAuth.apiFetch(`/pedidos/${id}`, { method: 'PUT', body: JSON.stringify({ status: 'aprovado' }) });
+      if (!res.ok) { showToast('❌ ' + res.message); return; }
+      const idx = pedidos.findIndex(x => x.id === id);
+      if (idx >= 0) pedidos[idx] = res.data;
       if (currentPedidoId === id) openDetail(id);
+      renderAll();
       showToast(`Pedido ${id} aprovado!`);
     }
-    function faturar(id) {
-      const p = pedidos.find(x => x.id === id); if (!p) return;
-      p.status = 'faturado'; salvar();
-      registrarVenda(p);
-      _ajustarEstoque(p.itens, 'saida', `Faturamento ${p.id}`);
-      _criarLancamentoPedido(p);
-      renderAll();
+    async function faturar(id) {
+      const res = await NexoAuth.apiFetch(`/pedidos/${id}`, { method: 'PUT', body: JSON.stringify({ status: 'faturado' }) });
+      if (!res.ok) { showToast('❌ ' + res.message); return; }
+      const idx = pedidos.findIndex(x => x.id === id);
+      if (idx >= 0) pedidos[idx] = res.data;
       if (currentPedidoId === id) openDetail(id);
+      renderAll();
       showToast(`Pedido ${id} faturado e lançado em Vendas!`);
     }
-    function concluir(id) {
-      const p = pedidos.find(x => x.id === id); if (!p) return;
-      p.status = 'concluido'; salvar(); renderAll();
+    async function concluir(id) {
+      const res = await NexoAuth.apiFetch(`/pedidos/${id}`, { method: 'PUT', body: JSON.stringify({ status: 'concluido' }) });
+      if (!res.ok) { showToast('❌ ' + res.message); return; }
+      const idx = pedidos.findIndex(x => x.id === id);
+      if (idx >= 0) pedidos[idx] = res.data;
       if (currentPedidoId === id) openDetail(id);
+      renderAll();
       showToast(`Pedido ${id} concluído!`);
     }
     function cancelar(id) {
       const p = pedidos.find(x => x.id === id); if (!p) return;
-      const statusAnterior = p.status;
-      openConfirm(`Pedido ${id} — ${p.cliente}`, () => {
-        p.status = 'cancelado'; salvar(); renderAll(); closeDetail();
-        if (['faturado', 'concluido'].includes(statusAnterior)) {
-          _ajustarEstoque(p.itens, 'entrada', `Cancelamento ${p.id}`);
-          _cancelarLancamentoPedido(p.id);
-        }
+      openConfirm(`Pedido ${id} — ${p.cliente || ''}`, async () => {
+        const res = await NexoAuth.apiFetch(`/pedidos/${id}`, { method: 'DELETE' });
+        if (!res.ok) { showToast('❌ ' + res.message); return; }
+        const idx = pedidos.findIndex(x => x.id === id);
+        if (idx >= 0) pedidos[idx].status = 'cancelado';
+        closeDetail();
+        renderAll();
         showToast('Pedido cancelado.');
       });
     }
@@ -1520,135 +1474,6 @@ font-weight: 800;
     }
     function closeConfirm() { document.getElementById('confirmOverlay').classList.remove('open'); confirmCb = null; }
     function doConfirm()    { if (confirmCb) confirmCb(); closeConfirm(); }
-
-    // ═══════════════════════════════════════════════
-    // INTEGRAÇÃO COM ESTOQUE
-    // ═══════════════════════════════════════════════
-    // Ajusta nexoerp.produtos e grava em nexoerp.movimentacoes.
-    // tipo: 'saida' (faturamento) | 'entrada' (cancelamento de pedido faturado)
-    function _ajustarEstoque(itens, tipo, motivo) {
-      try {
-        const session = JSON.parse(localStorage.getItem('nexoerp.session') || '{}');
-        const operador = session?.user?.name || 'Sistema';
-        const prodRaw = localStorage.getItem('nexoerp.produtos');
-        if (!prodRaw) return;
-        const prods = JSON.parse(prodRaw);
-        if (!Array.isArray(prods)) return;
-        const movRaw = localStorage.getItem('nexoerp.movimentacoes');
-        const movs = movRaw ? JSON.parse(movRaw) : [];
-        const now = new Date();
-        const dataStr = `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
-        itens.forEach(item => {
-          const prodId = item.produto_id || item.id;
-          const idx = prods.findIndex(p => p.id === prodId);
-          if (idx >= 0) {
-            if (tipo === 'saida') prods[idx].estoque = Math.max(0, (prods[idx].estoque || 0) - item.qty);
-            else                  prods[idx].estoque = (prods[idx].estoque || 0) + item.qty;
-          }
-          movs.unshift({
-            id: movs.length + 1,
-            tipo,
-            prodId,
-            produto: (idx >= 0 ? prods[idx].nome : '') || item.nome || '',
-            qty: tipo === 'saida' ? -item.qty : item.qty,
-            deposito: (idx >= 0 ? prods[idx].deposito : '') || 'Depósito Principal',
-            destino: '',
-            motivo,
-            operador,
-            data: dataStr,
-          });
-        });
-        localStorage.setItem('nexoerp.produtos', JSON.stringify(prods));
-        localStorage.setItem('nexoerp.movimentacoes', JSON.stringify(movs));
-      } catch (_) { }
-    }
-
-    // ═══════════════════════════════════════════════
-    // INTEGRAÇÃO FINANCEIRA
-    // ═══════════════════════════════════════════════
-    function _criarLancamentoPedido(p) {
-      try {
-        const raw = localStorage.getItem('nexoerp.financeiro');
-        const lancamentos = raw ? JSON.parse(raw) : [];
-        const now = new Date();
-        const parcelas = p.parcelas && p.parcelas.length
-          ? p.parcelas
-          : [{ valor: p.total, dataISO: now.toISOString().slice(0, 10), data: now.toLocaleDateString('pt-BR'), status: 'A vencer' }];
-
-        parcelas.forEach((parcela, idx) => {
-          const vencimento = parcela.dataISO || (() => {
-            const parts = (parcela.data || '').split('/');
-            return parts.length === 3
-              ? `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`
-              : now.toISOString().slice(0, 10);
-          })();
-          lancamentos.unshift({
-            id: Date.now() + idx,
-            tipo: 'receita',
-            categoria: 'Vendas',
-            descricao: `Pedido ${p.id} — ${p.cliente}${parcelas.length > 1 ? ` (${idx + 1}/${parcelas.length})` : ''}`,
-            valor: parcela.valor,
-            vencimento,
-            status: 'pendente',
-            forma_pgto: p.forma || '',
-            data: now.toLocaleDateString('pt-BR'),
-            pedido_id: p.id,
-            cliente_id: p.cliente_id || null,
-            origem: 'pedido',
-            parcela_idx: idx + 1,
-            parcelas_total: parcelas.length,
-          });
-        });
-        localStorage.setItem('nexoerp.financeiro', JSON.stringify(lancamentos));
-      } catch (_) { }
-    }
-
-    function _cancelarLancamentoPedido(pedidoId) {
-      try {
-        const raw = localStorage.getItem('nexoerp.financeiro');
-        if (!raw) return;
-        const lancamentos = JSON.parse(raw);
-        let changed = false;
-        lancamentos.forEach(l => {
-          if (l.pedido_id === pedidoId && l.status !== 'cancelado') {
-            l.status = 'cancelado';
-            changed = true;
-          }
-        });
-        if (changed) localStorage.setItem('nexoerp.financeiro', JSON.stringify(lancamentos));
-      } catch (_) { }
-    }
-
-    // ═══════════════════════════════════════════════
-    // INTEGRAÇÃO COM VENDAS
-    // ═══════════════════════════════════════════════
-    function registrarVenda(p) {
-      try {
-        const raw = localStorage.getItem(VENDAS_KEY);
-        const vendas = raw ? JSON.parse(raw) : [];
-        const now = new Date();
-        vendas.unshift({
-          id: `#V${String(5000 + Math.floor(Math.random() * 999)).padStart(4, '0')}`,
-          pedidoRef: p.id,
-          cliente: p.cliente,
-          cliente_id: p.cliente_id || null,
-          operador: p.vendedor,
-          operador_id: p.vendedor_id || null,
-          metodo: p.forma || 'Boleto bancário',
-          itens: p.itens,
-          subtotal: p.subtotal,
-          desconto: p.desconto || 0,
-          total: p.total,
-          status: 'concluida',
-          dataISO: now.toISOString(),
-          dataStr: now.toLocaleDateString('pt-BR'),
-          horaStr: now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-          tipo: 'b2b',
-          estornoMotivo: '',
-        });
-        localStorage.setItem(VENDAS_KEY, JSON.stringify(vendas));
-      } catch (e) { }
-    }
 
     // ═══════════════════════════════════════════════
     // MODAL NOVO PEDIDO
@@ -1685,12 +1510,12 @@ font-weight: 800;
     // itens
     function addItem() {
       const sel = document.getElementById('itemSelect');
-      const id = parseInt(sel.value); if (!id) return;
+      const id = sel.value; if (!id) return;
       const prod = PRODUTOS_MOCK.find(p => p.id === id);
       if (!prod) return;
       const existing = itensPedido.find(x => x.id === id);
       if (existing) { existing.qty++; existing.subtotal = existing.preco * existing.qty; }
-      else itensPedido.push({ id: prod.id, produto_id: prod.id, nome: prod.nome, emoji: prod.emoji || '📦', preco: prod.preco, qty: 1, descItem: 0, subtotal: prod.preco });
+      else itensPedido.push({ id: prod.id, nome: prod.nome, emoji: prod.emoji || '📦', preco: prod.preco, qty: 1, descItem: 0, subtotal: prod.preco });
       renderItens(); calcResumo();
     }
     function removeItem(id) { itensPedido = itensPedido.filter(x => x.id !== id); renderItens(); calcResumo(); }
@@ -1707,11 +1532,11 @@ font-weight: 800;
       empty.style.display = 'none';
       body.innerHTML = itensPedido.map(item => `<tr>
     <td>${item.emoji} ${item.nome}</td>
-    <td><input class="item-qty-inp" type="number" value="${item.qty}" min="1" onchange="updateQty(${item.id},this.value)"></td>
+    <td><input class="item-qty-inp" type="number" value="${item.qty}" min="1" onchange="updateQty('${item.id}',this.value)"></td>
     <td>R$ ${fmt(item.preco)}</td>
-    <td><input class="item-qty-inp" type="number" value="${item.descItem || 0}" min="0" max="100" onchange="itensPedido.find(x=>x.id==${item.id}).descItem=+this.value;updateQty(${item.id},${item.qty})"></td>
+    <td><input class="item-qty-inp" type="number" value="${item.descItem || 0}" min="0" max="100" onchange="itensPedido.find(x=>x.id==='${item.id}').descItem=+this.value;updateQty('${item.id}',${item.qty})"></td>
     <td style="font-weight:700;color:var(--accent)">R$ ${fmt(item.subtotal)}</td>
-    <td><span class="item-remove" onclick="removeItem(${item.id})"><i class="bi bi-x"></i></span></td>
+    <td><span class="item-remove" onclick="removeItem('${item.id}')"><i class="bi bi-x"></i></span></td>
   </tr>`).join('');
     }
     function calcResumo() {
@@ -1759,54 +1584,60 @@ font-weight: 800;
     </div>`).join('')}</div>`;
     }
 
-    function savePedido() {
+    async function savePedido() {
       const fcEl = document.getElementById('f-cliente');
-      const cliente_id = fcEl.value ? Number(fcEl.value) : null;
-      const cliente    = fcEl.options[fcEl.selectedIndex]?.text || '';
-      if (!cliente_id) { showToast('Selecione um cliente!'); switchTab(document.querySelector('.m-tab'), 't-dados'); return; }
+      const clienteId = fcEl.value || null;
+      const cliente   = fcEl.options[fcEl.selectedIndex]?.text || '';
+      if (!clienteId) { showToast('Selecione um cliente!'); switchTab(document.querySelectorAll('.m-tab')[0], 't-dados'); return; }
       if (!itensPedido.length) { showToast('Adicione pelo menos um item!'); switchTab(document.querySelectorAll('.m-tab')[1], 't-itens'); return; }
 
       const fvEl = document.getElementById('f-vendedor');
-      const vendedor_id = fvEl.value || null;
-      const vendedor    = fvEl.options[fvEl.selectedIndex]?.text || '';
+      const vendedorId = fvEl.value || null;
+      const vendedor   = fvEl.options[fvEl.selectedIndex]?.text || '';
 
       const sub  = itensPedido.reduce((s, x) => s + x.subtotal, 0);
       const disc = sub * ((parseFloat(document.getElementById('f-desconto-geral').value) || 0) / 100);
       const tot  = sub - disc;
       const cond = document.getElementById('f-condicao').value;
-      const condLabels = { avista:'À vista','7':'7 dias','14':'14 dias','30':'30 dias','30-60':'30/60 dias','30-60-90':'30/60/90 dias' };
       const existing = editingId ? pedidos.find(x => x.id === editingId) : null;
-      const now = existing ? new Date(existing.dataISO) : new Date();
+      const isEdit = !!editingId;
 
-      const pedido = {
-        id:           existing ? existing.id   : `#PV${String(1000 + pedidos.length + 1).padStart(4,'0')}`,
-        num:          existing ? existing.num  : 1000 + pedidos.length + 1,
-        cliente,      cliente_id,
-        vendedor,     vendedor_id,
-        status:       existing ? existing.status : document.getElementById('f-status').value,
-        itens:        itensPedido.map(i => ({ ...i, produto_id: i.id })),
-        subtotal: sub, desconto: disc, total: tot,
-        condicao:     cond, condicaoLabel: condLabels[cond],
-        forma:        document.getElementById('f-forma').value,
-        dataISO:      now.toISOString(), dataStr: now.toLocaleDateString('pt-BR'),
-        validade:     document.getElementById('f-validade').value,
-        entrega:      document.getElementById('f-entrega').value,
-        obsCliente:   document.getElementById('f-obs-cliente').value,
-        obsInterna:   document.getElementById('f-obs-interna').value,
-        ref:          document.getElementById('f-ref').value,
-        parcelas:     existing ? existing.parcelas : gerarParcelasCalc(tot, cond, now),
+      const payload = {
+        cliente,    clienteId,
+        vendedor,   vendedorId,
+        status:     existing ? existing.status : document.getElementById('f-status').value,
+        itens:      itensPedido,
+        subtotal:   sub,
+        desconto:   disc,
+        total:      tot,
+        condicao:   cond,
+        forma:      document.getElementById('f-forma').value,
+        dataStr:    existing ? existing.dataStr : new Date().toLocaleDateString('pt-BR'),
+        validade:   document.getElementById('f-validade').value,
+        entrega:    document.getElementById('f-entrega').value,
+        obsCliente: document.getElementById('f-obs-cliente').value,
+        obsInterna: document.getElementById('f-obs-interna').value,
+        ref:        document.getElementById('f-ref').value,
+        parcelas:   existing ? existing.parcelas : gerarParcelasCalc(tot, cond, new Date()),
       };
 
-      if (editingId) {
+      const res = editingId
+        ? await NexoAuth.apiFetch(`/pedidos/${editingId}`, { method: 'PUT', body: JSON.stringify(payload) })
+        : await NexoAuth.apiFetch('/pedidos', { method: 'POST', body: JSON.stringify(payload) });
+
+      if (!res.ok) { showToast('❌ ' + (res.message || 'Erro ao salvar')); return; }
+
+      const saved = res.data;
+      if (isEdit) {
         const idx = pedidos.findIndex(x => x.id === editingId);
-        if (idx >= 0) pedidos[idx] = pedido;
-        showToast(`Pedido ${pedido.id} atualizado!`);
+        if (idx >= 0) pedidos[idx] = saved;
       } else {
-        pedidos.unshift(pedido);
-        showToast(`Pedido ${pedido.id} criado com sucesso!`);
+        pedidos.unshift(saved);
       }
       editingId = null;
-      salvar(); closeModal(); renderAll();
+      closeModal();
+      renderAll();
+      showToast(isEdit ? `Pedido ${saved.id} atualizado!` : `Pedido ${saved.id} criado com sucesso!`);
     }
 
     // ═══════════════════════════════════════════════
@@ -1815,20 +1646,18 @@ font-weight: 800;
     function openEdit(id) {
       const p = pedidos.find(x => x.id === id); if (!p) return;
       editingId = id;
-      itensPedido = p.itens.map(i => ({ ...i }));
+      itensPedido = (p.itens || []).map(i => ({ ...i }));
       document.getElementById('modalTitle').textContent = `Editar Pedido ${id}`;
-      // Restaura cliente por ID; fallback por nome para pedidos antigos
       const fcEl = document.getElementById('f-cliente');
-      fcEl.value = p.cliente_id || '';
+      fcEl.value = p.clienteId || '';
       if (!fcEl.value) selVal('f-cliente', p.cliente);
 
-      // Restaura vendedor por ID; fallback por nome para pedidos antigos
       const fvEl = document.getElementById('f-vendedor');
-      fvEl.value = p.vendedor_id || '';
+      fvEl.value = p.vendedorId || '';
       if (!fvEl.value) selVal('f-vendedor', p.vendedor);
       selVal('f-condicao', p.condicao);
       selVal('f-forma', p.forma);
-      document.getElementById('f-data').value     = p.dataISO ? p.dataISO.slice(0,10) : '';
+      document.getElementById('f-data').value     = p.dataISO ? new Date(p.dataISO).toISOString().slice(0,10) : '';
       document.getElementById('f-validade').value = p.validade || new Date(Date.now()+15*864e5).toISOString().slice(0,10);
       document.getElementById('f-entrega').value      = p.entrega || '';
       document.getElementById('f-obs-cliente').value  = p.obsCliente || '';

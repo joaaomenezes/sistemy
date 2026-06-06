@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
@@ -5904,6 +5904,7 @@
   <script src="auth.js"></script>
   <script>
     NexoAuth.requireAuth();
+    requirePermission();
 
     // ═══════════════════════════════════════════════
     // CONFIGURAÇÕES DO PDV
@@ -5943,129 +5944,45 @@
     // DATA
     // ═══════════════════════════════════════════════
 
-    // Carrega produtos do nexoerp.produtos (compartilhado com produtos.html).
-    let PRODUCTS = (function () {
-      try {
-        const raw = localStorage.getItem('nexoerp.produtos');
-        if (raw) {
-          const stored = JSON.parse(raw);
-          if (Array.isArray(stored) && stored.length) {
-            return stored
-              .filter(p => p.status !== 'inativo' && p.exibirPdv !== false)
-              .map(p => ({
-                id: p.id,
-                nome: p.nome || '—',
-                sku: p.sku || '',
-                ean: p.ean || '',
-                cat: p.cat || 'Outros',
-                preco: p.preco || 0,
-                estoque: p.estoque ?? 0,
-                emoji: p.emoji || '📦',
-                promo: !!p.destaque,
-                vendas: p.vendas || 0,
-                custo: p.custo,
-                estoqueMin: p.estoqueMin,
-                estoqueMax: p.estoqueMax,
-                deposito: p.deposito,
-                fornecedor: p.fornecedor,
-                ncm: p.ncm,
-                marca: p.marca,
-                unidade: p.unidade,
-                localizacao: p.posicao,
-                vendaSemEstoque: !!p.vendaSemEstoque,
-                controlEstoque: p.controlEstoque !== false,
-              }));
-          }
-        }
-      } catch (_) { }
-      return [];
-    })();
+    let PRODUCTS = [];
 
-    // Persiste alterações de estoque de volta em nexoerp.produtos.
-    // No-op quando estiver usando os dados demo (sem LS).
-    function _saveProdutos() {
-      try {
-        const raw = localStorage.getItem('nexoerp.produtos');
-        if (!raw) return;
-        const stored = JSON.parse(raw);
-        if (!Array.isArray(stored)) return;
-        PRODUCTS.forEach(pdvProd => {
-          const idx = stored.findIndex(p => p.id === pdvProd.id);
-          if (idx >= 0) stored[idx].estoque = pdvProd.estoque;
-        });
-        localStorage.setItem('nexoerp.produtos', JSON.stringify(stored));
-      } catch (_) { }
+    function _mapProduto(p) {
+      return {
+        id: p.id,
+        nome: p.nome || '—',
+        sku: p.sku || '',
+        ean: p.ean || '',
+        cat: p.cat || 'Outros',
+        preco: p.preco || 0,
+        estoque: p.estoque ?? 0,
+        emoji: p.emoji || '📦',
+        promo: !!p.destaque,
+        vendas: p.vendas || 0,
+        custo: p.custo,
+        estoqueMin: p.estoqueMin,
+        estoqueMax: p.estoqueMax,
+        deposito: p.deposito,
+        fornecedor: p.fornecedor,
+        ncm: p.ncm,
+        marca: p.marca,
+        unidade: p.unidade,
+        localizacao: p.posicao,
+        vendaSemEstoque: !!p.vendaSemEstoque,
+        controlEstoque: p.controlEstoque !== false,
+      };
     }
 
-    // Grava saídas/entradas em nexoerp.movimentacoes sem alterar estoque
-    // (o PDV já fez o ajuste via PRODUCTS antes de chamar esta função).
-    function _addMovimentacoes(items, tipo, motivo) {
+    async function loadProdutos() {
       try {
-        const session = JSON.parse(localStorage.getItem('nexoerp.session') || '{}');
-        const operador = session?.user?.name || 'PDV';
-        const raw = localStorage.getItem('nexoerp.movimentacoes');
-        const movs = raw ? JSON.parse(raw) : [];
-        const prodRaw = localStorage.getItem('nexoerp.produtos');
-        const prods = prodRaw ? JSON.parse(prodRaw) : [];
-        const now = new Date();
-        const dataStr = `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
-        items.forEach(item => {
-          const prod = prods.find(p => p.id === item.id);
-          movs.unshift({
-            id: Date.now() + Math.random(),
-            tipo,
-            prodId: item.id,
-            produto: prod?.nome || item.nome || '',
-            qty: tipo === 'saida' ? -item.qty : item.qty,
-            deposito: prod?.deposito || 'Depósito Principal',
-            destino: '',
-            motivo,
-            operador,
-            dataISO: now.toISOString(),
-            data: dataStr,
-          });
-        });
-        localStorage.setItem('nexoerp.movimentacoes', JSON.stringify(movs));
-      } catch (_) { }
-    }
-
-    // Cria lançamento de receita em nexoerp.financeiro com referência ao id da venda PDV.
-    function _criarLancamentoFinanceiro(vendaId, total, metodo, cliente) {
-      try {
-        const raw = localStorage.getItem('nexoerp.financeiro');
-        const lancamentos = raw ? JSON.parse(raw) : [];
-        const now = new Date();
-        lancamentos.unshift({
-          id: Date.now(),
-          tipo: 'receita',
-          categoria: 'Vendas',
-          descricao: `Venda PDV ${vendaId} — ${cliente}`,
-          valor: total,
-          vencimento: now.toISOString().slice(0, 10),
-          pago_em: now.toISOString().slice(0, 10),
-          status: 'pago',
-          forma_pgto: metodo,
-          data: now.toLocaleDateString('pt-BR'),
-          venda_id: vendaId,
-          origem: 'pdv',
-        });
-        localStorage.setItem('nexoerp.financeiro', JSON.stringify(lancamentos));
-      } catch (_) { }
-    }
-
-    // Marca o lançamento financeiro de uma venda PDV como estornado.
-    function _estornarLancamentoFinanceiro(vendaId) {
-      try {
-        const raw = localStorage.getItem('nexoerp.financeiro');
-        if (!raw) return;
-        const lancamentos = JSON.parse(raw);
-        const idx = lancamentos.findIndex(l => l.venda_id === vendaId);
-        if (idx >= 0) {
-          lancamentos[idx].status = 'estornado';
-          localStorage.setItem('nexoerp.financeiro', JSON.stringify(lancamentos));
+        const r = await NexoAuth.apiFetch('/produtos');
+        if (r.ok && Array.isArray(r.data)) {
+          PRODUCTS = r.data
+            .filter(p => p.status !== 'inativo' && p.exibirPdv !== false)
+            .map(_mapProduto);
         }
       } catch (_) { }
     }
+
 
     let cart = [];
     let discType = '%';
@@ -6358,15 +6275,15 @@
       if (barText) barText.textContent = `${n} venda${n !== 1 ? 's' : ''} suspensa${n !== 1 ? 's' : ''}`;
     }
 
-    // Restaura vendas e stats do dia atual a partir de nexoerp.pdv.vendas
-    function _loadTodayData() {
+    // Restaura vendas e stats do turno atual (operador logado) via API
+    async function _loadTodayData() {
       try {
-        const raw = localStorage.getItem('nexoerp.pdv.vendas');
-        if (!raw) return;
-        const all = JSON.parse(raw);
-        if (!Array.isArray(all)) return;
         const today = new Date().toLocaleDateString('pt-BR');
-        const hojeVendas = all.filter(v => v.dataStr === today && v.tipo === 'pdv');
+        const session = NexoAuth.getSession();
+        const opId = session?.user?.id || '';
+        const r = await NexoAuth.apiFetch(`/vendas?tipo=pdv&operadorId=${opId}`);
+        if (!r.ok || !Array.isArray(r.data)) return;
+        const hojeVendas = r.data.filter(v => v.dataStr === today);
         if (!hojeVendas.length) return;
 
         let count = 0, total = 0;
@@ -6401,10 +6318,12 @@
       } catch (_) { }
     }
 
-    function init() {
+    async function init() {
       NexoAuth.renderCurrentUser();
       _loadSuspended();
-      _loadTodayData();
+      await loadProdutos();
+      await _loadTodayData();
+      await loadCaixa();
       buildCategoriasBar();
       calcPageSize();
       renderProducts();
@@ -6504,7 +6423,7 @@
         const bar = stockBarStyle(p.estoque);
         const nomeSafe = escapeHtml(p.nome);
         const skuSafe = escapeHtml(p.sku);
-        return `<div class="prod-card ${outStock ? 'out' : ''}" id="pc-${p.id}" onclick="addToCart(${p.id})" title="${nomeSafe} — ${skuSafe}">
+        return `<div class="prod-card ${outStock ? 'out' : ''}" id="pc-${p.id}" onclick="addToCart('${p.id}')" title="${nomeSafe} — ${skuSafe}">
       <div class="prod-img" style="background:${outStock ? 'rgba(255,71,87,.04)' : 'rgba(0,200,150,.04)'}">
         ${p.emoji}
         ${lowStock ? `<span class="prod-low-badge">Baixo</span>` : ''}
@@ -6750,7 +6669,7 @@
         <div class="ci-price${item._precoNegociado ? ' ci-price-negociado' : ''}">
           R$ <input class="ci-price-edit" type="number" min="0" step="0.01"
             value="${item.preco.toFixed(2)}"
-            onchange="setItemPrice(${item.id}, this.value)"
+            onchange="setItemPrice('${item.id}', this.value)"
             onclick="this.select()" title="Clique para negociar o preço"
             inputmode="decimal"> un
         </div>
@@ -6758,13 +6677,13 @@
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
         <div class="ci-subtotal">R$ ${fmt(item.preco * item.qty)}</div>
         <div class="ci-qty">
-          <div class="qty-btn" onclick="changeQty(${item.id},-1)">−</div>
+          <div class="qty-btn" onclick="changeQty('${item.id}',-1)">−</div>
           <input class="qty-val" type="number" min="1" max="${maxQty}" value="${item.qty}"
-            onchange="setQty(${item.id}, this.value)" onclick="this.select()" inputmode="numeric">
-          <div class="qty-btn" onclick="changeQty(${item.id},1)">+</div>
+            onchange="setQty('${item.id}', this.value)" onclick="this.select()" inputmode="numeric">
+          <div class="qty-btn" onclick="changeQty('${item.id}',1)">+</div>
         </div>
       </div>
-      <div class="ci-remove" onclick="removeFromCart(${item.id})"><i class="bi bi-x"></i></div>
+      <div class="ci-remove" onclick="removeFromCart('${item.id}')"><i class="bi bi-x"></i></div>
     </div>
   `;
       }).join('');
@@ -7745,7 +7664,39 @@
       };
     }
 
-    function _registrarVenda(sale, total) {
+    async function _registrarVenda(sale, total) {
+      const session = NexoAuth.getSession();
+      const operador = session?.user?.name || 'PDV';
+      const operadorId = session?.user?.id || null;
+      const now = new Date();
+
+      const payload = {
+        cliente: sale.client || 'Venda Balcão',
+        operador,
+        operadorId,
+        metodo: selectedMethod || 'dinheiro',
+        itens: (sale.cartSnapshot || []).map(c => ({
+          id: c.id,
+          nome: c.nome || '',
+          emoji: c.emoji || '📦',
+          preco: c.preco,
+          qty: c.qty,
+          subtotal: c.preco * c.qty,
+        })),
+        subtotal: sale.subtotal,
+        desconto: sale.desconto || 0,
+        total,
+        tipo: 'pdv',
+        dataStr: now.toLocaleDateString('pt-BR'),
+        horaStr: sale.time || now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+      };
+
+      const r = await NexoAuth.apiFetch('/vendas', { method: 'POST', body: JSON.stringify(payload) });
+      if (!r.ok) throw new Error(r.message || 'Erro ao registrar venda');
+
+      // Usa o id gerado pela API
+      sale.id = r.data.id;
+
       salesHistory.unshift(sale);
       todayStats.count++;
       todayStats.total += total;
@@ -7753,42 +7704,14 @@
       cupomAtivo = null;
       updateCupomBadge();
 
-      // ── Persistência em nexoerp.pdv.vendas ──
-      try {
-        const session = JSON.parse(localStorage.getItem('nexoerp.session') || '{}');
-        const operador = session?.user?.name || 'PDV';
-        const operador_id = session?.user?.id || null;
-        const now = new Date();
-        const venda = {
-          id: `#PDV${now.getTime().toString().slice(-6)}`,
-          cliente: sale.client || 'Venda Balcão',
-          operador,
-          operador_id,
-          metodo: selectedMethod || 'dinheiro',
-          itens: (sale.cartSnapshot || []).map(c => ({
-            id: c.id,
-            produto_id: c.id,
-            nome: c.nome || '',
-            emoji: c.emoji || '📦',
-            preco: c.preco,
-            qty: c.qty,
-            subtotal: c.preco * c.qty,
-          })),
-          subtotal: sale.subtotal,
-          desconto: sale.desconto || 0,
-          total,
-          status: 'concluida',
-          dataISO: now.toISOString(),
-          dataStr: now.toLocaleDateString('pt-BR'),
-          horaStr: sale.time || now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-          estornoMotivo: '',
-          tipo: 'pdv',
-        };
-        const raw = localStorage.getItem('nexoerp.pdv.vendas');
-        const lista = raw ? JSON.parse(raw) : [];
-        lista.unshift(venda);
-        localStorage.setItem('nexoerp.pdv.vendas', JSON.stringify(lista));
-      } catch (e) { }
+      // Atualiza estoque local para reflectir o UI imediatamente
+      (sale.cartSnapshot || []).forEach(item => {
+        const prod = PRODUCTS.find(p => p.id === item.id);
+        if (prod) {
+          if (prod.controlEstoque !== false) prod.estoque = Math.max(0, prod.estoque - item.qty);
+          prod.vendas = (prod.vendas || 0) + item.qty;
+        }
+      });
     }
 
     function _mostrarSucesso(sale, total) {
@@ -7801,22 +7724,21 @@
       document.getElementById('successOverlay').classList.add('show');
     }
 
-    function finalizarVenda() {
-      const total = getTotal();
-      const sale = _buildSale(total);
-      _registrarVenda(sale, total);
-      closePayModal();
-      _mostrarSucesso(sale, total);
-      cart.forEach(item => {
-        const prod = PRODUCTS.find(p => p.id === item.id);
-        if (prod && prod.controlEstoque !== false) {
-          prod.estoque = Math.max(0, prod.estoque - item.qty);
-        }
-      });
-      _saveProdutos();
-      _addMovimentacoes(cart, 'saida', `Venda PDV ${sale.id}`);
-      _criarLancamentoFinanceiro(sale.id, total, selectedMethod, sale.client || 'Venda Balcão');
-      clearCart();
+    async function finalizarVenda() {
+      const btn = document.getElementById('btnConfirmPay');
+      if (btn) btn.disabled = true;
+      try {
+        const total = getTotal();
+        const sale = _buildSale(total);
+        await _registrarVenda(sale, total);
+        closePayModal();
+        _mostrarSucesso(sale, total);
+        clearCart();
+      } catch (err) {
+        showToast('❌ Erro ao registrar venda. Tente novamente.');
+      } finally {
+        if (btn) btn.disabled = false;
+      }
     }
 
     function closeSuccess() {
@@ -7916,31 +7838,32 @@
       showConfirm(
         'Estornar venda?',
         `${sale.id} · R$ ${sale.total} · ${sale.method}. O estoque será devolvido e o valor subtraído do turno.`,
-        () => {
-          sale.estornada = true;
-          // Persiste status de estorno no nexoerp.pdv.vendas
+        async () => {
           try {
-            const rawV = localStorage.getItem('nexoerp.pdv.vendas');
-            if (rawV) {
-              const lista = JSON.parse(rawV);
-              const vi = lista.findIndex(v => v.id === sale.id);
-              if (vi >= 0) { lista[vi].status = 'estornada'; localStorage.setItem('nexoerp.pdv.vendas', JSON.stringify(lista)); }
-            }
-          } catch (_) { }
-          const val = parseFloat(String(sale.total).replace(/\./g, '').replace(',', '.')) || 0;
-          todayStats.count = Math.max(0, todayStats.count - 1);
-          todayStats.total = Math.max(0, todayStats.total - val);
-          (sale.cartSnapshot || []).forEach(item => {
-            const prod = PRODUCTS.find(p => p.id === item.id);
-            if (prod) prod.estoque += item.qty;
-          });
-          _saveProdutos();
-          _addMovimentacoes(sale.cartSnapshot || [], 'entrada', `Estorno PDV ${sale.id}`);
-          _estornarLancamentoFinanceiro(sale.id);
-          updateStats();
-          renderProducts();
-          renderDrawer();
-          showToast(`↩️ Venda ${sale.id} estornada`);
+            const r = await NexoAuth.apiFetch(`/vendas/${sale.id}`, {
+              method: 'PUT',
+              body: JSON.stringify({ status: 'estornada', estornoMotivo: 'Estorno manual PDV' }),
+            });
+            if (!r.ok) { showToast('❌ ' + (r.message || 'Erro ao estornar venda')); return; }
+
+            sale.estornada = true;
+            const val = parseFloat(String(sale.total).replace(/\./g, '').replace(',', '.')) || 0;
+            todayStats.count = Math.max(0, todayStats.count - 1);
+            todayStats.total = Math.max(0, todayStats.total - val);
+
+            // Reverte estoque local
+            (sale.cartSnapshot || []).forEach(item => {
+              const prod = PRODUCTS.find(p => p.id === item.id);
+              if (prod) prod.estoque += item.qty;
+            });
+
+            updateStats();
+            renderProducts();
+            renderDrawer();
+            showToast(`↩️ Venda ${sale.id} estornada`);
+          } catch (err) {
+            showToast('❌ Erro ao estornar: ' + err.message);
+          }
         },
         { confirmText: 'Estornar', icon: '↩️' }
       );
@@ -8025,11 +7948,16 @@
     // ═══════════════════════════════════════════════
     // CAIXA — Abertura, Fechamento, Sangria, Suprimento
     // ═══════════════════════════════════════════════
-    const CAIXA_KEY = 'nexoerp.pdv.caixa';
-    let caixaState = JSON.parse(localStorage.getItem(CAIXA_KEY) || 'null');
+    let caixaState = null;
     let caixaTab = 'sangria';
 
-    function saveCaixa() { localStorage.setItem(CAIXA_KEY, JSON.stringify(caixaState)); }
+    async function loadCaixa() {
+      try {
+        const r = await NexoAuth.apiFetch('/caixas/aberto');
+        if (r.ok) caixaState = r.data;
+      } catch (_) { }
+    }
+
     function isCaixaAberto() { return caixaState && caixaState.aberto; }
 
     function initCaixaUI() {
@@ -8078,16 +8006,22 @@
         <button class="cm-btn confirm" onclick="confirmarAbertura()"><i class="bi bi-unlock-fill"></i> Abrir Caixa</button>`;
     }
 
-    function confirmarAbertura() {
+    async function confirmarAbertura() {
       const fundo = parseFloat(document.getElementById('caixaFundo').value) || 0;
       const operador = document.getElementById('caixaOperador').value || 'Operador';
       const obs = document.getElementById('caixaObs').value;
-      const agora = new Date();
-      caixaState = {
-        aberto: true, operador, fundo, abertura: agora.toISOString(),
-        aberturaStr: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }), obs, movimentos: []
-      };
-      saveCaixa(); initCaixaUI(); closeCaixa();
+      const session = NexoAuth.getSession();
+      const aberturaStr = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+      const r = await NexoAuth.apiFetch('/caixas', {
+        method: 'POST',
+        body: JSON.stringify({ operador, operadorId: session?.user?.id || null, fundo, obs, aberturaStr }),
+      });
+
+      if (!r.ok) { showToast('❌ Erro ao abrir caixa'); return; }
+
+      caixaState = r.data;
+      initCaixaUI(); closeCaixa();
       showToast('✅ Caixa aberto com R$ ' + fmt(fundo) + ' de fundo');
     }
 
@@ -8134,14 +8068,22 @@
 
     function setCaixaTab(tab) { caixaTab = tab; renderCaixaAberto(); }
 
-    function confirmarMovimento() {
+    async function confirmarMovimento() {
       const valor = parseFloat(document.getElementById('movValor').value);
       if (!valor || valor <= 0) { showToast('⚠️ Informe um valor válido'); return; }
       const obs = document.getElementById('movObs').value;
       const hora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-      caixaState.movimentos.push({ tipo: caixaTab === 'sangria' ? 'Sangria' : 'Suprimento', valor, obs, hora });
-      saveCaixa();
-      const tipoAtual = caixaTab; // captura antes de trocar para histórico
+      const movimento = { tipo: caixaTab === 'sangria' ? 'Sangria' : 'Suprimento', valor, obs, hora };
+
+      const r = await NexoAuth.apiFetch(`/caixas/${caixaState.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ movimento }),
+      });
+
+      if (!r.ok) { showToast('❌ Erro ao registrar movimento'); return; }
+
+      caixaState = r.data;
+      const tipoAtual = caixaTab;
       caixaTab = 'historico'; renderCaixaAberto();
       showToast((tipoAtual === 'sangria' ? '⬆️ Sangria' : '⬇️ Suprimento') + ' de R$ ' + fmt(valor) + ' registrado');
     }
@@ -8205,12 +8147,22 @@
         <button class="cm-btn danger" onclick="confirmarFechamentoCaixa()"><i class="bi bi-lock-fill"></i> Confirmar Fechamento</button>`;
     }
 
-    function confirmarFechamentoCaixa() {
-      caixaState.aberto = false;
-      caixaState.fechamento = new Date().toISOString();
+    async function confirmarFechamentoCaixa() {
+      const r = await NexoAuth.apiFetch(`/caixas/${caixaState.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          aberto: false,
+          fechamento: new Date().toISOString(),
+          totalVendas: todayStats.total,
+        }),
+      });
+
+      if (!r.ok) { showToast('❌ Erro ao fechar caixa'); return; }
+
+      caixaState = null;
       _overtimeShown = false;
       _overtimeLastShown = 0;
-      saveCaixa(); initCaixaUI(); closeCaixa();
+      initCaixaUI(); closeCaixa();
       showToast(`🔒 Caixa fechado · ${todayStats.count} venda${todayStats.count !== 1 ? 's' : ''} · R$ ${fmt(todayStats.total)}`);
     }
 

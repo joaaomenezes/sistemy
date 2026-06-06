@@ -316,11 +316,6 @@
       padding: 18px 28px;
     }
 
-    .mf-left {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
     .btn-modal-back {
       padding: 10px 20px;
       border-radius: 9px;
@@ -1043,21 +1038,7 @@
   <script src="auth.js"></script>
   <script>
     NexoAuth.requireAuth();
-    requirePermission();
-
-    // ─── STORAGE ─────────────────────────────────────────────
-    const CLIENTES_KEY     = 'nexoerp.clientes';
-    const FORNECEDORES_KEY = 'nexoerp.fornecedores';
-    const VENDEDORES_KEY   = 'nexoerp.vendedores';
-
-    function loadData(key) {
-      try { const raw = localStorage.getItem(key); if (raw) return JSON.parse(raw); } catch(_) {}
-      return [];
-    }
-    function saveData(key, data) {
-      try { localStorage.setItem(key, JSON.stringify(data)); }
-      catch(err) { if (err.name === 'QuotaExceededError') showToast('❌ Armazenamento local cheio.'); }
-    }
+    NexoAuth.renderCurrentUser();
 
     // ─── DATA ────────────────────────────────────────────────
     const COLORS = [
@@ -1069,9 +1050,9 @@
       return COLORS[idx];
     }
 
-    let clients      = loadData(CLIENTES_KEY);
-    let fornecedores = loadData(FORNECEDORES_KEY);
-    let vendedores   = loadData(VENDEDORES_KEY);
+    let clients      = [];
+    let fornecedores = [];
+    let vendedores   = [];
     let currentSection = 'clientes';
     let filtered = [];
     let currentFilter = 'todos';
@@ -1082,8 +1063,22 @@
 
     function activeData()     { return currentSection === 'clientes' ? clients : currentSection === 'fornecedores' ? fornecedores : vendedores; }
     function setActiveData(d) { if (currentSection === 'clientes') clients = d; else if (currentSection === 'fornecedores') fornecedores = d; else vendedores = d; }
-    function saveActive()     { saveData(currentSection === 'clientes' ? CLIENTES_KEY : currentSection === 'fornecedores' ? FORNECEDORES_KEY : VENDEDORES_KEY, activeData()); }
     function entityLabel()    { return currentSection === 'clientes' ? 'Cliente' : currentSection === 'fornecedores' ? 'Fornecedor' : 'Vendedor'; }
+
+    // ─── INIT ────────────────────────────────────────────────
+    async function init() {
+      const [rc, rf, rv] = await Promise.all([
+        NexoAuth.apiFetch('/clientes?secao=clientes'),
+        NexoAuth.apiFetch('/clientes?secao=fornecedores'),
+        NexoAuth.apiFetch('/vendedores'),
+      ]);
+      if (rc.ok) clients      = rc.data;
+      if (rf.ok) fornecedores = rf.data;
+      if (rv.ok) vendedores   = rv.data;
+      populateVendedorSelect();
+      filtered = [...clients];
+      applyFilters();
+    }
 
     // ─── SECTION SWITCH ──────────────────────────────────────
     function switchSection(section) {
@@ -1142,38 +1137,38 @@
         const statusLabel = c.status === 'ativo' ? 'Ativo' : c.status === 'inativo' ? 'Inativo' : 'Bloqueado';
         const statusClass = c.status === 'ativo' ? 'ativo' : c.status === 'inativo' ? 'inativo' : 'bloq';
         if (isVend) {
-          return `<tr onclick="openVendedorEdit(${c.id})">
+          return `<tr onclick="openVendedorEdit('${c.id}')">
             <td><div class="client-cell">
               <div class="client-avatar" style="background:${bg};color:${fg}">${initials(c.nome)}</div>
-              <div><div class="client-name">${escapeHTML(c.nome)}</div><div class="client-doc">${c.doc}</div></div>
+              <div><div class="client-name">${escapeHTML(c.nome)}</div><div class="client-doc">${c.doc || ''}</div></div>
             </div></td>
             <td><span class="client-type ${c.tipo}">${typeLabel}</span></td>
             <td style="color:var(--muted);font-size:13px">${c.tel || '—'}</td>
             <td style="font-size:13px">${c.email || '—'}</td>
             <td style="display:none"></td>
             <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
-            <td style="color:var(--muted);font-size:12px">${c.cadastro}</td>
+            <td style="color:var(--muted);font-size:12px">${c.cadastro || '—'}</td>
             <td><div class="action-cell" onclick="event.stopPropagation()">
-              <div class="act-btn" title="Editar" onclick="openVendedorEdit(${c.id})"><i class="bi bi-pencil"></i></div>
-              <div class="act-btn del" title="Excluir" onclick="deleteEntity(${c.id})"><i class="bi bi-trash3"></i></div>
+              <div class="act-btn" title="Editar" onclick="openVendedorEdit('${c.id}')"><i class="bi bi-pencil"></i></div>
+              <div class="act-btn del" title="Excluir" onclick="deleteEntity('${c.id}')"><i class="bi bi-trash3"></i></div>
             </div></td>
           </tr>`;
         }
         const movVal = isCli ? (c.compras || 0) : (c.pedidos || 0);
-        return `<tr onclick="openDetail(${c.id})">
+        return `<tr onclick="openDetail('${c.id}')">
           <td><div class="client-cell">
             <div class="client-avatar" style="background:${bg};color:${fg}">${initials(c.nome)}</div>
-            <div><div class="client-name">${c.nome}</div><div class="client-doc">${c.doc}</div></div>
+            <div><div class="client-name">${c.nome}</div><div class="client-doc">${c.doc || ''}</div></div>
           </div></td>
           <td><span class="client-type ${c.tipo}">${typeLabel}</span></td>
           <td style="color:var(--muted);font-size:13px">${c.cidade || '—'}/${c.estado || '—'}</td>
-          <td style="font-size:13px">${c.tel}</td>
+          <td style="font-size:13px">${c.tel || '—'}</td>
           <td style="font-weight:700;font-size:13px">${movVal}</td>
           <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
-          <td style="color:var(--muted);font-size:12px">${c.cadastro}</td>
+          <td style="color:var(--muted);font-size:12px">${c.cadastro || '—'}</td>
           <td><div class="action-cell" onclick="event.stopPropagation()">
-            <div class="act-btn" title="Editar" onclick="openEdit(${c.id})"><i class="bi bi-pencil"></i></div>
-            <div class="act-btn del" title="Excluir" onclick="deleteEntity(${c.id})"><i class="bi bi-trash3"></i></div>
+            <div class="act-btn" title="Editar" onclick="openEdit('${c.id}')"><i class="bi bi-pencil"></i></div>
+            <div class="act-btn del" title="Excluir" onclick="deleteEntity('${c.id}')"><i class="bi bi-trash3"></i></div>
           </div></td>
         </tr>`;
       }).join('');
@@ -1339,46 +1334,59 @@
       return ok;
     }
 
-    function saveEntity() {
-      const data     = activeData();
-      const existing = editingId ? data.find(x => x.id===editingId) : null;
-      const entry = {
-        id:          editingId || Date.now(),
+    async function saveEntity() {
+      const existing = editingId ? activeData().find(x => x.id === editingId) : null;
+      const limiteRaw = document.getElementById('f-limite').value.replace(/\./g,'').replace(',','.').replace(/[^\d.]/g,'');
+      const payload = {
         nome:        document.getElementById('f-nome').value.trim(),
         tipo:        tipoSel,
-        doc:         document.getElementById('f-cpf').value.trim(),
-        rg:          document.getElementById('f-rg').value.trim(),
-        nascimento:  document.getElementById('f-nasc').value.trim(),
-        genero:      document.getElementById('f-genero').value,
-        tel:         document.getElementById('f-tel').value.trim(),
-        tel2:        document.getElementById('f-tel2').value.trim(),
-        email:       document.getElementById('f-email').value.trim(),
-        site:        document.getElementById('f-site').value.trim(),
-        cep:         document.getElementById('f-cep').value.trim(),
-        logradouro:  document.getElementById('f-logradouro').value.trim(),
-        numero:      document.getElementById('f-numero').value.trim(),
-        complemento: document.getElementById('f-complemento').value.trim(),
-        bairro:      document.getElementById('f-bairro').value.trim(),
-        cidade:      document.getElementById('f-cidade').value.trim() || '—',
-        estado:      document.getElementById('f-estado').value || 'SP',
+        secao:       currentSection,
+        doc:         document.getElementById('f-cpf').value.trim() || undefined,
+        rg:          document.getElementById('f-rg').value.trim() || undefined,
+        nascimento:  document.getElementById('f-nasc').value.trim() || undefined,
+        genero:      document.getElementById('f-genero').value || undefined,
+        tel:         document.getElementById('f-tel').value.trim() || undefined,
+        tel2:        document.getElementById('f-tel2').value.trim() || undefined,
+        email:       document.getElementById('f-email').value.trim() || undefined,
+        site:        document.getElementById('f-site').value.trim() || undefined,
+        cep:         document.getElementById('f-cep').value.trim() || undefined,
+        logradouro:  document.getElementById('f-logradouro').value.trim() || undefined,
+        numero:      document.getElementById('f-numero').value.trim() || undefined,
+        complemento: document.getElementById('f-complemento').value.trim() || undefined,
+        bairro:      document.getElementById('f-bairro').value.trim() || undefined,
+        cidade:      document.getElementById('f-cidade').value.trim() || undefined,
+        estado:      document.getElementById('f-estado').value || undefined,
         status:      document.getElementById('f-status').value || 'ativo',
-        compras:     existing?.compras  || 0,
-        pedidos:     existing?.pedidos  || 0,
-        limite:      (parseFloat(document.getElementById('f-limite').value.replace(/\D/g,'') || '0') / 100).toFixed(2),
-        desconto:    document.getElementById('f-desconto').value.trim() || '0',
-        condicao:    document.getElementById('f-condicao').value || 'À vista',
-        vendedor:    document.getElementById('f-vendedor').options[document.getElementById('f-vendedor').selectedIndex]?.text || '',
-        vendedor_id: document.getElementById('f-vendedor').value || null,
-        grupo:       document.getElementById('f-grupo').value,
-        origem:      document.getElementById('f-origem').value,
-        tags:        document.getElementById('f-tags').value.trim(),
-        obs:         document.getElementById('f-obs').value,
+        limite:      parseFloat(limiteRaw) || 0,
+        desconto:    document.getElementById('f-desconto').value.trim() || undefined,
+        condicao:    document.getElementById('f-condicao').value || undefined,
+        vendedor:    document.getElementById('f-vendedor').options[document.getElementById('f-vendedor').selectedIndex]?.text || undefined,
+        vendedorId:  document.getElementById('f-vendedor').value || undefined,
+        grupo:       document.getElementById('f-grupo').value || undefined,
+        origem:      document.getElementById('f-origem').value || undefined,
+        tags:        document.getElementById('f-tags').value.trim() || undefined,
+        obs:         document.getElementById('f-obs').value || undefined,
         cadastro:    existing?.cadastro || new Date().toLocaleDateString('pt-BR'),
       };
-      if (editingId) { const idx = data.findIndex(x => x.id===editingId); if (idx>=0) data[idx]=entry; }
-      else data.unshift(entry);
-      setActiveData(data);
-      saveActive();
+
+      const res = editingId
+        ? await NexoAuth.apiFetch(`/clientes/${editingId}`, { method: 'PUT', body: JSON.stringify(payload) })
+        : await NexoAuth.apiFetch('/clientes', { method: 'POST', body: JSON.stringify(payload) });
+
+      if (!res.ok) {
+        const errMsg = res.errors?.map(e => `campo "${e.path}": ${e.message}`).join(', ') || res.message;
+        showToast('❌ ' + errMsg);
+        return;
+      }
+
+      const saved = res.data;
+      const data  = activeData();
+      if (editingId) {
+        const idx = data.findIndex(x => x.id === editingId);
+        if (idx >= 0) data[idx] = saved;
+      } else {
+        data.unshift(saved);
+      }
       closeModal();
       applyFilters();
       showToast(editingId ? `${entityLabel()} atualizado com sucesso!` : `${entityLabel()} cadastrado com sucesso!`);
@@ -1416,7 +1424,7 @@
       setSelectVal('f-genero', c.genero);
       setSelectVal('f-estado', c.estado);   setSelectVal('f-status', c.status);
       setSelectVal('f-condicao', c.condicao);
-      if (c.vendedor_id) setSelectVal('f-vendedor', c.vendedor_id);
+      if (c.vendedorId) setSelectVal('f-vendedor', c.vendedorId);
       else setSelectVal('f-vendedor', c.vendedor);
       setSelectVal('f-grupo', c.grupo);     setSelectVal('f-origem', c.origem);
       const tipoEl = document.getElementById(`tipo-${c.tipo}`);
@@ -1436,10 +1444,12 @@
       openConfirm(
         `Excluir ${entityLabel().toLowerCase()}`,
         `"${entry.nome}" será removido permanentemente.`,
-        () => {
-          setActiveData(activeData().filter(x => x.id!==id));
-          saveActive();
-          if (currentDetailId===id) closeDetail();
+        async () => {
+          const endpoint = currentSection === 'vendedores' ? `/vendedores/${id}` : `/clientes/${id}`;
+          const res = await NexoAuth.apiFetch(endpoint, { method: 'DELETE' });
+          if (!res.ok) { showToast('❌ ' + res.message); return; }
+          setActiveData(activeData().filter(x => x.id !== id));
+          if (currentDetailId === id) closeDetail();
           applyFilters();
           showToast(`${entityLabel()} removido.`);
         }
@@ -1622,7 +1632,7 @@
         el.value = v.slice(0,14);
       }
     }
-    function saveVendedor() {
+    async function saveVendedor() {
       const nome = document.getElementById('vf-nome').value.trim();
       const doc  = document.getElementById('vf-doc').value.trim();
       const tel  = document.getElementById('vf-tel').value.trim();
@@ -1631,19 +1641,32 @@
       if (!doc)  { document.getElementById('ve-doc').classList.add('show');  ok = false; } else document.getElementById('ve-doc').classList.remove('show');
       if (!tel)  { document.getElementById('ve-tel').classList.add('show');  ok = false; } else document.getElementById('ve-tel').classList.remove('show');
       if (!ok) return;
-      const entry = {
-        id:       editingVendId || Date.now(),
+
+      const payload = {
         nome,
         tipo:     vendTipoSel,
         doc,
         tel,
-        email:    document.getElementById('vf-email').value.trim(),
+        email:    document.getElementById('vf-email').value.trim() || undefined,
         status:   document.getElementById('vf-status').value,
-        cadastro: editingVendId ? (vendedores.find(v => v.id === editingVendId)?.cadastro || new Date().toLocaleDateString('pt-BR')) : new Date().toLocaleDateString('pt-BR'),
+        cadastro: editingVendId
+          ? (vendedores.find(v => v.id === editingVendId)?.cadastro || new Date().toLocaleDateString('pt-BR'))
+          : new Date().toLocaleDateString('pt-BR'),
       };
-      if (editingVendId) { const idx = vendedores.findIndex(v => v.id === editingVendId); if (idx >= 0) vendedores[idx] = entry; }
-      else vendedores.unshift(entry);
-      saveData(VENDEDORES_KEY, vendedores);
+
+      const res = editingVendId
+        ? await NexoAuth.apiFetch(`/vendedores/${editingVendId}`, { method: 'PUT', body: JSON.stringify(payload) })
+        : await NexoAuth.apiFetch('/vendedores', { method: 'POST', body: JSON.stringify(payload) });
+
+      if (!res.ok) { showToast('❌ ' + res.message); return; }
+
+      const saved = res.data;
+      if (editingVendId) {
+        const idx = vendedores.findIndex(v => v.id === editingVendId);
+        if (idx >= 0) vendedores[idx] = saved;
+      } else {
+        vendedores.unshift(saved);
+      }
       populateVendedorSelect();
       closeVendedorModal();
       applyFilters();
@@ -1666,11 +1689,8 @@
       document.getElementById('vendedorModalOverlay').classList.add('open');
     }
 
-    // ─── INIT ─────────────────────────────────────────────────
-    NexoAuth.renderCurrentUser();
-    populateVendedorSelect();
-    filtered = [...clients];
-    applyFilters();
+    // ─── START ───────────────────────────────────────────────
+    init();
   </script>
 </body>
 

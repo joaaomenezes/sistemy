@@ -1912,7 +1912,9 @@ transition: border-color .15s;
   <script src="auth.js"></script>
   <script>
     NexoAuth.requireAuth();
-    requirePermission();
+
+    let PRODUTOS_DATA = [];
+    let MOVS_DATA     = [];
 
     // ═══════════════════════════════════════════════
     // KPI / CHART / DONUT — calculados a partir de nexoerp.financeiro
@@ -2031,12 +2033,7 @@ transition: border-color .15s;
       return { receber, receberVenc, receberFut, pagar, pagarVenc, pagarFut, vencidosCount };
     }
 
-    let lancamentos = (() => {
-      const raw = JSON.parse(localStorage.getItem('nexoerp.financeiro') || '[]');
-      const { list, dirty } = _normalizeLancamentos(raw);
-      if (dirty) localStorage.setItem('nexoerp.financeiro', JSON.stringify(list));
-      return list;
-    })();
+    let lancamentos = [];
 
     // Deriva RECEBER e PAGAR a partir dos lançamentos reais
     function buildReceberPagar() {
@@ -2257,7 +2254,7 @@ transition: border-color .15s;
 
       const tblRD = document.getElementById('tblReceberDetalhe');
       if (tblRD) {
-        const rows = lancamentos.filter(l => l.tipo === 'receita' && l.status !== 'cancelado' && l.status !== 'estornado');
+        const rows = lancamentos.filter(l => l.tipo === 'receita' && l.status !== 'pago' && l.status !== 'cancelado' && l.status !== 'estornado');
         tblRD.innerHTML = rows.length
           ? rows.map(l => { const st = _stLanc(l); return `<tr>
               <td>${escapeHTML(_fmtD(l.vencimento || l.data || ''))}</td>
@@ -2308,10 +2305,10 @@ transition: border-color .15s;
       el.value = v;
     }
 
-    function salvarLancamento() {
-      const desc = document.getElementById('fDesc').value.trim();
+    async function salvarLancamento() {
+      const desc  = document.getElementById('fDesc').value.trim();
       const valor = document.getElementById('fValor').value.replace(/\./g, '').replace(',', '.');
-      const venc = document.getElementById('fVenc').value;
+      const venc  = document.getElementById('fVenc').value;
       const categ = document.getElementById('fCateg').value;
 
       if (!desc || !valor || !venc || !categ) {
@@ -2319,22 +2316,22 @@ transition: border-color .15s;
         return;
       }
 
-      const lancamento = {
-        id: Date.now(),
-        tipo: tipoAtual,
+      const payload = {
+        tipo:      tipoAtual,
         descricao: desc,
-        valor: parseFloat(valor),
+        valor:     parseFloat(valor),
         vencimento: venc,
         categoria: categ,
-        parte: document.getElementById('fParte').value.trim(),
-        status: document.getElementById('fStatus').value,
-        obs: document.getElementById('fObs').value.trim(),
+        parte:     document.getElementById('fParte').value.trim(),
+        status:    document.getElementById('fStatus').value,
+        obs:       document.getElementById('fObs').value.trim(),
       };
 
-      lancamentos.unshift(lancamento);
-      localStorage.setItem('nexoerp.financeiro', JSON.stringify(lancamentos));
+      const res = await NexoAuth.apiFetch('/financeiro', { method: 'POST', body: JSON.stringify(payload) });
+      if (!res.ok) { showToast('Erro ao salvar: ' + res.message); return; }
 
-      showToast(`${tipoAtual === 'receita' ? '💰' : '📤'} Lançamento salvo com sucesso!`);
+      lancamentos.unshift(res.data);
+      showToast(`Lançamento salvo com sucesso!`);
       closeModal();
       renderKPIs();
       renderDonut();
@@ -2388,9 +2385,8 @@ transition: border-color .15s;
     }
 
     function calcDRE(start, end) {
-      let movs = [], products = [];
-      try { movs     = JSON.parse(localStorage.getItem('nexoerp.movimentacoes') || '[]'); } catch(_) {}
-      try { products = JSON.parse(localStorage.getItem('nexoerp.produtos')      || '[]'); } catch(_) {}
+      const movs     = MOVS_DATA;
+      const products = PRODUTOS_DATA;
 
       const inL = l => _dreInPeriod(l, start, end);
       const inC = c => { const d = new Date(c.data); return !isNaN(d) && d >= start && d <= end; };
@@ -2725,11 +2721,26 @@ transition: border-color .15s;
     // ═══════════════════════════════════════════════
 
 
-    NexoAuth.renderCurrentUser();
-    renderKPIs();
-    renderChart();
-    renderDonut();
-    renderTabelas();
+    async function init() {
+      const [rLanc, rCustos, rProd, rMovs] = await Promise.all([
+        NexoAuth.apiFetch('/financeiro'),
+        NexoAuth.apiFetch('/custos'),
+        NexoAuth.apiFetch('/produtos'),
+        NexoAuth.apiFetch('/estoque/movimentacoes'),
+      ]);
+      if (rLanc.ok)   lancamentos  = rLanc.data;
+      if (rCustos.ok) custosData   = rCustos.data;
+      if (rProd.ok)   PRODUTOS_DATA = rProd.data;
+      if (rMovs.ok)   MOVS_DATA     = rMovs.data;
+
+      NexoAuth.renderCurrentUser();
+      renderKPIs();
+      renderChart();
+      renderDonut();
+      renderTabelas();
+    }
+
+    init();
 
     // ─── Date picker global do financeiro ───
     (function initFinDp() {
@@ -2816,22 +2827,13 @@ transition: border-color .15s;
     // ═══════════════════════════════════════════════
     // CENTRO DE CUSTOS
     // ═══════════════════════════════════════════════
-    const CUSTOS_KEY        = 'nexoerp.custos';
     const CUSTO_CATS_KEY    = 'nexoerp.custos.cats.custo';
     const DESPESA_CATS_KEY  = 'nexoerp.custos.cats.despesa';
     const CC_COLORS         = ['#00c896','#0077ff','#ff6b35','#a855f7','#ec4899','#f59e0b','#14b8a6','#6b7f96'];
     const CC_DEFAULT_CUSTO_CATS   = ['Insumos','Matéria-prima','Embalagens','Frete','Mão de obra','Equipamentos'];
     const CC_DEFAULT_DESPESA_CATS = ['Funcionários','Aluguel','Marketing','Serviços','Administrativo','Outros'];
 
-    // Migração: se existia a key antiga, migra para custo
-    (function migrate() {
-      const old = localStorage.getItem('nexoerp.custos.categorias');
-      if (old && !localStorage.getItem(CUSTO_CATS_KEY)) {
-        localStorage.setItem(CUSTO_CATS_KEY, old);
-      }
-    })();
-
-    let custosData  = (() => { try { const r=localStorage.getItem(CUSTOS_KEY); return r?JSON.parse(r):[]; } catch(_){return[];} })();
+    let custosData  = []; // carregado em init()
     let custoCats   = (() => { try { const r=localStorage.getItem(CUSTO_CATS_KEY); return r?JSON.parse(r):[...CC_DEFAULT_CUSTO_CATS]; } catch(_){return[...CC_DEFAULT_CUSTO_CATS];} })();
     let despesaCats = (() => { try { const r=localStorage.getItem(DESPESA_CATS_KEY); return r?JSON.parse(r):[...CC_DEFAULT_DESPESA_CATS]; } catch(_){return[...CC_DEFAULT_DESPESA_CATS];} })();
 
@@ -2845,7 +2847,6 @@ transition: border-color .15s;
     let ccSerieCb        = null;
     let activeCatTab     = 'custo';
 
-    function saveCustosData()  { localStorage.setItem(CUSTOS_KEY,       JSON.stringify(custosData));  }
     function saveCustoCats()   { localStorage.setItem(CUSTO_CATS_KEY,   JSON.stringify(custoCats));   }
     function saveDespesaCats() { localStorage.setItem(DESPESA_CATS_KEY, JSON.stringify(despesaCats)); }
 
@@ -3002,7 +3003,7 @@ transition: border-color .15s;
       const q = (document.getElementById('custosSearch')?.value||'').toLowerCase();
       const filtered = current.filter(c=>
         (!custosCatFilter || c.categoria===custosCatFilter) &&
-        (!q || c.desc.toLowerCase().includes(q)||(c.categoria||'').toLowerCase().includes(q)||(c.fornecedor||'').toLowerCase().includes(q))
+        (!q || (c.descricao||'').toLowerCase().includes(q)||(c.categoria||'').toLowerCase().includes(q)||(c.fornecedor||'').toLowerCase().includes(q))
       );
       const body=document.getElementById('custosTbody'), empty=document.getElementById('custosEmpty');
       const total=filtered.length, start=(custosPage-1)*custosPerPage;
@@ -3025,7 +3026,7 @@ transition: border-color .15s;
         return `<tr>
           <td>
             <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
-              <span style="font-weight:600;font-size:13px">${escapeHTML(c.desc)}</span>${recBadge}
+              <span style="font-weight:600;font-size:13px">${escapeHTML(c.descricao)}</span>${recBadge}
             </div>
             <div style="display:flex;gap:5px;margin-top:2px">
               <span class="cc-tipo-badge ${tipo}">${tipoLabel}</span>
@@ -3036,8 +3037,8 @@ transition: border-color .15s;
           <td style="color:var(--muted);font-size:12px">${dataFmt}</td>
           <td style="font-weight:700;color:var(--danger);text-align:right">R$ ${fmtCusto(c.valor)}</td>
           <td><div class="action-cell" onclick="event.stopPropagation()">
-            <div class="act-btn" onclick="openCustosModal(${c.id})"><i class="bi bi-pencil"></i></div>
-            <div class="act-btn del" onclick="deleteCusto(${c.id})"><i class="bi bi-trash3"></i></div>
+            <div class="act-btn" onclick="openCustosModal('${c.id}')"><i class="bi bi-pencil"></i></div>
+            <div class="act-btn del" onclick="deleteCusto('${c.id}')"><i class="bi bi-trash3"></i></div>
           </div></td>
         </tr>`;
       }).join('');
@@ -3104,7 +3105,7 @@ transition: border-color .15s;
         const tipo=c.tipo||'custo';
         document.querySelector(`input[name="cf-tipo"][value="${tipo}"]`).checked=true;
         populateCfCat(tipo);
-        document.getElementById('cf-desc').value       = c.desc;
+        document.getElementById('cf-desc').value       = c.descricao;
         document.getElementById('cf-valor').value      = fmtCusto(c.valor);
         document.getElementById('cf-data').value       = c.data;
         document.getElementById('cf-fornecedor').value = c.fornecedor||'';
@@ -3123,7 +3124,7 @@ transition: border-color .15s;
     }
     function closeCustosModal() { document.getElementById('custosModalOverlay').classList.remove('open'); }
 
-    function saveCusto() {
+    async function saveCusto() {
       const desc  = document.getElementById('cf-desc').value.trim();
       const valor = parseFloat((document.getElementById('cf-valor').value||'0').replace(/\./g,'').replace(',','.'));
       const data  = document.getElementById('cf-data').value;
@@ -3132,37 +3133,42 @@ transition: border-color .15s;
       if (!desc||!valor||!data||!cat) { showToast('Preencha todos os campos obrigatórios.'); return; }
 
       const base = {
-        desc, valor, data, categoria:cat, tipo,
+        descricao: desc, valor, data, categoria:cat, tipo,
         fornecedor: document.getElementById('cf-fornecedor').value.trim(),
         obs:        document.getElementById('cf-obs').value.trim(),
       };
 
       if (editingCustoId) {
-        const idx=custosData.findIndex(x=>x.id===editingCustoId);
-        if (idx>=0) custosData[idx]={...custosData[idx],...base};
-        saveCustosData(); closeCustosModal(); renderCustosPanel();
+        const res = await NexoAuth.apiFetch(`/custos/${editingCustoId}`, { method: 'PUT', body: JSON.stringify(base) });
+        if (!res.ok) { showToast('Erro ao atualizar: ' + res.message); return; }
+        const idx = custosData.findIndex(x=>x.id===editingCustoId);
+        if (idx>=0) custosData[idx] = res.data;
+        closeCustosModal(); renderCustosPanel();
         showToast('Lançamento atualizado!'); return;
       }
 
-      const recorrente=document.getElementById('cf-recorrente').checked;
+      const recorrente = document.getElementById('cf-recorrente').checked;
       if (recorrente) {
-        const freq=document.getElementById('cf-freq').value;
-        const reps=parseInt(document.getElementById('cf-rep').value)||3;
-        const recorrenciaId=Date.now();
-        const entries=[];
+        const freq = document.getElementById('cf-freq').value;
+        const reps = parseInt(document.getElementById('cf-rep').value)||3;
+        const recorrenciaId = `rec-${Date.now()}`;
+        const criados = [];
         for (let i=0;i<reps;i++) {
-          const d=new Date(data);
+          const d = new Date(data);
           if (freq==='mensal')  d.setMonth(d.getMonth()+i);
           if (freq==='semanal') d.setDate(d.getDate()+i*7);
           if (freq==='anual')   d.setFullYear(d.getFullYear()+i);
-          entries.push({...base, id:recorrenciaId+i, data:d.toISOString().split('T')[0], recorrenciaId});
+          const res = await NexoAuth.apiFetch('/custos', { method: 'POST', body: JSON.stringify({...base, data:d.toISOString().split('T')[0], recorrenciaId}) });
+          if (res.ok) criados.push(res.data);
         }
-        custosData=[...entries,...custosData];
-        saveCustosData(); closeCustosModal(); renderCustosPanel();
-        showToast(`${reps} lançamentos recorrentes criados!`);
+        custosData = [...criados, ...custosData];
+        closeCustosModal(); renderCustosPanel();
+        showToast(`${criados.length} lançamentos recorrentes criados!`);
       } else {
-        custosData.unshift({...base, id:Date.now()});
-        saveCustosData(); closeCustosModal(); renderCustosPanel();
+        const res = await NexoAuth.apiFetch('/custos', { method: 'POST', body: JSON.stringify(base) });
+        if (!res.ok) { showToast('Erro ao salvar: ' + res.message); return; }
+        custosData.unshift(res.data);
+        closeCustosModal(); renderCustosPanel();
         showToast('Lançamento registrado!');
       }
     }
@@ -3181,13 +3187,20 @@ transition: border-color .15s;
     function deleteCusto(id) {
       const c=custosData.find(x=>x.id===id); if (!c) return;
       const serieCount=c.recorrenciaId ? custosData.filter(x=>x.recorrenciaId===c.recorrenciaId).length : 0;
-      const serieCb = serieCount>1 ? ()=>{
-        custosData=custosData.filter(x=>x.recorrenciaId!==c.recorrenciaId);
-        saveCustosData(); renderCustosPanel(); showToast(`${serieCount} lançamentos da série removidos.`);
+      const serieCb = serieCount>1 ? async ()=>{
+        const res = await NexoAuth.apiFetch(`/custos/${id}?serie=1`, { method: 'DELETE' });
+        if (!res.ok) { showToast('Erro ao remover série: ' + res.message); return; }
+        custosData = custosData.filter(x=>x.recorrenciaId!==c.recorrenciaId);
+        renderCustosPanel(); showToast(`${serieCount} lançamentos da série removidos.`);
       } : null;
       openCcConfirm(
-        serieCount>1 ? `"${c.desc}" — série com ${serieCount} lançamentos. Remover só este ou toda a série?` : `"${c.desc}" será removido permanentemente.`,
-        ()=>{ custosData=custosData.filter(x=>x.id!==id); saveCustosData(); renderCustosPanel(); showToast('Lançamento removido.'); },
+        serieCount>1 ? `"${c.descricao}" — série com ${serieCount} lançamentos. Remover só este ou toda a série?` : `"${c.descricao}" será removido permanentemente.`,
+        async ()=>{
+          const res = await NexoAuth.apiFetch(`/custos/${id}`, { method: 'DELETE' });
+          if (!res.ok) { showToast('Erro ao remover: ' + res.message); return; }
+          custosData = custosData.filter(x=>x.id!==id);
+          renderCustosPanel(); showToast('Lançamento removido.');
+        },
         serieCb
       );
     }
@@ -3263,7 +3276,7 @@ transition: border-color .15s;
         const nv=inp.value.trim();
         if (nv&&nv!==current) {
           if (cats.some((c,idx)=>idx!==i&&c.toLowerCase()===nv.toLowerCase())) { showToast('Categoria já existe!'); renderCustosCatList(); return; }
-          custosData.forEach(c=>{ if(c.categoria===current) c.categoria=nv; }); saveCustosData();
+          custosData.forEach(c=>{ if(c.categoria===current) { c.categoria=nv; NexoAuth.apiFetch(`/custos/${c.id}`,{method:'PUT',body:JSON.stringify({categoria:nv})}); } });
           cats[i]=nv;
           activeCatTab==='despesa' ? saveDespesaCats() : saveCustoCats();
           showToast('Categoria renomeada!');

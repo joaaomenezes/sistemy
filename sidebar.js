@@ -97,7 +97,7 @@
             </div>
             <i class="bi bi-three-dots-vertical" style="color:var(--muted);margin-left:auto;font-size:15px;flex-shrink:0"></i>
           </div>
-          <a class="nav-item" onclick="NexoAuth.confirmLogout()" style="cursor:pointer;color:var(--danger)">
+          <a class="nav-item" href="javascript:void(0)" onclick="NexoAuth.confirmLogout()" style="cursor:pointer;color:var(--danger)">
             <i class="bi bi-box-arrow-left"></i>
             <span class="nav-label">Sair</span>
           </a>

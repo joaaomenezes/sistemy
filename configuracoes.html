@@ -1371,9 +1371,9 @@ font-size: 12px;
     // ═══════════════════════════════════════════════
     // INIT
     // ═══════════════════════════════════════════════
-    function init() {
+    async function init() {
       buildColorSwatches();
-      loadUsers();
+      await loadUsers();
       renderUsers();
       NexoAuth.renderCurrentUser();
       loadSettings();
@@ -1536,17 +1536,21 @@ font-size: 12px;
     }
     // ── Usuários ──────────────────────────────────────────
 
-    function loadUsers() {
+    async function loadUsers() {
       try {
-        const all = JSON.parse(localStorage.getItem('nexoerp.users') || '[]');
-        usuarios = all.map(u => ({
-          id:          u.id,
-          nome:        u.name || u.username || u.email,
-          username:    u.username || '',
-          email:       u.email,
-          isDono:      !!u.isDono,
-          permissions: u.permissions ?? null,
-        }));
+        const result = await NexoAuth.apiFetch('/usuarios');
+        if (result.ok) {
+          usuarios = result.data.map(u => ({
+            id:          u.id,
+            nome:        u.nome || u.username || u.email,
+            username:    u.username || '',
+            email:       u.email,
+            isDono:      !!u.isDono,
+            permissions: u.permissions ?? null,
+          }));
+        } else {
+          usuarios = [];
+        }
       } catch (_) { usuarios = []; }
     }
 
@@ -1686,7 +1690,7 @@ font-size: 12px;
 
       if (!result.ok) { showToast('❌ ' + result.message, 'error'); return; }
 
-      loadUsers();
+      await loadUsers();
       closeUserModal();
       renderUsers();
       showToast(editingUserId ? '✅ Usuário atualizado!' : '✅ Usuário criado com sucesso!');
@@ -1694,15 +1698,14 @@ font-size: 12px;
 
     function editUser(id) { openUserModal(id); }
 
-    function removeUser(id) {
+    async function removeUser(id) {
       const u = usuarios.find(x => x.id === id);
       if (!u) return;
       if (u.isDono || u.permissions === null) { showToast('⚠️ O Dono não pode ser removido.', 'warning'); return; }
       if (!confirm(`Remover o usuário "${u.nome}"? Esta ação não pode ser desfeita.`)) return;
-      const all = JSON.parse(localStorage.getItem('nexoerp.users') || '[]');
-      const updated = all.filter(x => x.id !== id);
-      localStorage.setItem('nexoerp.users', JSON.stringify(updated));
-      loadUsers();
+      const result = await NexoAuth.removeSubUser(id);
+      if (!result.ok) { showToast('❌ ' + result.message, 'error'); return; }
+      await loadUsers();
       renderUsers();
       showToast('Usuário removido.');
     }

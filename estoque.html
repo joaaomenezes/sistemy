@@ -833,7 +833,7 @@
           <p>Controle de entradas, saídas, ajustes e posição por depósito.</p>
         </div>
         <div class="header-actions">
-          <button class="btn-sm btn-ghost-sm"><i class="bi bi-download"></i> Exportar</button>
+          <button class="btn-sm btn-ghost-sm" onclick="exportCSV()"><i class="bi bi-download"></i> Exportar CSV</button>
           <button class="btn-sm btn-ghost-sm" onclick="openMov(null,'transferencia')"><i
               class="bi bi-arrow-left-right"></i> Transferir</button>
           <button class="btn-sm btn-warn-sm" onclick="openMov(null,'ajuste')"><i class="bi bi-sliders"></i>
@@ -1192,64 +1192,13 @@
   <script src="auth.js"></script>
   <script>
     NexoAuth.requireAuth();
-    requirePermission();
-
-    // ═══════════════════════════════════════════════
-    // STORAGE — lê/grava produtos compartilhados com produtos.html
-    // ═══════════════════════════════════════════════
-    const PRODUTOS_KEY  = 'nexoerp.produtos';
-    const MOVS_KEY      = 'nexoerp.movimentacoes';
-    const DEPOSITOS_KEY = 'nexoerp.depositos';
-
-    function loadProducts() {
-      try {
-        const raw = localStorage.getItem(PRODUTOS_KEY);
-        if (raw) return JSON.parse(raw);
-      } catch (_) { }
-      return [];
-    }
-
-    function saveProducts() {
-      try {
-        localStorage.setItem(PRODUTOS_KEY, JSON.stringify(products));
-      } catch (err) {
-        if (err.name === 'QuotaExceededError') showToast('❌ Armazenamento local cheio.', 'error');
-      }
-    }
-
-    function loadMovs() {
-      try {
-        const raw = localStorage.getItem(MOVS_KEY);
-        if (raw) return JSON.parse(raw);
-      } catch (_) { }
-      return [];
-    }
-
-    function saveMovs() {
-      try {
-        localStorage.setItem(MOVS_KEY, JSON.stringify(movimentacoes));
-      } catch (_) { }
-    }
 
     // ═══════════════════════════════════════════════
     // DATA
     // ═══════════════════════════════════════════════
-    let products = loadProducts();
-
-    let movimentacoes = loadMovs();
-
-    function loadDepositos() {
-      try {
-        const raw = localStorage.getItem(DEPOSITOS_KEY);
-        if (raw) { const arr = JSON.parse(raw); if (Array.isArray(arr) && arr.length) return arr; }
-      } catch (_) { }
-      // Único depósito padrão para contas novas
-      return [{ id: 1, nome: 'Depósito Principal', icone: '🏭', endereco: '', cor: 'var(--accent)' }];
-    }
-    function saveDepositos() {
-      try { localStorage.setItem(DEPOSITOS_KEY, JSON.stringify(depositos)); } catch (_) { }
-    }
-    let depositos = loadDepositos();
+    let products      = [];
+    let movimentacoes = [];
+    let depositos     = [];
 
     let currentFilter = 'todos';
     let movFilter = 'todos';
@@ -1263,7 +1212,17 @@
     // ═══════════════════════════════════════════════
     // INIT
     // ═══════════════════════════════════════════════
-    function init() {
+    async function init() {
+      const [rProd, rMovs, rDep] = await Promise.all([
+        NexoAuth.apiFetch('/produtos'),
+        NexoAuth.apiFetch('/estoque/movimentacoes'),
+        NexoAuth.apiFetch('/estoque/depositos'),
+      ]);
+      if (rProd.ok) products      = rProd.data;
+      if (rMovs.ok) movimentacoes = rMovs.data;
+      if (rDep.ok)  depositos     = rDep.data.length ? rDep.data : [{ id: null, nome: 'Depósito Principal', icone: '🏭', cor: 'var(--accent)', endereco: '' }];
+
+      NexoAuth.renderCurrentUser();
       populateDepositoSelects();
       applyFilters();
       renderMovs();
@@ -1282,8 +1241,11 @@
       const valor = products.reduce((s, p) => s + p.estoque * p.custo, 0);
       const baixo = products.filter(p => p.estoque > 0 && p.estoque <= p.estoqueMin).length;
       const zerado = products.filter(p => p.estoque === 0).length;
-      const hojeStr = new Date().toLocaleDateString('pt-BR');
-      const hoje = movimentacoes.filter(m => m.data.startsWith(hojeStr)).length;
+      const now = new Date();
+      const hoje = movimentacoes.filter(m => {
+        const d = m.dataISO ? new Date(m.dataISO) : (m.data ? new Date(m.data) : null);
+        return d && d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+      }).length;
       document.getElementById('kpi-total').textContent = total;
       document.getElementById('kpi-valor').textContent = 'R$ ' + fmt(valor);
       document.getElementById('kpi-baixo').textContent = baixo;
@@ -1300,14 +1262,14 @@
       const baixos = products.filter(p => p.estoque > 0 && p.estoque <= p.estoqueMin);
       let html = '';
       criticos.forEach(p => {
-        html += `<div class="alerta-item critico" onclick="openMov(${p.id},'entrada')">
+        html += `<div class="alerta-item critico" onclick="openMov('${p.id}','entrada')">
       <i class="bi bi-x-circle-fill"></i>
       <div class="alerta-txt"><strong>${p.nome}</strong><span>· Estoque zerado — clique para registrar entrada</span></div>
       <div class="alerta-dismiss" onclick="event.stopPropagation();this.parentElement.remove()"><i class="bi bi-x"></i></div>
     </div>`;
       });
       baixos.forEach(p => {
-        html += `<div class="alerta-item baixo" onclick="openMov(${p.id},'entrada')">
+        html += `<div class="alerta-item baixo" onclick="openMov('${p.id}','entrada')">
       <i class="bi bi-exclamation-triangle-fill"></i>
       <div class="alerta-txt"><strong>${p.nome}</strong><span>· Estoque baixo: ${p.estoque} un (mín: ${p.estoqueMin})</span></div>
       <div class="alerta-dismiss" onclick="event.stopPropagation();this.parentElement.remove()"><i class="bi bi-x"></i></div>
@@ -1377,26 +1339,26 @@
         const s = stockStatus(p);
         const pct = Math.min(100, p.estoqueMax > 0 ? (p.estoque / p.estoqueMax) * 100 : 0);
         const barColor = s === 'zero' ? 'var(--danger)' : s === 'baixo' ? 'var(--warn)' : 'var(--accent)';
-        return `<tr onclick="openMov(${p.id},'entrada')">
+        return `<tr onclick="openMov('${p.id}','entrada')">
       <td><div class="prod-cell">
         <div class="prod-emoji">${p.emoji}</div>
         <div><div class="prod-name">${p.nome}</div><div class="prod-sku">SKU: ${p.sku}</div></div>
       </div></td>
-      <td style="font-size:12px;color:var(--muted)">${p.deposito}</td>
+      <td style="font-size:12px;color:var(--muted)">${p.deposito||'—'}</td>
       <td class="stock-cell">
         <div class="stock-nums">
-          <span class="stock-val ${s}">${p.estoque} <span style="font-size:10px;font-weight:400">${'un'}</span></span>
+          <span class="stock-val ${s}">${p.estoque} <span style="font-size:10px;font-weight:400">${p.unidade||'un'}</span></span>
           <span class="stock-minmax">mín ${p.estoqueMin} · máx ${p.estoqueMax}</span>
         </div>
         <div class="stock-bar-bg"><div class="stock-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
       </td>
       <td><span class="status-pill ${s}">${stockLabel(p)}</span></td>
-      <td style="font-size:12px;color:var(--muted)">${p.ultimaEntrada}</td>
-      <td style="font-size:12px;color:var(--muted)">${p.fornecedor}</td>
+      <td style="font-size:12px;color:var(--muted)">${p.ultimaEntrada||'—'}</td>
+      <td style="font-size:12px;color:var(--muted)">${p.fornecedor||'—'}</td>
       <td><div class="action-cell" onclick="event.stopPropagation()">
-        <div class="act-btn up"   title="Entrada"      onclick="openMov(${p.id},'entrada')"><i class="bi bi-arrow-down-circle"></i></div>
-        <div class="act-btn down" title="Saída"        onclick="openMov(${p.id},'saida')"><i class="bi bi-arrow-up-circle"></i></div>
-        <div class="act-btn adj"  title="Ajuste"       onclick="openMov(${p.id},'ajuste')"><i class="bi bi-sliders"></i></div>
+        <div class="act-btn up"   title="Entrada"      onclick="openMov('${p.id}','entrada')"><i class="bi bi-arrow-down-circle"></i></div>
+        <div class="act-btn down" title="Saída"        onclick="openMov('${p.id}','saida')"><i class="bi bi-arrow-up-circle"></i></div>
+        <div class="act-btn adj"  title="Ajuste"       onclick="openMov('${p.id}','ajuste')"><i class="bi bi-sliders"></i></div>
       </div></td>
     </tr>`;
       }).join('');
@@ -1453,8 +1415,10 @@
 
       body.innerHTML = list.map(m => {
         const tc = typeConfig[m.tipo] || typeConfig.entrada;
-        const qtySign = m.tipo === 'saida' || (m.tipo === 'ajuste' && m.qty < 0) ? 'neg' : 'pos';
-        const qtyStr = (m.qty > 0 ? '+' : '') + m.qty;
+        const qtyDisplay = m.tipo === 'saida' ? -Math.abs(m.qty) : m.qty;
+        const qtySign = qtyDisplay >= 0 ? 'pos' : 'neg';
+        const qtyStr = (qtyDisplay > 0 ? '+' : '') + qtyDisplay;
+        const dataFmt = m.data || (m.dataISO ? new Date(m.dataISO).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—');
         return `<tr>
       <td>
         <div style="display:flex;align-items:center;gap:8px">
@@ -1464,10 +1428,10 @@
       </td>
       <td><div class="prod-name" style="font-size:13px">${m.produto}</div></td>
       <td><span style="font-weight:800;font-size:14px;color:${qtySign === 'pos' ? 'var(--accent)' : 'var(--danger)'}">${qtyStr}</span></td>
-      <td style="font-size:12px;color:var(--muted)">${m.deposito}${m.destino ? ' → ' + m.destino : ''}</td>
-      <td style="font-size:12px;color:var(--muted)">${m.motivo}</td>
-      <td style="font-size:12px;color:var(--muted)">${m.operador}</td>
-      <td style="font-size:11px;color:var(--muted)">${m.data}</td>
+      <td style="font-size:12px;color:var(--muted)">${m.deposito||'—'}${m.destino ? ' → ' + m.destino : ''}</td>
+      <td style="font-size:12px;color:var(--muted)">${m.motivo||'—'}</td>
+      <td style="font-size:12px;color:var(--muted)">${m.operador||'—'}</td>
+      <td style="font-size:11px;color:var(--muted)">${dataFmt}</td>
     </tr>`;
       }).join('');
 
@@ -1485,16 +1449,18 @@
         const itens = prods.reduce((s, p) => s + p.estoque, 0);
         const valor = prods.reduce((s, p) => s + p.estoque * p.custo, 0);
         const alertas = prods.filter(p => p.estoque <= p.estoqueMin).length;
+        const icone = d.icone || '🏭';
+        const cor   = d.cor   || 'var(--accent)';
         return `<div class="dep-card">
       <div class="dep-header">
-        <div class="dep-icon">${d.icone}</div>
+        <div class="dep-icon">${icone}</div>
         <span class="dep-badge">${prods.length} SKUs</span>
-        ${canDelete ? `<button onclick="deleteDeposito(${d.id})" title="Excluir depósito" style="margin-left:auto;background:none;border:none;color:var(--danger);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:6px;opacity:.7" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.7"><i class="bi bi-trash"></i></button>` : ''}
+        ${canDelete && d.id ? `<button onclick="deleteDeposito('${d.id}')" title="Excluir depósito" style="margin-left:auto;background:none;border:none;color:var(--danger);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:6px;opacity:.7" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.7"><i class="bi bi-trash"></i></button>` : ''}
       </div>
       <div class="dep-name">${d.nome}</div>
       <div class="dep-addr">${d.endereco || '<span style="color:var(--muted);font-size:11px">Sem endereço</span>'}</div>
       <div class="dep-stats">
-        <div class="dep-stat"><div class="dep-stat-val" style="color:${d.cor}">${itens}</div><div class="dep-stat-lbl">Itens</div></div>
+        <div class="dep-stat"><div class="dep-stat-val" style="color:${cor}">${itens}</div><div class="dep-stat-lbl">Itens</div></div>
         <div class="dep-stat"><div class="dep-stat-val">R$ ${fmt(valor)}</div><div class="dep-stat-lbl">Valor</div></div>
         <div class="dep-stat"><div class="dep-stat-val" style="color:${alertas > 0 ? 'var(--warn)' : 'var(--accent)'}">${alertas}</div><div class="dep-stat-lbl">Alertas</div></div>
         <div class="dep-stat"><div class="dep-stat-val">${prods.length}</div><div class="dep-stat-lbl">Produtos</div></div>
@@ -1507,13 +1473,14 @@
     </div>`;
     }
 
-    function deleteDeposito(id) {
+    async function deleteDeposito(id) {
       if (depositos.length <= 1) { showToast('Deve existir ao menos um depósito.'); return; }
       const dep = depositos.find(d => d.id === id); if (!dep) return;
       const prods = products.filter(p => p.deposito === dep.nome);
       if (prods.length > 0) { showToast(`Mova os ${prods.length} produto(s) antes de excluir.`); return; }
+      const res = await NexoAuth.apiFetch(`/estoque/depositos/${id}`, { method: 'DELETE' });
+      if (!res.ok) { showToast('Erro ao excluir: ' + res.message); return; }
       depositos = depositos.filter(d => d.id !== id);
-      saveDepositos();
       populateDepositoSelects();
       renderDepositos();
       showToast('Depósito excluído.');
@@ -1530,20 +1497,24 @@
       document.getElementById('depModalOverlay').classList.add('open');
     }
     function closeDepModal() { document.getElementById('depModalOverlay').classList.remove('open'); }
-    function saveDeposito() {
+    async function saveDeposito() {
       const nome = document.getElementById('dep-nome').value.trim();
       if (!nome) { showToast('Informe o nome do depósito.'); return; }
-      const icone = document.getElementById('dep-icone').value.trim() || '🏭';
+      const icone    = document.getElementById('dep-icone').value.trim() || '🏭';
       const endereco = document.getElementById('dep-endereco').value.trim();
-      const cores = ['var(--accent)', 'var(--accent2)', 'var(--warn)', '#a855f7', '#f472b6'];
+      const cores    = ['var(--accent)', 'var(--accent2)', 'var(--warn)', '#a855f7', '#f472b6'];
+
       if (editingDepId) {
+        const res = await NexoAuth.apiFetch(`/estoque/depositos/${editingDepId}`, { method: 'PUT', body: JSON.stringify({ nome, icone, endereco }) });
+        if (!res.ok) { showToast('Erro ao atualizar: ' + res.message); return; }
         const idx = depositos.findIndex(d => d.id === editingDepId);
-        if (idx >= 0) { depositos[idx].nome = nome; depositos[idx].icone = icone; depositos[idx].endereco = endereco; }
+        if (idx >= 0) depositos[idx] = res.data;
       } else {
-        const maxId = depositos.reduce((m, d) => Math.max(m, d.id || 0), 0);
-        depositos.push({ id: maxId + 1, nome, icone, endereco, cor: cores[depositos.length % cores.length] });
+        const cor = cores[depositos.length % cores.length];
+        const res = await NexoAuth.apiFetch('/estoque/depositos', { method: 'POST', body: JSON.stringify({ nome, icone, endereco, cor }) });
+        if (!res.ok) { showToast('Erro ao criar: ' + res.message); return; }
+        depositos.push(res.data);
       }
-      saveDepositos();
       populateDepositoSelects();
       renderDepositos();
       closeDepModal();
@@ -1629,7 +1600,7 @@
     }
 
     function onProdutoChange() {
-      const id = parseInt(document.getElementById('movProduto').value);
+      const id = document.getElementById('movProduto').value;
       const p = products.find(x => x.id === id);
       const preview = document.getElementById('prodPreview');
       if (p) {
@@ -1649,44 +1620,34 @@
       inp.value = Math.max(1, (parseInt(inp.value) || 1) + delta);
     }
 
-    function saveMov() {
-      const prodId = parseInt(document.getElementById('movProduto').value);
-      const qty = parseInt(document.getElementById('movQty').value) || 1;
-      const dep = document.getElementById('movDeposito').value;
-      const motivo = document.getElementById('movMotivo').value;
-      const obs = document.getElementById('movObs').value;
+    async function saveMov() {
+      const prodId = document.getElementById('movProduto').value;
+      const qty    = parseInt(document.getElementById('movQty').value) || 1;
+      const dep    = document.getElementById('movDeposito').value;
+      const motivo = document.getElementById('movObs').value || document.getElementById('movMotivo').value;
 
       if (!prodId) { showToast('Selecione um produto.'); return; }
-
       const p = products.find(x => x.id === prodId);
       if (!p) return;
 
-      // aplica movimentação
-      if (movType === 'entrada') p.estoque += qty;
-      else if (movType === 'saida') p.estoque = Math.max(0, p.estoque - qty);
-      else if (movType === 'ajuste') p.estoque = qty; // ajuste = saldo real informado
-      else if (movType === 'transferencia') { /* sem mudança de total, só depósito */ p.deposito = document.getElementById('movDepDestino').value; }
+      const now      = new Date();
+      const dataStr  = `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+      const operador = (NexoAuth.getSession()?.user?.name || 'Sistema').split(' ').slice(0, 2).join(' ');
+      const destino  = movType === 'transferencia' ? document.getElementById('movDepDestino').value : '';
 
-      if (movType === 'entrada') p.ultimaEntrada = new Date().toLocaleDateString('pt-BR');
-
-      // registra histórico
-      const now = new Date();
-      const dataStr = `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
-      const qtyFinal = movType === 'ajuste' ? qty : movType === 'saida' ? -qty : qty;
-      movimentacoes.unshift({
-        id: Date.now() + Math.random(),
-        tipo: movType,
-        prodId, produto: p.nome, qty: qtyFinal,
-        deposito: dep,
-        destino: movType === 'transferencia' ? document.getElementById('movDepDestino').value : '',
-        motivo: obs || motivo,
-        operador: (NexoAuth.getSession()?.user?.name || 'Sistema').split(' ').slice(0, 2).join(' '),
-        dataISO: now.toISOString(),
-        data: dataStr,
+      const res = await NexoAuth.apiFetch('/estoque/movimentacoes', {
+        method: 'POST',
+        body: JSON.stringify({ tipo: movType, prodId, produto: p.nome, qty, deposito: dep, destino, motivo, operador, data: dataStr }),
       });
+      if (!res.ok) { showToast('Erro: ' + res.message); return; }
 
-      saveProducts();
-      saveMovs();
+      // Atualiza estado local
+      if (movType === 'entrada')       { p.estoque += qty; p.ultimaEntrada = now.toLocaleDateString('pt-BR'); }
+      else if (movType === 'saida')    { p.estoque = Math.max(0, p.estoque - qty); }
+      else if (movType === 'ajuste')   { p.estoque = qty; }
+      else if (movType === 'transferencia') { p.deposito = destino; }
+
+      movimentacoes.unshift(res.data);
       populateProdSelect();
       closeMov();
       applyFilters();
@@ -1695,7 +1656,7 @@
       renderAlertas();
       updateKPIs();
 
-      const labels = { entrada: 'Entrada registrada ✅', saida: 'Saída registrada', ajuste: 'Estoque ajustado', transferencia: 'Transferência realizada' };
+      const labels = { entrada: 'Entrada registrada', saida: 'Saída registrada', ajuste: 'Estoque ajustado', transferencia: 'Transferência realizada' };
       showToast(labels[movType]);
     }
 
@@ -1833,10 +1794,10 @@
       document.getElementById('xmlItemsBody').innerHTML = xmlItems.map((item, idx) => {
         const icon = item.matchedId ? '✅' : '⚠️';
         const opts = `<option value="">— Criar produto —</option>` +
-          products.map(p => `<option value="${p.id}"${p.id === item.matchedId ? ' selected' : ''}>${p.emoji} ${p.nome}</option>`).join('');
+          products.map(p => `<option value="${p.id}"${String(p.id) === String(item.matchedId) ? ' selected' : ''}>${p.emoji||'📦'} ${p.nome}</option>`).join('');
         return `<tr>
           <td style="font-size:12px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${item.xProd}">${icon} ${item.xProd}</td>
-          <td><select class="field" style="font-size:11px;padding:5px 8px;width:100%" onchange="xmlItems[${idx}].matchedId=this.value?parseInt(this.value):null;renderXmlReview()">${opts}</select></td>
+          <td><select class="field" style="font-size:11px;padding:5px 8px;width:100%" onchange="xmlItems[${idx}].matchedId=this.value||null;renderXmlReview()">${opts}</select></td>
           <td style="text-align:center;font-weight:800;font-size:14px">${item.qCom}</td>
           <td style="text-align:center;font-size:12px;white-space:nowrap">R$ ${fmt(item.vUnCom)}</td>
           <td style="text-align:center"><input type="checkbox"${item.skip ? ' checked' : ''} onchange="xmlItems[${idx}].skip=this.checked"></td>
@@ -1853,58 +1814,109 @@
       else saveMov();
     }
 
-    function saveXmlMov() {
+    async function saveXmlMov() {
       if (!xmlItems.length) { showToast('Importe um arquivo XML primeiro.'); return; }
-      const dep = document.getElementById('movDepositoXml').value;
+      const dep    = document.getElementById('movDepositoXml').value;
       const active = xmlItems.filter(i => !i.skip);
       if (!active.length) { showToast('Nenhum produto selecionado para importar.'); return; }
 
-      const now = new Date();
-      const dataStr = `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+      const now      = new Date();
+      const dataStr  = `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
       const operador = (NexoAuth.getSession()?.user?.name || 'Sistema').split(' ').slice(0, 2).join(' ');
-      const motivo = `NF-e ${nfInfo.numero || ''}/${nfInfo.serie || ''} — ${nfInfo.fornecedor || 'XML'}`;
+      const motivo   = `NF-e ${nfInfo.numero || ''}/${nfInfo.serie || ''} — ${nfInfo.fornecedor || 'XML'}`;
 
       let criados = 0;
-      active.forEach(item => {
+      for (const item of active) {
         if (!item.matchedId) {
-          const maxId = products.reduce((m, p) => Math.max(m, p.id || 0), 0);
-          const newP = {
-            id: maxId + 1, nome: item.xProd,
-            sku: item.cProd || ('XML' + Date.now()),
-            emoji: '📦', categoria: 'Importado',
-            deposito: dep, estoque: 0,
-            estoqueMin: 0, estoqueMax: 9999,
-            custo: item.vUnCom,
-            preco: parseFloat((item.vUnCom * 1.3).toFixed(2)),
+          const rNew = await NexoAuth.apiFetch('/produtos', { method: 'POST', body: JSON.stringify({
+            nome: item.xProd,
+            sku:  item.cProd || ('XML' + Date.now()),
+            cat:  'Importado',
+            deposito:  dep,
+            custo:     item.vUnCom,
+            preco:     parseFloat((item.vUnCom * 1.3).toFixed(2)),
             fornecedor: nfInfo.fornecedor || '',
-            ultimaEntrada: now.toLocaleDateString('pt-BR'),
-            codigoBarras: (item.cEAN && item.cEAN !== 'SEM GTIN') ? item.cEAN : '',
-          };
-          products.push(newP);
-          item.matchedId = newP.id;
+            ean:  (item.cEAN && item.cEAN !== 'SEM GTIN') ? item.cEAN : '',
+          }) });
+          if (!rNew.ok) continue;
+          products.push(rNew.data);
+          item.matchedId = rNew.data.id;
           criados++;
         }
-        const p = products.find(x => x.id === item.matchedId);
-        if (!p) return;
-        p.estoque += item.qCom;
-        p.custo = item.vUnCom;
-        p.ultimaEntrada = now.toLocaleDateString('pt-BR');
-        if (nfInfo.fornecedor) p.fornecedor = nfInfo.fornecedor;
-        movimentacoes.unshift({
-          id: Date.now() + Math.random(), tipo: 'entrada',
-          prodId: p.id, produto: p.nome, qty: item.qCom,
-          deposito: dep, destino: '', motivo, operador,
-          dataISO: now.toISOString(), data: dataStr,
-        });
-      });
 
-      saveProducts(); saveMovs();
+        const p = products.find(x => x.id === item.matchedId);
+        if (!p) continue;
+
+        const rMov = await NexoAuth.apiFetch('/estoque/movimentacoes', { method: 'POST', body: JSON.stringify({
+          tipo: 'entrada', prodId: p.id, produto: p.nome,
+          qty: item.qCom, deposito: dep, motivo, operador, data: dataStr,
+        }) });
+        if (rMov.ok) {
+          p.estoque += item.qCom;
+          p.ultimaEntrada = now.toLocaleDateString('pt-BR');
+          movimentacoes.unshift(rMov.data);
+        }
+
+        // Atualiza custo e fornecedor do produto
+        NexoAuth.apiFetch(`/produtos/${p.id}`, { method: 'PUT', body: JSON.stringify({
+          custo: item.vUnCom,
+          ...(nfInfo.fornecedor ? { fornecedor: nfInfo.fornecedor } : {}),
+          ultimaEntrada: now.toLocaleDateString('pt-BR'),
+        }) });
+        p.custo = item.vUnCom;
+        if (nfInfo.fornecedor) p.fornecedor = nfInfo.fornecedor;
+      }
+
       populateProdSelect(); closeMov();
       applyFilters(); renderMovs(); renderDepositos(); renderAlertas(); updateKPIs();
       const msg = criados > 0
-        ? `✅ ${active.length} produto(s) importados (${criados} criados)`
-        : `✅ ${active.length} produto(s) importados da NF-e`;
+        ? `${active.length} produto(s) importados (${criados} criados)`
+        : `${active.length} produto(s) importados da NF-e`;
       showToast(msg);
+    }
+
+    // ═══════════════════════════════════════════════
+    // EXPORT CSV
+    // ═══════════════════════════════════════════════
+    function exportCSV() {
+      const activePanel = document.querySelector('.tab-panel.active');
+      const isMov = activePanel && activePanel.id === 't-movimentacoes';
+
+      let header, rows, filename;
+
+      if (isMov) {
+        header = ['Tipo', 'Produto', 'Quantidade', 'Depósito', 'Destino', 'Motivo', 'Operador', 'Data'];
+        const tipoLabel = { entrada: 'Entrada', saida: 'Saída', ajuste: 'Ajuste', transferencia: 'Transferência' };
+        const list = movimentacoes.filter(m => movFilter === 'todos' || m.tipo === movFilter);
+        rows = list.map(m => [
+          tipoLabel[m.tipo] || m.tipo,
+          m.produto,
+          m.qty,
+          m.deposito || '—',
+          m.destino || '—',
+          m.motivo || '—',
+          m.operador || '—',
+          m.data || '',
+        ]);
+        filename = 'movimentacoes-estoque.csv';
+      } else {
+        header = ['SKU', 'Nome', 'Categoria', 'Depósito', 'Estoque Atual', 'Est. Mínimo', 'Est. Máximo', 'Status'];
+        rows = filtered.map(p => [
+          p.sku, p.nome, p.cat || '—', p.deposito || '—',
+          p.estoque, p.estoqueMin || 0, p.estoqueMax || 0,
+          p.status === 'ativo' ? 'Ativo' : 'Inativo',
+        ]);
+        filename = 'posicao-estoque.csv';
+      }
+
+      const escape = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+      const csv = [header, ...rows].map(r => r.map(escape).join(',')).join('\r\n');
+      const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
     }
 
     // ═══════════════════════════════════════════════
@@ -1913,7 +1925,6 @@
     // ═══════════════════════════════════════════════
     // HELPERS
     // ═══════════════════════════════════════════════
-    NexoAuth.renderCurrentUser();
     init();
   </script>
 </body>

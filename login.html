@@ -125,7 +125,7 @@
       width: 100%; padding: 12px 14px 12px 42px;
       background: var(--card); border: 1px solid var(--border);
       border-radius: 10px; color: var(--text);
-      font-family: 'DM Sans',sans-serif; font-size: 14px;
+      font-family: 'Inter',sans-serif; font-size: 14px;
       outline: none; transition: border-color .2s, box-shadow .2s;
     }
     input:focus {
@@ -155,7 +155,7 @@
     .btn-login {
       width: 100%; padding: 14px;
       background: var(--accent); border: none; border-radius: 10px;
-      color: #021c14; font-family: 'DM Sans',sans-serif;
+      color: #021c14; font-family: 'Inter',sans-serif;
       font-size: 16px; font-weight: 700; cursor: pointer;
       transition: opacity .2s, transform .2s;
       display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -324,6 +324,7 @@
       <div class="signup-link">
         Ainda não tem conta? <a href="cadastro.html">Cadastre-se grátis</a>
       </div>
+
     </div>
   </div>
 
@@ -332,31 +333,16 @@
     <div class="modal-box">
       <div id="recStep1">
         <h3>Recuperar acesso</h3>
-        <p>Digite o e-mail ou usuário cadastrado. Como os dados ficam no seu navegador, a nova senha será definida aqui mesmo.</p>
+        <p>Para redefinir sua senha, entre em contato com o administrador da sua conta.</p>
         <div class="rec-error" id="recError"></div>
-        <label for="recIdentifier">E-mail ou usuário</label>
-        <input type="text" id="recIdentifier" placeholder="seunome@empresa.com" onkeydown="if(event.key==='Enter')recStep2()">
+        <div id="recStep2" style="display:none"></div>
         <div class="modal-actions">
-          <button class="btn-modal-cancel" onclick="closeRecovery()">Cancelar</button>
-          <button class="btn-modal-ok" onclick="recStep2()">Continuar</button>
+          <button class="btn-modal-ok" style="width:100%" onclick="closeRecovery()">Entendido</button>
         </div>
       </div>
-      <div id="recStep2" style="display:none">
-        <h3>Nova senha</h3>
-        <p id="recUserLabel" style="margin-bottom:16px;color:var(--text);font-size:13px"></p>
-        <label for="recNewPwd">Nova senha</label>
-        <input type="password" id="recNewPwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')recConfirm()">
-        <label for="recNewPwd2">Confirmar senha</label>
-        <input type="password" id="recNewPwd2" placeholder="••••••••" onkeydown="if(event.key==='Enter')recConfirm()">
-        <div class="rec-error" id="recError2"></div>
-        <div class="modal-actions">
-          <button class="btn-modal-cancel" onclick="document.getElementById('recStep2').style.display='none';document.getElementById('recStep1').style.display='block'">Voltar</button>
-          <button class="btn-modal-ok" onclick="recConfirm()">Redefinir senha</button>
-        </div>
-      </div>
-      <div class="modal-success" id="recSuccess">
+      <div class="modal-success" id="recSuccess" style="display:none">
         <i class="bi bi-check-circle-fill"></i>
-        <p><strong>Senha redefinida!</strong><br>Você já pode entrar com sua nova senha.</p>
+        <p><strong>Contate o administrador.</strong></p>
         <button class="btn-modal-ok" style="width:100%;margin-top:20px" onclick="closeRecovery()">Fechar</button>
       </div>
     </div>
@@ -444,50 +430,14 @@
       if (e.key === 'Enter' && !document.getElementById('recoveryOverlay').classList.contains('open')) entrar();
     });
 
-    // ── Diagnóstico e recuperação de emergência (console) ──
-    // Digite no console do navegador: NexoDebug.diagnostico() ou NexoDebug.resetDemo()
-    window.NexoDebug = {
-      diagnostico() {
-        const USERS_KEY   = 'nexoerp.users';
-        const SESSION_KEY = 'nexoerp.session';
-        const DEMO_KEY    = 'nexoerp.demo_removed';
-        const users   = JSON.parse(localStorage.getItem(USERS_KEY)   || '[]');
-        const session = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
-        const demoRem = localStorage.getItem(DEMO_KEY);
-        console.group('🔍 NexoERP — Diagnóstico de autenticação');
-        console.log('demo_removed:', demoRem);
-        console.log('nexoerp.users (' + users.length + '):', users.map(u => ({ id: u.id, username: u.username, email: u.email, isDono: u.isDono, hasHash: !!u.passwordHash })));
-        console.log('nexoerp.session:', session ? { userId: session.user?.id, username: session.user?.username, expires: new Date(session.expiresAt).toLocaleString() } : null);
-        console.groupEnd();
-        return { users, session, demoRemoved: demoRem };
-      },
-      resetDemo() {
-        if (!confirm('Isso vai redefinir o usuário demo (admin / admin123) como único usuário. Dados de negócio NÃO são apagados. Continuar?')) return;
-        const demoHash = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
-        const demo = { id: 'demo-admin', name: 'Joao Desenvolvedor', username: 'admin', email: 'admin@nexoerp.com', passwordHash: demoHash, isDono: true, permissions: null, company: 'NexoERP Demo', createdAt: new Date().toISOString() };
-        localStorage.setItem('nexoerp.users', JSON.stringify([demo]));
-        localStorage.removeItem('nexoerp.demo_removed');
-        localStorage.removeItem('nexoerp.session');
-        console.log('✅ Demo restaurado. Entre com admin / admin123');
-        alert('Pronto! Entre com:\nUsuário: admin\nSenha: admin123');
-      },
-    };
 
     // ── Recuperação de senha ────────────────────────────
-    let _recUserId = null;
-
     function openRecovery() {
-      _recUserId = null;
-      document.getElementById('recIdentifier').value = '';
-      document.getElementById('recNewPwd').value = '';
-      document.getElementById('recNewPwd2').value = '';
-      document.getElementById('recError').className = 'rec-error';
-      document.getElementById('recError2').className = 'rec-error';
       document.getElementById('recStep1').style.display = 'block';
       document.getElementById('recStep2').style.display = 'none';
       document.getElementById('recSuccess').style.display = 'none';
+      document.getElementById('recError').className = 'rec-error';
       document.getElementById('recoveryOverlay').classList.add('open');
-      setTimeout(() => document.getElementById('recIdentifier').focus(), 100);
     }
 
     function closeRecovery() {
@@ -495,40 +445,11 @@
     }
 
     function recStep2() {
-      const id = document.getElementById('recIdentifier').value.trim();
-      const err = document.getElementById('recError');
-      if (!id) { err.textContent = 'Preencha o e-mail ou usuário.'; err.className = 'rec-error show'; return; }
-      const users = NexoAuth.getUsers();
-      const needle = id.toLowerCase();
-      const user = users.find(u => (u.email||'').toLowerCase() === needle || (u.username||'').toLowerCase() === needle);
-      if (!user) { err.textContent = 'Nenhuma conta encontrada com esse e-mail ou usuário.'; err.className = 'rec-error show'; return; }
-      _recUserId = user.id;
-      document.getElementById('recUserLabel').textContent = `Conta encontrada: ${user.name} (${user.email})`;
       document.getElementById('recStep1').style.display = 'none';
       document.getElementById('recStep2').style.display = 'block';
-      setTimeout(() => document.getElementById('recNewPwd').focus(), 100);
     }
 
-    async function recConfirm() {
-      const p1 = document.getElementById('recNewPwd').value;
-      const p2 = document.getElementById('recNewPwd2').value;
-      const err = document.getElementById('recError2');
-      if (!p1 || p1.length < 4) { err.textContent = 'A senha deve ter ao menos 4 caracteres.'; err.className = 'rec-error show'; return; }
-      if (p1 !== p2) { err.textContent = 'As senhas não conferem.'; err.className = 'rec-error show'; return; }
-
-      // Atualiza hash no localStorage
-      const USERS_KEY = 'nexoerp.users';
-      let users = [];
-      try { users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]'); } catch(_) {}
-      const idx = users.findIndex(u => u.id === _recUserId);
-      if (idx < 0) { err.textContent = 'Erro interno. Tente novamente.'; err.className = 'rec-error show'; return; }
-
-      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(p1));
-      const hash = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-      users[idx].passwordHash = hash;
-      delete users[idx].password;
-      localStorage.setItem(USERS_KEY, JSON.stringify(users));
-
+    function recConfirm() {
       document.getElementById('recStep2').style.display = 'none';
       document.getElementById('recSuccess').style.display = 'block';
     }

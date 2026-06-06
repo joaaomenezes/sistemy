@@ -287,6 +287,9 @@
         </div>
       </div>
 
+      <!-- Estado de carregamento / erro -->
+      <div id="relStatus" style="display:none;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;margin-bottom:20px;font-size:13px;font-weight:500"></div>
+
       <!-- Filtro de categorias -->
       <div class="rel-cats" id="relCats"></div>
 
@@ -406,19 +409,76 @@
     NexoAuth.requireAuth();
     requirePermission();
 
-    // ── Storage keys ──────────────────────────────────────────
-    const KEYS = {
-      produtos:    'nexoerp.produtos',
-      movs:        'nexoerp.movimentacoes',
-      pdvVendas:   'nexoerp.pdv.vendas',
-      pedVendas:   'nexoerp.vendas',
-      financeiro:  'nexoerp.financeiro',
-      custos:      'nexoerp.custos',
-      historico:   'nexoerp.relatorios.historico',
+    // ── Cache de dados (carregado via API no init) ────────────
+    const DATA = {
+      produtos:   [],
+      pdvVendas:  [],
+      pedVendas:  [],
+      financeiro: [],
+      custos:     [],
+      movs:       [],
+      categorias: [],
     };
+    let historico  = [];
+    let dataLoaded = false;
 
-    function load(key) {
-      try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : []; } catch(_) { return []; }
+    // Busca tolerante a falha: nunca rejeita, retorna [] se a API falhar
+    async function _fetchList(path) {
+      try {
+        const r = await NexoAuth.apiFetch(path);
+        return { ok: !!(r && r.ok), data: (r && r.ok) ? r.data : [] };
+      } catch (_) {
+        return { ok: false, data: [] };
+      }
+    }
+
+    function setStatus(tipo, msg) {
+      const el = document.getElementById('relStatus');
+      if (!el) return;
+      if (!tipo) { el.style.display = 'none'; return; }
+      const cor = tipo === 'erro'
+        ? { bg:'rgba(255,71,87,.12)', fg:'#ff4757', ic:'bi-exclamation-triangle-fill' }
+        : { bg:'rgba(0,200,150,.10)', fg:'var(--accent)', ic:'bi-arrow-repeat' };
+      el.style.background = cor.bg;
+      el.style.color = cor.fg;
+      el.style.display = 'flex';
+      el.innerHTML = `<i class="bi ${cor.ic}"></i><span>${msg}</span>`;
+    }
+
+    // Carrega todos os dados em paralelo (uma chamada de vendas, separada por tipo)
+    async function loadAllData() {
+      setStatus('load', 'Carregando dados dos relatórios…');
+      const [prod, vend, fin, cst, mov, cat, hist] = await Promise.all([
+        _fetchList('/produtos'),
+        _fetchList('/vendas'),
+        _fetchList('/financeiro'),
+        _fetchList('/custos'),
+        _fetchList('/estoque/movimentacoes'),
+        _fetchList('/categorias'),
+        _fetchList('/relatorios/historico'),
+      ]);
+
+      DATA.produtos   = prod.data;
+      DATA.pdvVendas  = vend.data.filter(v => v.tipo === 'pdv');
+      DATA.pedVendas  = vend.data.filter(v => v.tipo === 'pedido');
+      DATA.financeiro = fin.data;
+      DATA.custos     = cst.data;
+      DATA.movs       = mov.data;
+      DATA.categorias = cat.data.map(c => c.nome).filter(Boolean);
+      historico       = hist.data;
+      dataLoaded      = true;
+
+      const falhas = [
+        !prod.ok && 'produtos', !vend.ok && 'vendas', !fin.ok && 'financeiro',
+        !cst.ok && 'custos', !mov.ok && 'movimentações', !cat.ok && 'categorias',
+        !hist.ok && 'histórico',
+      ].filter(Boolean);
+
+      if (falhas.length) {
+        setStatus('erro', `Falha ao carregar: ${falhas.join(', ')}. Alguns relatórios podem sair incompletos. Recarregue a página para tentar de novo.`);
+      } else {
+        setStatus(null);
+      }
     }
 
     // ── Catálogo de relatórios ────────────────────────────────
@@ -461,7 +521,7 @@
         icon: 'bi-boxes', cor: '#00c896',
         tags: ['Todos os produtos'],
         filtros: [
-          { id: 'rf-cat-est', label: 'Categoria', opts: ['Todas', ...getCategorias()] },
+          { id: 'rf-cat-est', label: 'Categoria', opts: ['Todas'] }, // categorias injetadas dinamicamente em openRelModal
         ],
       },
       {
@@ -555,16 +615,12 @@
     ];
 
     function getCategorias() {
-      try {
-        const cats = localStorage.getItem('nexoerp.categorias');
-        return cats ? JSON.parse(cats) : [];
-      } catch(_) { return []; }
+      return DATA.categorias;
     }
 
     // ── Estado ───────────────────────────────────────────────
     let currentCat    = 'todos';
     let currentReport = null;
-    let historico     = load(KEYS.historico);
     let relPage       = 1;
     const relPerPage  = 12;
 
@@ -661,15 +717,19 @@
       const wrap = document.getElementById('relFiltrosWrap');
       const extra = document.getElementById('relFiltrosExtra');
       if (currentReport.filtros.length) {
-        wrap.innerHTML = currentReport.filtros.map(f => `
+        wrap.innerHTML = currentReport.filtros.map(f => {
+          // Categorias de estoque vêm do cache carregado via API (dinâmicas)
+          const opts = f.id === 'rf-cat-est' ? ['Todas', ...DATA.categorias] : f.opts;
+          return `
           <div class="form-group">
             <label class="lbl">${f.label}</label>
             <div class="inp-wrap"><i class="bi bi-funnel pre"></i>
               <select class="field" id="${f.id}">
-                ${f.opts.map(o => `<option value="${o}">${o}</option>`).join('')}
+                ${opts.map(o => `<option value="${o}">${o}</option>`).join('')}
               </select>
             </div>
-          </div>`).join('');
+          </div>`;
+        }).join('');
         extra.style.display = 'block';
       } else {
         wrap.innerHTML = '';
@@ -711,7 +771,7 @@
     function downloadData(filename, rows) {
       if (currentFmt === 'pdf')   downloadPDF(filename, rows);
       else if (currentFmt === 'excel') downloadExcel(filename, rows);
-      else downloadCSV(filename, rows);
+      else _downloadRelCSV(filename, rows);
     }
 
     function downloadPDF(filename, rows) {
@@ -762,7 +822,8 @@
     function filterByPeriod(lista, dr) {
       if (!dr.start && !dr.end) return lista;
       return lista.filter(item => {
-        const raw = item.dataISO || item.data || item.venc || '';
+        const raw = String(item.dataISO || item.data || item.vencimento || item.pagoEm || '');
+        if (!raw) return true;
         const d = raw.includes('/') ? parseBR(raw) : new Date(raw);
         if (isNaN(d)) return true;
         if (dr.start && d < dr.start) return false;
@@ -779,7 +840,7 @@
       return 'R$ ' + (v||0).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
     }
 
-    function downloadCSV(filename, rows) {
+    function _downloadRelCSV(filename, rows) {
       const csv = rows.map(r => r.map(c => `"${String(c==null?'—':c).replace(/"/g,'""')}"`).join(',')).join('\n');
       const blob = new Blob(['﻿'+csv], { type:'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
@@ -789,8 +850,16 @@
     }
 
     // ── Geração ──────────────────────────────────────────────
+    // Helper: data de exibição (string pt-BR ou ISO → dd/mm/aaaa)
+    function _fmtDataCol(item) {
+      if (item.data) return item.data;
+      if (item.dataISO) return new Date(item.dataISO).toLocaleDateString('pt-BR');
+      return '—';
+    }
+
     function gerarRelatorio() {
       if (!currentReport) return;
+      if (!dataLoaded) { showToast('Aguarde o carregamento dos dados.', 'warning'); return; }
       const dr    = getDateRange();
       const today = new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
 
@@ -801,18 +870,18 @@
           const filtroMetodo = document.getElementById('rf-metodo')?.value || 'Todos';
           const filtroFonte  = document.getElementById('rf-fonte')?.value  || 'Todos';
           let vendas = [];
-          if (filtroFonte !== 'Pedidos de Venda') vendas = vendas.concat(load(KEYS.pdvVendas).map(v=>({...v,fonte:'PDV'})));
-          if (filtroFonte !== 'PDV')              vendas = vendas.concat(load(KEYS.pedVendas).map(v=>({...v,fonte:'Pedidos'})));
+          if (filtroFonte !== 'Pedidos de Venda') vendas = vendas.concat(DATA.pdvVendas.map(v=>({...v,fonte:'PDV'})));
+          if (filtroFonte !== 'PDV')              vendas = vendas.concat(DATA.pedVendas.map(v=>({...v,fonte:'Pedidos'})));
           vendas = filterByPeriod(vendas, dr);
           if (filtroStatus !== 'Todos') vendas = vendas.filter(v => v.status === filtroStatus);
           if (filtroMetodo !== 'Todos') vendas = vendas.filter(v => v.metodo === filtroMetodo);
           const h = ['Nº Venda','Cliente','Operador','Método','Subtotal','Desconto','Total','Status','Data','Hora','Fonte'];
-          downloadData(`vendas_historico_${today}.csv`, [h, ...vendas.map(v=>[v.id,v.cliente,v.operador,v.metodo,fmtVal(v.subtotal),fmtVal(v.desconto),fmtVal(v.total),v.status,v.dataStr,v.horaStr,v.fonte])]);
+          downloadData(`vendas_historico_${today}.csv`, [h, ...vendas.map(v=>[v.id,v.cliente||'Venda Balcão',v.operador,v.metodo,fmtVal(v.subtotal),fmtVal(v.desconto),fmtVal(v.total),v.status,v.dataStr,v.horaStr,v.fonte])]);
           break;
         }
 
         case 'vendas-ranking': {
-          let vendas = [...load(KEYS.pdvVendas), ...load(KEYS.pedVendas)];
+          let vendas = [...DATA.pdvVendas, ...DATA.pedVendas];
           vendas = filterByPeriod(vendas, dr).filter(v => v.status === 'concluida');
           const rank = {};
           vendas.forEach(v => (v.itens||[]).forEach(item => {
@@ -826,7 +895,7 @@
         }
 
         case 'vendas-ticket': {
-          let vendas = [...load(KEYS.pdvVendas), ...load(KEYS.pedVendas)];
+          let vendas = [...DATA.pdvVendas, ...DATA.pedVendas];
           vendas = filterByPeriod(vendas, dr).filter(v => v.status === 'concluida');
           const totalFat = vendas.reduce((s,v) => s+(v.total||0), 0);
           const ticket   = vendas.length ? totalFat/vendas.length : 0;
@@ -838,7 +907,7 @@
         }
 
         case 'estoque-posicao': {
-          let produtos = load(KEYS.produtos);
+          let produtos = DATA.produtos;
           const catF = document.getElementById('rf-cat-est')?.value || 'Todas';
           if (catF !== 'Todas') produtos = produtos.filter(p => p.cat === catF);
           const h = ['SKU','Nome','Categoria','Unidade','Estoque Atual','Estoque Mín.','Preço Venda','Custo','Valor em Estoque','Depósito','Status'];
@@ -851,7 +920,7 @@
         }
 
         case 'estoque-critico': {
-          const criticos = load(KEYS.produtos).filter(p => p.estoque <= (p.estoqueMin||0));
+          const criticos = DATA.produtos.filter(p => p.estoque <= (p.estoqueMin||0));
           const h = ['SKU','Nome','Categoria','Estoque Atual','Estoque Mín.','Situação','Fornecedor'];
           downloadData(`estoque_critico_${today}.csv`, [h, ...criticos.map(p=>[
             p.sku, p.nome, p.cat, p.estoque, p.estoqueMin,
@@ -862,31 +931,32 @@
         }
 
         case 'estoque-movs': {
-          let movs = filterByPeriod(load(KEYS.movs), dr);
+          let movs = filterByPeriod(DATA.movs, dr);
           const tipoF = document.getElementById('rf-tipo-mov')?.value || 'Todos';
           if (tipoF !== 'Todos') movs = movs.filter(m => m.tipo === tipoF);
-          const h = ['Data','Produto','Tipo','Quantidade','Depósito Origem','Depósito Destino','Operador','Observação'];
+          const h = ['Data','Produto','Tipo','Quantidade','Depósito','Destino','Operador','Motivo'];
           downloadData(`movimentacoes_${today}.csv`, [h, ...movs.map(m=>[
-            m.dataStr||m.data||'—', m.produto||'—', m.tipo, m.quantidade,
-            m.depositoOrigem||'—', m.depositoDestino||'—', m.operador||'—', m.obs||'—',
+            _fmtDataCol(m), m.produto||'—', m.tipo, m.qty,
+            m.deposito||'—', m.destino||'—', m.operador||'—', m.motivo||'—',
           ])]);
           break;
         }
 
         case 'produtos-catalogo': {
-          let produtos = load(KEYS.produtos);
+          let produtos = DATA.produtos;
           const stF = document.getElementById('rf-status-prod')?.value || 'Todos';
           if (stF !== 'Todos') produtos = produtos.filter(p => p.status === stF);
           const h = ['SKU','EAN','Nome','Categoria','Marca','Unidade','Preço Venda','Custo','Margem %','Estoque','Status','Cadastro'];
           downloadData(`catalogo_${today}.csv`, [h, ...produtos.map(p=>{
             const mg = p.preco>0&&p.custo>0 ? ((p.preco-p.custo)/p.preco*100).toFixed(1)+'%' : '—';
-            return [p.sku,p.ean||'—',p.nome,p.cat,p.marca||'—',p.unidade,fmtVal(p.preco),fmtVal(p.custo),mg,p.estoque,p.status,p.cadastro||'—'];
+            const cadastro = p.cadastro || (p.criadoEm ? new Date(p.criadoEm).toLocaleDateString('pt-BR') : '—');
+            return [p.sku,p.ean||'—',p.nome,p.cat,p.marca||'—',p.unidade,fmtVal(p.preco),fmtVal(p.custo),mg,p.estoque,p.status,cadastro];
           })]);
           break;
         }
 
         case 'produtos-margem': {
-          const produtos = load(KEYS.produtos).filter(p=>p.preco>0&&p.custo>0)
+          const produtos = DATA.produtos.filter(p=>p.preco>0&&p.custo>0)
             .sort((a,b)=>((b.preco-b.custo)/b.preco)-((a.preco-a.custo)/a.preco));
           const h = ['Nome','Categoria','Preço Venda','Custo','Margem R$','Margem %'];
           downloadData(`margem_${today}.csv`, [h, ...produtos.map(p=>{
@@ -897,30 +967,30 @@
         }
 
         case 'fin-fluxo': {
-          const lancamentos = filterByPeriod(load(KEYS.financeiro), dr);
+          const lancamentos = filterByPeriod(DATA.financeiro, dr);
           const h = ['Data','Descrição','Tipo','Categoria','Valor','Status'];
-          downloadData(`fluxo_caixa_${today}.csv`, [h, ...lancamentos.map(l=>[l.venc||'—',l.desc||'—',l.tipo||'—',l.categ||'—',fmtVal(l.valor),l.status||'—'])]);
+          downloadData(`fluxo_caixa_${today}.csv`, [h, ...lancamentos.map(l=>[l.vencimento||'—',l.descricao||'—',l.tipo||'—',l.categoria||'—',fmtVal(l.valor),l.status||'—'])]);
           break;
         }
 
         case 'fin-pagar': {
-          let desp = filterByPeriod(load(KEYS.financeiro).filter(l=>l.tipo==='despesa'), dr);
+          let desp = filterByPeriod(DATA.financeiro.filter(l=>l.tipo==='despesa'), dr);
           const stF = document.getElementById('rf-status-fin')?.value || 'Todos';
           if (stF !== 'Todos') desp = desp.filter(l => l.status === stF);
-          downloadData(`contas_pagar_${today}.csv`, [['Vencimento','Descrição','Categoria','Valor','Status'], ...desp.map(l=>[l.venc,l.desc,l.categ,fmtVal(l.valor),l.status||'—'])]);
+          downloadData(`contas_pagar_${today}.csv`, [['Vencimento','Descrição','Categoria','Valor','Status'], ...desp.map(l=>[l.vencimento||'—',l.descricao||'—',l.categoria||'—',fmtVal(l.valor),l.status||'—'])]);
           break;
         }
 
         case 'fin-receber': {
-          let rec = filterByPeriod(load(KEYS.financeiro).filter(l=>l.tipo==='receita'), dr);
+          let rec = filterByPeriod(DATA.financeiro.filter(l=>l.tipo==='receita'), dr);
           const stF = document.getElementById('rf-status-rec')?.value || 'Todos';
           if (stF !== 'Todos') rec = rec.filter(l => l.status === stF);
-          downloadData(`contas_receber_${today}.csv`, [['Vencimento','Descrição','Categoria','Valor','Status'], ...rec.map(l=>[l.venc,l.desc,l.categ,fmtVal(l.valor),l.status||'—'])]);
+          downloadData(`contas_receber_${today}.csv`, [['Vencimento','Descrição','Categoria','Valor','Status'], ...rec.map(l=>[l.vencimento||'—',l.descricao||'—',l.categoria||'—',fmtVal(l.valor),l.status||'—'])]);
           break;
         }
 
         case 'fin-dre': {
-          const lancs   = filterByPeriod(load(KEYS.financeiro), dr);
+          const lancs   = filterByPeriod(DATA.financeiro, dr);
           const receitas = lancs.filter(l=>l.tipo==='receita').reduce((s,l)=>s+(l.valor||0),0);
           const despesas = lancs.filter(l=>l.tipo==='despesa').reduce((s,l)=>s+(l.valor||0),0);
           const resultado = receitas - despesas;
@@ -935,19 +1005,19 @@
         }
 
         case 'fin-custos': {
-          const custos = filterByPeriod(load(KEYS.custos), dr).filter(c=>(c.tipo||'custo')==='custo');
+          const custos = filterByPeriod(DATA.custos, dr).filter(c=>(c.tipo||'custo')==='custo');
           downloadData(`custos_operacionais_${today}.csv`, [
             ['Data','Descrição','Categoria','Fornecedor','Valor','Observação'],
-            ...custos.map(c=>[c.data||'—',c.desc,c.categoria,c.fornecedor||'—',fmtVal(c.valor),c.obs||'—']),
+            ...custos.map(c=>[c.data||'—',c.descricao,c.categoria,c.fornecedor||'—',fmtVal(c.valor),c.obs||'—']),
           ]);
           break;
         }
 
         case 'fin-despesas': {
-          const despesas = filterByPeriod(load(KEYS.custos), dr).filter(c=>(c.tipo||'custo')==='despesa');
+          const despesas = filterByPeriod(DATA.custos, dr).filter(c=>(c.tipo||'custo')==='despesa');
           downloadData(`despesas_operacionais_${today}.csv`, [
             ['Data','Descrição','Categoria','Fornecedor','Valor','Observação'],
-            ...despesas.map(c=>[c.data||'—',c.desc,c.categoria,c.fornecedor||'—',fmtVal(c.valor),c.obs||'—']),
+            ...despesas.map(c=>[c.data||'—',c.descricao,c.categoria,c.fornecedor||'—',fmtVal(c.valor),c.obs||'—']),
           ]);
           break;
         }
@@ -955,22 +1025,35 @@
         default: showToast('Relatório não implementado.'); return;
       }
 
-      addToHistory(currentReport.titulo, currentReport.cat, dr.label);
+      addToHistory(currentReport, dr.label);
       closeRelModal();
       showToast(`✅ ${currentReport.titulo} gerado com sucesso!`);
     }
 
-    // ── Histórico ────────────────────────────────────────────
-    function addToHistory(titulo, cat, periodo) {
-      const now = new Date();
-      historico.unshift({
-        titulo, cat,
-        periodo,
-        data: now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' }),
-        formato: 'CSV',
-      });
-      if (historico.length > 50) historico.pop();
-      localStorage.setItem(KEYS.historico, JSON.stringify(historico));
+    // ── Histórico (via API) ──────────────────────────────────
+    // Formata o campo `data` (ISO do backend) para exibição pt-BR
+    function _fmtHistData(d) {
+      const dt = new Date(d);
+      if (isNaN(dt)) return String(d || '—');
+      return dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+    }
+
+    async function addToHistory(report, periodo) {
+      try {
+        const r = await NexoAuth.apiFetch('/relatorios/historico', {
+          method: 'POST',
+          body: JSON.stringify({
+            relatorioId: report.id,
+            titulo:      report.titulo,
+            cat:         report.cat,
+            periodo,
+            formato:     'CSV',
+          }),
+        });
+        if (r && r.ok) historico.unshift(r.data);
+      } catch (_) {
+        showToast('Relatório gerado, mas falhou ao salvar no histórico.', 'warning');
+      }
       renderHistorico();
     }
 
@@ -992,37 +1075,48 @@
       btnL.style.display = 'flex';
       info.textContent = `${historico.length} relatório${historico.length!==1?'s':''} gerado${historico.length!==1?'s':''}`;
 
-      body.innerHTML = historico.map((r, i) => `
+      body.innerHTML = historico.map(r => `
         <tr>
           <td style="font-weight:600;font-size:13px">${escapeHTML(r.titulo)}</td>
           <td><span class="status-pill ativo" style="background:${CAT_COLORS[r.cat]}18;color:${CAT_COLORS[r.cat]}">${CAT_LABELS[r.cat]||r.cat}</span></td>
           <td style="color:var(--muted);font-size:12px">${escapeHTML(r.periodo)}</td>
-          <td style="color:var(--muted);font-size:12px">${escapeHTML(r.data)}</td>
+          <td style="color:var(--muted);font-size:12px">${escapeHTML(_fmtHistData(r.data))}</td>
           <td><span style="font-size:11px;font-weight:700;color:var(--accent)">CSV</span></td>
           <td><div class="action-cell">
-            <div class="act-btn danger" onclick="removerHistorico(${i})" title="Remover"><i class="bi bi-trash3"></i></div>
+            <div class="act-btn danger" onclick="removerHistorico('${r.id}')" title="Remover"><i class="bi bi-trash3"></i></div>
           </div></td>
         </tr>`).join('');
     }
 
-    function removerHistorico(i) {
-      historico.splice(i, 1);
-      localStorage.setItem(KEYS.historico, JSON.stringify(historico));
+    async function removerHistorico(id) {
+      const idx = historico.findIndex(h => h.id === id);
+      if (idx === -1) return;
+      historico.splice(idx, 1);
       renderHistorico();
+      try {
+        await NexoAuth.apiFetch(`/relatorios/historico/${id}`, { method: 'DELETE' });
+      } catch (_) { showToast('Falha ao remover do servidor.', 'warning'); }
     }
 
-    function limparHistorico() {
+    async function limparHistorico() {
       historico = [];
-      localStorage.removeItem(KEYS.historico);
       renderHistorico();
-      showToast('Histórico limpo.');
+      try {
+        await NexoAuth.apiFetch('/relatorios/historico', { method: 'DELETE' });
+        showToast('Histórico limpo.');
+      } catch (_) { showToast('Falha ao limpar no servidor.', 'warning'); }
     }
 
     // ── Init ─────────────────────────────────────────────────
-    NexoAuth.renderCurrentUser();
-    renderCats();
-    renderCards();
-    renderHistorico();
+    async function init() {
+      NexoAuth.renderCurrentUser();
+      renderCats();
+      renderCards();
+      renderHistorico();
+      await loadAllData();
+      renderHistorico(); // re-render com o histórico vindo da API
+    }
+    init();
   </script>
 </body>
 

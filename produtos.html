@@ -1461,30 +1461,10 @@
     const EMOJIS = ['📦', '🛒', '🔧', '🔩', '💊', '🧴', '🧹', '🍎', '🥤', '👕', '💻', '📱', '🔌', '🪑', '🛋', '🚗', '🔑', '📋', '🧰', '⚡', '🌿', '🧪', '🎯', '🏷️', '🪣', '🔦', '🧲', '📏', '🖨️', '📸'];
 const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec4899', '#f59e0b', '#14b8a6', '#6b7f96', '#e8edf5'];
 
-    const PRODUTOS_KEY = 'nexoerp.produtos';
-    // migração one-shot: renomeia chave legada
-    (function migrateLegacyKey() {
-      try {
-        const legado = localStorage.getItem('sistemy.produtos');
-        if (legado) { localStorage.setItem('nexoerp.produtos', legado); localStorage.removeItem('sistemy.produtos'); }
-      } catch (_) { }
-    })();
+    // Normaliza produto da API para o formato do frontend (desc vs descricao)
+    function fromApi(p) { return { ...p, desc: p.descricao || '' }; }
 
-    function saveProdutos() {
-      try {
-        localStorage.setItem(PRODUTOS_KEY, JSON.stringify(products));
-      } catch (err) {
-        if (err.name === 'QuotaExceededError') showToast('❌ Armazenamento local cheio.', 'error');
-      }
-    }
-
-    let products = (() => {
-      try {
-        const raw = localStorage.getItem(PRODUTOS_KEY);
-        if (raw) return JSON.parse(raw);
-      } catch (_) { }
-      return [];
-    })();
+    let products = [];
 
     let filtered = [...products];
     let currentFilter = 'todos';
@@ -1494,7 +1474,7 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
     let editingId = null;
     let selectedCat = null;
     let selectedEmoji = '📦';
-    let selectedColor = '#1e2a3a';
+    let selectedColor = '#00c896';
     let selectedImage = null;
 
     function handleImageUpload(event) {
@@ -1521,12 +1501,16 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
     let sortKey = null;
 
     // ─── INIT ─────────────────────────────────────────────────
-    function init() {
+    async function init() {
       buildEmojiGrid();
       buildColorSwatches();
+      await Promise.all([
+        NexoAuth.apiFetch('/produtos').then(r => { if (r.ok) products = r.data.map(fromApi); }),
+        NexoAuth.apiFetch('/categorias').then(r => { if (r.ok) categories = r.data; }),
+        populateDepositoSelect(),
+        populateFornecedorSelect(),
+      ]);
       populateCatSelect();
-      populateDepositoSelect();
-      populateFornecedorSelect();
       applyFilters();
       document.addEventListener('click', e => {
         const wrap = document.getElementById('catFilterWrap');
@@ -1627,7 +1611,7 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
         const [sc, sl] = stockStatus(p);
         const badgeClass = p.estoque === 0 ? 'baixo' : p.estoque <= p.estoqueMin ? 'baixo' : p.status;
         const badgeLabel = p.estoque === 0 ? 'Zerado' : p.estoque <= p.estoqueMin ? 'Estoque baixo' : p.status === 'ativo' ? 'Ativo' : 'Inativo';
-        return `<div class="product-card" onclick="openDetail(${p.id})">
+        return `<div class="product-card" onclick="openDetail('${p.id}')">
       <div class="pc-image" style="background:${p.cor}20;border-bottom:1px solid ${p.cor}30">
         ${p.emoji}
         <span class="pc-badge ${badgeClass}">${badgeLabel}</span>
@@ -1641,8 +1625,8 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
           <span class="pc-stock ${sc}">${sl}</span>
         </div>
         <div class="pc-actions" onclick="event.stopPropagation()">
-          <button class="pc-act-btn" onclick="openEdit(${p.id})"><i class="bi bi-pencil"></i> Editar</button>
-          <button class="pc-act-btn del" onclick="deleteProduct(${p.id})"><i class="bi bi-trash3"></i></button>
+          <button class="pc-act-btn" onclick="openEdit('${p.id}')"><i class="bi bi-pencil"></i> Editar</button>
+          <button class="pc-act-btn del" onclick="deleteProduct('${p.id}')"><i class="bi bi-trash3"></i></button>
         </div>
       </div>
     </div>`;
@@ -1674,7 +1658,7 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
 
       body.innerHTML = slice.map(p => {
         const [sc, sl] = stockStatus(p);
-        return `<tr onclick="openDetail(${p.id})">
+        return `<tr onclick="openDetail('${p.id}')">
       <td><div class="prod-cell">
         <div class="prod-emoji" style="background:${p.cor}30">${p.emoji}</div>
         <div><div class="prod-name">${p.nome}</div><div class="prod-sku">SKU: ${p.sku}</div></div>
@@ -1692,8 +1676,8 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
       <td style="color:var(--muted);font-size:12px">${p.unidade.toUpperCase()}</td>
       <td><span class="status-pill ${p.status}">${p.status === 'ativo' ? 'Ativo' : 'Inativo'}</span></td>
       <td><div class="action-cell" onclick="event.stopPropagation()">
-        <div class="act-btn" onclick="openEdit(${p.id})"><i class="bi bi-pencil"></i></div>
-        <div class="act-btn del" onclick="deleteProduct(${p.id})"><i class="bi bi-trash3"></i></div>
+        <div class="act-btn" onclick="openEdit('${p.id}')"><i class="bi bi-pencil"></i></div>
+        <div class="act-btn del" onclick="deleteProduct('${p.id}')"><i class="bi bi-trash3"></i></div>
       </div></td>
     </tr>`;
       }).join('');
@@ -1788,7 +1772,7 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
       document.getElementById('f-estoque').value = '0';
       document.getElementById('f-estoqueMin').value = '5';
       document.getElementById('f-estoqueMax').value = '100';
-      selectedEmoji = '📦'; selectedColor = '#1e2a3a';
+      selectedEmoji = '📦'; selectedColor = '#00c896';
       document.getElementById('emojiDisplay').textContent = '📦';
       buildEmojiGrid(); buildColorSwatches();
       ['tog-estoque', 'tog-ativo', 'tog-pdv'].forEach(id => document.getElementById(id).classList.add('on'));
@@ -1810,59 +1794,74 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
       else el.value = '';
     }
 
-    function saveProduct() {
+    async function saveProduct() {
       const nome = document.getElementById('f-nome').value.trim();
       const preco = document.getElementById('f-preco').value.trim();
       if (!nome) { document.getElementById('f-nome').classList.add('err'); document.getElementById('e-nome').classList.add('show'); switchTab(document.querySelector('.m-tab'), 't-geral'); return; }
       document.getElementById('f-nome').classList.remove('err'); document.getElementById('e-nome').classList.remove('show');
 
       const existing = editingId ? products.find(x => x.id === editingId) : null;
-      const p = {
-        id: editingId || Date.now(),
+      const payload = {
         nome,
-        sku: document.getElementById('f-sku').value || `PRD-${Date.now().toString().slice(-4)}`,
-        ean: document.getElementById('f-ean').value || '',
-        cat: document.getElementById('f-cat').value || 'Outros',
-        marca: document.getElementById('f-marca').value || '',
-        unidade: document.getElementById('f-unidade').value || 'un',
-        desc: document.getElementById('f-desc').value || '',
-        preco: parseFloat((preco || '0').replace(',', '.')) || 0,
-        custo: parseFloat((document.getElementById('f-custo').value || '0').replace(',', '.')) || 0,
-        precoMin: parseFloat((document.getElementById('f-precoMin').value || '0').replace(',', '.')) || 0,
-        descMax: parseFloat((document.getElementById('f-descMax').value || '0').replace(',', '.')) || 0,
-        tabela: document.getElementById('f-tabela').value || 'Padrão',
-        ncm: document.getElementById('f-ncm').value || '',
-        cest: document.getElementById('f-cest').value || '',
-        cfop: document.getElementById('f-cfop').value || '',
-        cst: document.getElementById('f-cst').value || '',
-        icms: document.getElementById('f-icms').value || '',
-        pis: document.getElementById('f-pis').value || '',
-        estoque: parseInt(document.getElementById('f-estoque').value) || 0,
-        estoqueMin: parseInt(document.getElementById('f-estoqueMin').value) || 5,
-        estoqueMax: parseInt(document.getElementById('f-estoqueMax').value) || 100,
-        deposito: document.getElementById('f-deposito').value || 'Depósito Principal',
-        posicao: document.getElementById('f-posicao').value || '',
-        fornecedor: document.getElementById('f-fornecedor').value || '',
-        prazo: parseInt(document.getElementById('f-prazo').value) || 0,
-        controlEstoque: document.getElementById('tog-estoque').classList.contains('on'),
+        sku:             document.getElementById('f-sku').value || `PRD-${Date.now().toString().slice(-4)}`,
+        ean:             document.getElementById('f-ean').value || '',
+        cat:             document.getElementById('f-cat').value || 'Outros',
+        marca:           document.getElementById('f-marca').value || '',
+        unidade:         document.getElementById('f-unidade').value || 'un',
+        descricao:       document.getElementById('f-desc').value || '',
+        preco:           parseFloat((preco || '0').replace(',', '.')) || 0,
+        custo:           parseFloat((document.getElementById('f-custo').value || '0').replace(',', '.')) || 0,
+        precoMin:        parseFloat((document.getElementById('f-precoMin').value || '0').replace(',', '.')) || 0,
+        descMax:         parseFloat((document.getElementById('f-descMax').value || '0').replace(',', '.')) || 0,
+        tabela:          document.getElementById('f-tabela').value || 'Padrão',
+        ncm:             document.getElementById('f-ncm').value || '',
+        cest:            document.getElementById('f-cest').value || '',
+        cfop:            document.getElementById('f-cfop').value || '',
+        cst:             document.getElementById('f-cst').value || '',
+        icms:            document.getElementById('f-icms').value || '',
+        pis:             document.getElementById('f-pis').value || '',
+        estoque:         parseInt(document.getElementById('f-estoque').value) || 0,
+        estoqueMin:      parseInt(document.getElementById('f-estoqueMin').value) || 5,
+        estoqueMax:      parseInt(document.getElementById('f-estoqueMax').value) || 100,
+        deposito:        document.getElementById('f-deposito').value || 'Depósito Principal',
+        posicao:         document.getElementById('f-posicao').value || '',
+        fornecedor:      document.getElementById('f-fornecedor').value || '',
+        prazo:           parseInt(document.getElementById('f-prazo').value) || 0,
+        controlEstoque:  document.getElementById('tog-estoque').classList.contains('on'),
         vendaSemEstoque: document.getElementById('tog-venda').classList.contains('on'),
         perecivel:       document.getElementById('tog-perecivel').classList.contains('on'),
         dataFabricacao:  document.getElementById('f-dt-fabricacao').value || '',
         dataVencimento:  document.getElementById('f-dt-vencimento').value || '',
         lote:            document.getElementById('f-lote').value.trim() || '',
-        status: document.getElementById('tog-ativo').classList.contains('on') ? 'ativo' : 'inativo',
-        exibirPdv: document.getElementById('tog-pdv').classList.contains('on'),
-        destaque: document.getElementById('tog-destaque').classList.contains('on'),
-        emoji: selectedEmoji,
-        cor: selectedColor,
-        imagem: selectedImage || existing?.imagem || null,
-        cadastro: existing?.cadastro || new Date().toLocaleDateString('pt-BR'),
+        status:          document.getElementById('tog-ativo').classList.contains('on') ? 'ativo' : 'inativo',
+        exibirPdv:       document.getElementById('tog-pdv').classList.contains('on'),
+        destaque:        document.getElementById('tog-destaque').classList.contains('on'),
+        emoji:           selectedEmoji,
+        cor:             selectedColor,
+        imagem:          selectedImage || existing?.imagem || undefined,
       };
 
-      if (editingId) { const idx = products.findIndex(x => x.id === editingId); if (idx >= 0) products[idx] = p; }
-      else products.unshift(p);
+      const btn = document.querySelector('.btn-save');
+      if (btn) { btn.disabled = true; btn.textContent = 'Salvando…'; }
 
-      closeModal(); saveProdutos(); applyFilters();
+      const res = editingId
+        ? await NexoAuth.apiFetch(`/produtos/${editingId}`, { method: 'PUT',  body: JSON.stringify(payload) })
+        : await NexoAuth.apiFetch('/produtos',              { method: 'POST', body: JSON.stringify(payload) });
+
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2"></i> Salvar produto'; }
+
+      if (!res.ok) {
+        const detail = res.errors?.map(e => `campo "${e.path.join('.')}" — ${e.message}`).join(' | ') || '';
+        console.error('[Produto] Campos inválidos:', detail || JSON.stringify(res.errors));
+        showToast('❌ ' + (detail || res.message || 'Erro ao salvar.'), 'error');
+        return;
+      }
+
+      const saved = fromApi(res.data);
+      if (editingId) { const idx = products.findIndex(x => x.id === editingId); if (idx >= 0) products[idx] = saved; }
+      else products.unshift(saved);
+
+      closeModal(); applyFilters();
       showToast(editingId ? 'Produto atualizado com sucesso!' : 'Produto cadastrado com sucesso!');
     }
 
@@ -1936,10 +1935,12 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
     function deleteProduct(id) {
       const p = products.find(x => x.id === id);
       if (!p) return;
-      openConfirm(`"${p.nome}" será removido do catálogo.`, () => {
+      openConfirm(`"${p.nome}" será removido do catálogo.`, async () => {
+        const res = await NexoAuth.apiFetch(`/produtos/${id}`, { method: 'DELETE' });
+        if (!res.ok) { showToast('❌ ' + res.message, 'error'); return; }
         products = products.filter(x => x.id !== id);
         if (currentDetailId === id) closeDetail();
-        saveProdutos(); applyFilters(); showToast('Produto removido.');
+        applyFilters(); showToast('Produto removido.');
       });
     }
 
@@ -2015,46 +2016,27 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
     }
 
     // ─── CATEGORIES ───────────────────────────────────────────
-    const CATS_KEY = 'nexoerp.categorias';
+    // categories é array de objetos {id, nome} vindos da API
+    let categories = [];
 
-    let categories = (() => {
-      try {
-        const raw = localStorage.getItem(CATS_KEY);
-        if (raw !== null) return JSON.parse(raw) || [];
-      } catch (_) { }
-      // Conta nova: inicializa vazia e persiste para não cair no fallback toda vez
-      localStorage.setItem(CATS_KEY, JSON.stringify([]));
-      return [];
-    })();
-
-    function saveCats() { localStorage.setItem(CATS_KEY, JSON.stringify(categories)); }
-
-    function populateDepositoSelect(preserveVal = false) {
+    async function populateDepositoSelect(preserveVal = false) {
       const sel = document.getElementById('f-deposito');
       if (!sel) return;
       const cur = preserveVal ? sel.value : '';
-      try {
-        const raw = localStorage.getItem('nexoerp.depositos');
-        const deps = raw ? JSON.parse(raw) : [{ nome: 'Depósito Principal' }];
-        sel.innerHTML = deps.map(d => `<option>${d.nome}</option>`).join('');
-      } catch (_) {
-        sel.innerHTML = '<option>Depósito Principal</option>';
-      }
+      const res = await NexoAuth.apiFetch('/estoque/depositos');
+      const deps = (res.ok && res.data.length > 0) ? res.data : [{ nome: 'Depósito Principal' }];
+      sel.innerHTML = deps.map(d => `<option>${d.nome}</option>`).join('');
       if (cur) setSelectVal('f-deposito', cur);
     }
 
-    function populateFornecedorSelect(preserveVal = false) {
+    async function populateFornecedorSelect(preserveVal = false) {
       const sel = document.getElementById('f-fornecedor');
       if (!sel) return;
       const cur = preserveVal ? sel.value : '';
-      try {
-        const raw = localStorage.getItem('nexoerp.fornecedores');
-        const forn = raw ? JSON.parse(raw).filter(f => f.status !== 'inativo' && f.status !== 'bloq') : [];
-        sel.innerHTML = '<option value="">Sem fornecedor</option>' +
-          forn.map(f => `<option>${f.nome}</option>`).join('');
-      } catch (_) {
-        sel.innerHTML = '<option value="">Sem fornecedor</option>';
-      }
+      const res = await NexoAuth.apiFetch('/clientes?secao=fornecedores&status=ativo');
+      const forn = res.ok ? res.data : [];
+      sel.innerHTML = '<option value="">Sem fornecedor</option>' +
+        forn.map(f => `<option>${f.nome}</option>`).join('');
       if (cur) setSelectVal('f-fornecedor', cur);
     }
 
@@ -2063,7 +2045,7 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
       if (!sel) return;
       const current = preserveVal ? sel.value : '';
       sel.innerHTML = '<option value="">Selecione...</option>' +
-        categories.map(c => `<option value="${c}">${c}</option>`).join('');
+        categories.map(c => `<option value="${c.nome}">${c.nome}</option>`).join('');
       if (current) setSelectVal('f-cat', current);
     }
 
@@ -2087,63 +2069,67 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
         list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px">Nenhuma categoria cadastrada.</div>';
         return;
       }
-      list.innerHTML = categories.map((cat, i) => {
-        const count = products.filter(p => p.cat === cat).length;
-        return `<div class="cat-item" id="cat-row-${i}">
-          <span class="cat-item-name" id="cat-name-${i}">${cat}</span>
+      list.innerHTML = categories.map(cat => {
+        const count = products.filter(p => p.cat === cat.nome).length;
+        return `<div class="cat-item" id="cat-row-${cat.id}">
+          <span class="cat-item-name" id="cat-name-${cat.id}">${cat.nome}</span>
           <span class="cat-count">${count} prod.</span>
-          <div class="act-btn" onclick="startRenameCat(${i})" title="Renomear"><i class="bi bi-pencil"></i></div>
-          <div class="act-btn del" onclick="deleteCat(${i})" title="Excluir"><i class="bi bi-trash3"></i></div>
+          <div class="act-btn" onclick="startRenameCat('${cat.id}')" title="Renomear"><i class="bi bi-pencil"></i></div>
+          <div class="act-btn del" onclick="deleteCat('${cat.id}')" title="Excluir"><i class="bi bi-trash3"></i></div>
         </div>`;
       }).join('');
     }
 
-    function addCategory() {
+    async function addCategory() {
       const input = document.getElementById('cat-new-input');
       const val = input.value.trim();
       if (!val) return;
-      if (categories.some(c => c.toLowerCase() === val.toLowerCase())) {
-        showToast('❌ Categoria já existe!'); return;
-      }
-      categories.push(val);
-      saveCats();
+      const res = await NexoAuth.apiFetch('/categorias', { method: 'POST', body: JSON.stringify({ nome: val }) });
+      if (!res.ok) { showToast('❌ ' + res.message); return; }
+      categories.push(res.data);
       input.value = '';
       renderCatList();
+      populateCatSelect();
       showToast('Categoria adicionada!');
     }
 
-    function deleteCat(i) {
-      const cat = categories[i];
-      const inUse = products.filter(p => p.cat === cat).length;
-      if (inUse > 0 && !confirm(`A categoria "${cat}" está em uso por ${inUse} produto(s). Remover mesmo assim?`)) return;
-      categories.splice(i, 1);
-      saveCats();
+    async function deleteCat(id) {
+      const cat = categories.find(c => c.id === id);
+      if (!cat) return;
+      const inUse = products.filter(p => p.cat === cat.nome).length;
+      if (inUse > 0 && !confirm(`A categoria "${cat.nome}" está em uso por ${inUse} produto(s). Remover mesmo assim?`)) return;
+      const res = await NexoAuth.apiFetch(`/categorias/${id}`, { method: 'DELETE' });
+      if (!res.ok) { showToast('❌ ' + res.message); return; }
+      categories = categories.filter(c => c.id !== id);
       renderCatList();
       showToast('Categoria removida.');
     }
 
-    function startRenameCat(i) {
-      const nameEl = document.getElementById(`cat-name-${i}`);
+    function startRenameCat(id) {
+      const cat = categories.find(c => c.id === id);
+      if (!cat) return;
+      const nameEl = document.getElementById(`cat-name-${id}`);
       if (!nameEl) return;
-      const current = categories[i];
       let escapePressed = false;
-      nameEl.outerHTML = `<input class="cat-item-input" id="cat-edit-${i}" value="${current.replace(/"/g, '&quot;')}">`;
-      const inp = document.getElementById(`cat-edit-${i}`);
+      nameEl.outerHTML = `<input class="cat-item-input" id="cat-edit-${id}" value="${cat.nome.replace(/"/g, '&quot;')}">`;
+      const inp = document.getElementById(`cat-edit-${id}`);
       inp.addEventListener('keydown', e => {
         if (e.key === 'Escape') { escapePressed = true; renderCatList(); }
         if (e.key === 'Enter') inp.blur();
       });
-      inp.addEventListener('blur', () => {
+      inp.addEventListener('blur', async () => {
         if (escapePressed) return;
         const newVal = inp.value.trim();
-        if (newVal && newVal !== current) {
-          if (categories.some((c, idx) => idx !== i && c.toLowerCase() === newVal.toLowerCase())) {
-            showToast('❌ Categoria já existe!'); renderCatList(); return;
+        if (newVal && newVal !== cat.nome) {
+          const res = await NexoAuth.apiFetch(`/categorias/${id}`, { method: 'PUT', body: JSON.stringify({ nome: newVal }) });
+          if (!res.ok) { showToast('❌ ' + res.message); renderCatList(); return; }
+          // Atualiza produtos afetados via API
+          for (const p of products.filter(x => x.cat === cat.nome)) {
+            await NexoAuth.apiFetch(`/produtos/${p.id}`, { method: 'PUT', body: JSON.stringify({ cat: newVal }) });
+            p.cat = newVal;
           }
-          products.forEach(p => { if (p.cat === current) p.cat = newVal; });
-          saveProdutos();
-          categories[i] = newVal;
-          saveCats();
+          const idx = categories.findIndex(c => c.id === id);
+          if (idx >= 0) categories[idx].nome = newVal;
           showToast('Categoria renomeada!');
         }
         renderCatList();

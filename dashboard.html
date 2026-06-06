@@ -80,6 +80,48 @@
       border-color: var(--border-h) !important;
     }
 
+    #searchInput {
+      width: 100%; height: 100%; border: none; background: transparent;
+      color: var(--text); font-size: 12.5px; font-family: var(--font-b);
+      padding: 0 12px 0 32px; outline: none;
+    }
+    #searchInput::placeholder { color: var(--muted); }
+    #searchIcon {
+      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); font-size: 13px; pointer-events: none;
+    }
+    .search-box { position: relative !important; }
+
+    /* Estilos do dropdown de busca global — layout interno */
+
+    .sd-group-label {
+      padding: 10px 14px 6px;
+      font-size: 10px; font-weight: 700; letter-spacing: .08em;
+      color: var(--muted); text-transform: uppercase;
+    }
+    .sd-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 14px; cursor: pointer;
+      transition: background .15s; text-decoration: none;
+    }
+    .sd-item:hover, .sd-item.active { background: rgba(255,255,255,.05); }
+    .sd-item-icon {
+      width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 13px;
+    }
+    .sd-item-text { flex: 1; min-width: 0; }
+    .sd-item-name {
+      font-size: 13px; color: var(--text); font-weight: 500;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .sd-item-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .sd-item-arrow { color: var(--muted); font-size: 11px; }
+    .sd-empty {
+      padding: 24px 14px; text-align: center;
+      font-size: 13px; color: var(--muted);
+    }
+    .sd-divider { height: 1px; background: var(--border); margin: 4px 0; }
+
     /* ═══════════════════════════════
        SIDEBAR OVERRIDE — icon-only premium
     ═══════════════════════════════ */
@@ -1121,9 +1163,9 @@ transition: var(--ease);
         <span class="breadcrumb-sep">/</span>
         <span style="color:var(--muted);font-size:13px">Visão Geral</span>
       </div>
-      <div class="search-box">
-        <i class="bi bi-search"></i>
-        Buscar clientes, pedidos, produtos…
+      <div class="search-box" id="searchBox">
+        <i class="bi bi-search" id="searchIcon"></i>
+        <input type="text" id="searchInput" placeholder="Buscar clientes, pedidos, produtos…" autocomplete="off">
       </div>
       <div class="topbar-right">
         <div class="icon-btn"><i class="bi bi-bell"></i>
@@ -1590,11 +1632,8 @@ transition: var(--ease);
         `${dias[d.getDay()]}, ${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()} · Operação de hoje`;
     })();
 
-    // ── Helpers ───────────────────────────────────────────────
-    function readKey(key) {
-      try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : []; }
-      catch (_) { return []; }
-    }
+    // ── Cache de dados (populado por initDashboard) ───────────
+    let _vendas = [], _clientes = [], _produtos = [], _pedidos = [], _financeiro = [];
 
     function fmtMoeda(v) {
       return 'R$ ' + fmt(v);
@@ -1625,12 +1664,26 @@ transition: var(--ease);
       return `há ${d} dia${d > 1 ? 's' : ''}`;
     }
 
-    // ── Leitura dos dados ─────────────────────────────────────
-    const vendas    = readKey('nexoerp.vendas');
-    const clientes  = readKey('nexoerp.clientes');
-    const produtos  = readKey('nexoerp.produtos');
-    const pedidos   = readKey('nexoerp.pedidos');
-    const financeiro = readKey('nexoerp.financeiro');
+    // ── Leitura dos dados via API ─────────────────────────────
+    async function initDashboard() {
+      const [rV, rC, rP, rPed, rF] = await Promise.all([
+        NexoAuth.apiFetch('/vendas'),
+        NexoAuth.apiFetch('/clientes'),
+        NexoAuth.apiFetch('/produtos'),
+        NexoAuth.apiFetch('/pedidos'),
+        NexoAuth.apiFetch('/financeiro'),
+      ]);
+      _vendas     = rV.ok    ? rV.data    : [];
+      _clientes   = rC.ok    ? rC.data    : [];
+      _produtos   = rP.ok    ? rP.data    : [];
+      _pedidos    = rPed.ok  ? rPed.data  : [];
+      _financeiro = rF.ok    ? rF.data    : [];
+
+      const vendas    = _vendas;
+      const clientes  = _clientes;
+      const produtos  = _produtos;
+      const pedidos   = _pedidos;
+      const financeiro = _financeiro;
 
     // ── KPI 1: Faturamento bruto ──────────────────────────────
     const vendasMes = vendas.filter(v =>
@@ -1840,10 +1893,10 @@ transition: var(--ease);
         todasAtividades.push({ tipo:'venda', titulo:'Venda concluída', desc:`${escapeHTML(nome)} · R$ ${fmt(v.total||0)}`, tempo:v.dataISO });
       });
     financeiro.filter(l=>l.status==='pago')
-      .sort((a,b)=>new Date(b.pago_em||b.vencimento||0)-new Date(a.pago_em||a.vencimento||0))
+      .sort((a,b)=>new Date(b.pagoEm||b.vencimento||0)-new Date(a.pagoEm||a.vencimento||0))
       .forEach(l=>{
         const t = l.tipo==='receita' ? 'Recebimento registrado' : 'Pagamento realizado';
-        todasAtividades.push({ tipo:'financeiro', titulo:t, desc:`${escapeHTML(l.descricao||l.categoria||'—')} · R$ ${fmt(l.valor||0)}`, tempo:l.pago_em||l.vencimento||null });
+        todasAtividades.push({ tipo:'financeiro', titulo:t, desc:`${escapeHTML(l.descricao||l.categoria||'—')} · R$ ${fmt(l.valor||0)}`, tempo:l.pagoEm||l.vencimento||null });
       });
     pedidos.forEach(p=>{
       todasAtividades.push({ tipo:'pedido', titulo:'Pedido criado', desc:`${escapeHTML(p.id||'—')} · ${escapeHTML(p.cliente||'—')}`, tempo:p.dataISO||null });
@@ -2027,6 +2080,10 @@ transition: var(--ease);
       ).join('');
     })();
 
+    renderFluxoCaixa('mensal');
+    }
+    initDashboard();
+
     // ── Fluxo de Caixa (dinâmico) ────────────────────────────
     function renderFluxoCaixa(periodo) {
       const el = document.getElementById('fluxoCaixaChart');
@@ -2039,26 +2096,26 @@ transition: var(--ease);
           const d = new Date(); d.setDate(d.getDate() - i);
           const key = d.toISOString().slice(0, 10);
           const lbl = i === 0 ? 'Hoje' : `${d.getDate()}/${d.getMonth()+1}`;
-          const ent = financeiro.filter(l=>l.tipo==='receita'&&l.status==='pago'&&(l.pago_em||l.vencimento||'').slice(0,10)===key).reduce((s,l)=>s+(l.valor||0),0);
-          const sai = financeiro.filter(l=>l.tipo==='despesa'&&l.status==='pago'&&(l.pago_em||l.vencimento||'').slice(0,10)===key).reduce((s,l)=>s+(l.valor||0),0);
+          const ent = _financeiro.filter(l=>l.tipo==='receita'&&l.status==='pago'&&(l.pagoEm||l.vencimento||'').slice(0,10)===key).reduce((s,l)=>s+(l.valor||0),0);
+          const sai = _financeiro.filter(l=>l.tipo==='despesa'&&l.status==='pago'&&(l.pagoEm||l.vencimento||'').slice(0,10)===key).reduce((s,l)=>s+(l.valor||0),0);
           pts.push({ lbl, ent, sai });
         }
       } else if (periodo === 'semanal') {
         for (let i = 5; i >= 0; i--) {
           const end = new Date(); end.setDate(end.getDate() - i*7);
           const start = new Date(end); start.setDate(start.getDate()-6);
-          const inR = l => { const d=new Date(l.pago_em||l.vencimento||''); return d>=start&&d<=end; };
-          const ent = financeiro.filter(l=>l.tipo==='receita'&&l.status==='pago'&&inR(l)).reduce((s,l)=>s+(l.valor||0),0);
-          const sai = financeiro.filter(l=>l.tipo==='despesa'&&l.status==='pago'&&inR(l)).reduce((s,l)=>s+(l.valor||0),0);
+          const inR = l => { const d=new Date(l.pagoEm||l.vencimento||''); return d>=start&&d<=end; };
+          const ent = _financeiro.filter(l=>l.tipo==='receita'&&l.status==='pago'&&inR(l)).reduce((s,l)=>s+(l.valor||0),0);
+          const sai = _financeiro.filter(l=>l.tipo==='despesa'&&l.status==='pago'&&inR(l)).reduce((s,l)=>s+(l.valor||0),0);
           pts.push({ lbl:`S${6-i}`, ent, sai });
         }
       } else {
         for (let i = 5; i >= 0; i--) {
           const d = new Date(); d.setDate(1); d.setMonth(d.getMonth()-i);
           const m = d.getMonth(), y = d.getFullYear();
-          const match = l => { const dd=new Date(l.pago_em||l.vencimento||''); return dd.getMonth()===m&&dd.getFullYear()===y; };
-          const ent = financeiro.filter(l=>l.tipo==='receita'&&l.status==='pago'&&match(l)).reduce((s,l)=>s+(l.valor||0),0);
-          const sai = financeiro.filter(l=>l.tipo==='despesa'&&l.status==='pago'&&match(l)).reduce((s,l)=>s+(l.valor||0),0);
+          const match = l => { const dd=new Date(l.pagoEm||l.vencimento||''); return dd.getMonth()===m&&dd.getFullYear()===y; };
+          const ent = _financeiro.filter(l=>l.tipo==='receita'&&l.status==='pago'&&match(l)).reduce((s,l)=>s+(l.valor||0),0);
+          const sai = _financeiro.filter(l=>l.tipo==='despesa'&&l.status==='pago'&&match(l)).reduce((s,l)=>s+(l.valor||0),0);
           pts.push({ lbl: MESES_S[m], ent, sai });
         }
       }
@@ -2127,7 +2184,6 @@ transition: var(--ease);
         ${bars}
       </svg>`;
     }
-    renderFluxoCaixa('mensal');
 
     function setFluxoFiltro(el, periodo) {
       document.querySelectorAll('.chips .chip').forEach(c => c.classList.remove('on'));
@@ -2213,7 +2269,8 @@ transition: var(--ease);
 
     function _getPainelKey() {
       try {
-        const u = JSON.parse(localStorage.getItem('nexoerp.currentUser') || '{}');
+        const session = NexoAuth.getSession();
+        const u = session ? session.user : {};
         return 'nexoerp.dashConfig.' + (u.id || u.email || 'default');
       } catch (_) { return 'nexoerp.dashConfig.default'; }
     }
@@ -2255,7 +2312,8 @@ transition: var(--ease);
       const saudacao = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
       let nome = 'Usuário';
       try {
-        const u = JSON.parse(localStorage.getItem('nexoerp.currentUser') || '{}');
+        const session = NexoAuth.getSession();
+        const u = session ? session.user : {};
         const n = u.nome || u.name || u.email?.split('@')[0] || 'Usuário';
         nome = n.split(' ')[0];
         nome = nome.charAt(0).toUpperCase() + nome.slice(1);
@@ -2332,8 +2390,12 @@ transition: var(--ease);
         const n = financeiro.filter(l => l.status !== 'pago' && l.vencimento && new Date(l.vencimento) < hoje).length;
         if (n) alertList.push({ ico: 'bi-exclamation-circle', txt: n + ' conta(s) vencida(s)' });
       }
-      if (cfg.alertas.fluxoNegativo && saldo < 0) {
-        alertList.push({ ico: 'bi-arrow-down-circle', txt: 'Fluxo de caixa negativo detectado' });
+      if (cfg.alertas.fluxoNegativo) {
+        const recP  = financeiro.filter(l => l.tipo === 'receita' && l.status === 'pago');
+        const despP = financeiro.filter(l => l.tipo === 'despesa' && l.status === 'pago');
+        const saldoAtual = recP.reduce((s, l) => s + (l.valor || 0), 0)
+                         - despP.reduce((s, l) => s + (l.valor || 0), 0);
+        if (saldoAtual < 0) alertList.push({ ico: 'bi-arrow-down-circle', txt: 'Fluxo de caixa negativo detectado' });
       }
       if (cfg.alertas.boletosVencendo) {
         const em3 = new Date(); em3.setDate(em3.getDate() + 3);
@@ -2353,6 +2415,223 @@ transition: var(--ease);
       card.innerHTML = '<div class="dash-alert-title"><i class="bi bi-exclamation-triangle-fill"></i>Alertas Ativos</div>'
         + alertList.map(a => '<div class="dash-alert-item"><i class="bi ' + a.ico + '"></i>' + a.txt + '</div>').join('');
     }
+
+    // ─── Busca Global ───────────────────────────────────────────
+    (function () {
+      const input   = document.getElementById('searchInput');
+      const searchBox = document.getElementById('searchBox');
+      if (!input) return;
+
+      // Dropdown portado ao body para escapar do stacking context do topbar
+      const dropdown = document.createElement('div');
+      dropdown.id = 'globalSearchDropdown';
+      // Estilos base via JS — evita conflitos de especificidade CSS
+      Object.assign(dropdown.style, {
+        display: 'none', position: 'fixed', background: '#0f1929',
+        border: '1px solid #1e2a3a', borderRadius: '14px',
+        boxShadow: '0 20px 50px rgba(0,0,0,.6)',
+        zIndex: '99999', overflow: 'hidden', maxHeight: '420px', overflowY: 'auto',
+        minWidth: '360px'
+      });
+      document.body.appendChild(dropdown);
+
+      function positionDropdown() {
+        const rect = searchBox.getBoundingClientRect();
+        dropdown.style.top  = (rect.bottom + 8) + 'px';
+        dropdown.style.left = rect.left + 'px';
+        dropdown.style.width = Math.max(rect.width, 360) + 'px';
+      }
+
+      // Páginas navegáveis (mín. 3 chars)
+      const PAGES = [
+        { label: 'Dashboard',     page: 'dashboard.html',    icon: 'bi-grid',           color: 'rgba(0,200,150,.15)',   iconColor: '#00c896',  keys: ['dashboard','painel','inicio','home'] },
+        { label: 'PDV',           page: 'pdv.html',          icon: 'bi-shop',           color: 'rgba(255,107,53,.15)',  iconColor: '#ff6b35',  keys: ['pdv','ponto de venda','caixa','frente de caixa'] },
+        { label: 'Pedidos',       page: 'pedidos.html',      icon: 'bi-receipt',        color: 'rgba(168,85,247,.15)',  iconColor: '#a855f7',  keys: ['pedidos','pedido','ordem','ordens'] },
+        { label: 'Vendas',        page: 'vendas.html',       icon: 'bi-graph-up-arrow', color: 'rgba(0,119,255,.15)',   iconColor: '#0077ff',  keys: ['vendas','venda','historico','histórico'] },
+        { label: 'Clientes',      page: 'clientes.html',     icon: 'bi-people',         color: 'rgba(0,200,150,.15)',   iconColor: '#00c896',  keys: ['clientes','cliente','parceiros','fornecedores','contatos'] },
+        { label: 'Produtos',      page: 'produtos.html',     icon: 'bi-box-seam',       color: 'rgba(0,119,255,.15)',   iconColor: '#0077ff',  keys: ['produtos','produto','itens','catalogo','catálogo'] },
+        { label: 'Estoque',       page: 'estoque.html',      icon: 'bi-boxes',          color: 'rgba(20,184,166,.15)',  iconColor: '#14b8a6',  keys: ['estoque','deposito','depósito','inventario','inventário'] },
+        { label: 'Financeiro',    page: 'financeiro.html',   icon: 'bi-cash-stack',     color: 'rgba(20,184,166,.15)',  iconColor: '#14b8a6',  keys: ['financeiro','financas','finanças','contas','receita','despesa','fluxo'] },
+        { label: 'Relatórios',    page: 'relatorios.html',   icon: 'bi-bar-chart',      color: 'rgba(168,85,247,.15)',  iconColor: '#a855f7',  keys: ['relatorios','relatórios','relatorio','relatório','reports'] },
+        { label: 'Configurações', page: 'configuracoes.html',icon: 'bi-gear',           color: 'rgba(148,163,184,.15)', iconColor: '#94a3b8',  keys: ['configuracoes','configurações','config','settings','preferencias'] },
+        { label: 'Catálogo',      page: 'catalogo.html',     icon: 'bi-grid-3x3-gap',   color: 'rgba(255,107,53,.15)',  iconColor: '#ff6b35',  keys: ['catalogo','catálogo','loja','vitrine','publicar'] },
+      ];
+
+      // Dados do sistema (a partir do 1º char)
+      const DATA_TYPES = [
+        {
+          key: 'clientes', label: 'Clientes', page: 'clientes.html',
+          icon: 'bi-person', color: 'rgba(0,200,150,.15)', iconColor: '#00c896',
+          match: (item, q) => (item.nome||item.name||'').toLowerCase().includes(q)
+                           || (item.email||'').toLowerCase().includes(q)
+                           || (item.telefone||'').toLowerCase().includes(q),
+          name: item => item.nome || item.name || '—',
+          sub:  item => item.email || item.telefone || '',
+        },
+        {
+          key: 'produtos', label: 'Produtos', page: 'produtos.html',
+          icon: 'bi-box-seam', color: 'rgba(0,119,255,.15)', iconColor: '#0077ff',
+          match: (item, q) => (item.nome||item.name||'').toLowerCase().includes(q)
+                           || (item.categoria||'').toLowerCase().includes(q)
+                           || (item.codigo||'').toLowerCase().includes(q),
+          name: item => item.nome || item.name || '—',
+          sub:  item => [item.categoria, item.estoque != null ? 'Estoque: ' + item.estoque : ''].filter(Boolean).join(' · '),
+        },
+        {
+          key: 'pedidos', label: 'Pedidos', page: 'pedidos.html',
+          icon: 'bi-receipt', color: 'rgba(168,85,247,.15)', iconColor: '#a855f7',
+          match: (item, q) => (item.cliente||'').toLowerCase().includes(q)
+                           || String(item.id||'').toLowerCase().includes(q)
+                           || (item.status||'').toLowerCase().includes(q),
+          name: item => item.cliente || 'Pedido #' + item.id,
+          sub:  item => [item.status, item.total != null ? 'R$ ' + Number(item.total).toFixed(2) : ''].filter(Boolean).join(' · '),
+        },
+        {
+          key: 'financeiro', label: 'Financeiro', page: 'financeiro.html',
+          icon: 'bi-cash-stack', color: 'rgba(20,184,166,.15)', iconColor: '#14b8a6',
+          match: (item, q) => (item.descricao||item.description||'').toLowerCase().includes(q)
+                           || (item.categoria||'').toLowerCase().includes(q),
+          name: item => item.descricao || item.description || '—',
+          sub:  item => [item.tipo, item.status, item.valor != null ? 'R$ ' + Number(item.valor).toFixed(2) : ''].filter(Boolean).join(' · '),
+        },
+      ];
+
+      let activeIdx = -1;
+
+      const _searchMap = { clientes: _clientes, produtos: _produtos, pedidos: _pedidos, financeiro: _financeiro };
+
+      function escapeHtml(s) {
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      }
+
+      function highlight(text, query) {
+        const idx = text.toLowerCase().indexOf(query);
+        if (idx < 0) return escapeHtml(text);
+        return escapeHtml(text.slice(0, idx))
+          + '<mark style="background:rgba(0,200,150,.25);color:var(--text);border-radius:3px;padding:0 2px">'
+          + escapeHtml(text.slice(idx, idx + query.length)) + '</mark>'
+          + escapeHtml(text.slice(idx + query.length));
+      }
+
+      function buildItem(href, iconBg, iconColor, icon, name, sub, isPage) {
+        return `<a class="sd-item" href="${href}" data-href="${href}">
+          <div class="sd-item-icon" style="background:${iconBg};color:${iconColor}">
+            <i class="bi ${icon}"></i>
+          </div>
+          <div class="sd-item-text">
+            <div class="sd-item-name">${name}</div>
+            ${sub ? `<div class="sd-item-sub">${sub}</div>` : ''}
+          </div>
+          <i class="bi ${isPage ? 'bi-arrow-right-circle' : 'bi-arrow-right'} sd-item-arrow"></i>
+        </a>`;
+      }
+
+      function render() {
+        const raw = input.value;
+        const q   = raw.trim().toLowerCase();
+        activeIdx = -1;
+
+        if (!q) { close(); return; }
+
+        let html  = '';
+        let total = 0;
+
+        // ── Páginas (mín. 3 chars) ──────────────────────────
+        const pageMatches = q.length >= 3 ? PAGES.filter(p =>
+          p.label.toLowerCase().includes(q) || p.keys.some(k => k.includes(q))
+        ).slice(0, 4) : [];
+
+        if (pageMatches.length) {
+          html += '<div class="sd-group-label"><i class="bi bi-lightning-charge-fill" style="color:#f59e0b;margin-right:4px"></i>Ir para página</div>';
+          pageMatches.forEach(p => {
+            html += buildItem(p.page, p.color, p.iconColor, p.icon, highlight(p.label, q), 'Pressione Enter ou clique para abrir', true);
+          });
+          total += pageMatches.length;
+        }
+
+        // ── Dados do sistema (a partir do 1º char) ──────────
+        DATA_TYPES.forEach(type => {
+          const data    = _searchMap[type.key] || [];
+          const matches = data.filter(item => type.match(item, q)).slice(0, 3);
+          if (!matches.length) return;
+          total += matches.length;
+          if (html) html += '<div class="sd-divider"></div>';
+          html += `<div class="sd-group-label">${type.label}</div>`;
+          matches.forEach(item => {
+            html += buildItem(type.page, type.color, type.iconColor, type.icon,
+              highlight(type.name(item), q), escapeHtml(type.sub(item)), false);
+          });
+        });
+
+        if (!total) {
+          html = `<div class="sd-empty">
+            <i class="bi bi-search" style="font-size:20px;display:block;margin-bottom:6px;opacity:.4"></i>
+            Nenhum resultado para "<strong>${escapeHtml(q)}</strong>"
+            ${q.length < 3 ? '<div style="font-size:11px;margin-top:4px;opacity:.6">Digite 3 letras para buscar páginas</div>' : ''}
+          </div>`;
+        }
+
+        positionDropdown();
+        dropdown.innerHTML = html;
+        dropdown.style.display = 'block';
+      }
+
+      function close() {
+        dropdown.style.display = 'none';
+        dropdown.innerHTML = '';
+        activeIdx = -1;
+      }
+
+      function getItems() {
+        return Array.from(dropdown.querySelectorAll('.sd-item'));
+      }
+
+      function setActive(idx) {
+        const items = getItems();
+        items.forEach(el => el.classList.remove('active'));
+        if (idx >= 0 && idx < items.length) {
+          items[idx].classList.add('active');
+          items[idx].scrollIntoView({ block: 'nearest' });
+        }
+        activeIdx = idx;
+      }
+
+      // Foca o campo ao pressionar qualquer tecla (exceto modificadores e atalhos)
+      document.addEventListener('keydown', e => {
+        const tag = document.activeElement?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+        if (e.ctrlKey || e.altKey || e.metaKey) return;
+        if (e.key.length !== 1) return; // ignora Shift, Tab, F1-F12, etc.
+        input.focus();
+      });
+
+      // Busca imediata a cada tecla (sem debounce — igual ao PDV)
+      input.addEventListener('input', render);
+
+      input.addEventListener('keydown', e => {
+        const items = getItems();
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          setActive(Math.min(activeIdx + 1, items.length - 1));
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          setActive(Math.max(activeIdx - 1, 0));
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          const target = activeIdx >= 0 ? items[activeIdx] : items[0];
+          if (target) { window.location.href = target.dataset.href; }
+        } else if (e.key === 'Escape') {
+          close(); input.blur();
+        }
+      });
+
+      document.addEventListener('mousedown', e => {
+        if (!searchBox.contains(e.target) && !dropdown.contains(e.target)) close();
+      });
+
+      window.addEventListener('scroll', () => { if (dropdown.classList.contains('open')) positionDropdown(); }, true);
+      window.addEventListener('resize', () => { if (dropdown.classList.contains('open')) positionDropdown(); });
+    })();
 
     // ─── Abrir / Fechar Drawer ──────────────────────────────────
     function openPainelConfig() {
@@ -2418,7 +2697,8 @@ transition: var(--ease);
 
       // Admin
       try {
-        const u = JSON.parse(localStorage.getItem('nexoerp.currentUser') || '{}');
+        const session = NexoAuth.getSession();
+        const u = session ? session.user : {};
         const isAdmin = u.role==='admin' || u.perfil==='admin' || u.nivel==='admin' || u.admin===true;
         const sec = document.getElementById('cfg-admin-sec');
         if (sec) sec.style.display = isAdmin ? '' : 'none';

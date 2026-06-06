@@ -1358,8 +1358,8 @@ tbody tr:hover .action-cell {
 /* ══════════════════════════════════════════════════
    FONT CENTRALIZATION — páginas internas
    ──────────────────────────────────────────────────
-   Syne    (--font-h) → títulos, valores, KPIs, avatares
-   DM Sans (--font-b) → corpo, botões, inputs, labels
+   Syne  (--font-h) → títulos, valores, KPIs, avatares
+   Inter (--font-b) → corpo, botões, inputs, labels
 
    ⚠️  NÃO declarar font-family nas páginas internas.
        Toda tipografia é controlada aqui.
@@ -1539,7 +1539,9 @@ tbody tr:hover .dp-id {
 }
 
 /* ══ RESPONSIVE ══ */
-@media (max-width: 700px) {
+
+/* Tablet landscape / janela reduzida: sidebar compacta, conteúdo respira */
+@media (max-width: 900px) {
   .sidebar {
     width: var(--sidebar-c);
   }
@@ -1547,7 +1549,10 @@ tbody tr:hover .dp-id {
   .main {
     margin-left: var(--sidebar-c);
   }
+}
 
+/* Mobile: padding reduzido */
+@media (max-width: 700px) {
   .content {
     padding: 16px;
   }
