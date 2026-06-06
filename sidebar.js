@@ -18,20 +18,6 @@
     const session = JSON.parse(localStorage.getItem('nexoerp.session') || '{}');
     const user    = session?.user || {};
 
-    // Migra sessões antigas que não tinham isDono / permissions
-    if (user.id && user.isDono === undefined) {
-      try {
-        const usersArr = JSON.parse(localStorage.getItem('nexoerp.users') || '[]');
-        const found    = usersArr.find(u => u.id === user.id);
-        if (found) {
-          user.isDono      = !!found.isDono;
-          user.permissions = found.permissions ?? null;
-          session.user     = user;
-          localStorage.setItem('nexoerp.session', JSON.stringify(session));
-        }
-      } catch (_) {}
-    }
-
     // Dono (isDono = true OU permissions = null) vê tudo.
     // Sub-usuário vê apenas itens cujo perm está habilitado ou perm = null (catálogo, comingSoon).
     const isDono  = user.isDono || user.permissions === null;
