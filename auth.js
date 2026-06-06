@@ -280,13 +280,14 @@
 
   let _toastContainer = null;
   function _getToastContainer() {
-    if (!_toastContainer || !document.body.contains(_toastContainer)) {
+    if (!_toastContainer || !document.documentElement.contains(_toastContainer)) {
       _toastContainer = document.createElement('div');
-      _toastContainer.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:99999;display:flex;flex-direction:column;gap:10px;pointer-events:none;';
+      // Usa position:fixed no documentElement para escapar de overflow:hidden no body (ex: PDV)
+      _toastContainer.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:2147483647;display:flex;flex-direction:column;gap:10px;pointer-events:none;';
       const style = document.createElement('style');
       style.textContent = '@keyframes _nxTIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}@keyframes _nxTOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(20px)}}';
       document.head.appendChild(style);
-      document.body.appendChild(_toastContainer);
+      document.documentElement.appendChild(_toastContainer);
     }
     return _toastContainer;
   }
