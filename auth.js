@@ -270,6 +270,52 @@
     }
   }
 
+  // ── Toast global ─────────────────────────────────────
+  const _TOAST_TYPES = {
+    success: { icon: 'bi-check-circle-fill',          color: '#00c896', border: 'rgba(0,200,150,.25)'  },
+    error:   { icon: 'bi-x-circle-fill',              color: '#ff4757', border: 'rgba(255,71,87,.25)'  },
+    warning: { icon: 'bi-exclamation-triangle-fill',  color: '#f5b700', border: 'rgba(245,183,0,.25)'  },
+    info:    { icon: 'bi-info-circle-fill',           color: '#0077ff', border: 'rgba(0,119,255,.25)'  },
+  };
+
+  let _toastContainer = null;
+  function _getToastContainer() {
+    if (!_toastContainer || !document.body.contains(_toastContainer)) {
+      _toastContainer = document.createElement('div');
+      _toastContainer.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:99999;display:flex;flex-direction:column;gap:10px;pointer-events:none;';
+      const style = document.createElement('style');
+      style.textContent = '@keyframes _nxTIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}@keyframes _nxTOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(20px)}}';
+      document.head.appendChild(style);
+      document.body.appendChild(_toastContainer);
+    }
+    return _toastContainer;
+  }
+
+  function _stripEmojis(str) {
+    return String(str).replace(/^[\u{1F300}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}✅❌⚠️ℹ️\s]+/u, '').trim();
+  }
+
+  function _toast(message, type = 'info', duration = 3500) {
+    const t = _TOAST_TYPES[type] || _TOAST_TYPES.info;
+    const msg = _stripEmojis(message);
+    const el = document.createElement('div');
+    el.style.cssText = `display:flex;align-items:center;gap:12px;padding:13px 16px;background:#10151e;border:1px solid ${t.border};border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.4);min-width:280px;max-width:380px;pointer-events:all;animation:_nxTIn .25s ease;font-family:'Inter',sans-serif;`;
+    el.innerHTML = `<i class="bi ${t.icon}" style="color:${t.color};font-size:18px;flex-shrink:0"></i><span style="font-size:13px;color:#e8edf5;line-height:1.4;flex:1">${msg}</span><i class="bi bi-x" style="color:#6b7f96;font-size:16px;cursor:pointer;flex-shrink:0" onclick="this.parentElement.remove()"></i>`;
+    _getToastContainer().appendChild(el);
+    setTimeout(() => {
+      el.style.animation = '_nxTOut .3s ease forwards';
+      setTimeout(() => el.remove(), 300);
+    }, duration);
+  }
+
+  window.NexoToast = {
+    show:    (msg, type, ms)  => _toast(msg, type, ms),
+    success: (msg, ms)        => _toast(msg, 'success', ms),
+    error:   (msg, ms)        => _toast(msg, 'error',   ms),
+    warning: (msg, ms)        => _toast(msg, 'warning', ms),
+    info:    (msg, ms)        => _toast(msg, 'info',    ms),
+  };
+
   window.NexoAuth = {
     registerUser,
     login,
