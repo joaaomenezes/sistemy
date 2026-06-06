@@ -1042,44 +1042,14 @@ font-size: 12px;
             <div class="cfg-section">
               <div class="cfg-section-header">
                 <div class="cfg-section-title">Identidade Visual</div>
-                <div class="cfg-section-sub">Personalize as cores e o nome do sistema.</div>
+                <div class="cfg-section-sub">Personalize as cores do sistema.</div>
               </div>
-              <div class="cfg-grid">
-                <div class="cfg-group">
-                  <label class="lbl">Nome do sistema</label>
-                  <div class="inp-wrap"><i class="bi bi-type pre"></i>
-                    <input class="field" type="text" id="nomeSystem" data-cfg="nomeSystem" value="Sistemy ERP"
-                      oninput="markDirty();updatePreview()">
-                  </div>
-                </div>
-                <div class="cfg-group">
-                  <label class="lbl">Slogan</label>
-                  <div class="inp-wrap"><i class="bi bi-chat-quote pre"></i>
-                    <input class="field" type="text" placeholder="Ex: Gestão inteligente" oninput="markDirty()">
-                  </div>
-                </div>
-              </div>
-              <div style="margin-top:20px">
+              <div>
                 <label class="lbl" style="display:block;margin-bottom:10px">Cor de destaque</label>
                 <div class="color-swatches" id="colorSwatches"></div>
               </div>
             </div>
 
-            <div class="cfg-section">
-              <div class="cfg-section-header">
-                <div class="cfg-section-title">Prévia</div>
-                <div class="cfg-section-sub">Como o cabeçalho do sistema ficará.</div>
-              </div>
-              <div
-                style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;align-items:center;gap:12px">
-                <div id="previewIcon"
-                  style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#008a60);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#021c14">
-                  S</div>
-                <span id="previewName"
-                  style="font-size:18px;font-weight:800;letter-spacing:-.5px">Sistemy<span
-                    style="color:var(--accent)">ERP</span></span>
-              </div>
-            </div>
           </div>
 
           <!-- ══ USUÁRIOS ══ -->
@@ -1440,7 +1410,6 @@ font-size: 12px;
         const logo = document.getElementById('logoPreview');
         if (logo) { logo.innerHTML = ''; const img = document.createElement('img'); img.src = cfg._logo; img.style.cssText = 'width:100%;height:100%;object-fit:contain;border-radius:8px'; logo.appendChild(img); }
       }
-      if (cfg.nomeSystem) updatePreview();
     }
 
     function hexToRgb(hex) {
@@ -1496,18 +1465,6 @@ font-size: 12px;
       el.classList.add('sel');
       markDirty();
       NexoToast.info('Cor de destaque alterada! Salve para aplicar.');
-    }
-
-    // ═══════════════════════════════════════════════
-    // PREVIEW
-    // ═══════════════════════════════════════════════
-    function updatePreview() {
-      const nome = document.getElementById('nomeSystem').value || 'Sistemy ERP';
-      const partes = nome.split(' ');
-      const first = partes.slice(0, -1).join(' ') || nome;
-      const last = partes.length > 1 ? partes[partes.length - 1] : '';
-      document.getElementById('previewName').innerHTML = `${first}<span style="color:var(--accent)">${last}</span>`;
-      document.getElementById('previewIcon').textContent = nome[0]?.toUpperCase() || 'S';
     }
 
     // ═══════════════════════════════════════════════
