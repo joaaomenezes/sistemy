@@ -1275,10 +1275,14 @@ font-size: 12px;
           </div>
           <div class="cfg-group" id="u-senha-wrap">
             <label class="lbl">Senha *</label>
-            <div class="inp-wrap"><i class="bi bi-lock pre"></i>
-              <input class="field" type="password" id="u-senha" placeholder="Senha de acesso do usuário">
+            <div class="inp-wrap" style="position:relative">
+              <i class="bi bi-lock pre"></i>
+              <input class="field" type="password" id="u-senha" placeholder="Senha de acesso" style="padding-right:40px" autocomplete="new-password">
+              <button type="button" onclick="togglePwd('u-senha',this)" tabindex="-1"
+                style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;line-height:1;display:flex;align-items:center">
+                <i class="bi bi-eye" style="font-size:16px"></i>
+              </button>
             </div>
-            <span style="font-size:11px;color:var(--muted);margin-top:4px;display:block" id="u-senha-hint">Deixe em branco para manter a senha atual ao editar.</span>
           </div>
 
           <!-- Checklist de permissões -->
@@ -1290,7 +1294,50 @@ font-size: 12px;
       </div>
       <div class="modal-footer">
         <button class="btn-cancel-m" onclick="closeUserModal()">Cancelar</button>
+        <button id="btnTrocarSenha" style="display:none;align-items:center;gap:6px;padding:0 16px;height:38px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif" onclick="openPwdModal(editingUserId)">
+          <i class="bi bi-key"></i> Trocar senha
+        </button>
         <button class="btn-save-m" id="btnSaveUser" onclick="saveUser()"><i class="bi bi-check2"></i> Salvar usuário</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL TROCAR SENHA -->
+  <div class="modal-overlay" id="pwdModalOverlay" onclick="handlePwdOverlay(event)">
+    <div class="modal" style="max-width:420px">
+      <div class="modal-header">
+        <h2 id="pwdModalTitle">Trocar senha</h2>
+        <div class="modal-close" onclick="closePwdModal()"><i class="bi bi-x-lg"></i></div>
+      </div>
+      <div class="modal-body">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="cfg-group">
+            <label class="lbl">Nova senha *</label>
+            <div class="inp-wrap" style="position:relative">
+              <i class="bi bi-lock pre"></i>
+              <input class="field" type="password" id="pwd-nova" placeholder="Mínimo 4 caracteres" style="padding-right:40px" autocomplete="new-password">
+              <button type="button" onclick="togglePwd('pwd-nova',this)" tabindex="-1"
+                style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;line-height:1;display:flex;align-items:center">
+                <i class="bi bi-eye" style="font-size:16px"></i>
+              </button>
+            </div>
+          </div>
+          <div class="cfg-group">
+            <label class="lbl">Confirmar nova senha *</label>
+            <div class="inp-wrap" style="position:relative">
+              <i class="bi bi-lock pre"></i>
+              <input class="field" type="password" id="pwd-confirm" placeholder="Repita a nova senha" style="padding-right:40px" autocomplete="new-password">
+              <button type="button" onclick="togglePwd('pwd-confirm',this)" tabindex="-1"
+                style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;line-height:1;display:flex;align-items:center">
+                <i class="bi bi-eye" style="font-size:16px"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel-m" onclick="closePwdModal()">Cancelar</button>
+        <button class="btn-save-m" id="btnSavePwd" onclick="savePassword()"><i class="bi bi-check2"></i> Confirmar</button>
       </div>
     </div>
   </div>
@@ -1607,7 +1654,9 @@ font-size: 12px;
       document.getElementById('u-email').value = '';
       document.getElementById('u-login').value = '';
       document.getElementById('u-senha').value = '';
-      document.getElementById('u-senha-hint').style.display = isEdit ? 'block' : 'none';
+      // Novo usuário: mostra campo de senha; edição: esconde e exibe botão "Trocar senha"
+      document.getElementById('u-senha-wrap').style.display    = isEdit ? 'none' : '';
+      document.getElementById('btnTrocarSenha').style.display  = isEdit ? 'flex' : 'none';
       const btnLabel = isEditingSelf ? 'Salvar perfil' : (isEdit ? 'Salvar alterações' : 'Criar usuário');
       document.getElementById('btnSaveUser').innerHTML = `<i class="bi bi-check2"></i> ${btnLabel}`;
       // Esconde permissões ao editar o próprio perfil — dono tem acesso total
@@ -1676,6 +1725,63 @@ font-size: 12px;
     }
 
     function editUser(id) { openUserModal(id); }
+
+    // ── Modal trocar senha ────────────────────────────────
+    let pwdTargetUserId = null;
+
+    function openPwdModal(userId) {
+      pwdTargetUserId = userId;
+      const session = NexoAuth.getSession();
+      const isMe    = userId === session?.user?.id;
+      const u       = usuarios.find(x => x.id === userId);
+      const nome    = isMe ? 'meu perfil' : (u?.nome || 'usuário');
+      document.getElementById('pwdModalTitle').textContent = `Trocar senha — ${nome}`;
+      document.getElementById('pwd-nova').value    = '';
+      document.getElementById('pwd-confirm').value = '';
+      // Reset eye toggles
+      ['pwd-nova','pwd-confirm'].forEach(id => {
+        const inp = document.getElementById(id);
+        inp.type = 'password';
+        inp.closest('.inp-wrap').querySelector('i.bi-eye-slash, i.bi-eye').className = 'bi bi-eye';
+      });
+      document.getElementById('pwdModalOverlay').classList.add('open');
+    }
+
+    function closePwdModal() { document.getElementById('pwdModalOverlay').classList.remove('open'); }
+    function handlePwdOverlay(e) { if (e.target === document.getElementById('pwdModalOverlay')) closePwdModal(); }
+
+    function togglePwd(inputId, btn) {
+      const inp  = document.getElementById(inputId);
+      const show = inp.type === 'password';
+      inp.type   = show ? 'text' : 'password';
+      btn.querySelector('i').className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
+    }
+
+    async function savePassword() {
+      const nova    = document.getElementById('pwd-nova').value.trim();
+      const confirm = document.getElementById('pwd-confirm').value.trim();
+
+      if (!nova)            { NexoToast.warning('Informe a nova senha.'); return; }
+      if (nova.length < 4)  { NexoToast.warning('A senha deve ter ao menos 4 caracteres.'); return; }
+      if (nova !== confirm)  { NexoToast.error('As senhas não coincidem.'); return; }
+
+      const btn = document.getElementById('btnSavePwd');
+      btn.disabled    = true;
+      btn.textContent = 'Salvando…';
+
+      const session = NexoAuth.getSession();
+      const isMe    = pwdTargetUserId === session?.user?.id;
+      const result  = isMe
+        ? await NexoAuth.updateMyProfile({ password: nova })
+        : await NexoAuth.updateSubUser(pwdTargetUserId, { password: nova });
+
+      btn.disabled  = false;
+      btn.innerHTML = '<i class="bi bi-check2"></i> Confirmar';
+
+      if (!result.ok) { NexoToast.error(result.message); return; }
+      closePwdModal();
+      NexoToast.success('Senha alterada com sucesso!');
+    }
 
     async function removeUser(id) {
       const u = usuarios.find(x => x.id === id);
