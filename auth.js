@@ -1,7 +1,11 @@
 (function () {
   const SESSION_KEY = 'nexoerp.session';
   const LOCKOUT_KEY = 'nexoerp.login.lockout';
-  const API_URL     = 'http://localhost:3333/api';
+  const API_URL = (function () {
+    const h = window.location.hostname;
+    if (h === 'localhost' || h === '127.0.0.1') return 'http://localhost:3333/api';
+    return 'https://CONFIGURAR-ANTES-DO-DEPLOY.railway.app/api';
+  })();
 
   const ALL_MODULES = [
     'dashboard','pdv','pedidos','vendas','clientes',
