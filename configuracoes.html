@@ -1474,7 +1474,7 @@ font-size: 12px;
         if (cfg._corSel && /^#[0-9a-f]{6}$/i.test(cfg._corSel)) {
           document.documentElement.style.setProperty('--accent', cfg._corSel);
         }
-        NexoToast.success('Configurações salvas! Acesse outros módulos para ver a nova cor.');
+        NexoToast.success('Configurações salvas!');
       } catch (err) {
         if (err.name === 'QuotaExceededError') NexoToast.error('Armazenamento local cheio.');
         else NexoToast.error('Erro ao salvar. Tente novamente.');
