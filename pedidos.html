@@ -1051,6 +1051,13 @@ font-weight: 800;
 
     const COND_LABELS = { avista:'À vista','7':'7 dias','14':'14 dias','30':'30 dias','30-60':'30/60 dias','30-60-90':'30/60/90 dias' };
     function condLabel(c) { return COND_LABELS[c] || c || '—'; }
+    function isFormaBoleto(forma) {
+      return String(forma || '').trim().toLowerCase().includes('boleto');
+    }
+
+    function currentUserName() {
+      return NexoAuth.getSession()?.user?.name || 'Usuario logado';
+    }
 
     const STATUS_LABELS = {
       pendente: 'Pendente', faturado: 'Faturado', concluido: 'Concluído', cancelado: 'Cancelado',
@@ -1106,7 +1113,7 @@ font-weight: 800;
       });
 
       const fv = document.getElementById('f-vendedor');
-      fv.innerHTML = '<option value="">Selecione o vendedor...</option>';
+      fv.innerHTML = '<option value="">Usuario logado (padrao)</option>';
       VENDEDORES_DATA.forEach(v => {
         const o = document.createElement('option'); o.value = v.id; o.textContent = v.nome; fv.appendChild(o);
       });
@@ -1216,7 +1223,7 @@ font-weight: 800;
 
       if (p.status === 'pendente') {
         acts.push(`<button class="det-btn primary" onclick="faturar('${p.id}')"><i class="bi bi-receipt"></i> Emitir NF-e → Faturar</button>`);
-        acts.push(`<button class="det-btn green" onclick="gerarBoleto('${p.id}')"><i class="bi bi-file-text"></i> Gerar Boleto</button>`);
+        acts.push(`<button class="det-btn green" onclick="concluir('${p.id}')"><i class="bi bi-check2-circle"></i> Concluir venda</button>`);
         acts.push(printDd);
         acts.push(emailBtn);
         acts.push(`<button class="det-btn" onclick="openEdit('${p.id}');closeDetail()"><i class="bi bi-pencil"></i> Editar</button>`);
@@ -1225,7 +1232,7 @@ font-weight: 800;
       if (p.status === 'faturado') {
         if (p.temBoleto)
           acts.push(`<div class="fiscal-warning"><span style="font-size:16px;line-height:1">⚠</span><div><b>Boleto vinculado</b>Para cancelar este pedido você precisa primeiro cancelar o <strong>boleto</strong> na aba <strong>Fiscal/Financeiro</strong>.</div></div>`);
-        if (!p.temBoleto)
+        if (!p.temBoleto && isFormaBoleto(p.forma))
           acts.push(`<button class="det-btn green" onclick="gerarBoleto('${p.id}')"><i class="bi bi-file-text"></i> Gerar Boleto</button>`);
         acts.push(printDd);
         acts.push(emailBtn);
@@ -1235,8 +1242,11 @@ font-weight: 800;
           acts.push(`<button class="det-btn danger" onclick="cancelar('${p.id}')"><i class="bi bi-x-circle"></i> Cancelar</button>`);
       }
       if (p.status === 'concluido') {
+        if (!p.temBoleto && isFormaBoleto(p.forma))
+          acts.push(`<button class="det-btn green" onclick="gerarBoleto('${p.id}')"><i class="bi bi-file-text"></i> Gerar Boleto</button>`);
         acts.push(printDd);
         acts.push(emailBtn);
+        acts.push(`<button class="det-btn danger" onclick="estornarVenda('${p.id}')"><i class="bi bi-arrow-counterclockwise"></i> Estornar Venda</button>`);
       }
       if (p.status === 'cancelado') {
         acts.push(`<button class="det-btn" onclick="NexoToast.info('Em breve.')"><i class="bi bi-printer"></i> Imprimir</button>`);
@@ -1293,20 +1303,23 @@ font-weight: 800;
         </div>`;
 
       // Documentos
-      const faturado = p.status === 'faturado' || p.status === 'concluido';
+      const historicoPedido = Array.isArray(p.historico) ? p.historico : [];
+      const nfeEmitida = historicoPedido.some(e => e && e.tipo === 'nfe_emitida') || p.status === 'faturado';
+      const podeGerarBoleto = ['faturado', 'concluido'].includes(p.status) && isFormaBoleto(p.forma);
       const parcelas = p.parcelas || [];
       const vencimento = parcelas.length ? parcelas[0].data : (p.validade || '—');
       document.getElementById('dp-documentos').innerHTML = `
         <div class="doc-cards">
           <div class="doc-card">
             <div class="doc-card-label">Nota Fiscal (NF-e)</div>
-            <div class="doc-card-val ${faturado ? 'tag-emitida' : 'tag-pendente'}">${faturado ? 'Emitida' : 'Pendente'}</div>
-            ${!faturado ? `<div class="doc-card-action" onclick="faturar('${p.id}')"><i class="bi bi-plus"></i> Emitir NF-e</div>` : ''}
+            <div class="doc-card-val ${nfeEmitida ? 'tag-emitida' : 'tag-pendente'}">${nfeEmitida ? 'Emitida' : 'Pendente'}</div>
+            ${!nfeEmitida && p.status === 'pendente' ? `<div class="doc-card-action" onclick="faturar('${p.id}')"><i class="bi bi-plus"></i> Emitir NF-e</div>` : ''}
           </div>
           <div class="doc-card">
             <div class="doc-card-label">Boleto</div>
             <div class="doc-card-val ${p.temBoleto ? 'tag-emitida' : 'tag-pendente'}">${p.temBoleto ? 'Gerado' : 'Pendente'}</div>
-            ${!p.temBoleto ? `<div class="doc-card-action" onclick="gerarBoleto('${p.id}')"><i class="bi bi-plus"></i> Gerar Boleto</div>` : `<div class="doc-card-action" onclick="NexoToast.info('Em breve: 2ª via do boleto.')"><i class="bi bi-download"></i> 2ª Via</div>`}
+            ${p.temBoleto ? `<div class="doc-card-action" onclick="NexoToast.info('Em breve: 2ª via do boleto.')"><i class="bi bi-download"></i> 2ª Via</div>` : ''}
+            ${!p.temBoleto && podeGerarBoleto ? `<div class="doc-card-action" onclick="gerarBoleto('${p.id}')"><i class="bi bi-plus"></i> Gerar Boleto</div>` : ''}
           </div>
           <div class="doc-card">
             <div class="doc-card-label">Forma de Pagamento</div>
@@ -1321,21 +1334,48 @@ font-weight: 800;
       // Histórico / timeline
       const tlFmt = (iso) => {
         const d = new Date(iso);
+        if (Number.isNaN(d.getTime())) return 'Data indisponível';
         return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
       };
       const tlItem = (label, date, cor, user) =>
-        `<div class="tl-item"><div class="tl-dot ${cor}"></div><div class="tl-content"><div class="tl-label">${label}</div><div class="tl-date">${date}${user ? ' · ' + escapeHTML(user) : ''}</div></div></div>`;
-      const tlItems = [];
-      tlItems.push(tlItem('Pedido criado', tlFmt(p.dataISO), 'muted', p.criadoPor || ''));
-      if (['faturado', 'concluido'].includes(p.status))
-        tlItems.push(tlItem('NF-e emitida — Pedido faturado', '—', 'green', ''));
-      if (p.temBoleto)
-        tlItems.push(tlItem('Boleto gerado', '—', 'yellow', ''));
-      if (p.status === 'concluido')
-        tlItems.push(tlItem('Pedido concluído', '—', 'green', ''));
-      if (p.status === 'cancelado')
-        tlItems.push(tlItem('Pedido cancelado', '—', 'red', ''));
-      document.getElementById('dp-timeline').innerHTML = tlItems.join('');
+        `<div class="tl-item"><div class="tl-dot ${cor}"></div><div class="tl-content"><div class="tl-label">${escapeHTML(label)}</div><div class="tl-date">${escapeHTML(date)}${user ? ' · ' + escapeHTML(user) : ''}</div></div></div>`;
+      const corEvento = {
+        pedido_criado: 'muted',
+        nfe_emitida: 'green',
+        boleto_gerado: 'yellow',
+        pedido_concluido: 'green',
+        pedido_cancelado: 'red'
+      };
+      const eventos = historicoPedido.filter(e => e && typeof e === 'object').map(e => ({
+        tipo: e.tipo || 'evento',
+        titulo: e.titulo || 'Atualização do pedido',
+        dataISO: e.dataISO || p.dataISO,
+        usuario: e.usuario || p.criadoPor || ''
+      }));
+      const temEvento = (tipo) => eventos.some(e => e.tipo === tipo);
+      if (!temEvento('pedido_criado')) {
+        eventos.push({ tipo: 'pedido_criado', titulo: 'Pedido criado', dataISO: p.dataISO, usuario: p.criadoPor || '' });
+      }
+      if (p.status === 'faturado' && !temEvento('nfe_emitida')) {
+        eventos.push({ tipo: 'nfe_emitida', titulo: 'NF-e emitida - Pedido faturado', dataISO: p.dataISO, usuario: p.criadoPor || '' });
+      }
+      if (p.temBoleto && !temEvento('boleto_gerado')) {
+        eventos.push({ tipo: 'boleto_gerado', titulo: 'Boleto gerado', dataISO: p.dataISO, usuario: p.criadoPor || '' });
+      }
+      if (p.status === 'concluido' && !temEvento('pedido_concluido')) {
+        eventos.push({ tipo: 'pedido_concluido', titulo: 'Venda concluída', dataISO: p.dataISO, usuario: p.criadoPor || '' });
+      }
+      if (p.status === 'cancelado' && !temEvento('pedido_cancelado')) {
+        eventos.push({ tipo: 'pedido_cancelado', titulo: 'Pedido cancelado', dataISO: p.dataISO, usuario: p.criadoPor || '' });
+      }
+      const tlTime = (iso) => {
+        const t = new Date(iso).getTime();
+        return Number.isNaN(t) ? 0 : t;
+      };
+      eventos.sort((a, b) => tlTime(b.dataISO) - tlTime(a.dataISO));
+      document.getElementById('dp-timeline').innerHTML = eventos
+        .map(e => tlItem(e.titulo, tlFmt(e.dataISO), corEvento[e.tipo] || 'muted', e.usuario))
+        .join('');
 
       // Observações
       const obs = p.obs || p.obsCliente || '';
@@ -1354,10 +1394,27 @@ font-weight: 800;
       currentPedidoId = null;
     }
 
+    function validarEstoquePedido(id) {
+      const p = pedidos.find(x => x.id === id);
+      if (!p) return '';
+      for (const item of (p.itens || [])) {
+        if (!item.id) continue;
+        const prod = PRODUTOS_MOCK.find(x => x.id === item.id);
+        if (!prod || prod.controlEstoque === false || prod.vendaSemEstoque) continue;
+        const qty = Number(item.qty || 1);
+        if (prod.estoque < qty) {
+          return `Estoque insuficiente para "${prod.nome}". Disponivel: ${prod.estoque}.`;
+        }
+      }
+      return '';
+    }
+
     // ═══════════════════════════════════════════════
     // AÇÕES DE STATUS
     // ═══════════════════════════════════════════════
     async function faturar(id) {
+      const erroEstoque = validarEstoquePedido(id);
+      if (erroEstoque) { NexoToast.warning(erroEstoque); return; }
       const res = await NexoAuth.apiFetch(`/pedidos/${id}`, { method: 'PUT', body: JSON.stringify({ status: 'faturado' }) });
       if (!res.ok) { NexoToast.error(res.message); return; }
       const idx = pedidos.findIndex(x => x.id === id);
@@ -1367,6 +1424,8 @@ font-weight: 800;
       NexoToast.success(`Pedido ${id} faturado.`);
     }
     async function concluir(id) {
+      const erroEstoque = validarEstoquePedido(id);
+      if (erroEstoque) { NexoToast.warning(erroEstoque); return; }
       const res = await NexoAuth.apiFetch(`/pedidos/${id}`, { method: 'PUT', body: JSON.stringify({ status: 'concluido' }) });
       if (!res.ok) { NexoToast.error(res.message); return; }
       const idx = pedidos.findIndex(x => x.id === id);
@@ -1399,7 +1458,29 @@ font-weight: 800;
         NexoToast.success('Pedido cancelado.');
       }, { title: 'Cancelar pedido', sub: 'O pedido será marcado como cancelado e o estoque revertido.', btnLabel: 'Cancelar pedido', icon: 'bi-x-circle' });
     }
+    function estornarVenda(id) {
+      const p = pedidos.find(x => x.id === id); if (!p) return;
+      openConfirm(`Pedido ${id}${p.cliente ? ' — ' + p.cliente : ''}`, async () => {
+        const res = await NexoAuth.apiFetch(`/pedidos/${id}`, { method: 'DELETE' });
+        if (!res.ok) { NexoToast.error(res.message); return; }
+        const idx = pedidos.findIndex(x => x.id === id);
+        if (idx >= 0) pedidos[idx].status = 'cancelado';
+        closeDetail();
+        renderAll();
+        NexoToast.success('Venda estornada.');
+      }, {
+        title: 'Estornar venda',
+        sub: 'O estoque será devolvido e os impactos financeiros da venda serão removidos.',
+        btnLabel: 'Estornar venda',
+        icon: 'bi-arrow-counterclockwise'
+      });
+    }
     async function gerarBoleto(id) {
+      const p = pedidos.find(x => x.id === id);
+      if (!p || !['faturado', 'concluido'].includes(p.status) || !isFormaBoleto(p.forma)) {
+        NexoToast.warning('O boleto só pode ser gerado para pedidos faturados/concluídos com forma de pagamento Boleto.');
+        return;
+      }
       const res = await NexoAuth.apiFetch(`/pedidos/${id}`, { method: 'PUT', body: JSON.stringify({ temBoleto: true }) });
       if (!res.ok) { NexoToast.error(res.message || 'Erro ao gerar boleto.'); return; }
       const idx = pedidos.findIndex(x => x.id === id);
@@ -1644,7 +1725,7 @@ font-weight: 800;
 
       const fvEl = document.getElementById('f-vendedor');
       const vendedorId = fvEl.value || undefined;
-      const vendedor   = fvEl.value ? (fvEl.options[fvEl.selectedIndex]?.text || '') : undefined;
+      const vendedor   = fvEl.value ? (fvEl.options[fvEl.selectedIndex]?.text || '') : currentUserName();
 
       const sub     = itensValidos.reduce((s, x) => s + x.subtotal, 0);
       const discPct = parseFloat(document.getElementById('r-desconto-pct').value) || 0;

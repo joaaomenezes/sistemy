@@ -630,6 +630,10 @@
           <option value="credito">Crédito</option>
           <option value="debito">Débito</option>
           <option value="multiplo">Múltiplo</option>
+          <option value="boleto">Boleto bancário</option>
+          <option value="duplicata">Duplicata</option>
+          <option value="transferencia">Transferência / PIX</option>
+          <option value="cheque">Cheque</option>
         </select>
         <div class="toolbar-right">
           <div class="vnd-dp-wrap">
@@ -670,7 +674,7 @@
                 <th onclick="sortVendas('total')">Total ↕</th>
                 <th>Status</th>
                 <th onclick="sortVendas('data')">Data/Hora ↕</th>
-                <th>Operador</th>
+                <th id="operatorHeader">Operador</th>
                 <th></th>
               </tr>
             </thead>
@@ -721,7 +725,7 @@
     <div class="dp-actions">
       <button class="dp-btn primary" onclick="printVenda()"><i class="bi bi-printer"></i> Imprimir</button>
       <button class="dp-btn danger" id="btnEstornar" onclick="openEstornoModal()"><i
-          class="bi bi-arrow-counterclockwise"></i> Estornar</button>
+          class="bi bi-arrow-counterclockwise"></i> Estornar Venda</button>
     </div>
   </div>
 
@@ -811,6 +815,7 @@
       const isPdv = section === 'pdv';
       document.getElementById('sec-pdv').classList.toggle('active', isPdv);
       document.getElementById('sec-pedidos').classList.toggle('active', !isPdv);
+      document.getElementById('operatorHeader').textContent = isPdv ? 'Operador' : 'Vendedor';
       document.getElementById('emptyStateMsg').textContent = isPdv
         ? 'Ajuste os filtros ou realize vendas pelo PDV.'
         : 'Ajuste os filtros ou fature pedidos em Pedidos de Venda.';
@@ -865,7 +870,7 @@
           (v.cliente || '').toLowerCase().includes(q) ||
           fmt(v.total).includes(q);
         const matchF = currentFilter === 'todos' || v.status === currentFilter;
-        const matchM = !metodo || v.metodo === metodo;
+        const matchM = !metodo || getMethodMeta(v.metodo).key === metodo;
         let matchD = true;
         // Datas interpretadas no fuso local (anexar horário evita o parse UTC de "YYYY-MM-DD")
         if (dIni) matchD = matchD && v.data >= new Date(dIni + 'T00:00:00');
@@ -907,12 +912,34 @@
     }
     const methodIcons = {
       dinheiro: 'bi-cash-coin', pix: 'bi-qr-code-scan',
-      credito: 'bi-credit-card-fill', debito: 'bi-credit-card', multiplo: 'bi-layout-split'
+      credito: 'bi-credit-card-fill', debito: 'bi-credit-card', multiplo: 'bi-layout-split',
+      boleto: 'bi-upc-scan', duplicata: 'bi-file-earmark-text', transferencia: 'bi-bank',
+      cheque: 'bi-journal-check', outro: 'bi-credit-card-2-front'
     };
     const methodLabels = {
-      dinheiro: 'Dinheiro', pix: 'PIX', credito: 'Crédito', debito: 'Débito', multiplo: 'Múltiplo'
+      dinheiro: 'Dinheiro', pix: 'PIX', credito: 'Crédito', debito: 'Débito', multiplo: 'Múltiplo',
+      boleto: 'Boleto bancário', duplicata: 'Duplicata', transferencia: 'Transferência / PIX',
+      cheque: 'Cheque', outro: 'Outro'
     };
     const statusLabels = { concluida: 'Concluída', cancelada: 'Cancelada', estornada: 'Estornada', pendente: 'Pendente' };
+
+    function getMethodMeta(raw) {
+      const label = String(raw || '').trim();
+      const n = label.toLowerCase();
+      let key = 'outro';
+      if (['dinheiro', 'pix', 'credito', 'debito', 'multiplo'].includes(n)) key = n;
+      else if (n.includes('pix') || n.includes('transfer')) key = 'transferencia';
+      else if (n.includes('cart')) key = 'credito';
+      else if (n.includes('boleto')) key = 'boleto';
+      else if (n.includes('duplicata')) key = 'duplicata';
+      else if (n.includes('cheque')) key = 'cheque';
+
+      return {
+        key,
+        icon: methodIcons[key] || methodIcons.outro,
+        label: label || methodLabels[key] || methodLabels.outro,
+      };
+    }
 
     function renderTable() {
       const body = document.getElementById('vendasBody');
@@ -927,6 +954,7 @@
       body.innerHTML = slice.map(v => {
         const [bg, fg] = colorFor(v.cliente);
         const isNeg = v.status === 'estornada' || v.status === 'cancelada';
+        const metodo = getMethodMeta(v.metodo);
         return `<tr onclick="openDetail('${v.id}')">
       <td>
         <div class="venda-id">${v.id}</div>
@@ -937,7 +965,7 @@
         <div class="client-name">${v.cliente || 'Venda Balcão'}</div>
       </div></td>
       <td style="color:var(--muted);font-size:13px">${v.itens.length} ${v.itens.length === 1 ? 'item' : 'itens'}</td>
-      <td><span class="method-badge ${v.metodo}"><i class="bi ${methodIcons[v.metodo]}"></i>${methodLabels[v.metodo]}</span></td>
+      <td><span class="method-badge ${metodo.key}"><i class="bi ${metodo.icon}"></i>${escapeHTML(metodo.label)}</span></td>
       <td><span class="valor-cell ${isNeg ? 'neg' : 'pos'}">R$ ${fmt(v.total)}</span></td>
       <td><span class="status-pill ${v.status}">${statusLabels[v.status]}</span></td>
       <td style="color:var(--muted);font-size:12px">${v.dataStr}<br>${v.horaStr}</td>
@@ -945,7 +973,7 @@
       <td><div class="action-cell" onclick="event.stopPropagation()">
         <div class="act-btn" title="Ver detalhes" onclick="openDetail('${v.id}')"><i class="bi bi-eye"></i></div>
         <div class="act-btn" title="Imprimir" onclick="printVendaId('${v.id}')"><i class="bi bi-printer"></i></div>
-        ${v.status === 'concluida' ? `<div class="act-btn danger" title="Estornar" onclick="openEstornoById('${v.id}')"><i class="bi bi-arrow-counterclockwise"></i></div>` : ''}
+        ${v.status === 'concluida' ? `<div class="act-btn danger" title="Estornar Venda" onclick="openEstornoById('${v.id}')"><i class="bi bi-arrow-counterclockwise"></i></div>` : ''}
       </div></td>
     </tr>`;
       }).join('');
@@ -999,10 +1027,11 @@
       // meta badges
       const isNeg = v.status === 'estornada' || v.status === 'cancelada';
       const safeStatus = escapeHTML(v.status);
-      const safeMetodo = escapeHTML(v.metodo);
+      const metodo = getMethodMeta(v.metodo);
+      const safeMetodo = escapeHTML(metodo.key);
       document.getElementById('dp-meta').innerHTML = `
     <span class="status-pill ${safeStatus}">${escapeHTML(statusLabels[v.status])}</span>
-    <span class="method-badge ${safeMetodo}"><i class="bi ${escapeHTML(methodIcons[v.metodo])}"></i>${escapeHTML(methodLabels[v.metodo])}</span>
+    <span class="method-badge ${safeMetodo}"><i class="bi ${escapeHTML(metodo.icon)}"></i>${escapeHTML(metodo.label)}</span>
   `;
       const dpTotal = document.getElementById('dp-total');
       dpTotal.textContent = `R$ ${fmt(v.total)}`;
@@ -1011,10 +1040,10 @@
       // info
       document.getElementById('dp-info').innerHTML = [
         ['Cliente', v.cliente || 'Venda Balcão'],
-        ['Operador', v.operador || '—'],
+        [currentSection === 'pedidos' ? 'Vendedor' : 'Operador', v.operador || '—'],
         ['Data/Hora', (v.dataStr || v.horaStr) ? `${v.dataStr || ''} ${v.horaStr ? 'às ' + v.horaStr : ''}`.trim() : '—'],
         ['Status', statusLabels[v.status]],
-        ['Método', methodLabels[v.metodo]],
+        ['Método', metodo.label],
         v.estornoMotivo ? ['Motivo estorno', v.estornoMotivo] : null,
       ].filter(Boolean).map(([l, val]) =>
         `<div class="dp-row"><span class="dp-label">${escapeHTML(l)}</span><span class="dp-val">${escapeHTML(val)}</span></div>`
@@ -1113,10 +1142,10 @@
     // EXPORT CSV
     // ═══════════════════════════════════════════════
     function exportCSV() {
-      const header = ['Nº Venda', 'Cliente', 'Qtd Itens', 'Método', 'Subtotal (R\$)', 'Desconto (R\$)', 'Total (R\$)', 'Status', 'Data', 'Hora', 'Operador'];
+      const header = ['Nº Venda', 'Cliente', 'Qtd Itens', 'Método', 'Subtotal (R$)', 'Desconto (R$)', 'Total (R$)', 'Status', 'Data', 'Hora', currentSection === 'pedidos' ? 'Vendedor' : 'Operador'];
       const rows = filtered.map(v => [
         v.id, v.cliente, v.itens.length,
-        methodLabels[v.metodo] || v.metodo,
+        getMethodMeta(v.metodo).label,
         String(v.subtotal || v.total || 0).replace('.', ','),
         String(v.desconto || 0).replace('.', ','),
         String(v.total || 0).replace('.', ','),
