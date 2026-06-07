@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rascunho — Modal Novo Pedido</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --surface2: #1e2334;
+    --border: rgba(255,255,255,.08);
+    --text: #e8eaf0;
+    --muted: #6b7f96;
+    --accent: #4f7cff;
+    --accent-dim: rgba(79,124,255,.12);
+    --green: #22c55e;
+    --green-dim: rgba(34,197,94,.12);
+    --red: #ef4444;
+    --red-dim: rgba(239,68,68,.1);
+    --radius: 10px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 32px 16px;
+  }
+
+  /* ── OVERLAY ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.6);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 24px 16px;
+    overflow-y: auto;
+    z-index: 10;
+  }
+
+  /* ── MODAL ── */
+  .modal-pedido-venda {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 1040px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,.5);
+  }
+
+  /* ── HEADER ── */
+  .modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 24px 28px 20px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .modal-header h2 {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -.3px;
+  }
+  .modal-header p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+  .btn-close {
+    width: 32px; height: 32px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all .15s;
+    line-height: 1;
+  }
+  .btn-close:hover { color: var(--text); border-color: var(--text); }
+
+  /* ── SCROLL BODY ── */
+  .modal-body {
+    overflow-y: auto;
+    padding: 24px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-height: calc(100vh - 200px);
+  }
+  .modal-body::-webkit-scrollbar { width: 5px; }
+  .modal-body::-webkit-scrollbar-track { background: transparent; }
+  .modal-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,.08); border-radius: 10px; }
+
+  /* ── GRID 3 COLUNAS ── */
+  .pedido-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .card h3 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: var(--muted);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2px;
+  }
+
+  /* ── CAMPO ── */
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  label.lbl {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: var(--muted);
+  }
+  label.lbl .req { color: var(--accent); margin-left: 2px; }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="date"],
+  input[type="number"],
+  select,
+  textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 13px;
+    font-family: inherit;
+    padding: 8px 11px;
+    outline: none;
+    transition: border-color .15s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
+  select { cursor: pointer; }
+  input::placeholder { color: var(--muted); }
+  input[type="date"] { color-scheme: dark; }
+
+  /* Readonly / disabled */
+  input[readonly], input:disabled {
+    opacity: .5; cursor: not-allowed;
+  }
+
+  /* Checkbox row */
+  .check-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--muted);
+    padding: 4px 0;
+  }
+  .check-row input[type="checkbox"] {
+    width: 16px; height: 16px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  .check-row:hover { color: var(--text); }
+
+  /* Fields ocultos quando checkbox desmarcado */
+  .address-fields { display: none; flex-direction: column; gap: 12px; }
+  .address-fields.show { display: flex; }
+
+  /* Grid 2 colunas dentro de card */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* ── ITENS ── */
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2px;
+  }
+  .card-header h3 { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+  .btn-add-item {
+    height: 30px;
+    padding: 0 12px;
+    background: var(--accent-dim);
+    border: 1px solid rgba(79,124,255,.3);
+    border-radius: 7px;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 5px;
+    transition: all .15s;
+  }
+  .btn-add-item:hover { background: rgba(79,124,255,.2); }
+
+  .itens-table { width: 100%; border-collapse: collapse; }
+  .itens-table thead th {
+    padding: 8px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: var(--muted);
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .itens-table tbody td {
+    padding: 8px 6px;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+    vertical-align: middle;
+  }
+  .itens-table tbody tr:last-child td { border-bottom: none; }
+  .itens-table input, .itens-table select {
+    padding: 6px 8px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+  .itens-table input[type="text"]   { width: 100%; }
+  .itens-table input[type="number"] { width: 80px; text-align: right; }
+  .td-total { font-weight: 700; font-size: 13px; color: var(--accent); white-space: nowrap; }
+  .btn-remove {
+    width: 28px; height: 28px;
+    background: var(--red-dim);
+    border: 1px solid rgba(239,68,68,.2);
+    border-radius: 6px;
+    color: var(--red);
+    font-size: 14px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s;
+  }
+  .btn-remove:hover { background: rgba(239,68,68,.2); }
+
+  /* Empty state */
+  .itens-empty {
+    text-align: center;
+    padding: 28px 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  /* ── RODAPÉ ── */
+  .pedido-footer {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Resumo financeiro */
+  .resumo-financeiro { gap: 12px; }
+  .resumo-cols {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr) auto;
+    gap: 12px;
+    align-items: end;
+  }
+  .resumo-col { display: flex; flex-direction: column; gap: 5px; }
+  .resumo-col-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: var(--muted);
+  }
+  .resumo-col-val {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    padding: 8px 0 4px;
+  }
+  .resumo-col .resumo-inp {
+    text-align: right;
+    padding: 7px 10px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+  .resumo-total-col {
+    background: var(--accent-dim);
+    border: 1px solid rgba(79,124,255,.25);
+    border-radius: var(--radius);
+    padding: 12px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    min-width: 180px;
+  }
+  .resumo-total-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: var(--accent); }
+  .resumo-total-val   { font-size: 22px; font-weight: 800; color: var(--accent); }
+
+  /* ── FOOTER AÇÕES ── */
+  .modal-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 18px 28px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .btn {
+    height: 38px;
+    padding: 0 20px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    display: flex; align-items: center; gap: 7px;
+    transition: opacity .15s;
+  }
+  .btn:hover { opacity: .85; }
+  .btn-secondary { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+  .btn-secondary:hover { color: var(--text); opacity: 1; border-color: var(--muted); }
+  .btn-primary { background: var(--accent); color: #fff; }
+</style>
+</head>
+<body>
+
+<div class="modal-overlay">
+<div class="modal-pedido-venda">
+
+  <!-- CABEÇALHO -->
+  <div class="modal-header">
+    <div>
+      <h2>Criar Pedido de Venda</h2>
+      <p>Preencha as informações para criar um novo pedido.</p>
+    </div>
+    <button class="btn-close" onclick="this.closest('.modal-overlay').style.display='none'">×</button>
+  </div>
+
+  <!-- CORPO SCROLLÁVEL -->
+  <div class="modal-body">
+
+    <!-- GRID PRINCIPAL -->
+    <div class="pedido-grid">
+
+      <!-- CLIENTE -->
+      <div class="card">
+        <h3>Dados do Cliente</h3>
+
+        <div class="field-group">
+          <label class="lbl">Cliente <span class="req">*</span></label>
+          <select onchange="preencherContato(this)">
+            <option value="">Selecione o cliente...</option>
+            <option value="1">João Menezes Ltda.</option>
+            <option value="2">Supermercado Silva</option>
+            <option value="3">Tech Distribuidora</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label class="lbl">Contato</label>
+          <select>
+            <option value="">Selecione...</option>
+            <option>João Menezes (Compras)</option>
+            <option>Ana Paula (Financeiro)</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label class="lbl">E-mail</label>
+          <input type="email" id="f-email" placeholder="email@empresa.com">
+        </div>
+
+        <div class="field-group">
+          <label class="lbl">Telefone</label>
+          <input type="text" id="f-tel" placeholder="(11) 99999-9999">
+        </div>
+      </div>
+
+      <!-- PEDIDO -->
+      <div class="card">
+        <h3>Informações do Pedido</h3>
+
+        <div class="two-col">
+          <div class="field-group">
+            <label class="lbl">Data do Pedido <span class="req">*</span></label>
+            <input type="date" id="f-data" value="2026-06-07">
+          </div>
+          <div class="field-group">
+            <label class="lbl">Previsão de Entrega</label>
+            <input type="date" id="f-entrega">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="lbl">Vendedor <span class="req">*</span></label>
+          <select>
+            <option value="">Selecione o vendedor...</option>
+            <option>Admin</option>
+            <option>Carlos Vendas</option>
+          </select>
+        </div>
+
+        <div class="two-col">
+          <div class="field-group">
+            <label class="lbl">Condição Pgto. <span class="req">*</span></label>
+            <select>
+              <option value="">Selecione...</option>
+              <option>À vista</option>
+              <option>30 dias</option>
+              <option>30/60 dias</option>
+              <option>30/60/90 dias</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="lbl">Forma Pgto. <span class="req">*</span></label>
+            <select>
+              <option value="">Selecione...</option>
+              <option>Boleto</option>
+              <option>PIX</option>
+              <option>Transferência</option>
+              <option>Cartão</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="lbl">Observações</label>
+          <textarea placeholder="Observações internas ou para o cliente..."></textarea>
+        </div>
+      </div>
+
+      <!-- ENTREGA -->
+      <div class="card">
+        <h3>Endereço de Entrega</h3>
+
+        <label class="check-row">
+          <input type="checkbox" id="chk-entrega" onchange="toggleEntrega(this)">
+          Entregar em endereço diferente
+        </label>
+
+        <div class="address-fields" id="addressFields">
+          <div class="two-col">
+            <div class="field-group">
+              <label class="lbl">CEP</label>
+              <input type="text" placeholder="00000-000" maxlength="9">
+            </div>
+            <div class="field-group" style="justify-content:flex-end">
+              <button style="height:36px;padding:0 12px;background:var(--accent-dim);border:1px solid rgba(79,124,255,.3);border-radius:8px;color:var(--accent);font-size:12px;font-weight:700;cursor:pointer">Buscar CEP</button>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="lbl">Rua</label>
+            <input type="text" placeholder="Rua, Av., etc.">
+          </div>
+
+          <div class="two-col">
+            <div class="field-group">
+              <label class="lbl">Número</label>
+              <input type="text" placeholder="Nº">
+            </div>
+            <div class="field-group">
+              <label class="lbl">Complemento</label>
+              <input type="text" placeholder="Apto, Sala...">
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="lbl">Bairro</label>
+            <input type="text" placeholder="Bairro">
+          </div>
+
+          <div class="two-col">
+            <div class="field-group">
+              <label class="lbl">Cidade</label>
+              <input type="text" placeholder="Cidade">
+            </div>
+            <div class="field-group">
+              <label class="lbl">Estado</label>
+              <select>
+                <option value="">UF</option>
+                <option>SP</option><option>RJ</option><option>MG</option>
+                <option>RS</option><option>PR</option><option>SC</option>
+                <option>BA</option><option>GO</option><option>DF</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="entrega-placeholder" style="flex:1;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;text-align:center;padding:20px 0">
+          Marque a opção acima para informar um endereço de entrega diferente.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ITENS -->
+    <div class="card">
+      <div class="card-header">
+        <h3>Itens do Pedido</h3>
+        <button class="btn-add-item" onclick="addItem()">+ Adicionar Item</button>
+      </div>
+
+      <table class="itens-table">
+        <thead>
+          <tr>
+            <th style="width:30%">Produto</th>
+            <th style="width:10%">Código</th>
+            <th style="width:8%">Unid.</th>
+            <th style="width:9%">Qtd.</th>
+            <th style="width:12%">Preço Unit.</th>
+            <th style="width:10%">Desconto</th>
+            <th style="width:12%">Total</th>
+            <th style="width:5%"></th>
+          </tr>
+        </thead>
+        <tbody id="itensBody">
+          <tr id="empty-row">
+            <td colspan="8">
+              <div class="itens-empty">Nenhum item adicionado. Clique em "+ Adicionar Item" para começar.</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RODAPÉ -->
+    <div class="pedido-footer">
+
+      <!-- RESUMO FINANCEIRO -->
+      <div class="card resumo-financeiro">
+        <h3>Resumo Financeiro</h3>
+        <div class="resumo-cols">
+          <div class="resumo-col">
+            <span class="resumo-col-label">Subtotal</span>
+            <span class="resumo-col-val" id="r-subtotal">R$ 0,00</span>
+          </div>
+          <div class="resumo-col">
+            <span class="resumo-col-label">Desconto geral (%)</span>
+            <input class="resumo-inp" type="number" id="r-desconto" value="0" min="0" max="100" step="0.5" oninput="calcResumo()">
+          </div>
+          <div class="resumo-col">
+            <span class="resumo-col-label">Acréscimos (R$)</span>
+            <input class="resumo-inp" type="number" id="r-acrescimos" value="0" min="0" step="0.01" oninput="calcResumo()">
+          </div>
+          <div class="resumo-col">
+            <span class="resumo-col-label">Frete (R$)</span>
+            <input class="resumo-inp" type="number" id="r-frete" value="0" min="0" step="0.01" oninput="calcResumo()">
+          </div>
+          <div class="resumo-total-col">
+            <span class="resumo-total-label">Total do Pedido</span>
+            <span class="resumo-total-val" id="r-total">R$ 0,00</span>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+  </div><!-- /modal-body -->
+
+  <!-- BOTÕES -->
+  <div class="modal-actions">
+    <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').style.display='none'">Cancelar</button>
+    <button class="btn btn-primary">Criar Pedido</button>
+  </div>
+
+</div>
+</div><!-- /modal-overlay -->
+
+<script>
+  let itens = [];
+  let itemId = 0;
+
+  const produtos = [
+    { id: 1, nome: 'Camisa Polo Preta G',    sku: 'CAM-001', unidade: 'UN', preco: 89.90 },
+    { id: 2, nome: 'Calça Jeans Slim 42',     sku: 'CAL-004', unidade: 'UN', preco: 159.90 },
+    { id: 3, nome: 'Tênis Running Branco 42', sku: 'TEN-012', unidade: 'PAR', preco: 349.90 },
+  ];
+
+  function fmt(v) { return v.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
+
+  function toggleEntrega(chk) {
+    document.getElementById('addressFields').classList.toggle('show', chk.checked);
+    document.getElementById('entrega-placeholder').style.display = chk.checked ? 'none' : '';
+  }
+
+  function preencherContato(sel) {
+    const emails = { '1': 'joao@menezes.com.br', '2': 'compras@silva.com', '3': 'contato@tech.com' };
+    const tels   = { '1': '(11) 99999-0001', '2': '(11) 98888-0002', '3': '(21) 97777-0003' };
+    document.getElementById('f-email').value = emails[sel.value] || '';
+    document.getElementById('f-tel').value   = tels[sel.value]   || '';
+  }
+
+  function addItem() {
+    const id = ++itemId;
+    itens.push({ id, prodId: '', qty: 1, preco: 0, desc: 0 });
+    renderItens();
+  }
+
+  function removeItem(id) {
+    itens = itens.filter(x => x.id !== id);
+    renderItens();
+    calcResumo();
+  }
+
+  function renderItens() {
+    const body = document.getElementById('itensBody');
+    if (!itens.length) {
+      body.innerHTML = `<tr id="empty-row"><td colspan="8"><div class="itens-empty">Nenhum item adicionado. Clique em "+ Adicionar Item" para começar.</div></td></tr>`;
+      calcResumo(); return;
+    }
+    body.innerHTML = itens.map(item => {
+      const opts = produtos.map(p =>
+        `<option value="${p.id}" ${item.prodId == p.id ? 'selected' : ''}>${p.nome}</option>`
+      ).join('');
+      const total = item.qty * item.preco * (1 - item.desc / 100);
+      return `<tr>
+        <td>
+          <select onchange="selectProd(${item.id}, this.value)" style="width:100%">
+            <option value="">Selecione...</option>
+            ${opts}
+          </select>
+        </td>
+        <td><input type="text" value="${item.sku || ''}" readonly style="width:80px;opacity:.5;cursor:not-allowed"></td>
+        <td><input type="text" value="${item.unidade || 'UN'}" readonly style="width:50px;opacity:.5;cursor:not-allowed"></td>
+        <td><input type="number" value="${item.qty}" min="1" style="width:70px;text-align:right" onchange="updateItem(${item.id},'qty',this.value)"></td>
+        <td><input type="number" value="${item.preco.toFixed(2)}" min="0" step="0.01" style="width:100px;text-align:right" onchange="updateItem(${item.id},'preco',this.value)"></td>
+        <td><input type="number" value="${item.desc}" min="0" max="100" step="0.5" style="width:70px;text-align:right" onchange="updateItem(${item.id},'desc',this.value)"><span style="color:var(--muted);font-size:11px;margin-left:2px">%</span></td>
+        <td class="td-total">R$ ${fmt(total)}</td>
+        <td><button class="btn-remove" onclick="removeItem(${item.id})">✕</button></td>
+      </tr>`;
+    }).join('');
+    calcResumo();
+  }
+
+  function selectProd(id, prodId) {
+    const item = itens.find(x => x.id === id);
+    const prod = produtos.find(p => p.id == prodId);
+    if (item && prod) {
+      item.prodId  = prod.id;
+      item.sku     = prod.sku;
+      item.unidade = prod.unidade;
+      item.preco   = prod.preco;
+      renderItens();
+    }
+  }
+
+  function updateItem(id, field, val) {
+    const item = itens.find(x => x.id === id);
+    if (item) { item[field] = parseFloat(val) || 0; calcResumo(); }
+  }
+
+  function calcResumo() {
+    const subtotal   = itens.reduce((s, x) => s + x.qty * x.preco * (1 - x.desc / 100), 0);
+    const descPct    = parseFloat(document.getElementById('r-desconto').value) || 0;
+    const acrescimos = parseFloat(document.getElementById('r-acrescimos').value) || 0;
+    const frete      = parseFloat(document.getElementById('r-frete').value) || 0;
+    const total      = subtotal * (1 - descPct / 100) + acrescimos + frete;
+    document.getElementById('r-subtotal').textContent = 'R$ ' + fmt(subtotal);
+    document.getElementById('r-total').textContent    = 'R$ ' + fmt(total);
+  }
+</script>
+</body>
+</html>

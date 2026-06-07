@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rascunho — Pedidos de Venda</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --surface2: #1e2334;
+    --border: rgba(255,255,255,.08);
+    --text: #e8eaf0;
+    --muted: #6b7f96;
+    --accent: #4f7cff;
+    --accent-dim: rgba(79,124,255,.12);
+    --green: #22c55e;
+    --green-dim: rgba(34,197,94,.12);
+    --yellow: #f59e0b;
+    --yellow-dim: rgba(245,158,11,.12);
+    --red: #ef4444;
+    --red-dim: rgba(239,68,68,.12);
+    --purple: #a855f7;
+    --purple-dim: rgba(168,85,247,.12);
+    --radius: 10px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .topbar-logo {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--accent);
+    letter-spacing: -.3px;
+    margin-right: 8px;
+  }
+  .topbar-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .topbar-sep { width: 1px; height: 20px; background: var(--border); }
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+  /* ── MAIN LAYOUT ── */
+  .main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    height: calc(100vh - 56px);
+  }
+
+  /* ── LEFT: LISTA ── */
+  .list-panel {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border);
+    transition: width .25s ease;
+    overflow: hidden;
+  }
+  .main.detail-open .list-panel {
+    width: 52%;
+  }
+
+  /* Toolbar */
+  .toolbar {
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .toolbar-row1 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .search-box {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0 12px 0 36px;
+    height: 36px;
+    color: var(--text);
+    font-size: 13px;
+    position: relative;
+    outline: none;
+    transition: border-color .15s;
+  }
+  .search-box:focus { border-color: var(--accent); }
+  .search-wrap { position: relative; flex: 1; }
+  .search-icon {
+    position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+    color: var(--muted); pointer-events: none; font-size: 14px;
+  }
+  .btn {
+    height: 36px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: opacity .15s, background .15s;
+    white-space: nowrap;
+  }
+  .btn:hover { opacity: .85; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-ghost {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  /* Status filter tabs */
+  .filter-tabs {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .ftab {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--muted);
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .ftab:hover { color: var(--text); background: var(--surface2); }
+  .ftab.active           { background: var(--accent-dim); color: var(--accent); border-color: rgba(79,124,255,.3); }
+  .ftab.aberto.active    { background: var(--accent-dim); color: var(--accent); border-color: rgba(79,124,255,.3); }
+  .ftab.faturado.active  { background: var(--green-dim);  color: var(--green);  border-color: rgba(34,197,94,.3); }
+  .ftab.cancelado.active { background: var(--red-dim);    color: var(--red);    border-color: rgba(239,68,68,.3); }
+
+  /* Table */
+  .table-wrap {
+    flex: 1;
+    overflow-y: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  thead th {
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    white-space: nowrap;
+  }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background .12s;
+  }
+  tbody tr:hover { background: rgba(255,255,255,.03); }
+  tbody tr.selected { background: var(--accent-dim); }
+  tbody td {
+    padding: 12px 16px;
+    font-size: 13px;
+    vertical-align: middle;
+  }
+  .td-num { font-weight: 700; color: var(--text); font-size: 13px; }
+  .td-cliente { font-weight: 500; }
+  .td-muted { color: var(--muted); font-size: 12px; }
+  .td-val { font-weight: 700; font-size: 13px; }
+
+  /* Status pill */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1px solid transparent;
+  }
+  .pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .8; }
+  .pill-aberto    { background: var(--accent-dim); color: var(--accent); border-color: rgba(79,124,255,.2); }
+  .pill-faturado  { background: var(--green-dim);  color: var(--green);  border-color: rgba(34,197,94,.2); }
+  .pill-cancelado { background: var(--red-dim);    color: var(--red);    border-color: rgba(239,68,68,.2); }
+
+  /* Pagination */
+  .pagination {
+    padding: 12px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .pagination span { margin: 0 4px; }
+  .pg-btn {
+    width: 30px; height: 30px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 13px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pg-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .pg-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .pagination-info { margin-left: auto; }
+
+  /* ── RIGHT: DETALHE ── */
+  .detail-panel {
+    width: 0;
+    overflow: hidden;
+    transition: width .25s ease;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .main.detail-open .detail-panel {
+    width: 48%;
+  }
+  .detail-inner {
+    width: 48vw;
+    min-width: 460px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Detail header */
+  .det-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .det-header-row1 {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .det-num {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -.3px;
+  }
+  .det-date { color: var(--muted); font-size: 12px; margin-top: 3px; }
+  .det-close {
+    margin-left: auto;
+    width: 30px; height: 30px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    color: var(--muted);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .det-close:hover { color: var(--text); border-color: var(--text); }
+
+  /* Action buttons */
+  .det-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .det-btn {
+    height: 32px;
+    padding: 0 13px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--surface2);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 5px;
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .det-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .det-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .det-btn.primary:hover { opacity: .85; color: #fff; }
+  .det-btn.green { background: var(--green-dim); border-color: rgba(34,197,94,.3); color: var(--green); }
+  .det-btn.purple { background: var(--purple-dim); border-color: rgba(168,85,247,.3); color: var(--purple); }
+  .det-btn.danger { background: var(--red-dim); border-color: rgba(239,68,68,.2); color: var(--red); }
+
+  /* Scrollable detail body */
+  .det-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 24px 24px;
+  }
+
+  /* Section */
+  .det-section {
+    margin-top: 20px;
+  }
+  .det-section-title {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: var(--muted);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Cliente card */
+  .cliente-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .cliente-avatar {
+    width: 38px; height: 38px;
+    background: var(--accent-dim);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .cliente-name { font-weight: 600; font-size: 14px; }
+  .cliente-info { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .cliente-link { margin-left: auto; color: var(--accent); font-size: 12px; cursor: pointer; }
+  .cliente-link:hover { text-decoration: underline; }
+
+  /* Itens table */
+  .itens-table { width: 100%; border-collapse: collapse; }
+  .itens-table thead th {
+    padding: 8px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    text-align: left;
+    position: static;
+  }
+  .itens-table tbody td {
+    padding: 10px;
+    border: 1px solid var(--border);
+    font-size: 13px;
+    vertical-align: middle;
+  }
+  .itens-table tbody tr:hover { background: rgba(255,255,255,.02); }
+  .itens-sku { font-size: 11px; color: var(--muted); }
+
+  /* Totais */
+  .totais {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+  }
+  .total-row.main-total {
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .total-row .label { color: var(--muted); }
+  .total-row.main-total .label { color: var(--text); }
+
+  /* Fiscal / Financeiro cards */
+  .doc-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .doc-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+  }
+  .doc-card-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .doc-card-val {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .doc-card-action {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--accent);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .doc-card-action:hover { text-decoration: underline; }
+  .tag-pendente { color: var(--yellow); }
+  .tag-emitida  { color: var(--green); }
+
+  /* Timeline */
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+  .tl-item {
+    display: flex;
+    gap: 12px;
+    padding-bottom: 14px;
+    position: relative;
+  }
+  .tl-item:last-child { padding-bottom: 0; }
+  .tl-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+    margin-top: 4px;
+    position: relative;
+    z-index: 1;
+  }
+  .tl-item:not(:last-child) .tl-dot::after {
+    content: '';
+    position: absolute;
+    left: 4px; top: 10px;
+    width: 1px;
+    height: calc(100% + 8px);
+    background: var(--border);
+  }
+  .tl-dot.green { background: var(--green); }
+  .tl-dot.yellow { background: var(--yellow); }
+  .tl-dot.muted { background: var(--muted); }
+  .tl-content { flex: 1; }
+  .tl-label { font-size: 13px; font-weight: 500; }
+  .tl-date { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 10px; }
+
+  /* Dropdown imprimir */
+  .det-btn-wrap { position: relative; display: inline-flex; }
+  .det-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px;
+    min-width: 180px;
+    z-index: 100;
+    box-shadow: 0 8px 24px rgba(0,0,0,.4);
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .det-dropdown.open { display: flex; }
+  .det-drop-item {
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background .12s;
+    white-space: nowrap;
+    border: none;
+    background: none;
+    text-align: left;
+    width: 100%;
+  }
+  .det-drop-item:hover { background: rgba(255,255,255,.06); }
+  .det-drop-item .drop-icon { font-size: 14px; width: 18px; text-align: center; }
+  .det-drop-item.disabled { opacity: .35; cursor: not-allowed; }
+  .det-drop-divider { height: 1px; background: var(--border); margin: 2px 4px; }
+
+  /* Aviso fiscal */
+  .fiscal-warning {
+    background: rgba(245,158,11,.08);
+    border: 1px solid rgba(245,158,11,.25);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--yellow);
+    line-height: 1.5;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .fiscal-warning b { display: block; margin-bottom: 2px; font-size: 12px; }
+
+  /* Observações box */
+  .obs-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <span class="topbar-logo">NexoERP</span>
+  <div class="topbar-sep"></div>
+  <span class="topbar-title">Pedidos de Venda</span>
+  <div class="topbar-right">
+    <button class="btn btn-primary" onclick="openNew()">+ Novo Pedido</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main" id="mainLayout">
+
+  <!-- LISTA -->
+  <div class="list-panel">
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-row1">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input class="search-box" type="text" placeholder="Buscar por cliente, nº pedido...">
+        </div>
+        <button class="btn btn-ghost">📅 Período</button>
+        <button class="btn btn-ghost">↓ Exportar</button>
+      </div>
+      <div class="filter-tabs">
+        <button class="ftab active"   onclick="setTab(this,'todos')"    >Todos     <span style="opacity:.5;margin-left:2px">28</span></button>
+        <button class="ftab aberto"   onclick="setTab(this,'aberto')"   >Aberto    <span style="opacity:.5;margin-left:2px">19</span></button>
+        <button class="ftab faturado" onclick="setTab(this,'faturado')" >Faturado  <span style="opacity:.5;margin-left:2px">7</span></button>
+        <button class="ftab cancelado" onclick="setTab(this,'cancelado')">Cancelado <span style="opacity:.5;margin-left:2px">2</span></button>
+      </div>
+    </div>
+
+    <!-- Tabela -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Nº</th>
+            <th>Cliente</th>
+            <th>Data</th>
+            <th>Valor</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginação -->
+    <div class="pagination">
+      <button class="pg-btn" onclick="changePage(-1)">‹</button>
+      <button class="pg-btn active" id="pg1">1</button>
+      <button class="pg-btn" id="pg2" onclick="changePage(1)">2</button>
+      <button class="pg-btn" id="pg3">3</button>
+      <button class="pg-btn" onclick="changePage(1)">›</button>
+      <span class="pagination-info" id="pgInfo">Mostrando 1–10 de 42 pedidos</span>
+    </div>
+  </div>
+
+  <!-- DETALHE -->
+  <div class="detail-panel" id="detailPanel">
+    <div class="detail-inner">
+      <!-- Header -->
+      <div class="det-header">
+        <div class="det-header-row1">
+          <div>
+            <div class="det-num">Pedido #PV-0042</div>
+            <div class="det-date">Criado em 07/06/2026 às 14:32 · por Admin</div>
+          </div>
+          <span class="pill pill-aberto" style="margin-top:4px">Aberto</span>
+          <button class="det-close" onclick="closeDetail()">✕</button>
+        </div>
+        <div class="det-actions" id="detActions"></div>
+      </div>
+
+      <!-- Body scrollável -->
+      <div class="det-body">
+
+        <!-- Cliente -->
+        <div class="det-section">
+          <div class="det-section-title">Cliente</div>
+          <div class="cliente-card">
+            <div class="cliente-avatar">JM</div>
+            <div>
+              <div class="cliente-name">João Menezes Ltda.</div>
+              <div class="cliente-info">CNPJ 12.345.678/0001-90 · (11) 99999-0000</div>
+            </div>
+            <span class="cliente-link">Ver perfil →</span>
+          </div>
+        </div>
+
+        <!-- Itens -->
+        <div class="det-section">
+          <div class="det-section-title">Itens do Pedido</div>
+          <table class="itens-table">
+            <thead>
+              <tr>
+                <th>Produto</th>
+                <th style="text-align:center">Qtd</th>
+                <th style="text-align:right">Unit.</th>
+                <th style="text-align:right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div>Camisa Polo Preta G</div>
+                  <div class="itens-sku">SKU: CAM-001</div>
+                </td>
+                <td style="text-align:center">3</td>
+                <td style="text-align:right">R$ 89,90</td>
+                <td style="text-align:right;font-weight:600">R$ 269,70</td>
+              </tr>
+              <tr>
+                <td>
+                  <div>Calça Jeans Slim 42</div>
+                  <div class="itens-sku">SKU: CAL-004</div>
+                </td>
+                <td style="text-align:center">2</td>
+                <td style="text-align:right">R$ 159,90</td>
+                <td style="text-align:right;font-weight:600">R$ 319,80</td>
+              </tr>
+              <tr>
+                <td>
+                  <div>Tênis Running Branco 42</div>
+                  <div class="itens-sku">SKU: TEN-012</div>
+                </td>
+                <td style="text-align:center">1</td>
+                <td style="text-align:right">R$ 349,90</td>
+                <td style="text-align:right;font-weight:600">R$ 349,90</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Totais -->
+        <div class="det-section">
+          <div class="det-section-title">Resumo Financeiro</div>
+          <div class="totais">
+            <div class="total-row">
+              <span class="label">Subtotal</span>
+              <span>R$ 939,40</span>
+            </div>
+            <div class="total-row">
+              <span class="label">Desconto (5%)</span>
+              <span style="color:var(--green)">− R$ 46,97</span>
+            </div>
+            <div class="total-row">
+              <span class="label">Frete</span>
+              <span>R$ 25,00</span>
+            </div>
+            <div class="total-row main-total">
+              <span class="label">Total</span>
+              <span>R$ 917,43</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fiscal / Financeiro -->
+        <div class="det-section">
+          <div class="det-section-title">Documentos</div>
+          <div class="doc-cards">
+            <div class="doc-card">
+              <div class="doc-card-label">Nota Fiscal (NF-e)</div>
+              <div class="doc-card-val tag-pendente">Pendente</div>
+              <div class="doc-card-action">+ Emitir NF-e</div>
+            </div>
+            <div class="doc-card">
+              <div class="doc-card-label">Boleto</div>
+              <div class="doc-card-val tag-pendente">Pendente</div>
+              <div class="doc-card-action">+ Gerar Boleto</div>
+            </div>
+            <div class="doc-card">
+              <div class="doc-card-label">Forma de Pagamento</div>
+              <div class="doc-card-val">Boleto 30 dias</div>
+            </div>
+            <div class="doc-card">
+              <div class="doc-card-label">Vencimento</div>
+              <div class="doc-card-val">07/07/2026</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Histórico -->
+        <div class="det-section">
+          <div class="det-section-title">Histórico</div>
+          <div class="timeline" id="detTimeline">
+            <div class="tl-item">
+              <div class="tl-dot muted"></div>
+              <div class="tl-content">
+                <div class="tl-label">Pedido criado</div>
+                <div class="tl-date">07/06/2026 14:32 · Admin</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Observações -->
+        <div class="det-section">
+          <div class="det-section-title">Observações</div>
+          <div class="obs-box">Entregar no período da manhã. Confirmar com o comprador João antes de despachar.</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── DADOS MOCK ──
+  const pedidos = [
+    { id: 'PV-0042', cliente: 'João Menezes Ltda.',   data: '07/06/2026', valor: 917.43,  status: 'aberto'    },
+    { id: 'PV-0041', cliente: 'Supermercado Silva',   data: '06/06/2026', valor: 2340.00, status: 'faturado'  },
+    { id: 'PV-0040', cliente: 'Tech Distribuidora',   data: '05/06/2026', valor: 580.50,  status: 'aberto'    },
+    { id: 'PV-0039', cliente: 'Loja do Centro Ltda.', data: '04/06/2026', valor: 1200.00, status: 'faturado'  },
+    { id: 'PV-0038', cliente: 'Pedro Ferreira ME',    data: '03/06/2026', valor: 430.80,  status: 'aberto'    },
+    { id: 'PV-0037', cliente: 'Distribuidora ABC',    data: '02/06/2026', valor: 3100.00, status: 'faturado'  },
+    { id: 'PV-0036', cliente: 'Ana Comércio',         data: '01/06/2026', valor: 760.00,  status: 'cancelado' },
+    { id: 'PV-0035', cliente: 'Varejo Express',       data: '31/05/2026', valor: 895.20,  status: 'aberto'    },
+    { id: 'PV-0034', cliente: 'Mercado Bom Preço',    data: '30/05/2026', valor: 2050.00, status: 'faturado'  },
+    { id: 'PV-0033', cliente: 'Carlos Atacado',       data: '29/05/2026', valor: 670.30,  status: 'aberto'    },
+  ];
+
+  const statusLabel = { aberto: 'Aberto', faturado: 'Faturado', cancelado: 'Cancelado' };
+  let selectedRow = null;
+
+  function renderTable() {
+    const tbody = document.getElementById('tbody');
+    tbody.innerHTML = pedidos.map((p, i) => `
+      <tr onclick="openDetail(${i})" id="row-${i}">
+        <td class="td-num">#${p.id}</td>
+        <td class="td-cliente">${p.cliente}</td>
+        <td class="td-muted">${p.data}</td>
+        <td class="td-val">R$ ${p.valor.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
+        <td><span class="pill pill-${p.status}">${statusLabel[p.status]}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  function openDetail(i) {
+    if (selectedRow !== null) {
+      document.getElementById(`row-${selectedRow}`)?.classList.remove('selected');
+    }
+    selectedRow = i;
+    document.getElementById(`row-${i}`).classList.add('selected');
+    document.getElementById('mainLayout').classList.add('detail-open');
+
+    // atualiza pill e ações do detalhe conforme o pedido clicado
+    const p = pedidos[i];
+    const pillEl = document.querySelector('.det-header-row1 .pill');
+    pillEl.className = `pill pill-${p.status}`;
+    pillEl.textContent = statusLabel[p.status];
+    document.querySelector('.det-num').textContent = `Pedido #${p.id}`;
+
+    // reseta timeline
+    document.getElementById('detTimeline').innerHTML = `
+      <div class="tl-item">
+        <div class="tl-dot muted"></div>
+        <div class="tl-content">
+          <div class="tl-label">Pedido criado</div>
+          <div class="tl-date">${p.data} · Admin</div>
+        </div>
+      </div>`;
+
+    renderDetActions(i);
+  }
+
+  function closeDetail() {
+    if (selectedRow !== null) {
+      document.getElementById(`row-${selectedRow}`)?.classList.remove('selected');
+      selectedRow = null;
+    }
+    document.getElementById('mainLayout').classList.remove('detail-open');
+  }
+
+  function setTab(el, status) {
+    document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+    el.classList.add(status);
+    el.classList.add('active');
+  }
+
+  // Dados extras dos pedidos mock (boleto gerado ou não)
+  const pedidosExtra = {
+    'PV-0041': { temBoleto: true,  temNFe: true  },
+    'PV-0039': { temBoleto: false, temNFe: true  },
+    'PV-0037': { temBoleto: true,  temNFe: true  },
+    'PV-0034': { temBoleto: false, temNFe: true  },
+  };
+
+  function renderDetActions(idx) {
+    const p = pedidos[idx];
+    const extra = pedidosExtra[p.id] || { temBoleto: false, temNFe: false };
+    const el = document.getElementById('detActions');
+
+    if (p.status === 'aberto') {
+      el.innerHTML = `
+        <button class="det-btn primary" onclick="simularFaturar()">Emitir NF-e → Faturar</button>
+        <button class="det-btn green" onclick="simularBoleto()">Gerar Boleto</button>
+        <div class="det-btn-wrap">
+          <button class="det-btn" onclick="togglePrintDrop(event)">Imprimir ▾</button>
+          <div class="det-dropdown" id="printDrop">
+            <button class="det-drop-item" onclick="printPedido()">
+              <span class="drop-icon">🖨</span> Resumo do pedido
+            </button>
+            <div class="det-drop-divider"></div>
+            <button class="det-drop-item disabled">
+              <span class="drop-icon">📄</span> DANFE (NF-e) <span style="margin-left:auto;font-size:10px;color:var(--muted)">não emitida</span>
+            </button>
+            <button class="det-drop-item disabled">
+              <span class="drop-icon">🔖</span> 2ª via Boleto <span style="margin-left:auto;font-size:10px;color:var(--muted)">não gerado</span>
+            </button>
+          </div>
+        </div>
+        <button class="det-btn">Enviar E-mail</button>
+        <button class="det-btn">Editar</button>
+        <button class="det-btn danger" onclick="simularExcluir()">Excluir pedido</button>
+      `;
+    } else if (p.status === 'faturado') {
+      const avisoFiscal = extra.temBoleto ? `
+        <div class="fiscal-warning" style="width:100%;margin-bottom:4px">
+          <span style="font-size:16px;line-height:1">⚠</span>
+          <div>
+            <b>Boleto vinculado</b>
+            Para cancelar este pedido você precisa primeiro cancelar o <strong>boleto</strong>
+            na aba <strong>Fiscal/Financeiro</strong>.
+          </div>
+        </div>` : '';
+      el.innerHTML = `
+        ${avisoFiscal}
+        ${!extra.temBoleto ? `<button class="det-btn green" onclick="simularBoleto()">Gerar Boleto</button>` : ''}
+        <div class="det-btn-wrap">
+          <button class="det-btn" onclick="togglePrintDrop(event)">Imprimir ▾</button>
+          <div class="det-dropdown" id="printDrop">
+            <button class="det-drop-item" onclick="printPedido()">
+              <span class="drop-icon">🖨</span> Resumo do pedido
+            </button>
+            <div class="det-drop-divider"></div>
+            <button class="det-drop-item ${extra.temNFe ? '' : 'disabled'}" onclick="${extra.temNFe ? 'printDANFE()' : ''}">
+              <span class="drop-icon">📄</span> DANFE (NF-e) ${!extra.temNFe ? '<span style="margin-left:auto;font-size:10px;color:var(--muted)">não emitida</span>' : ''}
+            </button>
+            <button class="det-drop-item ${extra.temBoleto ? '' : 'disabled'}" onclick="${extra.temBoleto ? 'printBoleto()' : ''}">
+              <span class="drop-icon">🔖</span> 2ª via Boleto ${!extra.temBoleto ? '<span style="margin-left:auto;font-size:10px;color:var(--muted)">não gerado</span>' : ''}
+            </button>
+          </div>
+        </div>
+        <button class="det-btn">Enviar E-mail</button>
+        <button class="det-btn danger" onclick="simularCancelar()" ${extra.temBoleto ? 'disabled style="opacity:.4;cursor:not-allowed" title="Cancele o boleto primeiro"' : ''}>Cancelar pedido</button>
+      `;
+    } else if (p.status === 'cancelado') {
+      el.innerHTML = `<span style="font-size:12px;color:var(--muted)">Pedido cancelado — somente visualização.</span>`;
+    }
+  }
+
+  function simularFaturar() {
+    if (selectedRow === null) return;
+    const p = pedidos[selectedRow];
+    p.status = 'faturado';
+    pedidosExtra[p.id] = { temBoleto: pedidosExtra[p.id]?.temBoleto || false, temNFe: true };
+
+    document.querySelector('.det-header-row1 .pill').className = 'pill pill-faturado';
+    document.querySelector('.det-header-row1 .pill').textContent = 'Faturado';
+    document.querySelector(`#row-${selectedRow} .pill`).className = 'pill pill-faturado';
+    document.querySelector(`#row-${selectedRow} .pill`).textContent = 'Faturado';
+
+    _addTimeline('green', 'NF-e emitida — pedido faturado');
+    renderDetActions(selectedRow);
+  }
+
+  function simularBoleto() {
+    if (selectedRow === null) return;
+    const p = pedidos[selectedRow];
+    if (!pedidosExtra[p.id]) pedidosExtra[p.id] = { temBoleto: false, temNFe: false };
+    pedidosExtra[p.id].temBoleto = true;
+    _addTimeline('green', 'Boleto gerado');
+    renderDetActions(selectedRow);
+  }
+
+  function simularExcluir() {
+    if (selectedRow === null) return;
+    if (!confirm(`Excluir o pedido #${pedidos[selectedRow].id}? Esta ação não pode ser desfeita.`)) return;
+    pedidos.splice(selectedRow, 1);
+    renderTable();
+    closeDetail();
+  }
+
+  function simularCancelar() {
+    if (selectedRow === null) return;
+    if (!confirm(`Cancelar o pedido #${pedidos[selectedRow].id}?`)) return;
+    pedidos[selectedRow].status = 'cancelado';
+
+    document.querySelector('.det-header-row1 .pill').className = 'pill pill-cancelado';
+    document.querySelector('.det-header-row1 .pill').textContent = 'Cancelado';
+    document.querySelector(`#row-${selectedRow} .pill`).className = 'pill pill-cancelado';
+    document.querySelector(`#row-${selectedRow} .pill`).textContent = 'Cancelado';
+
+    _addTimeline('muted', 'Pedido cancelado');
+    renderDetActions(selectedRow);
+  }
+
+  function _addTimeline(cor, label) {
+    const tl = document.getElementById('detTimeline');
+    const item = document.createElement('div');
+    item.className = 'tl-item';
+    item.innerHTML = `
+      <div class="tl-dot ${cor}"></div>
+      <div class="tl-content">
+        <div class="tl-label">${label}</div>
+        <div class="tl-date">07/06/2026 agora · Admin</div>
+      </div>`;
+    tl.insertBefore(item, tl.firstChild);
+  }
+
+  function togglePrintDrop(e) {
+    e.stopPropagation();
+    const drop = document.getElementById('printDrop');
+    drop.classList.toggle('open');
+  }
+
+  document.addEventListener('click', () => {
+    document.getElementById('printDrop')?.classList.remove('open');
+  });
+
+  function printPedido() {
+    document.getElementById('printDrop')?.classList.remove('open');
+    alert('Aqui abriria o PDF do resumo do pedido.');
+  }
+  function printDANFE() {
+    document.getElementById('printDrop')?.classList.remove('open');
+    alert('Aqui abriria o DANFE da NF-e em nova aba (PDF da SEFAZ).');
+  }
+  function printBoleto() {
+    document.getElementById('printDrop')?.classList.remove('open');
+    alert('Aqui abriria a 2ª via do boleto em nova aba.');
+  }
+
+  function changePage() {}
+  function openNew() { alert('Aqui abriria o modal/página de novo pedido'); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeDetail();
+  });
+
+  renderTable();
+</script>
+</body>
+</html>
