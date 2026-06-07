@@ -306,6 +306,7 @@
   function _getToastContainer() {
     if (!_toastContainer || !document.documentElement.contains(_toastContainer)) {
       _toastContainer = document.createElement('div');
+      _toastContainer.id = 'nexo-toast-container';
       // Usa position:fixed no documentElement para escapar de overflow:hidden no body (ex: PDV)
       _toastContainer.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:2147483647;display:flex;flex-direction:column;gap:10px;pointer-events:none;';
       const style = document.createElement('style');

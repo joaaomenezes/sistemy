@@ -1238,10 +1238,11 @@
     // KPIs
     // ═══════════════════════════════════════════════
     function updateKPIs() {
-      const total = products.reduce((s, p) => s + p.estoque, 0);
-      const valor = products.reduce((s, p) => s + p.estoque * p.custo, 0);
-      const baixo = products.filter(p => p.estoque > 0 && p.estoque <= p.estoqueMin).length;
-      const zerado = products.filter(p => p.estoque === 0).length;
+      const ativos = products.filter(p => p.status === 'ativo');
+      const total = ativos.reduce((s, p) => s + p.estoque, 0);
+      const valor = ativos.reduce((s, p) => s + p.estoque * p.custo, 0);
+      const baixo = ativos.filter(p => p.estoque > 0 && p.estoque <= p.estoqueMin).length;
+      const zerado = ativos.filter(p => p.estoque === 0).length;
       const now = new Date();
       const hoje = movimentacoes.filter(m => {
         const d = m.dataISO ? new Date(m.dataISO) : (m.data ? new Date(m.data) : null);
@@ -1259,8 +1260,8 @@
     // ═══════════════════════════════════════════════
     function renderAlertas() {
       const strip = document.getElementById('alertasStrip');
-      const criticos = products.filter(p => p.estoque === 0);
-      const baixos = products.filter(p => p.estoque > 0 && p.estoque <= p.estoqueMin);
+      const criticos = products.filter(p => p.status === 'ativo' && p.estoque === 0);
+      const baixos = products.filter(p => p.status === 'ativo' && p.estoque > 0 && p.estoque <= p.estoqueMin);
       let html = '';
       criticos.forEach(p => {
         html += `<div class="alerta-item critico" onclick="openMov('${p.id}','entrada')">
@@ -1337,10 +1338,11 @@
       else empty.classList.remove('show');
 
       body.innerHTML = slice.map(p => {
+        const ativo = p.status === 'ativo';
         const s = stockStatus(p);
         const pct = Math.min(100, p.estoqueMax > 0 ? (p.estoque / p.estoqueMax) * 100 : 0);
         const barColor = s === 'zero' ? 'var(--danger)' : s === 'baixo' ? 'var(--warn)' : 'var(--accent)';
-        return `<tr onclick="openMov('${p.id}','entrada')">
+        return `<tr ${ativo ? `onclick="openMov('${p.id}','entrada')"` : `style="opacity:.55;cursor:default"`}>
       <td><div class="prod-cell">
         <div class="prod-emoji">${p.emoji}</div>
         <div><div class="prod-name">${p.nome}</div><div class="prod-sku">SKU: ${p.sku}</div></div>
@@ -1353,13 +1355,18 @@
         </div>
         <div class="stock-bar-bg"><div class="stock-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
       </td>
-      <td><span class="status-pill ${s}">${stockLabel(p)}</span></td>
+      <td>${ativo
+        ? `<span class="status-pill ${s}">${stockLabel(p)}</span>`
+        : `<span class="status-pill" style="background:rgba(107,127,150,.15);color:var(--muted);border-color:var(--muted)">Inativo</span>`
+      }</td>
       <td style="font-size:12px;color:var(--muted)">${p.ultimaEntrada||'—'}</td>
       <td style="font-size:12px;color:var(--muted)">${p.fornecedor||'—'}</td>
       <td><div class="action-cell" onclick="event.stopPropagation()">
-        <div class="act-btn up"   title="Entrada"      onclick="openMov('${p.id}','entrada')"><i class="bi bi-arrow-down-circle"></i></div>
-        <div class="act-btn down" title="Saída"        onclick="openMov('${p.id}','saida')"><i class="bi bi-arrow-up-circle"></i></div>
-        <div class="act-btn adj"  title="Ajuste"       onclick="openMov('${p.id}','ajuste')"><i class="bi bi-sliders"></i></div>
+        ${ativo ? `
+        <div class="act-btn up"   title="Entrada" onclick="openMov('${p.id}','entrada')"><i class="bi bi-arrow-down-circle"></i></div>
+        <div class="act-btn down" title="Saída"   onclick="openMov('${p.id}','saida')"><i class="bi bi-arrow-up-circle"></i></div>
+        <div class="act-btn adj"  title="Ajuste"  onclick="openMov('${p.id}','ajuste')"><i class="bi bi-sliders"></i></div>
+        ` : `<span style="font-size:11px;color:var(--muted)">—</span>`}
       </div></td>
     </tr>`;
       }).join('');
@@ -1540,7 +1547,7 @@
     function populateProdSelect() {
       const sel = document.getElementById('movProduto');
       sel.innerHTML = '<option value="">Selecione o produto...</option>' +
-        products.map(p => `<option value="${p.id}">${p.emoji} ${p.nome} (${p.estoque} un)</option>`).join('');
+        products.filter(p => p.status === 'ativo').map(p => `<option value="${p.id}">${p.emoji} ${p.nome} (${p.estoque} un)</option>`).join('');
     }
 
     const movTitles = {

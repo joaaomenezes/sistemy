@@ -36,6 +36,14 @@
       --accent2-25: rgba(0, 119, 255, .25);
     }
 
+    /* Toast centralizado na parte inferior — só PDV */
+    #nexo-toast-container {
+      right: auto !important;
+      left: 50% !important;
+      transform: translateX(-50%);
+      align-items: center;
+    }
+
     *,
     *::before,
     *::after {
@@ -2199,9 +2207,9 @@
       background: var(--card);
       border: 1px solid rgba(0, 200, 150, .3);
       border-radius: 20px;
-      padding: 40px;
+      padding: 40px 44px 36px;
       text-align: center;
-      max-width: 380px;
+      max-width: 480px;
       width: 100%;
       box-shadow: 0 0 60px rgba(0, 200, 150, .15);
       transform: scale(.9);
@@ -2250,34 +2258,103 @@
 
     .success-actions {
       display: flex;
+      flex-direction: column;
       gap: 10px;
     }
 
+    .suc-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0 18px;
+    }
+
+    .suc-label {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .9px;
+      font-weight: 600;
+      text-align: left;
+      margin-bottom: 8px;
+    }
+
+    .suc-share-row {
+      display: flex;
+      gap: 8px;
+    }
+
     .suc-btn {
-      flex: 1;
-      padding: 11px;
       border-radius: 10px;
       font-family: 'Inter', sans-serif;
-      font-size: 13px;
       font-weight: 700;
       cursor: pointer;
-      transition: opacity .15s;
+      transition: all .15s;
     }
 
     .suc-btn.primary {
+      width: 100%;
+      padding: 13px;
       background: var(--accent);
       color: #021c14;
       border: none;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
-    .suc-btn.ghost {
-      background: none;
+    .suc-btn.primary:hover { opacity: .88; }
+
+    .suc-btn.share {
+      flex: 1;
+      padding: 10px 6px;
+      background: var(--surface);
       border: 1px solid var(--border);
-      color: var(--text);
+      color: var(--sub);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
     }
 
-    .suc-btn:hover {
-      opacity: .85;
+    .suc-btn.share i {
+      font-size: 18px;
+    }
+
+    .suc-btn.share:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-10);
+    }
+
+    .suc-progress {
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      margin-top: 18px;
+      overflow: hidden;
+    }
+
+    .suc-progress-bar {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      width: 100%;
+    }
+
+    .suc-progress-bar.running {
+      transition: width 10s linear;
+      width: 0%;
+    }
+
+    .suc-countdown {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      letter-spacing: .3px;
     }
 
     /* ══ DRAWER ÚLTIMAS VENDAS ══ */
@@ -5503,10 +5580,7 @@
       <h2>Venda Realizada!</h2>
       <p id="successSubtitle">Pagamento confirmado com sucesso.</p>
       <div class="success-total" id="successTotal">R$ 0,00</div>
-      <div class="success-actions" id="successActions">
-        <button class="suc-btn ghost" onclick="closeSuccess()"><i class="bi bi-printer"></i> Imprimir</button>
-        <button class="suc-btn primary" onclick="closeSuccess()"><i class="bi bi-plus-lg"></i> Nova Venda</button>
-      </div>
+      <div class="success-actions" id="successActions"></div>
     </div>
   </div>
   <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer()"></div>
@@ -6226,7 +6300,7 @@
     function suspendBtnClick() {
       if (cart.length) openSuspendLabelModal();
       else if (suspendedCarts.length) openSuspendedPanel();
-      else showToast('⚠️ Carrinho vazio — nada para suspender.');
+      else NexoToast.warning('Carrinho vazio — nada para suspender.');
     }
 
     function openSuspendLabelModal() {
@@ -6264,7 +6338,7 @@
       closeSuspendLabelModal();
       _saveSuspended();
       _updateSuspendUI();
-      showToast(`⏸️ Venda suspensa — "${label}"`);
+      NexoToast.info(`Venda suspensa — "${label}"`);
     }
 
     function openSuspendedPanel() {
@@ -6332,7 +6406,7 @@
       _saveSuspended();
       _updateSuspendUI();
       closeSuspendedPanel();
-      showToast(`↩️ Venda retomada — "${saved.label}"`);
+      NexoToast.success(`Venda retomada — "${saved.label}"`);
     }
 
     function descartarSuspensa(idx) {
@@ -6347,7 +6421,7 @@
           _renderSuspendedList();
           _updateSuspendUI();
           if (!suspendedCarts.length) closeSuspendedPanel();
-          showToast('🗑️ Venda suspensa descartada');
+          NexoToast.info('Venda suspensa descartada');
         },
         { confirmText: 'Descartar', icon: '🗑️' }
       );
@@ -6492,6 +6566,30 @@
     // ═══════════════════════════════════════════════
     function handleSearchKey(e) {
       if (e.key !== 'Enter') return;
+      const q = document.getElementById('searchInput').value.trim();
+
+      // Exact EAN or SKU → scanner-style add (beep + indicator)
+      if (q.length >= 3) {
+        const exact = PRODUCTS.find(p =>
+          (p.ean && p.ean === q) || p.sku.toLowerCase() === q.toLowerCase()
+        );
+        if (exact) {
+          addToCart(exact.id);
+          _beep(1200, 80);
+          const ind = document.getElementById('barcodeIndicator');
+          document.getElementById('barcodeVal').textContent = q;
+          ind.classList.add('show');
+          setTimeout(() => ind.classList.remove('show'), 2000);
+          document.getElementById('searchInput').value = '';
+          activeCat = null;
+          buildCategoriasBar();
+          renderProducts();
+          document.getElementById('searchInput').focus();
+          return;
+        }
+      }
+
+      // Fallback: único resultado no filtro geral
       const list = getFiltered();
       if (list.length !== 1) return;
       addToCart(list[0].id);
@@ -6706,7 +6804,7 @@
 
       const existing = cart.find(c => c.id === id);
       if (existing) {
-        if (existing.qty >= p.estoque) { showToast('⚠️ Estoque esgotado para esse produto'); return; }
+        if (existing.qty >= p.estoque) { NexoToast.warning('Estoque esgotado para esse produto'); return; }
         existing.qty++;
       } else { cart.push({ ...p, qty: 1, _precoOriginal: p.preco, _descR: 0 }); }
       // pulse animation
@@ -6714,7 +6812,7 @@
       if (card) { card.classList.remove('added'); void card.offsetWidth; card.classList.add('added'); }
       renderCart();
       renderProducts();
-      showToast(`${p.emoji} ${p.nome} adicionado`);
+      NexoToast.success(`${p.nome} adicionado`);
       updateAI();
     }
 
@@ -6728,7 +6826,7 @@
       if (!item) return;
       if (delta > 0) {
         const prod = PRODUCTS.find(p => p.id === id);
-        if (prod && item.qty >= prod.estoque) { showToast('⚠️ Estoque esgotado para esse produto'); return; }
+        if (prod && item.qty >= prod.estoque) { NexoToast.warning('Estoque esgotado para esse produto'); return; }
       }
       item.qty += delta;
       if (item.qty <= 0) removeFromCart(id);
@@ -6741,7 +6839,7 @@
       const prod = PRODUCTS.find(p => p.id === id);
       const max = prod ? prod.estoque : item.estoque;
       const qty = Math.max(1, Math.min(parseInt(rawVal) || 1, max));
-      if (qty !== parseInt(rawVal)) showToast('⚠️ Quantidade ajustada ao limite de estoque');
+      if (qty !== parseInt(rawVal)) NexoToast.warning('Quantidade ajustada ao limite de estoque');
       item.qty = qty;
       renderCart();
       renderProducts();
@@ -7257,7 +7355,7 @@
       const total = getTotal();
       const chave = PDV_CONFIG.pixChave;
       if (!chave || !chave.trim()) {
-        showToast('⚠️ Configure a chave PIX nas configurações antes de gerar o QR.');
+        NexoToast.warning('Configure a chave PIX nas configurações antes de gerar o QR.');
         return;
       }
       const payload = _buildPixPayload(
@@ -7353,7 +7451,7 @@
       document.getElementById('pixTimer').textContent = '✓';
       document.getElementById('pixTimer').classList.remove('urgente');
 
-      showToast('✅ PIX recebido! Confirme o pagamento.');
+      NexoToast.success('PIX recebido! Confirme o pagamento.');
 
       // Habilita botão confirmar após 1s
       setTimeout(() => {
@@ -7376,7 +7474,7 @@
           btn.innerHTML = '<i class="bi bi-copy"></i> Copiar';
         }, 2000);
       }).catch(() => {
-        showToast('⚠️ Não foi possível copiar automaticamente.');
+        NexoToast.warning('Não foi possível copiar automaticamente.');
       });
     }
 
@@ -7580,23 +7678,23 @@
     function simularSplitPix(i) {
       splitItems[i].status = 'confirmado';
       renderSplitItems();
-      showToast(`✅ PIX confirmado — parcela ${i + 1}`);
+      NexoToast.success(`PIX confirmado — parcela ${i + 1}`);
     }
 
     function simularSplitAprovacao(i) {
       splitItems[i].status = 'confirmado';
       renderSplitItems();
-      showToast(`✅ Cartão aprovado — parcela ${i + 1}`);
+      NexoToast.success(`Cartão aprovado — parcela ${i + 1}`);
     }
 
     function simularSplitRecusa(i) {
       splitItems[i].status = 'recusado';
       renderSplitItems();
-      showToast(`❌ Cartão recusado — parcela ${i + 1}`);
+      NexoToast.error(`Cartão recusado — parcela ${i + 1}`);
     }
 
     function addSplitItem() {
-      if (splitItems.length >= 5) { showToast('⚠️ Máximo de 5 parcelas no pagamento dividido.'); return; }
+      if (splitItems.length >= 5) { NexoToast.warning('Máximo de 5 parcelas no pagamento dividido.'); return; }
       splitItems.push({ method: 'Dinheiro', value: '', status: 'pendente' });
       renderSplitItems();
     }
@@ -7727,12 +7825,12 @@
       Object.assign(PDV_CONFIG, newConfig);
       buildQuickCash();
       closePdvConfig();
-      showToast('✅ Configurações salvas');
+      NexoToast.success('Configurações salvas');
     }
 
     function confirmPayment() {
       if (selectedMethod === 'pix' && !pixPago) {
-        showToast('⚠️ Aguardando confirmação do PIX.');
+        NexoToast.warning('Aguardando confirmação do PIX.');
         return;
       }
       if (selectedMethod === 'split') {
@@ -7740,15 +7838,15 @@
         const paid = splitItems.reduce((s, x) => s + (parseFloat((x.value || '0').replace(',', '.')) || 0), 0);
         const rest = total - paid;
         if (Math.round(rest * 100) > 0) {
-          showToast(`⚠️ Faltam R$ ${fmt(rest)} para completar o pagamento.`);
+          NexoToast.warning(`Faltam R$ ${fmt(rest)} para completar o pagamento.`);
           return;
         }
         const unconfirmed = splitItems.filter(x => x.status !== 'confirmado');
         if (unconfirmed.length > 0) {
           const hasAguardando = unconfirmed.some(x => x.status === 'aguardando');
-          showToast(hasAguardando
-            ? '⚠️ Aguardando confirmação de pagamento(s).'
-            : '⚠️ Processe todos os pagamentos antes de confirmar.');
+          NexoToast.warning(hasAguardando
+            ? 'Aguardando confirmação de pagamento(s).'
+            : 'Processe todos os pagamentos antes de confirmar.');
           return;
         }
       }
@@ -7840,14 +7938,14 @@
 
     function simularAprovacaoTerminal() {
       setTerminalStatus('aprovado');
-      showToast('✅ Pagamento aprovado pela operadora!');
+      NexoToast.success('Pagamento aprovado pela operadora!');
       clearTimeout(_termTimeout);
       _termTimeout = setTimeout(() => { if (terminalAtivo) finalizarVenda(); }, 1200);
     }
 
     function simularRecusaTerminal() {
       setTerminalStatus('recusado');
-      showToast('❌ Pagamento recusado. Tente outro cartão.');
+      NexoToast.error('Pagamento recusado. Tente outro cartão.');
       clearTimeout(_termTimeout);
       // Volta ao estado de seleção de cartão após 2.5s
       _termTimeout = setTimeout(() => {
@@ -7966,14 +8064,56 @@
       });
     }
 
+    let _successTimer = null;
+
     function _mostrarSucesso(sale, total) {
       document.getElementById('successTotal').textContent = `R$ ${fmt(total)}`;
       document.getElementById('successSubtitle').textContent = `${sale.method} · ${sale.client}`;
+      const sid = sale.id;
       document.getElementById('successActions').innerHTML = `
-        <button class="suc-btn ghost" onclick="imprimirCupom(salesHistory.find(s=>s.id==='${sale.id}'))"><i class="bi bi-printer"></i> Imprimir</button>
-        <button class="suc-btn primary" onclick="closeSuccess()"><i class="bi bi-plus-lg"></i> Nova Venda</button>
+        <hr class="suc-divider">
+        <div class="suc-label">Compartilhar cupom</div>
+        <div class="suc-share-row">
+          <button id="sucPrintBtn" class="suc-btn share" onclick="_cancelSuccessTimer();imprimirCupom(salesHistory.find(s=>s.id==='${sid}'))">
+            <i class="bi bi-printer"></i>Imprimir
+          </button>
+          <button class="suc-btn share" onclick="_cancelSuccessTimer();_compartilharEmail(salesHistory.find(s=>s.id==='${sid}'))">
+            <i class="bi bi-envelope"></i>E-mail
+          </button>
+          <button class="suc-btn share" onclick="_cancelSuccessTimer();_compartilharWhatsApp(salesHistory.find(s=>s.id==='${sid}'))">
+            <i class="bi bi-whatsapp"></i>WhatsApp
+          </button>
+        </div>
+        <button class="suc-btn primary" onclick="_cancelSuccessTimer();closeSuccess()">
+          <i class="bi bi-plus-lg"></i> Nova Venda
+        </button>
+        <div class="suc-progress" id="sucProgress"><div class="suc-progress-bar" id="sucProgressBar"></div></div>
+        <div class="suc-countdown" id="sucCountdown">Fechando em <span id="sucCountNum">10</span>s · <span style="cursor:pointer;text-decoration:underline" onclick="_cancelSuccessTimer()">manter aberto</span></div>
       `;
       document.getElementById('successOverlay').classList.add('show');
+
+      // Progress bar animation
+      requestAnimationFrame(() => {
+        const bar = document.getElementById('sucProgressBar');
+        if (bar) bar.classList.add('running');
+      });
+
+      // Auto-close countdown
+      let secs = 10;
+      _successTimer = setInterval(() => {
+        secs--;
+        const el = document.getElementById('sucCountNum');
+        if (el) el.textContent = secs;
+        if (secs <= 0) { _cancelSuccessTimer(); closeSuccess(); }
+      }, 1000);
+    }
+
+    function _cancelSuccessTimer() {
+      if (_successTimer) { clearInterval(_successTimer); _successTimer = null; }
+      const prog = document.getElementById('sucProgress');
+      const cd = document.getElementById('sucCountdown');
+      if (prog) prog.style.display = 'none';
+      if (cd) cd.style.display = 'none';
     }
 
     async function finalizarVenda() {
@@ -7987,13 +8127,14 @@
         _mostrarSucesso(sale, total);
         clearCart();
       } catch (err) {
-        showToast('❌ Erro ao registrar venda. Tente novamente.');
+        NexoToast.error('Erro ao registrar venda. Tente novamente.');
       } finally {
         if (btn) btn.disabled = false;
       }
     }
 
     function closeSuccess() {
+      _cancelSuccessTimer();
       document.getElementById('successOverlay').classList.remove('show');
       document.getElementById('searchInput').value = '';
       activeCat = null;
@@ -8096,7 +8237,7 @@
               method: 'PUT',
               body: JSON.stringify({ status: 'estornada', estornoMotivo: 'Estorno manual PDV' }),
             });
-            if (!r.ok) { showToast('❌ ' + (r.message || 'Erro ao estornar venda')); return; }
+            if (!r.ok) { NexoToast.error(r.message || 'Erro ao estornar venda'); return; }
 
             sale.estornada = true;
             const val = parseFloat(String(sale.total).replace(/\./g, '').replace(',', '.')) || 0;
@@ -8112,9 +8253,9 @@
             updateStats();
             renderProducts();
             renderDrawer();
-            showToast(`↩️ Venda ${sale.id} estornada`);
+            NexoToast.success(`Venda ${sale.id} estornada`);
           } catch (err) {
-            showToast('❌ Erro ao estornar: ' + err.message);
+            NexoToast.error('Erro ao estornar: ' + err.message);
           }
         },
         { confirmText: 'Estornar', icon: '↩️' }
@@ -8147,6 +8288,14 @@
     // ═══════════════════════════════════════════════
     function handleKeys(e) {
       const tag = document.activeElement.tagName;
+
+      // Enter no modal de sucesso → aciona imprimir
+      if (e.key === 'Enter' && document.getElementById('successOverlay').classList.contains('show')) {
+        e.preventDefault();
+        document.getElementById('sucPrintBtn')?.click();
+        return;
+      }
+
       const anyModalOpen = document.getElementById('payOverlay').classList.contains('open') ||
         document.getElementById('caixaOverlay').classList.contains('open') ||
         document.getElementById('cupomOverlay').classList.contains('open') ||
@@ -8172,7 +8321,7 @@
       // F6 — suspender venda / abrir suspensas
       if (e.key === 'F6') { e.preventDefault(); suspendBtnClick(); return; }
       // F7 — painel de vendas suspensas
-      if (e.key === 'F7') { e.preventDefault(); if (suspendedCarts.length) openSuspendedPanel(); else showToast('Nenhuma venda suspensa.'); return; }
+      if (e.key === 'F7') { e.preventDefault(); if (suspendedCarts.length) openSuspendedPanel(); else NexoToast.info('Nenhuma venda suspensa.'); return; }
       // F8 — estoque simplificado
       if (e.key === 'F8') { e.preventDefault(); openEstoqueModal(); return; }
       // DEL — remove último item / Ctrl+DEL — limpa carrinho
@@ -8183,13 +8332,22 @@
         else if (cart.length) { changeQty(cart[cart.length - 1].id, -1); }
         return;
       }
-      // ESC — fechar modais
+      // ESC — fechar modais (do mais aninhado pro mais externo)
       if (e.key === 'Escape') {
-        if (document.getElementById('atalhosOverlay').classList.contains('open')) { closeAtalhos(); return; }
-        if (document.getElementById('estoqueOverlay').classList.contains('open')) { closeEstoqueModal(); return; }
-        if (document.getElementById('suspendedOverlay').classList.contains('open')) { closeSuspendedPanel(); return; }
-        if (document.getElementById('suspendLabelOverlay').classList.contains('open')) { closeSuspendLabelModal(); return; }
+        const cfa = document.getElementById('caixaFechadoAlert');
+        if (cfa) { cfa.remove(); return; }
+        if (document.getElementById('pinOverlay')?.classList.contains('open'))          { closePinModal(); return; }
+        if (document.getElementById('itemEditOverlay')?.classList.contains('open'))     { closeItemEdit(); return; }
+        if (document.getElementById('confirmOverlay').classList.contains('open'))       { _resolveConfirm(false); return; }
+        if (document.getElementById('cupomOverlay').classList.contains('open'))         { closeCupom(); return; }
+        if (document.getElementById('caixaOverlay').classList.contains('open'))         { closeCaixa(); return; }
+        if (document.getElementById('pdvConfigOverlay').classList.contains('open'))     { closePdvConfig(); return; }
+        if (document.getElementById('atalhosOverlay').classList.contains('open'))       { closeAtalhos(); return; }
+        if (document.getElementById('estoqueOverlay').classList.contains('open'))       { closeEstoqueModal(); return; }
+        if (document.getElementById('suspendedOverlay').classList.contains('open'))     { closeSuspendedPanel(); return; }
+        if (document.getElementById('suspendLabelOverlay').classList.contains('open'))  { closeSuspendLabelModal(); return; }
         closePayModal(); closeDrawer();
+        _cancelSuccessTimer();
         document.getElementById('successOverlay').classList.remove('show');
         document.getElementById('aiPanel').classList.remove('show'); aiVisible = false;
         return;
@@ -8270,11 +8428,11 @@
         body: JSON.stringify({ operador, operadorId: session?.user?.id || null, fundo, obs, aberturaStr }),
       });
 
-      if (!r.ok) { showToast('❌ Erro ao abrir caixa'); return; }
+      if (!r.ok) { NexoToast.error('Erro ao abrir caixa'); return; }
 
       caixaState = r.data;
       initCaixaUI(); closeCaixa();
-      showToast('✅ Caixa aberto com R$ ' + fmt(fundo) + ' de fundo');
+      NexoToast.success('Caixa aberto — fundo R$ ' + fmt(fundo));
     }
 
     function renderCaixaAberto() {
@@ -8322,7 +8480,7 @@
 
     async function confirmarMovimento() {
       const valor = parseFloat(document.getElementById('movValor').value);
-      if (!valor || valor <= 0) { showToast('⚠️ Informe um valor válido'); return; }
+      if (!valor || valor <= 0) { NexoToast.warning('Informe um valor válido'); return; }
       const obs = document.getElementById('movObs').value;
       const hora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
       const movimento = { tipo: caixaTab === 'sangria' ? 'Sangria' : 'Suprimento', valor, obs, hora };
@@ -8332,12 +8490,12 @@
         body: JSON.stringify({ movimento }),
       });
 
-      if (!r.ok) { showToast('❌ Erro ao registrar movimento'); return; }
+      if (!r.ok) { NexoToast.error('Erro ao registrar movimento'); return; }
 
       caixaState = r.data;
       const tipoAtual = caixaTab;
       caixaTab = 'historico'; renderCaixaAberto();
-      showToast((tipoAtual === 'sangria' ? '⬆️ Sangria' : '⬇️ Suprimento') + ' de R$ ' + fmt(valor) + ' registrado');
+      NexoToast.success((tipoAtual === 'sangria' ? 'Sangria' : 'Suprimento') + ' de R$ ' + fmt(valor) + ' registrado');
     }
 
     function fecharCaixa() {
@@ -8409,13 +8567,13 @@
         }),
       });
 
-      if (!r.ok) { showToast('❌ Erro ao fechar caixa'); return; }
+      if (!r.ok) { NexoToast.error('Erro ao fechar caixa'); return; }
 
       caixaState = null;
       _overtimeShown = false;
       _overtimeLastShown = 0;
       initCaixaUI(); closeCaixa();
-      showToast(`🔒 Caixa fechado · ${todayStats.count} venda${todayStats.count !== 1 ? 's' : ''} · R$ ${fmt(todayStats.total)}`);
+      NexoToast.success(`Caixa fechado · ${todayStats.count} venda${todayStats.count !== 1 ? 's' : ''} · R$ ${fmt(todayStats.total)}`);
     }
 
     // ═══════════════════════════════════════════════
@@ -8562,7 +8720,7 @@
       cupomAtivo = null;
       document.getElementById('discInput').value = '';
       updateSummary(); updateCupomBadge();
-      showToast('Cupom removido');
+      NexoToast.info('Cupom removido');
     }
 
     function updateCupomBadge() {
@@ -8579,14 +8737,14 @@
     // ═══════════════════════════════════════════════
     // IMPRESSÃO DE CUPOM
     // ═══════════════════════════════════════════════
-    function imprimirCupom(sale) {
+    function _cupomHtml(sale) {
       const items = sale.cartSnapshot || [];
       const dateStr = new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
       const itemsHtml = items.map(i => `
         <div class="cp-row"><span class="cp-item-name">${escapeHtml(i.nome.substring(0, 22))}</span><span class="cp-item-val">${i.qty}x R$ ${fmt(i.preco)}</span></div>
         <div class="cp-row" style="color:#555;font-size:11px"><span></span><span class="cp-item-val">= R$ ${fmt(i.preco * i.qty)}</span></div>
       `).join('');
-      const html = `<div class="cupom-print">
+      return `<div class="cupom-print">
         ${sale.estornada ? '<div class="cp-estorno-stamp">Estornada</div>' : ''}
         <div class="cp-logo">${escapeHtml(PDV_CONFIG.lojaNome)}</div>
         <div class="cp-sub">CNPJ ${escapeHtml(PDV_CONFIG.lojaCnpj)}</div>
@@ -8602,20 +8760,56 @@
         <div class="cp-row"><span>Pagamento</span><span>${escapeHtml(sale.method)}</span></div>
         ${(sale.troco || 0) > 0 ? `<div class="cp-row"><span>Troco</span><span>R$ ${fmt(sale.troco)}</span></div>` : ''}
         <div class="cp-sep"></div>
-        <div class="cp-center" style="font-size:10px">Cliente: ${escapeHtml(sale.client)}</div>
         <div class="cp-center" style="font-size:10px">Operador: ${escapeHtml(caixaState && caixaState.operador ? caixaState.operador : 'Operador')}</div>
         ${sale.obs ? `<div class="cp-sep"></div><div class="cp-center" style="font-size:10px;font-style:italic">Obs: ${escapeHtml(sale.obs)}</div>` : ''}
         <div class="cp-sep"></div>
         <div class="cp-footer">${escapeHtml(PDV_CONFIG.lojaRodape)}</div>
       </div>`;
-      const frame = document.getElementById('printFrame');
-      const bar = `<div style="position:sticky;top:0;background:#111;padding:10px;display:flex;gap:8px;justify-content:center;z-index:10">
-        <button onclick="fecharImpressao()" style="padding:8px 16px;border-radius:8px;border:1px solid #333;background:none;color:#fff;font-size:13px;cursor:pointer">✕ Fechar</button>
-        <button onclick="window.print()" style="padding:8px 16px;border-radius:8px;border:none;background:var(--accent);color:#021c14;font-size:13px;font-weight:700;cursor:pointer">🖨️ Imprimir</button>
-      </div>`;
-      frame.innerHTML = bar + html;
-      frame.style.display = 'block';
     }
+
+    function _buildTextReceipt(sale) {
+      const sep = '─'.repeat(32);
+      const items = (sale.cartSnapshot || []).map(i =>
+        `${i.nome.substring(0, 20).padEnd(20)} ${String(i.qty + 'x').padStart(4)} R$ ${fmt(i.preco * i.qty)}`
+      ).join('\n');
+      const dateStr = new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      return [
+        PDV_CONFIG.lojaNome,
+        'CNPJ: ' + PDV_CONFIG.lojaCnpj,
+        dateStr,
+        sep,
+        'CUPOM NÃO FISCAL',
+        sep,
+        items,
+        sep,
+        'Subtotal: R$ ' + fmt(sale.subtotal || 0),
+        (sale.desconto || 0) > 0 ? 'Desconto: -R$ ' + fmt(sale.desconto) : '',
+        'TOTAL: R$ ' + sale.total,
+        sep,
+        'Pagamento: ' + sale.method,
+        (sale.troco || 0) > 0 ? 'Troco: R$ ' + fmt(sale.troco) : '',
+        sep,
+        PDV_CONFIG.lojaRodape,
+      ].filter(Boolean).join('\n');
+    }
+
+    function _compartilharEmail(sale) {
+      const text = _buildTextReceipt(sale);
+      window.open('mailto:?subject=' + encodeURIComponent('Cupom - ' + PDV_CONFIG.lojaNome) + '&body=' + encodeURIComponent(text));
+    }
+
+    function _compartilharWhatsApp(sale) {
+      const text = _buildTextReceipt(sale);
+      window.open('https://wa.me/?text=' + encodeURIComponent(text));
+    }
+
+    function imprimirCupom(sale) {
+      const frame = document.getElementById('printFrame');
+      frame.innerHTML = _cupomHtml(sale);
+      // frame permanece oculto — @media print { display: block !important } o exibe só na impressão
+      setTimeout(() => { window.print(); frame.innerHTML = ''; }, 150);
+    }
+
     function fecharImpressao() { const f = document.getElementById('printFrame'); f.style.display = 'none'; f.innerHTML = ''; }
 
     function openAtalhos() { document.getElementById('atalhosOverlay').classList.add('open'); }
@@ -8632,6 +8826,8 @@
       if (tag === 'INPUT' || tag === 'TEXTAREA') return;
       if (document.getElementById('payOverlay').classList.contains('open')) return;
       if (document.getElementById('caixaOverlay').classList.contains('open')) return;
+      if (document.getElementById('itemEditOverlay')?.classList.contains('open')) return;
+      if (document.getElementById('pinOverlay')?.classList.contains('open')) return;
       if (e.key === 'Enter') {
         if (barcodeBuffer.length >= 3) processBarcode(barcodeBuffer.trim());
         barcodeBuffer = ''; return;
@@ -8666,8 +8862,8 @@
       document.getElementById('barcodeVal').textContent = code;
       ind.classList.add('show'); setTimeout(() => ind.classList.remove('show'), 2000);
       const prod = PRODUCTS.find(p => p.sku.toLowerCase() === code.toLowerCase() || (p.ean && p.ean === code));
-      if (prod) { _beep(1200, 80); addToCart(prod.id); showToast('📦 ' + prod.nome + ' — ' + code); }
-      else { _beep(400, 200); document.getElementById('searchInput').value = code; renderProducts(); showToast('🔍 Buscando: ' + code); }
+      if (prod) { _beep(1200, 80); addToCart(prod.id); NexoToast.success(prod.nome); }
+      else { _beep(400, 200); document.getElementById('searchInput').value = code; renderProducts(); NexoToast.warning('Produto não encontrado: ' + code); }
     }
 
     // ═══════════════════════════════════════════════

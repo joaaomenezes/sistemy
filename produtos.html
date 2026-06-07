@@ -1217,11 +1217,14 @@
         <div class="tab-panel" id="t-estoque">
           <div class="form-section">
             <div class="form-section-title">Quantidades</div>
+            <div class="form-hint" style="margin-bottom:12px;padding:10px 14px;background:rgba(0,119,255,.07);border:1px solid rgba(0,119,255,.2);border-radius:8px;font-size:12px;color:var(--sub)">
+              <i class="bi bi-info-circle" style="color:var(--accent2)"></i> A quantidade em estoque é gerenciada exclusivamente pelo módulo <strong>Estoque</strong>.
+            </div>
             <div class="form-grid g3">
               <div class="form-group">
-                <label class="lbl">Estoque atual *</label>
+                <label class="lbl">Estoque atual</label>
                 <div class="inp-wrap"><i class="bi bi-stack pre"></i>
-                  <input class="field" type="number" id="f-estoque" placeholder="0" min="0">
+                  <input class="field" type="number" id="f-estoque" placeholder="0" min="0" readonly style="opacity:.5;cursor:not-allowed">
                 </div>
               </div>
               <div class="form-group">
@@ -1821,7 +1824,6 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
         cst:             document.getElementById('f-cst').value || '',
         icms:            document.getElementById('f-icms').value || '',
         pis:             document.getElementById('f-pis').value || '',
-        estoque:         parseInt(document.getElementById('f-estoque').value) || 0,
         estoqueMin:      parseInt(document.getElementById('f-estoqueMin').value) || 5,
         estoqueMax:      parseInt(document.getElementById('f-estoqueMax').value) || 100,
         deposito:        document.getElementById('f-deposito').value || 'Depósito Principal',
@@ -1936,12 +1938,16 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
     function deleteProduct(id) {
       const p = products.find(x => x.id === id);
       if (!p) return;
+      if (p.estoque > 0) {
+        NexoToast.warning(`"${p.nome}" tem ${p.estoque} un em estoque. Zere o estoque antes de excluir.`);
+        return;
+      }
       openConfirm(`"${p.nome}" será removido do catálogo.`, async () => {
         const res = await NexoAuth.apiFetch(`/produtos/${id}`, { method: 'DELETE' });
-        if (!res.ok) { showToast('❌ ' + res.message, 'error'); return; }
+        if (!res.ok) { NexoToast.error(res.message); return; }
         products = products.filter(x => x.id !== id);
         if (currentDetailId === id) closeDetail();
-        applyFilters(); showToast('Produto removido.');
+        applyFilters(); NexoToast.success('Produto removido.');
       });
     }
 
