@@ -2,6 +2,7 @@
   const SESSION_KEY = 'nexoerp.session';
   const LOCKOUT_KEY = 'nexoerp.login.lockout';
   const API_URL = (function () {
+    if (window.NEXO_CONFIG && window.NEXO_CONFIG.apiUrl) return window.NEXO_CONFIG.apiUrl;
     const h = window.location.hostname;
     if (h === 'localhost' || h === '127.0.0.1') return 'http://localhost:3333/api';
     return 'https://CONFIGURAR-ANTES-DO-DEPLOY.railway.app/api';
