@@ -3316,6 +3316,77 @@
       display: block;
     }
 
+    /* ══ ITEM EDIT MODAL ══ */
+    .item-edit-overlay {
+      position: fixed; inset: 0; z-index: 1200;
+      background: rgba(0,0,0,.75); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+      opacity: 0; pointer-events: none; transition: opacity .2s;
+    }
+    .item-edit-overlay.open { opacity: 1; pointer-events: all; }
+    .ied-modal {
+      background: #0f1520; border: 1px solid rgba(255,255,255,.09);
+      border-radius: 20px; width: 100%; max-width: 360px; padding: 24px;
+      transform: translateY(18px) scale(.97);
+      transition: transform .28s cubic-bezier(.34,1.2,.64,1);
+    }
+    .item-edit-overlay.open .ied-modal { transform: none; }
+    .ied-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .ied-title { font-size: 15px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
+    .ied-close { color: var(--muted); cursor: pointer; font-size: 16px; padding: 4px; }
+    .ied-field { margin-bottom: 14px; }
+    .ied-field label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+    .ied-input-wrap { display: flex; align-items: center; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); border-radius: 10px; overflow: hidden; transition: border-color .15s; }
+    .ied-input-wrap:focus-within { border-color: var(--accent); }
+    .ied-prefix { padding: 0 10px; color: var(--muted); font-size: 13px; font-weight: 600; flex-shrink: 0; }
+    .ied-input-wrap input { flex: 1; background: none; border: none; outline: none; color: var(--text); font-family: 'Inter',sans-serif; font-size: 15px; font-weight: 700; padding: 10px 12px 10px 0; min-width: 0; }
+    .ied-tipo-btn { padding: 10px 16px; background: rgba(255,255,255,.06); border: none; border-left: 1px solid rgba(255,255,255,.08); color: var(--accent); font-family: 'Inter',sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: background .15s; flex-shrink: 0; }
+    .ied-tipo-btn:hover { background: rgba(0,200,150,.12); }
+    .ied-preview { display: flex; align-items: center; justify-content: space-between; background: rgba(0,200,150,.06); border: 1px solid rgba(0,200,150,.15); border-radius: 10px; padding: 12px 14px; margin-top: 6px; }
+    .ied-preview-label { font-size: 12px; color: var(--muted); }
+    .ied-preview-val { font-size: 18px; font-weight: 800; color: var(--accent); }
+    .ied-footer { display: flex; gap: 10px; margin-top: 20px; }
+    .ied-btn-cancel { flex: 1; padding: 11px; border-radius: 10px; border: 1px solid rgba(255,255,255,.1); background: none; color: var(--muted); font-family: 'Inter',sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .ied-btn-apply { flex: 2; padding: 11px; border-radius: 10px; border: none; background: var(--accent); color: #021c14; font-family: 'Inter',sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: opacity .15s; }
+    .ied-btn-apply:hover { opacity: .88; }
+    .ci-disc-badge { font-size: 10px; font-weight: 700; color: var(--accent); margin-left: 4px; }
+
+    /* ══ PIN SUPERVISOR MODAL ══ */
+    .pin-overlay {
+      position: fixed; inset: 0; z-index: 1300;
+      background: rgba(0,0,0,.8); backdrop-filter: blur(10px);
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+      opacity: 0; pointer-events: none; transition: opacity .2s;
+    }
+    .pin-overlay.open { opacity: 1; pointer-events: all; }
+    .pin-modal {
+      background: #0f1520; border: 1px solid rgba(255,255,255,.09);
+      border-radius: 22px; width: 100%; max-width: 300px; padding: 28px 24px;
+      text-align: center;
+      transform: scale(.95); transition: transform .28s cubic-bezier(.34,1.2,.64,1);
+    }
+    .pin-overlay.open .pin-modal { transform: none; }
+    .pin-icon { font-size: 32px; color: var(--accent); margin-bottom: 12px; }
+    .pin-title { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+    .pin-sub { font-size: 12px; color: var(--muted); margin-bottom: 24px; line-height: 1.5; }
+    .pin-dots { display: flex; gap: 14px; justify-content: center; margin-bottom: 24px; }
+    .pin-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(255,255,255,.2); transition: all .15s; }
+    .pin-dot.filled { background: var(--accent); border-color: var(--accent); transform: scale(1.15); }
+    @keyframes _pinShake {
+      0%,100% { transform: translateX(0) } 20% { transform: translateX(-8px) }
+      40% { transform: translateX(8px) } 60% { transform: translateX(-6px) } 80% { transform: translateX(6px) }
+    }
+    .pin-dots.shake { animation: _pinShake .4s ease; }
+    .pin-pad { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+    .pin-key {
+      aspect-ratio: 1; border-radius: 14px; border: 1px solid rgba(255,255,255,.07);
+      background: rgba(255,255,255,.04); color: var(--text);
+      font-family: 'Inter',sans-serif; font-size: 20px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background .1s, transform .1s;
+    }
+    .pin-key:active { background: rgba(255,255,255,.12); transform: scale(.93); }
+
     /* ══ CUPOM impressão ══ */
     @media print {
       body>*:not(#printFrame) {
@@ -5719,6 +5790,68 @@
     </div>
   </div>
 
+  <!-- MODAL EDITAR ITEM DO CARRINHO -->
+  <div class="item-edit-overlay" id="itemEditOverlay" onclick="if(event.target===this)closeItemEdit()">
+    <div class="ied-modal">
+      <div class="ied-header">
+        <div class="ied-title" id="ied-nome">Produto</div>
+        <div class="ied-close" onclick="closeItemEdit()"><i class="bi bi-x-lg"></i></div>
+      </div>
+      <div class="ied-field">
+        <label>Preço unitário</label>
+        <div class="ied-input-wrap">
+          <span class="ied-prefix">R$</span>
+          <input id="ied-preco" type="number" min="0" step="0.01" inputmode="decimal" oninput="updateIedPreview()">
+        </div>
+      </div>
+      <div class="ied-field">
+        <label>Desconto</label>
+        <div class="ied-input-wrap">
+          <span class="ied-prefix" style="min-width:0"></span>
+          <input id="ied-desc-val" type="number" min="0" step="0.01" placeholder="0" inputmode="decimal" oninput="updateIedPreview()">
+          <button class="ied-tipo-btn" id="ied-tipo-btn" onclick="toggleIedTipo()">%</button>
+        </div>
+      </div>
+      <div class="ied-preview">
+        <span class="ied-preview-label">Preço final</span>
+        <span class="ied-preview-val" id="ied-preview-val">R$ 0,00</span>
+      </div>
+      <div class="ied-footer">
+        <button class="ied-btn-cancel" onclick="closeItemEdit()">Cancelar</button>
+        <button class="ied-btn-apply" onclick="submitItemEdit()"><i class="bi bi-check2"></i> Aplicar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PIN SUPERVISOR -->
+  <div class="pin-overlay" id="pinOverlay" onclick="if(event.target===this)closePinModal()">
+    <div class="pin-modal">
+      <div class="pin-icon"><i class="bi bi-shield-lock-fill"></i></div>
+      <div class="pin-title">PIN de Supervisor</div>
+      <div class="pin-sub">Autorização necessária para alterar preço ou desconto</div>
+      <div class="pin-dots" id="pinDots">
+        <div class="pin-dot" id="pin-dot-0"></div>
+        <div class="pin-dot" id="pin-dot-1"></div>
+        <div class="pin-dot" id="pin-dot-2"></div>
+        <div class="pin-dot" id="pin-dot-3"></div>
+      </div>
+      <div class="pin-pad">
+        <button class="pin-key" onclick="pinKey('1')">1</button>
+        <button class="pin-key" onclick="pinKey('2')">2</button>
+        <button class="pin-key" onclick="pinKey('3')">3</button>
+        <button class="pin-key" onclick="pinKey('4')">4</button>
+        <button class="pin-key" onclick="pinKey('5')">5</button>
+        <button class="pin-key" onclick="pinKey('6')">6</button>
+        <button class="pin-key" onclick="pinKey('7')">7</button>
+        <button class="pin-key" onclick="pinKey('8')">8</button>
+        <button class="pin-key" onclick="pinKey('9')">9</button>
+        <button class="pin-key" onclick="closePinModal()" style="font-size:15px;color:var(--muted)">✕</button>
+        <button class="pin-key" onclick="pinKey('0')">0</button>
+        <button class="pin-key" onclick="pinKey('del')" style="font-size:16px"><i class="bi bi-backspace"></i></button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL CONFIRMAÇÃO -->
   <div class="confirm-overlay" id="confirmOverlay">
     <div class="confirm-modal">
@@ -6575,7 +6708,7 @@
       if (existing) {
         if (existing.qty >= p.estoque) { showToast('⚠️ Estoque esgotado para esse produto'); return; }
         existing.qty++;
-      } else { cart.push({ ...p, qty: 1 }); }
+      } else { cart.push({ ...p, qty: 1, _precoOriginal: p.preco, _descR: 0 }); }
       // pulse animation
       const card = document.getElementById(`pc-${id}`);
       if (card) { card.classList.remove('added'); void card.offsetWidth; card.classList.add('added'); }
@@ -6623,6 +6756,124 @@
       renderCart();
     }
 
+    // ── Item edit modal ───────────────────────────────────
+    let _editingItemId  = null;
+    let _pendingItemEdit = null;
+    let _iedDiscTipo    = '%';
+    let _pinInput       = '';
+
+    function openItemEdit(id) {
+      const item = cart.find(c => c.id === id);
+      if (!item) return;
+      _editingItemId = id;
+      _iedDiscTipo   = '%';
+      document.getElementById('ied-nome').textContent      = item.nome;
+      document.getElementById('ied-preco').value           = (item._precoOriginal ?? item.preco).toFixed(2);
+      document.getElementById('ied-desc-val').value        = '';
+      document.getElementById('ied-tipo-btn').textContent  = '%';
+      updateIedPreview();
+      document.getElementById('itemEditOverlay').classList.add('open');
+      setTimeout(() => document.getElementById('ied-preco').focus(), 100);
+    }
+
+    function closeItemEdit() {
+      document.getElementById('itemEditOverlay').classList.remove('open');
+    }
+
+    function toggleIedTipo() {
+      _iedDiscTipo = _iedDiscTipo === '%' ? 'R$' : '%';
+      document.getElementById('ied-tipo-btn').textContent = _iedDiscTipo;
+      updateIedPreview();
+    }
+
+    function updateIedPreview() {
+      const preco   = Math.max(0, parseFloat(String(document.getElementById('ied-preco').value).replace(',','.')) || 0);
+      const descVal = Math.max(0, parseFloat(String(document.getElementById('ied-desc-val').value).replace(',','.')) || 0);
+      const descR   = _iedDiscTipo === '%' ? preco * (descVal / 100) : Math.min(descVal, preco);
+      const final   = Math.max(0, preco - descR);
+      document.getElementById('ied-preview-val').textContent = 'R$ ' + fmt(final);
+    }
+
+    function submitItemEdit() {
+      const preco   = Math.max(0, parseFloat(String(document.getElementById('ied-preco').value).replace(',','.')) || 0);
+      const descVal = Math.max(0, parseFloat(String(document.getElementById('ied-desc-val').value).replace(',','.')) || 0);
+      const descR   = _iedDiscTipo === '%' ? preco * (descVal / 100) : Math.min(descVal, preco);
+      const final   = Math.max(0, preco - descR);
+      _pendingItemEdit = { precoOriginal: preco, descR, precoFinal: final };
+
+      const session = NexoAuth.getSession();
+      const isDono  = session?.user?.isDono || session?.user?.permissions === null;
+      if (isDono) {
+        applyItemEdit();
+      } else {
+        const cfg = JSON.parse(localStorage.getItem('nexoerp.config') || '{}');
+        if (!cfg._supervisorPin) {
+          NexoToast.warning('PIN de supervisor não configurado. Contate o administrador.');
+          return;
+        }
+        closeItemEdit();
+        openPinModal();
+      }
+    }
+
+    function applyItemEdit() {
+      const item = cart.find(c => c.id === _editingItemId);
+      if (!item || !_pendingItemEdit) return;
+      item._precoOriginal = _pendingItemEdit.precoOriginal;
+      item._descR         = _pendingItemEdit.descR;
+      item.preco          = _pendingItemEdit.precoFinal;
+      item._precoNegociado = item.preco !== (PRODUCTS.find(p => p.id === item.id) || {}).preco;
+      _pendingItemEdit = null;
+      closeItemEdit();
+      closePinModal();
+      renderCart();
+      NexoToast.success('Item atualizado!');
+    }
+
+    // ── PIN supervisor ────────────────────────────────────
+    function openPinModal() {
+      _pinInput = '';
+      _updatePinDots();
+      document.getElementById('pinOverlay').classList.add('open');
+    }
+
+    function closePinModal() {
+      document.getElementById('pinOverlay').classList.remove('open');
+      _pinInput = '';
+      _updatePinDots();
+    }
+
+    function pinKey(val) {
+      if (val === 'del') {
+        _pinInput = _pinInput.slice(0, -1);
+      } else if (_pinInput.length < 4) {
+        _pinInput += val;
+      }
+      _updatePinDots();
+      if (_pinInput.length === 4) setTimeout(_verifyPin, 150);
+    }
+
+    function _updatePinDots() {
+      for (let i = 0; i < 4; i++) {
+        document.getElementById(`pin-dot-${i}`).classList.toggle('filled', i < _pinInput.length);
+      }
+    }
+
+    function _verifyPin() {
+      const cfg = JSON.parse(localStorage.getItem('nexoerp.config') || '{}');
+      if (_pinInput === String(cfg._supervisorPin || '')) {
+        applyItemEdit();
+      } else {
+        _pinInput = '';
+        _updatePinDots();
+        const dots = document.getElementById('pinDots');
+        dots.classList.remove('shake');
+        void dots.offsetWidth;
+        dots.classList.add('shake');
+        NexoToast.error('PIN incorreto.');
+      }
+    }
+
     function confirmClearCart() {
       if (!cart.length) return;
       showConfirm(
@@ -6661,29 +6912,30 @@
 
       container.innerHTML = cart.map(item => {
         const maxQty = (PRODUCTS.find(p => p.id === item.id) || item).estoque;
+        const orig   = item._precoOriginal ?? item.preco;
+        const isModified = item.preco !== orig || (item._descR || 0) > 0;
+        const discBadge  = (item._descR || 0) > 0
+          ? `<span class="ci-disc-badge">-R$ ${fmt(item._descR)}</span>` : '';
         return `
     <div class="cart-item" id="ci-${item.id}">
-      <div class="ci-emoji">${item.emoji}</div>
-      <div class="ci-info">
+      <div class="ci-emoji" onclick="openItemEdit('${item.id}')" style="cursor:pointer">${item.emoji}</div>
+      <div class="ci-info" onclick="openItemEdit('${item.id}')" style="cursor:pointer">
         <div class="ci-name">${escapeHtml(item.nome)}</div>
-        <div class="ci-price${item._precoNegociado ? ' ci-price-negociado' : ''}">
-          R$ <input class="ci-price-edit" type="number" min="0" step="0.01"
-            value="${item.preco.toFixed(2)}"
-            onchange="setItemPrice('${item.id}', this.value)"
-            onclick="this.select()" title="Clique para negociar o preço"
-            inputmode="decimal"> un
+        <div class="ci-price${isModified ? ' ci-price-negociado' : ''}">
+          R$ ${fmt(item.preco)} un${discBadge}
         </div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
         <div class="ci-subtotal">R$ ${fmt(item.preco * item.qty)}</div>
         <div class="ci-qty">
-          <div class="qty-btn" onclick="changeQty('${item.id}',-1)">−</div>
+          <div class="qty-btn" onclick="event.stopPropagation();changeQty('${item.id}',-1)">−</div>
           <input class="qty-val" type="number" min="1" max="${maxQty}" value="${item.qty}"
-            onchange="setQty('${item.id}', this.value)" onclick="this.select()" inputmode="numeric">
-          <div class="qty-btn" onclick="changeQty('${item.id}',1)">+</div>
+            onchange="setQty('${item.id}', this.value)"
+            onclick="event.stopPropagation();this.select()" inputmode="numeric">
+          <div class="qty-btn" onclick="event.stopPropagation();changeQty('${item.id}',1)">+</div>
         </div>
       </div>
-      <div class="ci-remove" onclick="removeFromCart('${item.id}')"><i class="bi bi-x"></i></div>
+      <div class="ci-remove" onclick="event.stopPropagation();removeFromCart('${item.id}')"><i class="bi bi-x"></i></div>
     </div>
   `;
       }).join('');

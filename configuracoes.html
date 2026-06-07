@@ -1063,6 +1063,24 @@ font-size: 12px;
               <button class="btn-add-user" onclick="openUserModal()"><i class="bi bi-person-plus"></i> Adicionar novo
                 usuário</button>
             </div>
+
+            <!-- PIN de Supervisor — só o Dono vê e configura -->
+            <div class="cfg-section" id="pinSection" style="display:none">
+              <div class="cfg-section-header">
+                <div class="cfg-section-title">PIN de Supervisor (PDV)</div>
+                <div class="cfg-section-sub">Código de 4 dígitos exigido de sub-usuários ao aplicar desconto ou alterar preço no PDV. O Dono nunca precisa digitá-lo.</div>
+              </div>
+              <div class="cfg-group" style="max-width:220px">
+                <label class="lbl">PIN (4 dígitos)</label>
+                <div class="inp-wrap">
+                  <i class="bi bi-shield-lock pre"></i>
+                  <input class="field" type="password" id="supervisorPinInput" data-cfg="_supervisorPin"
+                    placeholder="••••" maxlength="4" inputmode="numeric"
+                    oninput="this.value=this.value.replace(/\D/g,'').slice(0,4);markDirty()">
+                </div>
+                <span style="font-size:11px;color:var(--muted);margin-top:4px;display:block">Deixe em branco para desabilitar a proteção.</span>
+              </div>
+            </div>
           </div>
 
           <!-- ══ NOTIFICAÇÕES ══ -->
@@ -1394,6 +1412,11 @@ font-size: 12px;
       renderUsers();
       NexoAuth.renderCurrentUser();
       loadSettings();
+      // PIN de supervisor só visível para o Dono
+      const session = NexoAuth.getSession();
+      if (session?.user?.isDono || session?.user?.permissions === null) {
+        document.getElementById('pinSection').style.display = '';
+      }
     }
 
     // ═══════════════════════════════════════════════
