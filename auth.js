@@ -238,12 +238,28 @@
   }
 
   // ── Proteção de rotas ─────────────────────────────────
+  function _setAvatar(session) {
+    const nome = session?.user?.nome || session?.user?.username || '';
+    const parts = nome.trim().split(/\s+/);
+    const initials = parts.length >= 2
+      ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+      : nome.slice(0, 2).toUpperCase();
+    document.querySelectorAll('.user-avatar').forEach(el => {
+      if (el.textContent.trim() === 'JD' || el.textContent.trim() === '') el.textContent = initials;
+    });
+  }
+
   function requireAuth() {
     const session = getSession();
     if (!session) {
       const next = encodeURIComponent(location.pathname.split('/').pop() || 'dashboard.html');
       location.href = `login.html?next=${next}`;
       return null;
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => _setAvatar(session));
+    } else {
+      _setAvatar(session);
     }
     return session;
   }
