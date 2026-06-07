@@ -502,6 +502,26 @@ font-size: 14px;
       background: rgba(255, 255, 255, .025);
     }
 
+    .movim-card {
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 250px);
+      min-height: 420px;
+    }
+
+    .movim-card .table-wrap {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .movim-card .fin-table tbody tr {
+      height: 52px;
+    }
+
+    .movim-footer {
+      min-height: 54px;
+    }
+
     .val-positivo {
       color: var(--accent);
       font-weight: 700;
@@ -1377,7 +1397,7 @@ transition: border-color .15s;
 
       <!-- Movimentações -->
       <div class="fin-panel" id="panel-movimentacoes">
-        <div class="card u-mt-20" >
+        <div class="card u-mt-20 movim-card" >
           <div class="table-header">
             <div class="table-header-title"><i class="bi bi-arrow-left-right"
                 style="color:var(--accent2);margin-right:6px"></i>Movimentações</div>
@@ -1386,7 +1406,7 @@ transition: border-color .15s;
             <table class="fin-table">
               <thead>
                 <tr>
-                  <th>Data</th>
+                  <th>Data/Hora</th>
                   <th>Descrição</th>
                   <th>Categoria</th>
                   <th>Tipo</th>
@@ -1395,6 +1415,10 @@ transition: border-color .15s;
               </thead>
               <tbody id="tblMovim"></tbody>
             </table>
+          </div>
+          <div class="table-footer movim-footer">
+            <span id="movimInfo">—</span>
+            <div class="pagination" id="movimPagination"></div>
           </div>
         </div>
       </div>
@@ -1916,6 +1940,15 @@ transition: border-color .15s;
 
     let PRODUTOS_DATA = [];
     let MOVS_DATA     = [];
+    let movimPage     = 1;
+
+    function getMovimPerPage() {
+      const card = document.querySelector('#panel-movimentacoes .movim-card');
+      if (!card) return 10;
+      const rect = card.getBoundingClientRect();
+      const usable = Math.max(260, rect.height - 112);
+      return Math.max(5, Math.floor(usable / 52));
+    }
 
     // ═══════════════════════════════════════════════
     // KPI / CHART / DONUT — calculados a partir de nexoerp.financeiro
@@ -2238,6 +2271,52 @@ transition: border-color .15s;
         const d = new Date(raw.includes('/') ? raw.split('/').reverse().join('-') : raw);
         return isNaN(d) ? raw : d.toLocaleDateString('pt-BR');
       };
+      const _fmtDateTime = raw => {
+        if (!raw) return '—';
+        const d = new Date(raw);
+        if (isNaN(d.getTime())) return _fmtD(raw);
+        const data = d.toLocaleDateString('pt-BR');
+        const hora = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        return `${data} ${hora}`;
+      };
+      const _movDateRaw = l => l.criadoEm || l.dataISO || l.pagoEm || l.data || l.vencimento || '';
+      const _movTime = l => {
+        const d = new Date(_movDateRaw(l));
+        return isNaN(d.getTime()) ? 0 : d.getTime();
+      };
+      const _movTipoHtml = l => {
+        if (l.status === 'estornado') return '<span class="vencer-pill vencida">Estorno</span>';
+        if (l.status === 'cancelado') return '<span class="vencer-pill vencida">Cancelado</span>';
+        return l.tipo === 'receita'
+          ? '<span class="vencer-pill ok">Entrada</span>'
+          : '<span class="vencer-pill vencida">Saída</span>';
+      };
+      const _movValorHtml = l => {
+        const valor = fmt(l.valor || 0);
+        if (l.status === 'estornado' || l.status === 'cancelado') {
+          const estornoEntrada = l.tipo === 'despesa';
+          return `<span class="${estornoEntrada ? 'val-positivo' : 'val-negativo'}">${estornoEntrada ? '+' : '-'} R$ ${valor}</span>`;
+        }
+        const isEntrada = l.tipo === 'receita';
+        return `<span class="${isEntrada ? 'val-positivo' : 'val-negativo'}">${isEntrada ? '+' : '-'} R$ ${valor}</span>`;
+      };
+      const _renderMovimPagination = (total, perPage) => {
+        const info = document.getElementById('movimInfo');
+        const pg = document.getElementById('movimPagination');
+        if (!info || !pg) return;
+        const pages = Math.max(1, Math.ceil(total / perPage));
+        if (movimPage > pages) movimPage = pages;
+        const start = total ? (movimPage - 1) * perPage + 1 : 0;
+        const end = Math.min(movimPage * perPage, total);
+        info.textContent = total ? `Mostrando ${start}–${end} de ${total} movimentações` : '—';
+        if (pages <= 1) { pg.innerHTML = ''; return; }
+        let h = `<button class="pg-btn" onclick="movimGoPage(${movimPage - 1})" ${movimPage === 1 ? 'disabled' : ''}>‹</button>`;
+        for (let i = 1; i <= pages; i++) {
+          h += `<button class="pg-btn ${i === movimPage ? 'active' : ''}" onclick="movimGoPage(${i})">${i}</button>`;
+        }
+        h += `<button class="pg-btn" onclick="movimGoPage(${movimPage + 1})" ${movimPage === pages ? 'disabled' : ''}>›</button>`;
+        pg.innerHTML = h;
+      };
 
       const tblPD = document.getElementById('tblPagarDetalhe');
       if (tblPD) {
@@ -2269,18 +2348,31 @@ transition: border-color .15s;
 
       const tblMov = document.getElementById('tblMovim');
       if (tblMov) {
-        const movs = [...lancamentos].sort((a, b) =>
-          (b.data || b.vencimento || '').localeCompare(a.data || a.vencimento || ''));
+        const movs = [...lancamentos].sort((a, b) => _movTime(b) - _movTime(a));
+        const perPage = getMovimPerPage();
+        const pages = Math.max(1, Math.ceil(movs.length / perPage));
+        if (movimPage > pages) movimPage = pages;
+        const start = (movimPage - 1) * perPage;
+        const slice = movs.slice(start, start + perPage);
         tblMov.innerHTML = movs.length
-          ? movs.map(l => `<tr>
-              <td>${escapeHTML(_fmtD(l.data || l.vencimento || ''))}</td>
+          ? slice.map(l => `<tr>
+              <td>${escapeHTML(_fmtDateTime(_movDateRaw(l)))}</td>
               <td class="u-fw-500">${escapeHTML(l.descricao || '—')}</td>
               <td class="u-muted">${escapeHTML(l.categoria || '—')}</td>
-              <td>${l.tipo === 'receita' ? '<span class="vencer-pill ok">Entrada</span>' : '<span class="vencer-pill vencida">Saída</span>'}</td>
-              <td class="${l.tipo === 'receita' ? 'val-positivo' : 'val-negativo'}">${l.tipo === 'receita' ? '+' : '-'} R$ ${fmt(l.valor || 0)}</td>
+              <td>${_movTipoHtml(l)}</td>
+              <td>${_movValorHtml(l)}</td>
             </tr>`).join('')
           : '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Nenhuma movimentação registrada</td></tr>';
+        _renderMovimPagination(movs.length, perPage);
       }
+    }
+
+    function movimGoPage(p) {
+      const perPage = getMovimPerPage();
+      const pages = Math.max(1, Math.ceil(lancamentos.length / perPage));
+      if (p < 1 || p > pages) return;
+      movimPage = p;
+      renderTabelas();
     }
 
     // ═══════════════════════════════════════════════
@@ -2353,6 +2445,7 @@ transition: border-color .15s;
       document.getElementById('finDesc').textContent = desc;
       document.getElementById('topbarSub').textContent = title;
       closeMais();
+      if (panelId === 'movimentacoes') { movimPage = 1; renderTabelas(); }
       if (panelId === 'fluxo-caixa') renderChartFluxo();
     }
 
@@ -2746,6 +2839,12 @@ transition: border-color .15s;
     }
 
     init();
+
+    window.addEventListener('resize', () => {
+      if (document.getElementById('panel-movimentacoes')?.classList.contains('active')) {
+        renderTabelas();
+      }
+    });
 
     // ─── Date picker global do financeiro ───
     (function initFinDp() {
