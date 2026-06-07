@@ -1557,3 +1557,19 @@ tbody tr:hover .dp-id {
     padding: 16px;
   }
 }
+
+/* ── Skeleton loading ──────────────────────────────────── */
+@keyframes _skShimmer {
+  0%   { background-position: -400px 0 }
+  100% { background-position:  400px 0 }
+}
+.skeleton {
+  background: linear-gradient(90deg,
+    rgba(255,255,255,.03) 25%,
+    rgba(255,255,255,.08) 50%,
+    rgba(255,255,255,.03) 75%);
+  background-size: 800px 100%;
+  animation: _skShimmer 1.5s infinite linear;
+  border-radius: 5px;
+  display: inline-block;
+}

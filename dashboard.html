@@ -1666,6 +1666,9 @@ transition: var(--ease);
 
     // ── Leitura dos dados via API ─────────────────────────────
     async function initDashboard() {
+      document.querySelectorAll('.kpi-val').forEach(el => {
+        el.innerHTML = NexoSkeleton.kpiVal('80px', '24px');
+      });
       const [rV, rC, rP, rPed, rF] = await Promise.all([
         NexoAuth.apiFetch('/vendas'),
         NexoAuth.apiFetch('/clientes'),

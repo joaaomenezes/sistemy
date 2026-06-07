@@ -2722,6 +2722,10 @@ transition: border-color .15s;
 
 
     async function init() {
+      ['tblReceber','tblPagar','tblMovim','dreTbody'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = NexoSkeleton.tableRows(6, 5);
+      });
       const [rLanc, rCustos, rProd, rMovs] = await Promise.all([
         NexoAuth.apiFetch('/financeiro'),
         NexoAuth.apiFetch('/custos'),

@@ -1502,6 +1502,7 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
 
     // ─── INIT ─────────────────────────────────────────────────
     async function init() {
+      document.getElementById('tableBody').innerHTML = NexoSkeleton.tableRows(8, 6);
       buildEmojiGrid();
       buildColorSwatches();
       await Promise.all([

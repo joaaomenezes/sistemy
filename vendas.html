@@ -836,6 +836,7 @@
       const inicio = new Date(hoje); inicio.setDate(inicio.getDate() - 30);
       document.getElementById('dataInicio').value = inicio.toISOString().slice(0, 10);
       document.getElementById('dataFim').value = hoje.toISOString().slice(0, 10);
+      document.getElementById('vendasBody').innerHTML = NexoSkeleton.tableRows(8, 6);
       vendas = await loadVendas('pdv');
       filtered = [...vendas];
       applyFilters();

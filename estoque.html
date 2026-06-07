@@ -1213,6 +1213,7 @@
     // INIT
     // ═══════════════════════════════════════════════
     async function init() {
+      document.getElementById('stockTableBody').innerHTML = NexoSkeleton.tableRows(8, 5);
       const [rProd, rMovs, rDep] = await Promise.all([
         NexoAuth.apiFetch('/produtos'),
         NexoAuth.apiFetch('/estoque/movimentacoes'),

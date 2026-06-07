@@ -166,6 +166,22 @@ function requirePermission() {
   } catch (_) {}
 })();
 
+// ── NexoSkeleton — placeholders animados durante loading ─────
+window.NexoSkeleton = {
+  // Gera linhas de skeleton para um <tbody>
+  tableRows(count = 7, cols = 5) {
+    const widths = [55, 75, 40, 50, 35, 65, 45];
+    const cells = Array.from({ length: cols }, (_, i) =>
+      `<td style="padding:14px 12px"><span class="skeleton" style="display:block;height:12px;width:${widths[i % widths.length]}%"></span></td>`
+    ).join('');
+    return Array.from({ length: count }, () => `<tr>${cells}</tr>`).join('');
+  },
+  // Gera um bloco skeleton para valor de KPI
+  kpiVal(w = '90px', h = '28px') {
+    return `<span class="skeleton" style="width:${w};height:${h}"></span>`;
+  },
+};
+
 // ── NexoConfig — formatadores que respeitam nexoerp.config ──
 window.NexoConfig = {
   _read() {

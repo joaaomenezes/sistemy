@@ -1191,6 +1191,7 @@ font-weight: 800;
     // INIT
     // ═══════════════════════════════════════════════
     async function init() {
+      document.getElementById('listBody').innerHTML = NexoSkeleton.tableRows(8, 6);
       const [rp, rc, rv, rped] = await Promise.all([
         NexoAuth.apiFetch('/produtos?status=ativo'),
         NexoAuth.apiFetch('/clientes?secao=clientes&status=ativo'),

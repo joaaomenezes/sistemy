@@ -1067,6 +1067,7 @@
 
     // ─── INIT ────────────────────────────────────────────────
     async function init() {
+      document.getElementById('tableBody').innerHTML = NexoSkeleton.tableRows(8, 5);
       const [rc, rf, rv] = await Promise.all([
         NexoAuth.apiFetch('/clientes?secao=clientes'),
         NexoAuth.apiFetch('/clientes?secao=fornecedores'),
