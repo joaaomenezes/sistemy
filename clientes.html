@@ -3,7 +3,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistemy — Parceiros</title>
   <link rel="stylesheet" href="global.css">
@@ -270,6 +271,7 @@
       color: var(--muted);
       font-size: 13px;
       font-weight: 600;
+      text-decoration: none;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -387,6 +389,7 @@
       width: fit-content;
       margin-bottom: 20px;
     }
+
     .sec-tab {
       padding: 8px 20px;
       border-radius: 9px;
@@ -401,10 +404,11 @@
       gap: 7px;
       transition: all .18s;
     }
+
     .sec-tab.active {
       background: var(--card);
       color: var(--text);
-      box-shadow: 0 1px 4px rgba(0,0,0,.25);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .25);
     }
 
     .btn-del {
@@ -421,18 +425,23 @@
       gap: 7px;
       transition: opacity .18s;
     }
-    .btn-del:hover { opacity: .85; }
+
+    .btn-del:hover {
+      opacity: .85;
+    }
+
     .confirm-body {
       padding: 24px 28px;
       display: flex;
       gap: 16px;
       align-items: flex-start;
     }
+
     .confirm-icon {
       width: 42px;
       height: 42px;
       border-radius: 10px;
-      background: rgba(255,71,87,.12);
+      background: rgba(255, 71, 87, .12);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -440,8 +449,17 @@
       color: var(--danger);
       flex-shrink: 0;
     }
-    .confirm-text h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-    .confirm-text p  { font-size: 13px; color: var(--muted); }
+
+    .confirm-text h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .confirm-text p {
+      font-size: 13px;
+      color: var(--muted);
+    }
 
     @media(max-width:900px) {
       .form-grid.cols3 {
@@ -483,15 +501,19 @@
         </div>
         <div class="header-actions">
           <button class="btn-sm btn-ghost-sm" onclick="exportCSV()"><i class="bi bi-download"></i> Exportar CSV</button>
-          <button class="btn-sm btn-primary-sm" onclick="openModal()"><i class="bi bi-plus-lg"></i> <span id="btn-novo-label">Novo Cliente</span></button>
+          <button class="btn-sm btn-primary-sm" onclick="openModal()"><i class="bi bi-plus-lg"></i> <span
+              id="btn-novo-label">Novo Cliente</span></button>
         </div>
       </div>
 
       <!-- Section Tabs -->
       <div class="section-tabs">
-        <button class="sec-tab active" id="sec-clientes" onclick="switchSection('clientes')"><i class="bi bi-people-fill"></i> Clientes</button>
-        <button class="sec-tab" id="sec-fornecedores" onclick="switchSection('fornecedores')"><i class="bi bi-truck"></i> Fornecedores</button>
-        <button class="sec-tab" id="sec-vendedores" onclick="switchSection('vendedores')"><i class="bi bi-person-badge-fill"></i> Vendedores</button>
+        <button class="sec-tab active" id="sec-clientes" onclick="switchSection('clientes')"><i
+            class="bi bi-people-fill"></i> Clientes</button>
+        <button class="sec-tab" id="sec-fornecedores" onclick="switchSection('fornecedores')"><i
+            class="bi bi-truck"></i> Fornecedores</button>
+        <button class="sec-tab" id="sec-vendedores" onclick="switchSection('vendedores')"><i
+            class="bi bi-person-badge-fill"></i> Vendedores</button>
       </div>
 
       <!-- KPIs -->
@@ -531,7 +553,7 @@
         <div class="search-input">
           <i class="bi bi-search"></i>
           <input type="text" id="searchInput" placeholder="Buscar por nome, CPF/CNPJ, e-mail..."
-            oninput="filterTable()">
+            oninput="scheduleFilters()">
         </div>
         <div class="filter-group">
           <button class="filter-btn active" onclick="setFilter(this,'todos')">Todos</button>
@@ -580,41 +602,51 @@
   <!-- MODAL VENDEDOR -->
   <div class="modal-overlay" id="vendedorModalOverlay" onclick="handleVendedorOverlayClick(event)">
     <div class="modal" style="max-width:480px;border-radius:16px;overflow:hidden">
-      <div class="modal-header" style="padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+      <div class="modal-header"
+        style="padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
         <div>
-          <div class="modal-title" id="vendedorModalTitle" style="font-size:16px;font-weight:700;color:var(--text)">Novo Vendedor</div>
+          <div class="modal-title" id="vendedorModalTitle" style="font-size:16px;font-weight:700;color:var(--text)">Novo
+            Vendedor</div>
           <div style="font-size:12px;color:var(--muted);margin-top:2px">Preencha os dados do vendedor</div>
         </div>
-        <button class="modal-close" onclick="closeVendedorModal()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px"><i class="bi bi-x-lg"></i></button>
+        <button class="modal-close" onclick="closeVendedorModal()"
+          style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px"><i
+            class="bi bi-x-lg"></i></button>
       </div>
       <div style="padding:20px 24px;display:flex;flex-direction:column;gap:14px">
         <!-- Tipo -->
         <div class="radio-row" style="display:flex;gap:8px">
-          <div class="radio-opt sel" onclick="selectVendTipo(this,'pf')" id="vend-tipo-pf" style="flex:1;justify-content:center"><i class="bi bi-person"></i> Pessoa Física</div>
-          <div class="radio-opt"    onclick="selectVendTipo(this,'pj')" id="vend-tipo-pj"  style="flex:1;justify-content:center"><i class="bi bi-building"></i> Pessoa Jurídica</div>
+          <div class="radio-opt sel" onclick="selectVendTipo(this,'pf')" id="vend-tipo-pf"
+            style="flex:1;justify-content:center"><i class="bi bi-person"></i> Pessoa Física</div>
+          <div class="radio-opt" onclick="selectVendTipo(this,'pj')" id="vend-tipo-pj"
+            style="flex:1;justify-content:center"><i class="bi bi-building"></i> Pessoa Jurídica</div>
         </div>
         <!-- Nome -->
         <div class="form-group">
           <label class="lbl" id="vend-lbl-nome">Nome *</label>
-          <div class="inp-wrap"><i class="bi bi-person pre"></i><input class="field" type="text" id="vf-nome" placeholder="Nome completo"></div>
+          <div class="inp-wrap"><i class="bi bi-person pre"></i><input class="field" type="text" id="vf-nome"
+              placeholder="Nome completo"></div>
           <span class="field-err" id="ve-nome">Informe o nome.</span>
         </div>
         <!-- CPF/CNPJ -->
         <div class="form-group">
           <label class="lbl" id="vend-lbl-doc">CPF *</label>
-          <div class="inp-wrap"><i class="bi bi-card-text pre"></i><input class="field" type="text" id="vf-doc" placeholder="000.000.000-00" oninput="maskVendDoc(this)" maxlength="14"></div>
+          <div class="inp-wrap"><i class="bi bi-card-text pre"></i><input class="field" type="text" id="vf-doc"
+              placeholder="000.000.000-00" oninput="maskVendDoc(this)" maxlength="14"></div>
           <span class="field-err" id="ve-doc">Informe o documento.</span>
         </div>
         <!-- Telefone -->
         <div class="form-group">
           <label class="lbl">Telefone *</label>
-          <div class="inp-wrap"><i class="bi bi-telephone pre"></i><input class="field" type="tel" id="vf-tel" placeholder="(11) 99999-9999" oninput="maskPhone(this)"></div>
+          <div class="inp-wrap"><i class="bi bi-telephone pre"></i><input class="field" type="tel" id="vf-tel"
+              placeholder="(11) 99999-9999" oninput="maskPhone(this)"></div>
           <span class="field-err" id="ve-tel">Informe o telefone.</span>
         </div>
         <!-- Email -->
         <div class="form-group">
           <label class="lbl">E-mail</label>
-          <div class="inp-wrap"><i class="bi bi-envelope pre"></i><input class="field" type="email" id="vf-email" placeholder="email@exemplo.com"></div>
+          <div class="inp-wrap"><i class="bi bi-envelope pre"></i><input class="field" type="email" id="vf-email"
+              placeholder="email@exemplo.com"></div>
         </div>
         <!-- Status -->
         <div class="form-group">
@@ -1039,94 +1071,175 @@
   <script src="auth.js"></script>
   <script>
     NexoAuth.requireAuth();
+    requirePermission();
     NexoAuth.renderCurrentUser();
 
     // ─── DATA ────────────────────────────────────────────────
     const COLORS = [
-      ['#00c896','#021c14'],['#0077ff','#e8f0ff'],['#ff6b35','#fff0ea'],
-      ['#a855f7','#f3e8ff'],['#ec4899','#fce7f3'],['#14b8a6','#e0f7f5']
+      ['#00c896', '#021c14'], ['#0077ff', '#e8f0ff'], ['#ff6b35', '#fff0ea'],
+      ['#a855f7', '#f3e8ff'], ['#ec4899', '#fce7f3'], ['#14b8a6', '#e0f7f5']
     ];
     function colorFor(name) {
       const idx = (name.charCodeAt(0) + (name.charCodeAt(1) || 0)) % COLORS.length;
       return COLORS[idx];
     }
 
-    let clients      = [];
+    let clients = [];
     let fornecedores = [];
-    let vendedores   = [];
+    let vendedores = [];
+    let vendedoresOptions = [];
     let currentSection = 'clientes';
     let filtered = [];
     let currentFilter = 'todos';
     let currentPage = 1;
     const perPage = 6;
+    let pageMeta = { page: 1, limit: perPage, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
+    let resumoBySection = {
+      clientes: { total: 0, ativos: 0, inativos: 0, mes: 0 },
+      fornecedores: { total: 0, ativos: 0, inativos: 0, mes: 0 },
+      vendedores: { total: 0, ativos: 0, inativos: 0, mes: 0 },
+    };
+    let filterTimer = null;
+    let sortKey = null;
+    let sortDir = 1;
     let editingId = null;
     let currentDetailId = null;
 
-    function activeData()     { return currentSection === 'clientes' ? clients : currentSection === 'fornecedores' ? fornecedores : vendedores; }
+    function activeData() { return currentSection === 'clientes' ? clients : currentSection === 'fornecedores' ? fornecedores : vendedores; }
     function setActiveData(d) { if (currentSection === 'clientes') clients = d; else if (currentSection === 'fornecedores') fornecedores = d; else vendedores = d; }
-    function entityLabel()    { return currentSection === 'clientes' ? 'Cliente' : currentSection === 'fornecedores' ? 'Fornecedor' : 'Vendedor'; }
+    function entityLabel() { return currentSection === 'clientes' ? 'Cliente' : currentSection === 'fornecedores' ? 'Fornecedor' : 'Vendedor'; }
+    function activeResumo() { return resumoBySection[currentSection] || resumoBySection.clientes; }
+
+    function buildEntityQuery(page = currentPage, withPagination = true) {
+      const params = new URLSearchParams();
+      const q = document.getElementById('searchInput')?.value.trim();
+
+      if (currentSection !== 'vendedores') params.set('secao', currentSection);
+      if (withPagination) {
+        params.set('page', String(page));
+        params.set('limit', String(perPage));
+      }
+      if (q) params.set('q', q);
+      if (currentFilter === 'ativo' || currentFilter === 'inativo' || currentFilter === 'bloq') params.set('status', currentFilter);
+      if (currentFilter === 'pf' || currentFilter === 'pj' || currentFilter === 'mei') params.set('tipo', currentFilter);
+      if (sortKey) {
+        params.set('sortBy', sortKey);
+        params.set('sortDir', sortDir === -1 ? 'desc' : 'asc');
+      }
+
+      return params.toString();
+    }
+
+    function endpointForCurrentSection() {
+      return currentSection === 'vendedores' ? '/vendedores' : '/clientes';
+    }
+
+    async function loadResumo(section = currentSection) {
+      const endpoint = section === 'vendedores' ? '/vendedores/resumo' : `/clientes/resumo?secao=${section}`;
+      const res = await NexoAuth.apiFetch(endpoint);
+      if (res.ok) resumoBySection[section] = { ...resumoBySection[section], ...res.data };
+      updateKPIs();
+    }
+
+    async function loadVendedoresOptions() {
+      const res = await NexoAuth.apiFetch('/vendedores?status=ativo');
+      if (res.ok) vendedoresOptions = res.data || [];
+      populateVendedorSelect();
+    }
+
+    function renderLoadingState() {
+      document.getElementById('tableBody').innerHTML = NexoSkeleton.tableRows(8, 5);
+      document.getElementById('emptyState').classList.remove('show');
+    }
+
+    async function loadEntityPage(page = 1, showLoading = true) {
+      currentPage = page;
+      if (showLoading) renderLoadingState();
+
+      const res = await NexoAuth.apiFetch(endpointForCurrentSection() + '?' + buildEntityQuery(page));
+      if (!res.ok) {
+        NexoToast.error(res.message || `Erro ao carregar ${entityLabel().toLowerCase()}s.`);
+        return;
+      }
+
+      setActiveData(res.data || []);
+      filtered = [...activeData()];
+      pageMeta = res.pagination || {
+        page,
+        limit: perPage,
+        total: filtered.length,
+        totalPages: Math.max(1, Math.ceil(filtered.length / perPage)),
+        hasNextPage: false,
+        hasPrevPage: page > 1,
+      };
+      currentPage = pageMeta.page;
+      renderTable();
+    }
+
+    function scheduleFilters() {
+      clearTimeout(filterTimer);
+      filterTimer = setTimeout(() => applyFilters(), 250);
+    }
 
     // ─── INIT ────────────────────────────────────────────────
     async function init() {
       document.getElementById('tableBody').innerHTML = NexoSkeleton.tableRows(8, 5);
-      const [rc, rf, rv] = await Promise.all([
-        NexoAuth.apiFetch('/clientes?secao=clientes'),
-        NexoAuth.apiFetch('/clientes?secao=fornecedores'),
-        NexoAuth.apiFetch('/vendedores'),
+      await Promise.all([
+        loadResumo('clientes'),
+        loadResumo('fornecedores'),
+        loadResumo('vendedores'),
+        loadVendedoresOptions(),
+        loadEntityPage(1, false),
       ]);
-      if (rc.ok) clients      = rc.data;
-      if (rf.ok) fornecedores = rf.data;
-      if (rv.ok) vendedores   = rv.data;
-      populateVendedorSelect();
-      filtered = [...clients];
-      applyFilters();
     }
 
     // ─── SECTION SWITCH ──────────────────────────────────────
     function switchSection(section) {
       currentSection = section;
-      const isCli  = section === 'clientes';
+      const isCli = section === 'clientes';
       const isVend = section === 'vendedores';
       document.getElementById('sec-clientes').classList.toggle('active', isCli);
       document.getElementById('sec-fornecedores').classList.toggle('active', section === 'fornecedores');
       document.getElementById('sec-vendedores').classList.toggle('active', isVend);
       document.getElementById('btn-novo-label').textContent = isCli ? 'Novo Cliente' : isVend ? 'Novo Vendedor' : 'Novo Fornecedor';
-      document.getElementById('page-h1').textContent        = isCli ? 'Clientes' : isVend ? 'Vendedores' : 'Fornecedores';
-      document.getElementById('page-sub').textContent       = isCli
+      document.getElementById('page-h1').textContent = isCli ? 'Clientes' : isVend ? 'Vendedores' : 'Fornecedores';
+      document.getElementById('page-sub').textContent = isCli
         ? 'Gerencie seu cadastro de clientes, histórico e relacionamento.'
         : isVend
-        ? 'Gerencie seus vendedores e representantes comerciais.'
-        : 'Gerencie seus fornecedores, contatos e condições comerciais.';
-      document.getElementById('kpi-total-lbl').textContent  = isCli ? 'Total de clientes' : isVend ? 'Total de vendedores' : 'Total de fornecedores';
-      document.getElementById('kpi-mes-lbl').textContent    = 'Novos este mês';
+          ? 'Gerencie seus vendedores e representantes comerciais.'
+          : 'Gerencie seus fornecedores, contatos e condições comerciais.';
+      document.getElementById('kpi-total-lbl').textContent = isCli ? 'Total de clientes' : isVend ? 'Total de vendedores' : 'Total de fornecedores';
+      document.getElementById('kpi-mes-lbl').textContent = 'Novos este mês';
       document.getElementById('breadcrumb-cur').textContent = isCli ? 'Clientes' : isVend ? 'Vendedores' : 'Fornecedores';
-      document.getElementById('empty-h3').textContent       = isCli ? 'Nenhum cliente encontrado' : isVend ? 'Nenhum vendedor encontrado' : 'Nenhum fornecedor encontrado';
-      document.getElementById('empty-p').textContent        = isCli
+      document.getElementById('empty-h3').textContent = isCli ? 'Nenhum cliente encontrado' : isVend ? 'Nenhum vendedor encontrado' : 'Nenhum fornecedor encontrado';
+      document.getElementById('empty-p').textContent = isCli
         ? 'Tente ajustar os filtros ou cadastre um novo cliente.'
         : isVend
-        ? 'Tente ajustar os filtros ou cadastre um novo vendedor.'
-        : 'Tente ajustar os filtros ou cadastre um novo fornecedor.';
+          ? 'Tente ajustar os filtros ou cadastre um novo vendedor.'
+          : 'Tente ajustar os filtros ou cadastre um novo fornecedor.';
       // Ajuste de colunas da tabela
-      document.getElementById('th-nome').firstChild.textContent  = isCli ? 'Cliente ' : isVend ? 'Vendedor ' : 'Fornecedor ';
-      document.getElementById('th-col3').firstChild.textContent  = isVend ? 'Telefone ' : 'Cidade ';
-      document.getElementById('th-col4').textContent             = isVend ? 'E-mail' : 'Telefone';
-      document.getElementById('th-compras').style.display        = isVend ? 'none' : '';
+      document.getElementById('th-nome').firstChild.textContent = isCli ? 'Cliente ' : isVend ? 'Vendedor ' : 'Fornecedor ';
+      document.getElementById('th-col3').firstChild.textContent = isVend ? 'Telefone ' : 'Cidade ';
+      document.getElementById('th-col4').textContent = isVend ? 'E-mail' : 'Telefone';
+      document.getElementById('th-compras').style.display = isVend ? 'none' : '';
       if (!isVend) document.getElementById('th-compras').firstChild.textContent = isCli ? 'Compras ' : 'Pedidos ';
       currentFilter = 'todos';
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       document.querySelector('.filter-btn[onclick*="todos"]').classList.add('active');
       document.getElementById('searchInput').value = '';
       currentPage = 1;
+      sortKey = null;
+      sortDir = 1;
       applyFilters();
     }
 
     // ─── RENDER TABLE ────────────────────────────────────────
     function renderTable() {
-      const body  = document.getElementById('tableBody');
+      const body = document.getElementById('tableBody');
       const empty = document.getElementById('emptyState');
-      const total = filtered.length;
-      const start = (currentPage - 1) * perPage;
-      const slice = filtered.slice(start, start + perPage);
+      const total = pageMeta.total;
+      const start = (pageMeta.page - 1) * pageMeta.limit;
+      const slice = filtered;
       const isCli = currentSection === 'clientes';
 
       if (!total) { body.innerHTML = ''; empty.classList.add('show'); }
@@ -1134,7 +1247,7 @@
 
       const isVend = currentSection === 'vendedores';
       body.innerHTML = slice.map(c => {
-        const [bg, fg]  = colorFor(c.nome);
+        const [bg, fg] = colorFor(c.nome);
         const typeLabel = c.tipo === 'pf' ? 'Pessoa Física' : c.tipo === 'pj' ? 'Pessoa Jurídica' : 'MEI';
         const statusLabel = c.status === 'ativo' ? 'Ativo' : c.status === 'inativo' ? 'Inativo' : 'Bloqueado';
         const statusClass = c.status === 'ativo' ? 'ativo' : c.status === 'inativo' ? 'inativo' : 'bloq';
@@ -1183,31 +1296,43 @@
     }
 
     function renderPagination(total) {
-      const pages = Math.ceil(total / perPage);
+      const pages = pageMeta.totalPages || Math.ceil(total / perPage);
       const pg = document.getElementById('pagination');
       if (pages <= 1) { pg.innerHTML = ''; return; }
-      let html = `<button class="pg-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}><i class="bi bi-chevron-left"></i></button>`;
-      for (let i = 1; i <= pages; i++) html += `<button class="pg-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
-      html += `<button class="pg-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}><i class="bi bi-chevron-right"></i></button>`;
+      let html = `<button class="pg-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}><i class="bi bi-chevron-left"></i></button>`;
+      for (const i of getVisiblePages(pages)) {
+        html += i === '...'
+          ? `<span class="pg-btn" style="pointer-events:none">...</span>`
+          : `<button class="pg-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+      }
+      html += `<button class="pg-btn" onclick="goPage(${currentPage + 1})" ${currentPage === pages ? 'disabled' : ''}><i class="bi bi-chevron-right"></i></button>`;
       pg.innerHTML = html;
     }
+
+    function getVisiblePages(totalPages) {
+      const pages = new Set([1, totalPages]);
+      for (let i = currentPage - 2; i <= currentPage + 2; i++) {
+        if (i >= 1 && i <= totalPages) pages.add(i);
+      }
+      const ordered = [...pages].sort((a, b) => a - b);
+      return ordered.flatMap((page, idx) => {
+        const prev = ordered[idx - 1];
+        return idx > 0 && page - prev > 1 ? ['...', page] : [page];
+      });
+    }
+
     function goPage(p) {
-      const pages = Math.ceil(filtered.length / perPage);
+      const pages = pageMeta.totalPages || 1;
       if (p < 1 || p > pages) return;
-      currentPage = p; renderTable();
+      loadEntityPage(p);
     }
 
     function updateKPIs() {
-      const data = activeData();
-      const now = new Date();
-      const mes = String(now.getMonth()+1).padStart(2,'0');
-      const ano = String(now.getFullYear());
-      document.getElementById('kpi-total').textContent    = data.length;
-      document.getElementById('kpi-ativos').textContent   = data.filter(c => c.status === 'ativo').length;
-      document.getElementById('kpi-inativos').textContent = data.filter(c => c.status === 'inativo' || c.status === 'bloq').length;
-      document.getElementById('kpi-mes').textContent      = data.filter(c => {
-        const p = (c.cadastro||'').split('/'); return p[1]===mes && p[2]===ano;
-      }).length;
+      const resumo = activeResumo();
+      document.getElementById('kpi-total').textContent = resumo.total;
+      document.getElementById('kpi-ativos').textContent = resumo.ativos;
+      document.getElementById('kpi-inativos').textContent = resumo.inativos;
+      document.getElementById('kpi-mes').textContent = resumo.mes;
     }
 
     // ─── FILTER / SEARCH ─────────────────────────────────────
@@ -1218,31 +1343,23 @@
     }
     function filterTable() { currentPage = 1; applyFilters(); }
     function applyFilters() {
-      const q = document.getElementById('searchInput').value.toLowerCase();
-      filtered = activeData().filter(c => {
-        const matchQ = !q || c.nome.toLowerCase().includes(q) || c.doc.includes(q) || (c.email||'').toLowerCase().includes(q);
-        const matchF = currentFilter === 'todos' || c.status === currentFilter || c.tipo === currentFilter;
-        return matchQ && matchF;
-      });
-      renderTable();
+      currentPage = 1;
+      return loadEntityPage(1);
     }
 
     // ─── SORT ────────────────────────────────────────────────
-    let sortDir = 1;
     function sortTable(key) {
-      filtered.sort((a, b) => {
-        const av = typeof a[key]==='number' ? a[key] : (a[key]||'').toLowerCase();
-        const bv = typeof b[key]==='number' ? b[key] : (b[key]||'').toLowerCase();
-        return av > bv ? sortDir : av < bv ? -sortDir : 0;
-      });
-      sortDir *= -1; renderTable();
+      if (sortKey === key) sortDir *= -1;
+      else { sortKey = key; sortDir = 1; }
+      currentPage = 1;
+      loadEntityPage(1);
     }
 
     // ─── CONFIRM MODAL ───────────────────────────────────────
     let confirmCallback = null;
     function openConfirm(title, msg, cb) {
       document.getElementById('confirmTitle').textContent = title;
-      document.getElementById('confirmMsg').textContent   = msg;
+      document.getElementById('confirmMsg').textContent = msg;
       confirmCallback = cb;
       document.getElementById('confirmOverlay').classList.add('open');
     }
@@ -1260,21 +1377,21 @@
       if (currentSection === 'vendedores') { openVendedorModal(); return; }
       editingId = null;
       document.getElementById('modalTitle').textContent = `Novo ${entityLabel()}`;
-      document.getElementById('modalSub').textContent   = `Preencha os dados do ${entityLabel().toLowerCase()}`;
+      document.getElementById('modalSub').textContent = `Preencha os dados do ${entityLabel().toLowerCase()}`;
       if (reset) { resetForm(); wizardGoTo(1); }
       document.getElementById('modalOverlay').classList.add('open');
     }
     function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
-    function handleOverlayClick(e) { if (e.target===document.getElementById('modalOverlay')) closeModal(); }
+    function handleOverlayClick(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
 
     function resetForm() {
       populateVendedorSelect();
-      ['f-nome','f-cpf','f-rg','f-nasc','f-tel','f-email','f-cep','f-logradouro',
-       'f-numero','f-complemento','f-bairro','f-cidade','f-pais','f-tel2','f-site',
-       'f-limite','f-desconto','f-obs','f-tags'].forEach(id => {
-        const el = document.getElementById(id); if (el) el.value = '';
-      });
-      ['f-genero','f-estado','f-condicao','f-vendedor','f-grupo','f-status','f-origem'].forEach(id => {
+      ['f-nome', 'f-cpf', 'f-rg', 'f-nasc', 'f-tel', 'f-email', 'f-cep', 'f-logradouro',
+        'f-numero', 'f-complemento', 'f-bairro', 'f-cidade', 'f-pais', 'f-tel2', 'f-site',
+        'f-limite', 'f-desconto', 'f-obs', 'f-tags'].forEach(id => {
+          const el = document.getElementById(id); if (el) el.value = '';
+        });
+      ['f-genero', 'f-estado', 'f-condicao', 'f-vendedor', 'f-grupo', 'f-status', 'f-origem'].forEach(id => {
         const el = document.getElementById(id); if (el) el.selectedIndex = 0;
       });
       document.getElementById('f-pais').value = 'Brasil';
@@ -1284,32 +1401,32 @@
     function wizardGoTo(step) {
       wizardStep = step;
       for (let i = 1; i <= 4; i++) {
-        document.getElementById(`mstep-${i}`).style.display = i===step ? 'block' : 'none';
+        document.getElementById(`mstep-${i}`).style.display = i === step ? 'block' : 'none';
         const tab = document.getElementById(`tab-${i}`);
-        tab.classList.remove('active','done');
+        tab.classList.remove('active', 'done');
         if (i < step) tab.classList.add('done');
         if (i === step) tab.classList.add('active');
         if (i < step) tab.querySelector('.tab-num').innerHTML = '<i class="bi bi-check2"></i>';
         else tab.querySelector('.tab-num').textContent = i;
       }
       document.getElementById('mf-step-info').textContent = `Passo ${step} de 4`;
-      document.getElementById('btnBack').style.display    = step > 1 ? 'flex' : 'none';
-      document.getElementById('btnNext').innerHTML        = step < 4
+      document.getElementById('btnBack').style.display = step > 1 ? 'flex' : 'none';
+      document.getElementById('btnNext').innerHTML = step < 4
         ? 'Próximo <i class="bi bi-arrow-right"></i>'
         : `<i class="bi bi-check2"></i> Salvar ${entityLabel().toLowerCase()}`;
       document.getElementById('modalBody').scrollTop = 0;
     }
 
     function wizardNext() {
-      if (wizardStep===1 && !validateStep1()) return;
-      if (wizardStep < 4) { wizardGoTo(wizardStep+1); return; }
+      if (wizardStep === 1 && !validateStep1()) return;
+      if (wizardStep < 4) { wizardGoTo(wizardStep + 1); return; }
       saveEntity();
     }
-    function wizardBack() { if (wizardStep > 1) wizardGoTo(wizardStep-1); }
+    function wizardBack() { if (wizardStep > 1) wizardGoTo(wizardStep - 1); }
 
     function validateStep1() {
       let ok = true;
-      [{id:'f-nome',err:'e-nome'},{id:'f-tel',err:'e-tel'},{id:'f-cpf',err:'e-cpf'}].forEach(({id,err}) => {
+      [{ id: 'f-nome', err: 'e-nome' }, { id: 'f-tel', err: 'e-tel' }, { id: 'f-cpf', err: 'e-cpf' }].forEach(({ id, err }) => {
         const el = document.getElementById(id), er = document.getElementById(err);
         if (!el.value.trim()) { el.classList.add('err'); er.classList.add('show'); ok = false; }
         else { el.classList.remove('err'); er.classList.remove('show'); }
@@ -1338,37 +1455,37 @@
 
     async function saveEntity() {
       const existing = editingId ? activeData().find(x => x.id === editingId) : null;
-      const limiteRaw = document.getElementById('f-limite').value.replace(/\./g,'').replace(',','.').replace(/[^\d.]/g,'');
+      const limiteRaw = document.getElementById('f-limite').value.replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '');
       const payload = {
-        nome:        document.getElementById('f-nome').value.trim(),
-        tipo:        tipoSel,
-        secao:       currentSection,
-        doc:         document.getElementById('f-cpf').value.trim() || undefined,
-        rg:          document.getElementById('f-rg').value.trim() || undefined,
-        nascimento:  document.getElementById('f-nasc').value.trim() || undefined,
-        genero:      document.getElementById('f-genero').value || undefined,
-        tel:         document.getElementById('f-tel').value.trim() || undefined,
-        tel2:        document.getElementById('f-tel2').value.trim() || undefined,
-        email:       document.getElementById('f-email').value.trim() || undefined,
-        site:        document.getElementById('f-site').value.trim() || undefined,
-        cep:         document.getElementById('f-cep').value.trim() || undefined,
-        logradouro:  document.getElementById('f-logradouro').value.trim() || undefined,
-        numero:      document.getElementById('f-numero').value.trim() || undefined,
+        nome: document.getElementById('f-nome').value.trim(),
+        tipo: tipoSel,
+        secao: currentSection,
+        doc: document.getElementById('f-cpf').value.trim() || undefined,
+        rg: document.getElementById('f-rg').value.trim() || undefined,
+        nascimento: document.getElementById('f-nasc').value.trim() || undefined,
+        genero: document.getElementById('f-genero').value || undefined,
+        tel: document.getElementById('f-tel').value.trim() || undefined,
+        tel2: document.getElementById('f-tel2').value.trim() || undefined,
+        email: document.getElementById('f-email').value.trim() || undefined,
+        site: document.getElementById('f-site').value.trim() || undefined,
+        cep: document.getElementById('f-cep').value.trim() || undefined,
+        logradouro: document.getElementById('f-logradouro').value.trim() || undefined,
+        numero: document.getElementById('f-numero').value.trim() || undefined,
         complemento: document.getElementById('f-complemento').value.trim() || undefined,
-        bairro:      document.getElementById('f-bairro').value.trim() || undefined,
-        cidade:      document.getElementById('f-cidade').value.trim() || undefined,
-        estado:      document.getElementById('f-estado').value || undefined,
-        status:      document.getElementById('f-status').value || 'ativo',
-        limite:      parseFloat(limiteRaw) || 0,
-        desconto:    document.getElementById('f-desconto').value.trim() || undefined,
-        condicao:    document.getElementById('f-condicao').value || undefined,
-        vendedor:    document.getElementById('f-vendedor').options[document.getElementById('f-vendedor').selectedIndex]?.text || undefined,
-        vendedorId:  document.getElementById('f-vendedor').value || undefined,
-        grupo:       document.getElementById('f-grupo').value || undefined,
-        origem:      document.getElementById('f-origem').value || undefined,
-        tags:        document.getElementById('f-tags').value.trim() || undefined,
-        obs:         document.getElementById('f-obs').value || undefined,
-        cadastro:    existing?.cadastro || new Date().toLocaleDateString('pt-BR'),
+        bairro: document.getElementById('f-bairro').value.trim() || undefined,
+        cidade: document.getElementById('f-cidade').value.trim() || undefined,
+        estado: document.getElementById('f-estado').value || undefined,
+        status: document.getElementById('f-status').value || 'ativo',
+        limite: parseFloat(limiteRaw) || 0,
+        desconto: document.getElementById('f-desconto').value.trim() || undefined,
+        condicao: document.getElementById('f-condicao').value || undefined,
+        vendedor: document.getElementById('f-vendedor').options[document.getElementById('f-vendedor').selectedIndex]?.text || undefined,
+        vendedorId: document.getElementById('f-vendedor').value || undefined,
+        grupo: document.getElementById('f-grupo').value || undefined,
+        origem: document.getElementById('f-origem').value || undefined,
+        tags: document.getElementById('f-tags').value.trim() || undefined,
+        obs: document.getElementById('f-obs').value || undefined,
+        cadastro: existing?.cadastro || new Date().toLocaleDateString('pt-BR'),
       };
 
       const res = editingId
@@ -1381,54 +1498,48 @@
         return;
       }
 
-      const saved = res.data;
-      const data  = activeData();
-      if (editingId) {
-        const idx = data.findIndex(x => x.id === editingId);
-        if (idx >= 0) data[idx] = saved;
-      } else {
-        data.unshift(saved);
-      }
+      const wasEditing = !!editingId;
       closeModal();
-      applyFilters();
+      await loadResumo(currentSection);
+      await loadEntityPage(wasEditing ? currentPage : 1);
       showToast(editingId ? `${entityLabel()} atualizado com sucesso!` : `${entityLabel()} cadastrado com sucesso!`);
     }
 
     // ─── EDIT / DELETE ───────────────────────────────────────
     function openEdit(id) {
-      const c = activeData().find(x => x.id===id);
+      const c = activeData().find(x => x.id === id);
       if (!c) return;
       editingId = id;
       document.getElementById('modalTitle').textContent = `Editar ${entityLabel()}`;
-      document.getElementById('modalSub').textContent   = c.nome;
+      document.getElementById('modalSub').textContent = c.nome;
       resetForm();
-      document.getElementById('f-nome').value        = c.nome;
-      document.getElementById('f-cpf').value         = c.doc || '';
-      document.getElementById('f-rg').value          = c.rg || '';
-      document.getElementById('f-nasc').value        = c.nascimento || '';
-      document.getElementById('f-tel').value         = c.tel || '';
-      document.getElementById('f-tel2').value        = c.tel2 || '';
-      document.getElementById('f-email').value       = c.email || '';
-      document.getElementById('f-site').value        = c.site || '';
-      document.getElementById('f-cep').value         = c.cep || '';
-      document.getElementById('f-logradouro').value  = c.logradouro || '';
-      document.getElementById('f-numero').value      = c.numero || '';
+      document.getElementById('f-nome').value = c.nome;
+      document.getElementById('f-cpf').value = c.doc || '';
+      document.getElementById('f-rg').value = c.rg || '';
+      document.getElementById('f-nasc').value = c.nascimento || '';
+      document.getElementById('f-tel').value = c.tel || '';
+      document.getElementById('f-tel2').value = c.tel2 || '';
+      document.getElementById('f-email').value = c.email || '';
+      document.getElementById('f-site').value = c.site || '';
+      document.getElementById('f-cep').value = c.cep || '';
+      document.getElementById('f-logradouro').value = c.logradouro || '';
+      document.getElementById('f-numero').value = c.numero || '';
       document.getElementById('f-complemento').value = c.complemento || '';
-      document.getElementById('f-bairro').value      = c.bairro || '';
-      document.getElementById('f-cidade').value      = c.cidade !== '—' ? (c.cidade || '') : '';
-      document.getElementById('f-obs').value         = c.obs || '';
-      document.getElementById('f-tags').value        = c.tags || '';
+      document.getElementById('f-bairro').value = c.bairro || '';
+      document.getElementById('f-cidade').value = c.cidade !== '—' ? (c.cidade || '') : '';
+      document.getElementById('f-obs').value = c.obs || '';
+      document.getElementById('f-tags').value = c.tags || '';
       if (c.limite) {
-        const v = parseFloat(c.limite).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+        const v = parseFloat(c.limite).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
         document.getElementById('f-limite').value = v;
       }
       document.getElementById('f-desconto').value = c.desconto && c.desconto !== '0' ? c.desconto : '';
       setSelectVal('f-genero', c.genero);
-      setSelectVal('f-estado', c.estado);   setSelectVal('f-status', c.status);
+      setSelectVal('f-estado', c.estado); setSelectVal('f-status', c.status);
       setSelectVal('f-condicao', c.condicao);
       if (c.vendedorId) setSelectVal('f-vendedor', c.vendedorId);
       else setSelectVal('f-vendedor', c.vendedor);
-      setSelectVal('f-grupo', c.grupo);     setSelectVal('f-origem', c.origem);
+      setSelectVal('f-grupo', c.grupo); setSelectVal('f-origem', c.origem);
       const tipoEl = document.getElementById(`tipo-${c.tipo}`);
       if (tipoEl) selectTipo(tipoEl, c.tipo);
       wizardGoTo(1);
@@ -1437,11 +1548,11 @@
 
     function setSelectVal(id, val) {
       const el = document.getElementById(id); if (!el || !val) return;
-      for (let o of el.options) if (o.value===val || o.text===val) { o.selected=true; break; }
+      for (let o of el.options) if (o.value === val || o.text === val) { o.selected = true; break; }
     }
 
     function deleteEntity(id) {
-      const entry = activeData().find(x => x.id===id);
+      const entry = activeData().find(x => x.id === id);
       if (!entry) return;
       openConfirm(
         `Excluir ${entityLabel().toLowerCase()}`,
@@ -1450,9 +1561,9 @@
           const endpoint = currentSection === 'vendedores' ? `/vendedores/${id}` : `/clientes/${id}`;
           const res = await NexoAuth.apiFetch(endpoint, { method: 'DELETE' });
           if (!res.ok) { showToast('❌ ' + res.message); return; }
-          setActiveData(activeData().filter(x => x.id !== id));
           if (currentDetailId === id) closeDetail();
-          applyFilters();
+          await loadResumo(currentSection);
+          await loadEntityPage(currentPage);
           showToast(`${entityLabel()} removido.`);
         }
       );
@@ -1460,41 +1571,41 @@
 
     // ─── DETAIL PANEL ────────────────────────────────────────
     function openDetail(id) {
-      const c = activeData().find(x => x.id===id);
+      const c = activeData().find(x => x.id === id);
       if (!c) return;
       currentDetailId = id;
-      const [bg,fg] = colorFor(c.nome);
+      const [bg, fg] = colorFor(c.nome);
       document.getElementById('dp-avatar').style.cssText = `background:${bg};color:${fg}`;
-      document.getElementById('dp-avatar').textContent   = initials(c.nome);
-      document.getElementById('dp-name').textContent     = c.nome;
-      document.getElementById('dp-doc').textContent      = c.doc;
+      document.getElementById('dp-avatar').textContent = initials(c.nome);
+      document.getElementById('dp-name').textContent = c.nome;
+      document.getElementById('dp-doc').textContent = c.doc;
 
-      const typeLabel   = c.tipo==='pf' ? 'Pessoa Física' : c.tipo==='pj' ? 'Pessoa Jurídica' : 'MEI';
-      const statusLabel = c.status==='ativo' ? 'Ativo' : c.status==='inativo' ? 'Inativo' : 'Bloqueado';
-      const isCli       = currentSection === 'clientes';
-      const movLabel    = isCli ? 'Compras' : 'Pedidos';
-      const movVal      = isCli ? (c.compras||0)+' pedidos' : (c.pedidos||0)+' ordens';
-      const parteLabel  = isCli ? 'Vendedor' : 'Comprador';
+      const typeLabel = c.tipo === 'pf' ? 'Pessoa Física' : c.tipo === 'pj' ? 'Pessoa Jurídica' : 'MEI';
+      const statusLabel = c.status === 'ativo' ? 'Ativo' : c.status === 'inativo' ? 'Inativo' : 'Bloqueado';
+      const isCli = currentSection === 'clientes';
+      const movLabel = isCli ? 'Compras' : 'Pedidos';
+      const movVal = isCli ? (c.compras || 0) + ' pedidos' : (c.pedidos || 0) + ' ordens';
+      const parteLabel = isCli ? 'Vendedor' : 'Comprador';
 
       document.getElementById('dp-info').innerHTML = [
-        ['Tipo',typeLabel],['Telefone',c.tel],['E-mail',c.email||'—'],
-        [parteLabel,c.vendedor||'—'],['Grupo',c.grupo||'—'],['Status',statusLabel],
-        ['Cadastro',c.cadastro],[movLabel,movVal]
-      ].map(([l,v])=>`<div class="dp-row"><span class="dp-label">${l}</span><span class="dp-val">${v}</span></div>`).join('');
+        ['Tipo', typeLabel], ['Telefone', c.tel], ['E-mail', c.email || '—'],
+        [parteLabel, c.vendedor || '—'], ['Grupo', c.grupo || '—'], ['Status', statusLabel],
+        ['Cadastro', c.cadastro], [movLabel, movVal]
+      ].map(([l, v]) => `<div class="dp-row"><span class="dp-label">${l}</span><span class="dp-val">${v}</span></div>`).join('');
 
-      const addr = [c.logradouro,c.numero,c.bairro,c.cidade,c.estado,c.cep].filter(Boolean).join(', ')||'—';
+      const addr = [c.logradouro, c.numero, c.bairro, c.cidade, c.estado, c.cep].filter(Boolean).join(', ') || '—';
       document.getElementById('dp-addr').innerHTML =
         `<div class="dp-row"><span class="dp-label">Endereço</span><span class="dp-val" style="max-width:200px;text-align:right">${addr}</span></div>`;
 
-      const limFmt = c.limite ? 'R$ '+fmt(parseFloat(c.limite)||0) : '—';
+      const limFmt = c.limite ? 'R$ ' + fmt(parseFloat(c.limite) || 0) : '—';
       document.getElementById('dp-fin').innerHTML = [
-        ['Limite',limFmt],['Condição',c.condicao||'—']
-      ].map(([l,v])=>`<div class="dp-row"><span class="dp-label">${escapeHTML(l)}</span><span class="dp-val">${escapeHTML(v)}</span></div>`).join('');
+        ['Limite', limFmt], ['Condição', c.condicao || '—']
+      ].map(([l, v]) => `<div class="dp-row"><span class="dp-label">${escapeHTML(l)}</span><span class="dp-val">${escapeHTML(v)}</span></div>`).join('');
 
       document.getElementById('detailPanel').classList.add('open');
     }
-    function closeDetail() { document.getElementById('detailPanel').classList.remove('open'); currentDetailId=null; }
-    function editClient()  { if (currentDetailId) { closeDetail(); openEdit(currentDetailId); } }
+    function closeDetail() { document.getElementById('detailPanel').classList.remove('open'); currentDetailId = null; }
+    function editClient() { if (currentDetailId) { closeDetail(); openEdit(currentDetailId); } }
 
     // ─── TIPO PESSOA ─────────────────────────────────────────
     function selectTipo(el, tipo) {
@@ -1502,67 +1613,73 @@
       document.querySelectorAll('.radio-opt').forEach(o => o.classList.remove('sel'));
       el.classList.add('sel');
       const isPJ = tipo === 'pj' || tipo === 'mei';
-      document.getElementById('dados-title').textContent  = isPJ ? 'Dados da Empresa' : 'Dados Pessoais';
-      document.getElementById('lbl-doc').textContent      = isPJ ? 'CNPJ *' : 'CPF *';
-      document.getElementById('lbl-rg').textContent       = isPJ ? 'Inscrição Estadual' : 'RG';
-      document.getElementById('f-cpf').placeholder        = isPJ ? '00.000.000/0001-00' : '000.000.000-00';
-      document.getElementById('grp-nasc').style.display   = isPJ ? 'none' : '';
+      document.getElementById('dados-title').textContent = isPJ ? 'Dados da Empresa' : 'Dados Pessoais';
+      document.getElementById('lbl-doc').textContent = isPJ ? 'CNPJ *' : 'CPF *';
+      document.getElementById('lbl-rg').textContent = isPJ ? 'Inscrição Estadual' : 'RG';
+      document.getElementById('f-cpf').placeholder = isPJ ? '00.000.000/0001-00' : '000.000.000-00';
+      document.getElementById('grp-nasc').style.display = isPJ ? 'none' : '';
       document.getElementById('grp-genero').style.display = isPJ ? 'none' : '';
     }
 
     // ─── MASKS ───────────────────────────────────────────────
     function maskCPF(el) {
-      let v = el.value.replace(/\D/g,'');
-      if (tipoSel==='pj'||tipoSel==='mei') {
-        v=v.substring(0,14);
-        if(v.length>12) v=v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5,8)+'/'+v.slice(8,12)+'-'+v.slice(12);
-        else if(v.length>8) v=v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5,8)+'/'+v.slice(8);
-        else if(v.length>5) v=v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5);
-        else if(v.length>2) v=v.slice(0,2)+'.'+v.slice(2);
+      let v = el.value.replace(/\D/g, '');
+      if (tipoSel === 'pj' || tipoSel === 'mei') {
+        v = v.substring(0, 14);
+        if (v.length > 12) v = v.slice(0, 2) + '.' + v.slice(2, 5) + '.' + v.slice(5, 8) + '/' + v.slice(8, 12) + '-' + v.slice(12);
+        else if (v.length > 8) v = v.slice(0, 2) + '.' + v.slice(2, 5) + '.' + v.slice(5, 8) + '/' + v.slice(8);
+        else if (v.length > 5) v = v.slice(0, 2) + '.' + v.slice(2, 5) + '.' + v.slice(5);
+        else if (v.length > 2) v = v.slice(0, 2) + '.' + v.slice(2);
       } else {
-        v=v.substring(0,11);
-        if(v.length>9) v=v.slice(0,3)+'.'+v.slice(3,6)+'.'+v.slice(6,9)+'-'+v.slice(9);
-        else if(v.length>6) v=v.slice(0,3)+'.'+v.slice(3,6)+'.'+v.slice(6);
-        else if(v.length>3) v=v.slice(0,3)+'.'+v.slice(3);
+        v = v.substring(0, 11);
+        if (v.length > 9) v = v.slice(0, 3) + '.' + v.slice(3, 6) + '.' + v.slice(6, 9) + '-' + v.slice(9);
+        else if (v.length > 6) v = v.slice(0, 3) + '.' + v.slice(3, 6) + '.' + v.slice(6);
+        else if (v.length > 3) v = v.slice(0, 3) + '.' + v.slice(3);
       }
-      el.value=v;
+      el.value = v;
     }
     function maskDate(el) {
-      let v=el.value.replace(/\D/g,'').substring(0,8);
-      if(v.length>4) v=v.slice(0,2)+'/'+v.slice(2,4)+'/'+v.slice(4);
-      else if(v.length>2) v=v.slice(0,2)+'/'+v.slice(2);
-      el.value=v;
+      let v = el.value.replace(/\D/g, '').substring(0, 8);
+      if (v.length > 4) v = v.slice(0, 2) + '/' + v.slice(2, 4) + '/' + v.slice(4);
+      else if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
+      el.value = v;
     }
     function maskCurrency(el) {
-      let v=el.value.replace(/\D/g,'');
-      if(!v){el.value='';return;}
-      el.value=(parseInt(v)/100).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+      let v = el.value.replace(/\D/g, '');
+      if (!v) { el.value = ''; return; }
+      el.value = (parseInt(v) / 100).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
 
     // ─── CEP API ─────────────────────────────────────────────
     async function buscaCEP() {
-      const cep = document.getElementById('f-cep').value.replace(/\D/g,'');
-      if (cep.length!==8) return;
-      document.getElementById('cep-loading').style.display='block';
+      const cep = document.getElementById('f-cep').value.replace(/\D/g, '');
+      if (cep.length !== 8) return;
+      document.getElementById('cep-loading').style.display = 'block';
       try {
-        const r=await fetch(`https://viacep.com.br/ws/${cep}/json/`), d=await r.json();
-        if(!d.erro){
-          document.getElementById('f-logradouro').value=d.logradouro||'';
-          document.getElementById('f-bairro').value=d.bairro||'';
-          document.getElementById('f-cidade').value=d.localidade||'';
-          setSelectVal('f-estado',d.uf);
+        const r = await fetch(`https://viacep.com.br/ws/${cep}/json/`), d = await r.json();
+        if (!d.erro) {
+          document.getElementById('f-logradouro').value = d.logradouro || '';
+          document.getElementById('f-bairro').value = d.bairro || '';
+          document.getElementById('f-cidade').value = d.localidade || '';
+          setSelectVal('f-estado', d.uf);
           document.getElementById('f-numero').focus();
         }
-      } catch(e){}
-      document.getElementById('cep-loading').style.display='none';
+      } catch (e) { }
+      document.getElementById('cep-loading').style.display = 'none';
     }
 
     // ─── EXPORT CSV ──────────────────────────────────────────
-    function exportCSV() {
+    async function exportCSV() {
       const isCli = currentSection === 'clientes';
-      const label = isCli ? 'clientes' : 'fornecedores';
+      const label = isCli ? 'clientes' : currentSection === 'vendedores' ? 'vendedores' : 'fornecedores';
       const header = ['Nome', 'Tipo', 'CPF/CNPJ', 'Telefone', 'E-mail', 'Cidade', 'Estado', 'Status', 'Cadastro'];
-      const rows = filtered.map(c => [
+      const res = await NexoAuth.apiFetch(endpointForCurrentSection() + '?' + buildEntityQuery(1, false));
+      if (!res.ok) {
+        NexoToast.error(res.message || 'Erro ao exportar dados.');
+        return;
+      }
+
+      const rows = (res.data || []).map(c => [
         c.nome,
         c.tipo === 'pf' ? 'Pessoa Física' : c.tipo === 'pj' ? 'Pessoa Jurídica' : 'MEI',
         c.doc, c.tel, c.email || '',
@@ -1575,7 +1692,7 @@
 
     function _csvDate() {
       const d = new Date();
-      return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+      return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
     }
 
     function populateVendedorSelect() {
@@ -1583,7 +1700,7 @@
       if (!sel) return;
       const cur = sel.value;
       sel.innerHTML = '<option value="">Sem vendedor</option>' +
-        vendedores.filter(v => v.status === 'ativo').map(v => `<option value="${v.id}">${v.nome}</option>`).join('');
+        vendedoresOptions.filter(v => v.status === 'ativo').map(v => `<option value="${v.id}">${v.nome}</option>`).join('');
       if (cur) setSelectVal('f-vendedor', cur);
     }
 
@@ -1605,7 +1722,7 @@
     }
     function resetVendForm() {
       vendTipoSel = 'pf';
-      ['vf-nome','vf-doc','vf-tel','vf-email'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      ['vf-nome', 'vf-doc', 'vf-tel', 'vf-email'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
       document.getElementById('vf-status').value = 'ativo';
       selectVendTipo(document.getElementById('vend-tipo-pf'), 'pf');
       document.querySelectorAll('[id^="ve-"]').forEach(e => e.classList.remove('show'));
@@ -1616,41 +1733,41 @@
       el.classList.add('sel');
       const isPJ = tipo === 'pj';
       document.getElementById('vend-lbl-nome').textContent = isPJ ? 'Razão Social *' : 'Nome *';
-      document.getElementById('vend-lbl-doc').textContent  = isPJ ? 'CNPJ *' : 'CPF *';
+      document.getElementById('vend-lbl-doc').textContent = isPJ ? 'CNPJ *' : 'CPF *';
       document.getElementById('vf-doc').placeholder = isPJ ? '00.000.000/0001-00' : '000.000.000-00';
-      document.getElementById('vf-doc').maxLength   = isPJ ? 18 : 14;
+      document.getElementById('vf-doc').maxLength = isPJ ? 18 : 14;
       document.getElementById('vf-doc').value = '';
     }
     function maskVendDoc(el) {
       if (vendTipoSel === 'pj') {
-        let v = el.value.replace(/\D/g,'');
-        v = v.replace(/^(\d{2})(\d)/,'$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3')
-             .replace(/\.(\d{3})(\d)/,'.$1/$2').replace(/(\d{4})(\d)/,'$1-$2');
-        el.value = v.slice(0,18);
+        let v = el.value.replace(/\D/g, '');
+        v = v.replace(/^(\d{2})(\d)/, '$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+          .replace(/\.(\d{3})(\d)/, '.$1/$2').replace(/(\d{4})(\d)/, '$1-$2');
+        el.value = v.slice(0, 18);
       } else {
-        let v = el.value.replace(/\D/g,'');
-        v = v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})\.(\d{3})(\d)/,'$1.$2.$3')
-             .replace(/(\d{3})\.(\d{3})\.(\d{3})(\d)/,'$1.$2.$3-$4');
-        el.value = v.slice(0,14);
+        let v = el.value.replace(/\D/g, '');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
+          .replace(/(\d{3})\.(\d{3})\.(\d{3})(\d)/, '$1.$2.$3-$4');
+        el.value = v.slice(0, 14);
       }
     }
     async function saveVendedor() {
       const nome = document.getElementById('vf-nome').value.trim();
-      const doc  = document.getElementById('vf-doc').value.trim();
-      const tel  = document.getElementById('vf-tel').value.trim();
+      const doc = document.getElementById('vf-doc').value.trim();
+      const tel = document.getElementById('vf-tel').value.trim();
       let ok = true;
       if (!nome) { document.getElementById('ve-nome').classList.add('show'); ok = false; } else document.getElementById('ve-nome').classList.remove('show');
-      if (!doc)  { document.getElementById('ve-doc').classList.add('show');  ok = false; } else document.getElementById('ve-doc').classList.remove('show');
-      if (!tel)  { document.getElementById('ve-tel').classList.add('show');  ok = false; } else document.getElementById('ve-tel').classList.remove('show');
+      if (!doc) { document.getElementById('ve-doc').classList.add('show'); ok = false; } else document.getElementById('ve-doc').classList.remove('show');
+      if (!tel) { document.getElementById('ve-tel').classList.add('show'); ok = false; } else document.getElementById('ve-tel').classList.remove('show');
       if (!ok) return;
 
       const payload = {
         nome,
-        tipo:     vendTipoSel,
+        tipo: vendTipoSel,
         doc,
         tel,
-        email:    document.getElementById('vf-email').value.trim() || undefined,
-        status:   document.getElementById('vf-status').value,
+        email: document.getElementById('vf-email').value.trim() || undefined,
+        status: document.getElementById('vf-status').value,
         cadastro: editingVendId
           ? (vendedores.find(v => v.id === editingVendId)?.cadastro || new Date().toLocaleDateString('pt-BR'))
           : new Date().toLocaleDateString('pt-BR'),
@@ -1662,16 +1779,11 @@
 
       if (!res.ok) { showToast('❌ ' + res.message); return; }
 
-      const saved = res.data;
-      if (editingVendId) {
-        const idx = vendedores.findIndex(v => v.id === editingVendId);
-        if (idx >= 0) vendedores[idx] = saved;
-      } else {
-        vendedores.unshift(saved);
-      }
-      populateVendedorSelect();
+      const wasEditing = !!editingVendId;
+      await loadResumo('vendedores');
+      await loadVendedoresOptions();
       closeVendedorModal();
-      applyFilters();
+      await loadEntityPage(wasEditing ? currentPage : 1);
       showToast(editingVendId ? 'Vendedor atualizado com sucesso!' : 'Vendedor cadastrado com sucesso!');
       editingVendId = null;
     }
@@ -1682,9 +1794,9 @@
       document.getElementById('vendedorModalTitle').textContent = 'Editar Vendedor';
       const tipoEl = document.getElementById(`vend-tipo-${v.tipo}`);
       if (tipoEl) selectVendTipo(tipoEl, v.tipo);
-      document.getElementById('vf-nome').value  = v.nome;
-      document.getElementById('vf-doc').value   = v.doc;
-      document.getElementById('vf-tel').value   = v.tel;
+      document.getElementById('vf-nome').value = v.nome;
+      document.getElementById('vf-doc').value = v.doc;
+      document.getElementById('vf-tel').value = v.tel;
       document.getElementById('vf-email').value = v.email || '';
       document.getElementById('vf-status').value = v.status;
       document.querySelectorAll('[id^="ve-"]').forEach(e => e.classList.remove('show'));

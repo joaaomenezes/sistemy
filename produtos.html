@@ -938,7 +938,7 @@
         <div class="search-input">
           <i class="bi bi-search" style="color:var(--muted)"></i>
           <input type="text" id="searchInput" placeholder="Buscar por nome, SKU, código de barras..."
-            oninput="applyFilters()">
+            oninput="scheduleFilters()">
         </div>
         <div class="filter-group">
           <button class="filter-btn active" onclick="setFilter(this,'todos')">Todos</button>
@@ -1475,6 +1475,9 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
     let viewMode = 'grid';
     let currentPage = 1;
     const perPage = 8;
+    let pageMeta = { page: 1, limit: perPage, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
+    let produtoResumo = { total: 0, ativos: 0, baixo: 0, zerado: 0, valorEstoque: 0 };
+    let filterTimer = null;
     let editingId = null;
     let selectedCat = null;
     let selectedEmoji = '📦';
@@ -1510,13 +1513,13 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
       buildEmojiGrid();
       buildColorSwatches();
       await Promise.all([
-        NexoAuth.apiFetch('/produtos').then(r => { if (r.ok) products = r.data.map(fromApi); }),
         NexoAuth.apiFetch('/categorias').then(r => { if (r.ok) categories = r.data; }),
+        loadProdutoResumo(),
+        loadProductsPage(1, false),
         populateDepositoSelect(),
         populateFornecedorSelect(),
       ]);
       populateCatSelect();
-      applyFilters();
       document.addEventListener('click', e => {
         const wrap = document.getElementById('catFilterWrap');
         if (wrap && !wrap.contains(e.target)) document.getElementById('catDropdown').classList.remove('open');
@@ -1548,6 +1551,71 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
       document.querySelectorAll('.swatch').forEach((el, i) => el.classList.toggle('sel', SWATCHES[i] === c));
     }
 
+    function buildProdutoQuery(page = currentPage, withPagination = true) {
+      const params = new URLSearchParams();
+      const q = document.getElementById('searchInput')?.value.trim();
+
+      if (withPagination) {
+        params.set('page', String(page));
+        params.set('limit', String(perPage));
+      }
+      if (q) params.set('q', q);
+      if (currentFilter === 'ativo' || currentFilter === 'inativo') params.set('status', currentFilter);
+      if (currentFilter === 'baixo') params.set('estoqueStatus', 'baixo');
+      if (currentFilter === 'cat' && selectedCat) params.set('cat', selectedCat);
+      if (sortKey) {
+        params.set('sortBy', sortKey);
+        params.set('sortDir', sortDir === -1 ? 'desc' : 'asc');
+      }
+
+      return params.toString();
+    }
+
+    async function loadProdutoResumo() {
+      const res = await NexoAuth.apiFetch('/produtos/resumo');
+      if (res.ok) produtoResumo = { ...produtoResumo, ...res.data };
+      updateKPIs();
+    }
+
+    function renderLoadingState() {
+      if (viewMode === 'list') {
+        document.getElementById('tableBody').innerHTML = NexoSkeleton.tableRows(8, 6);
+        document.getElementById('emptyList').classList.remove('show');
+      } else {
+        document.getElementById('gridView').innerHTML = '';
+        document.getElementById('emptyGrid').classList.remove('show');
+      }
+    }
+
+    async function loadProductsPage(page = 1, showLoading = true) {
+      currentPage = page;
+      if (showLoading) renderLoadingState();
+
+      const res = await NexoAuth.apiFetch('/produtos?' + buildProdutoQuery(page));
+      if (!res.ok) {
+        NexoToast.error(res.message || 'Erro ao carregar produtos.');
+        return;
+      }
+
+      products = (res.data || []).map(fromApi);
+      filtered = [...products];
+      pageMeta = res.pagination || {
+        page,
+        limit: perPage,
+        total: filtered.length,
+        totalPages: Math.max(1, Math.ceil(filtered.length / perPage)),
+        hasNextPage: false,
+        hasPrevPage: page > 1,
+      };
+      currentPage = pageMeta.page;
+      renderAll();
+    }
+
+    function scheduleFilters() {
+      clearTimeout(filterTimer);
+      filterTimer = setTimeout(() => applyFilters(), 250);
+    }
+
     // ─── FILTERS ─────────────────────────────────────────────
     function setFilter(el, val) {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -1559,18 +1627,8 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
       applyFilters();
     }
     function applyFilters() {
-      const q = document.getElementById('searchInput').value.toLowerCase();
-      filtered = products.filter(p => {
-        const matchQ = !q || p.nome.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) || p.ean.includes(q) || p.cat.toLowerCase().includes(q);
-        let matchF = true;
-        if (currentFilter === 'ativo') matchF = p.status === 'ativo';
-        if (currentFilter === 'inativo') matchF = p.status === 'inativo';
-        if (currentFilter === 'baixo') matchF = p.estoque > 0 && p.estoque <= p.estoqueMin;
-        if (currentFilter === 'cat') matchF = p.cat === selectedCat;
-        return matchQ && matchF;
-      });
       currentPage = 1;
-      renderAll();
+      return loadProductsPage(1);
     }
 
     // ─── VIEW MODE ────────────────────────────────────────────
@@ -1600,12 +1658,12 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
       const grid = document.getElementById('gridView');
       const emptyG = document.getElementById('emptyGrid');
       const footer = document.getElementById('gridFooter');
-      const start = (currentPage - 1) * perPage;
-      const slice = filtered.slice(start, start + perPage);
+      const start = (pageMeta.page - 1) * pageMeta.limit;
+      const slice = filtered;
       if (!filtered.length) {
         grid.innerHTML = '';
-        emptyG.querySelector('h3').textContent = products.length === 0 ? 'Nenhum produto cadastrado' : 'Nenhum resultado encontrado';
-        emptyG.querySelector('p').textContent = products.length === 0 ? 'Cadastre seu primeiro produto clicando em "Novo Produto".' : 'Tente ajustar os filtros ou limpe a busca.';
+        emptyG.querySelector('h3').textContent = produtoResumo.total === 0 ? 'Nenhum produto cadastrado' : 'Nenhum resultado encontrado';
+        emptyG.querySelector('p').textContent = produtoResumo.total === 0 ? 'Cadastre seu primeiro produto clicando em "Novo Produto".' : 'Tente ajustar os filtros ou limpe a busca.';
         emptyG.classList.add('show');
         footer.style.display = 'none';
         return;
@@ -1637,18 +1695,35 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
     </div>`;
       }).join('');
 
-      const total = filtered.length;
+      const total = pageMeta.total;
       document.getElementById('gridInfo').textContent = `Mostrando ${Math.min(start + 1, total)}–${Math.min(start + perPage, total)} de ${total} produtos`;
       renderGridPagination(total);
-      footer.style.display = total > perPage ? 'flex' : 'none';
+      footer.style.display = total > pageMeta.limit ? 'flex' : 'none';
+    }
+
+    function getVisiblePages(totalPages) {
+      const pages = new Set([1, totalPages]);
+      for (let i = currentPage - 2; i <= currentPage + 2; i++) {
+        if (i >= 1 && i <= totalPages) pages.add(i);
+      }
+
+      const ordered = [...pages].sort((a, b) => a - b);
+      return ordered.flatMap((page, idx) => {
+        const prev = ordered[idx - 1];
+        return idx > 0 && page - prev > 1 ? ['...', page] : [page];
+      });
     }
 
     function renderGridPagination(total) {
-      const pages = Math.ceil(total / perPage);
+      const pages = pageMeta.totalPages || Math.ceil(total / perPage);
       const pg = document.getElementById('gridPagination');
       if (pages <= 1) { pg.innerHTML = ''; return; }
       let html = `<button class="pg-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}><i class="bi bi-chevron-left"></i></button>`;
-      for (let i = 1; i <= pages; i++) html += `<button class="pg-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+      for (const i of getVisiblePages(pages)) {
+        html += i === '...'
+          ? `<span class="pg-btn" style="pointer-events:none">...</span>`
+          : `<button class="pg-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+      }
       html += `<button class="pg-btn" onclick="goPage(${currentPage + 1})" ${currentPage === pages ? 'disabled' : ''}><i class="bi bi-chevron-right"></i></button>`;
       pg.innerHTML = html;
     }
@@ -1656,8 +1731,8 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
     function renderList() {
       const body = document.getElementById('tableBody');
       const emptyL = document.getElementById('emptyList');
-      const start = (currentPage - 1) * perPage;
-      const slice = filtered.slice(start, start + perPage);
+      const start = (pageMeta.page - 1) * pageMeta.limit;
+      const slice = filtered;
       if (!filtered.length) { body.innerHTML = ''; emptyL.classList.add('show'); }
       else emptyL.classList.remove('show');
 
@@ -1687,7 +1762,7 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
     </tr>`;
       }).join('');
 
-      const total = filtered.length;
+      const total = pageMeta.total;
       document.getElementById('tableInfo').textContent = `Mostrando ${Math.min(start + 1, total)}–${Math.min(start + perPage, total)} de ${total} produtos`;
       renderPagination(total);
       updateSortIndicators();
@@ -1709,40 +1784,38 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
     }
 
     function renderPagination(total) {
-      const pages = Math.ceil(total / perPage);
+      const pages = pageMeta.totalPages || Math.ceil(total / perPage);
       const pg = document.getElementById('pagination');
       if (pages <= 1) { pg.innerHTML = ''; return; }
       let html = `<button class="pg-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}><i class="bi bi-chevron-left"></i></button>`;
-      for (let i = 1; i <= pages; i++) html += `<button class="pg-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+      for (const i of getVisiblePages(pages)) {
+        html += i === '...'
+          ? `<span class="pg-btn" style="pointer-events:none">...</span>`
+          : `<button class="pg-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+      }
       html += `<button class="pg-btn" onclick="goPage(${currentPage + 1})" ${currentPage === pages ? 'disabled' : ''}><i class="bi bi-chevron-right"></i></button>`;
       pg.innerHTML = html;
     }
     function goPage(p) {
-      const pages = Math.ceil(filtered.length / perPage);
+      const pages = pageMeta.totalPages || 1;
       if (p < 1 || p > pages) return;
-      currentPage = p; renderAll();
+      loadProductsPage(p);
     }
 
     function updateKPIs() {
-      document.getElementById('kpi-total').textContent = products.length;
-      document.getElementById('kpi-ativos').textContent = products.filter(p => p.status === 'ativo').length;
-      document.getElementById('kpi-baixo').textContent = products.filter(p => p.estoque > 0 && p.estoque <= p.estoqueMin).length;
-      document.getElementById('kpi-zerado').textContent = products.filter(p => p.estoque === 0).length;
-      const valorTotal = products.reduce((acc, p) => acc + (p.estoque * (p.custo || 0)), 0);
-      document.getElementById('kpi-valor').textContent = 'R$ ' + fmtPrice(valorTotal);
+      document.getElementById('kpi-total').textContent = produtoResumo.total;
+      document.getElementById('kpi-ativos').textContent = produtoResumo.ativos;
+      document.getElementById('kpi-baixo').textContent = produtoResumo.baixo;
+      document.getElementById('kpi-zerado').textContent = produtoResumo.zerado;
+      document.getElementById('kpi-valor').textContent = 'R$ ' + fmtPrice(produtoResumo.valorEstoque);
     }
 
     // ─── SORT ─────────────────────────────────────────────────
     function sortProducts(key) {
       if (sortKey === key) sortDir *= -1;
       else { sortKey = key; sortDir = 1; }
-      filtered.sort((a, b) => {
-        const av = typeof a[key] === 'number' ? a[key] : (a[key] || '').toLowerCase();
-        const bv = typeof b[key] === 'number' ? b[key] : (b[key] || '').toLowerCase();
-        return av > bv ? sortDir : av < bv ? -sortDir : 0;
-      });
       currentPage = 1;
-      renderAll();
+      loadProductsPage(1);
     }
 
     // ─── MODAL ────────────────────────────────────────────────
@@ -1861,11 +1934,10 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
         return;
       }
 
-      const saved = fromApi(res.data);
-      if (editingId) { const idx = products.findIndex(x => x.id === editingId); if (idx >= 0) products[idx] = saved; }
-      else products.unshift(saved);
-
-      closeModal(); applyFilters();
+      const wasEditing = !!editingId;
+      closeModal();
+      await loadProdutoResumo();
+      await loadProductsPage(wasEditing ? currentPage : 1);
       showToast(editingId ? 'Produto atualizado com sucesso!' : 'Produto cadastrado com sucesso!');
     }
 
@@ -1946,9 +2018,10 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
       openConfirm(`"${p.nome}" será removido do catálogo.`, async () => {
         const res = await NexoAuth.apiFetch(`/produtos/${id}`, { method: 'DELETE' });
         if (!res.ok) { NexoToast.error(res.message); return; }
-        products = products.filter(x => x.id !== id);
         if (currentDetailId === id) closeDetail();
-        applyFilters(); NexoToast.success('Produto removido.');
+        await loadProdutoResumo();
+        await loadProductsPage(currentPage);
+        NexoToast.success('Produto removido.');
       });
     }
 
@@ -1995,18 +2068,17 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
       const dd = document.getElementById('catDropdown');
       if (dd.classList.contains('open')) { dd.classList.remove('open'); return; }
       dd.innerHTML = `<div class="cat-dd-item ${!selectedCat ? 'active' : ''}" onclick="filterByCat(-1)">
-        Todas <span class="cat-dd-count">${products.length}</span>
+        Todas <span class="cat-dd-count">${produtoResumo.total}</span>
       </div>` + categories.map((cat, i) => {
-        const count = products.filter(p => p.cat === cat).length;
-        return `<div class="cat-dd-item ${selectedCat === cat ? 'active' : ''}" onclick="filterByCat(${i})">
-          ${cat} <span class="cat-dd-count">${count}</span>
+        return `<div class="cat-dd-item ${selectedCat === cat.nome ? 'active' : ''}" onclick="filterByCat(${i})">
+          ${cat.nome}
         </div>`;
       }).join('');
       dd.classList.add('open');
     }
 
     function filterByCat(idx) {
-      selectedCat = idx >= 0 ? categories[idx] : null;
+      selectedCat = idx >= 0 ? categories[idx]?.nome : null;
       document.getElementById('catDropdown').classList.remove('open');
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       const btn = document.getElementById('catFilterBtn');
@@ -2078,10 +2150,8 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
         return;
       }
       list.innerHTML = categories.map(cat => {
-        const count = products.filter(p => p.cat === cat.nome).length;
         return `<div class="cat-item" id="cat-row-${cat.id}">
           <span class="cat-item-name" id="cat-name-${cat.id}">${cat.nome}</span>
-          <span class="cat-count">${count} prod.</span>
           <div class="act-btn" onclick="startRenameCat('${cat.id}')" title="Renomear"><i class="bi bi-pencil"></i></div>
           <div class="act-btn del" onclick="deleteCat('${cat.id}')" title="Excluir"><i class="bi bi-trash3"></i></div>
         </div>`;
@@ -2104,12 +2174,19 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
     async function deleteCat(id) {
       const cat = categories.find(c => c.id === id);
       if (!cat) return;
-      const inUse = products.filter(p => p.cat === cat.nome).length;
+      const uso = await NexoAuth.apiFetch(`/produtos?cat=${encodeURIComponent(cat.nome)}&page=1&limit=1`);
+      const inUse = uso.ok ? (uso.pagination?.total || uso.data.length) : 0;
       if (inUse > 0 && !confirm(`A categoria "${cat.nome}" está em uso por ${inUse} produto(s). Remover mesmo assim?`)) return;
       const res = await NexoAuth.apiFetch(`/categorias/${id}`, { method: 'DELETE' });
       if (!res.ok) { showToast('❌ ' + res.message); return; }
       categories = categories.filter(c => c.id !== id);
       renderCatList();
+      if (selectedCat === cat.nome) {
+        selectedCat = null;
+        currentFilter = 'todos';
+        document.getElementById('catFilterLabel').textContent = 'Categoria';
+        await loadProductsPage(1);
+      }
       showToast('Categoria removida.');
     }
 
@@ -2132,12 +2209,20 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
           const res = await NexoAuth.apiFetch(`/categorias/${id}`, { method: 'PUT', body: JSON.stringify({ nome: newVal }) });
           if (!res.ok) { showToast('❌ ' + res.message); renderCatList(); return; }
           // Atualiza produtos afetados via API
-          for (const p of products.filter(x => x.cat === cat.nome)) {
+          const produtosCat = await NexoAuth.apiFetch(`/produtos?cat=${encodeURIComponent(cat.nome)}`);
+          const afetados = produtosCat.ok ? produtosCat.data : products.filter(x => x.cat === cat.nome);
+          for (const p of afetados) {
             await NexoAuth.apiFetch(`/produtos/${p.id}`, { method: 'PUT', body: JSON.stringify({ cat: newVal }) });
             p.cat = newVal;
           }
           const idx = categories.findIndex(c => c.id === id);
           if (idx >= 0) categories[idx].nome = newVal;
+          if (selectedCat === cat.nome) {
+            selectedCat = newVal;
+            document.getElementById('catFilterLabel').textContent = newVal;
+          }
+          await loadProdutoResumo();
+          await loadProductsPage(currentPage);
           showToast('Categoria renomeada!');
         }
         renderCatList();
@@ -2146,9 +2231,15 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
     }
 
     // ─── EXPORT CSV ───────────────────────────────────────────
-    function exportCSV() {
+    async function exportCSV() {
       const header = ['SKU', 'Nome', 'Categoria', 'Marca', 'Unidade', 'Preço Venda', 'Custo', 'Margem %', 'Estoque', 'Est. Mínimo', 'Est. Máximo', 'Status', 'Depósito', 'Fornecedor', 'EAN', 'NCM'];
-      const rows = filtered.map(p => {
+      const res = await NexoAuth.apiFetch('/produtos?' + buildProdutoQuery(1, false));
+      if (!res.ok) {
+        NexoToast.error(res.message || 'Erro ao exportar produtos.');
+        return;
+      }
+
+      const rows = (res.data || []).map(fromApi).map(p => {
         const margem = p.custo > 0 ? (((p.preco - p.custo) / p.custo) * 100).toFixed(1) : '0.0';
         return [
           p.sku, p.nome, p.cat, p.marca, p.unidade,
