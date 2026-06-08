@@ -232,6 +232,29 @@
       background: rgba(255, 255, 255, .025);
     }
 
+    .vendas-table-card {
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 335px);
+    }
+
+    .vendas-table-card .table-wrap {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .vendas-table-card tbody tr {
+      height: 62px;
+    }
+
+    .vendas-table-card tbody tr:last-child td {
+      border-bottom: 1px solid rgba(30, 42, 58, .7);
+    }
+
+    .vendas-table-card .table-footer {
+      min-height: 56px;
+    }
+
     /* venda id */
     .venda-id {
       font-weight: 700;
@@ -562,8 +585,8 @@
         </div>
         <div class="header-actions">
           <button class="btn-sm btn-ghost-sm" onclick="exportCSV()"><i class="bi bi-download"></i> Exportar CSV</button>
-          <button class="btn-sm btn-primary-sm" onclick="window.location.href='pdv.html'"><i class="bi bi-display"></i>
-            Abrir PDV</button>
+          <button class="btn-sm btn-primary-sm" id="btnAbrirOrigem" onclick="window.location.href='pdv.html'"><i class="bi bi-display"></i>
+            <span>Abrir PDV</span></button>
         </div>
       </div>
 
@@ -662,7 +685,7 @@
       </div>
 
       <!-- Table -->
-      <div class="table-card">
+      <div class="table-card vendas-table-card">
         <div class="table-wrap">
           <table>
             <thead>
@@ -803,9 +826,13 @@
     let filtered = [...vendas];
     let currentFilter = 'todos';
     let currentPage = 1;
-    const perPage = 10;
     let sortDir = -1;
     let currentVendaId = null;
+
+    function getVendasPerPage() {
+      const usable = window.innerHeight - 445;
+      return Math.max(1, Math.floor(usable / 62));
+    }
 
     // ═══════════════════════════════════════════════
     // SECTION SWITCH
@@ -816,6 +843,13 @@
       document.getElementById('sec-pdv').classList.toggle('active', isPdv);
       document.getElementById('sec-pedidos').classList.toggle('active', !isPdv);
       document.getElementById('operatorHeader').textContent = isPdv ? 'Operador' : 'Vendedor';
+      const btnAbrir = document.getElementById('btnAbrirOrigem');
+      if (btnAbrir) {
+        btnAbrir.onclick = () => { window.location.href = isPdv ? 'pdv.html' : 'pedidos.html'; };
+        btnAbrir.innerHTML = isPdv
+          ? '<i class="bi bi-display"></i><span>Abrir PDV</span>'
+          : '<i class="bi bi-file-earmark-text-fill"></i><span>Abrir PV</span>';
+      }
       document.getElementById('emptyStateMsg').textContent = isPdv
         ? 'Ajuste os filtros ou realize vendas pelo PDV.'
         : 'Ajuste os filtros ou fature pedidos em Pedidos de Venda.';
@@ -945,6 +979,9 @@
       const body = document.getElementById('vendasBody');
       const empty = document.getElementById('emptyState');
       const total = filtered.length;
+      const perPage = getVendasPerPage();
+      const pages = Math.max(1, Math.ceil(total / perPage));
+      if (currentPage > pages) currentPage = pages;
       const start = (currentPage - 1) * perPage;
       const slice = filtered.slice(start, start + perPage);
 
@@ -980,10 +1017,10 @@
 
       document.getElementById('tableInfo').textContent =
         total ? `Mostrando ${start + 1}–${Math.min(start + perPage, total)} de ${total} vendas` : '0 vendas';
-      renderPagination(total);
+      renderPagination(total, perPage);
     }
 
-    function renderPagination(total) {
+    function renderPagination(total, perPage) {
       const pages = Math.ceil(total / perPage);
       const pg = document.getElementById('pagination');
       if (pages <= 1) { pg.innerHTML = ''; return; }
@@ -993,6 +1030,7 @@
       pg.innerHTML = html;
     }
     function goPage(p) {
+      const perPage = getVendasPerPage();
       const pages = Math.ceil(filtered.length / perPage);
       if (p < 1 || p > pages) return;
       currentPage = p; renderTable();
@@ -1165,6 +1203,10 @@
     // ═══════════════════════════════════════════════
 
     init();
+
+    window.addEventListener('resize', () => {
+      renderTable();
+    });
 
     // ── Date picker vendas ──
     function toggleVndDp() {

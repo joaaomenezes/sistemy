@@ -110,6 +110,25 @@
       background: rgba(255, 255, 255, .025);
     }
 
+    .pedidos-list-card {
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 335px);
+    }
+
+    .pedidos-list-card .table-wrap {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .pedidos-list-card tbody tr {
+      height: 54px;
+    }
+
+    .pedidos-list-card tbody tr:last-child td {
+      border-bottom: 1px solid rgba(30, 42, 58, .7);
+    }
+
     #itensBody tr:hover td { background: transparent; }
 
     /* tabs do modal */
@@ -816,7 +835,7 @@ font-weight: 800;
       </div>
 
       <!-- Listagem -->
-      <div class="table-card" id="listView">
+      <div class="table-card pedidos-list-card" id="listView">
         <div class="table-wrap">
           <table>
             <thead>
@@ -837,6 +856,7 @@ font-weight: 800;
         </div>
         <div class="table-footer">
           <span id="listInfo">—</span>
+          <div class="pagination" id="listPagination"></div>
         </div>
       </div>
 
@@ -1144,9 +1164,15 @@ font-weight: 800;
     let pedidos = [];
     let currentStatus = 'todos';
     let currentPedidoId = null;
+    let listPage = 1;
     let itensPedido = [];
     let editingId = null;
     let confirmCb = null;
+
+    function getPedidosPerPage() {
+      const usable = window.innerHeight - 440;
+      return Math.max(1, Math.floor(usable / 54));
+    }
 
     // ═══════════════════════════════════════════════
     // INIT
@@ -1216,7 +1242,7 @@ font-weight: 800;
       updateTabCounts();
       renderList();
     }
-    function renderView() { renderAll(); }
+    function renderView() { listPage = 1; renderAll(); }
 
     function updateKPIs() {
       const total = pedidos.length;
@@ -1244,7 +1270,12 @@ font-weight: 800;
     function renderList() {
       const filtered = getFiltered();
       const body = document.getElementById('listBody');
-      body.innerHTML = filtered.map(p => {
+      const perPage = getPedidosPerPage();
+      const pages = Math.max(1, Math.ceil(filtered.length / perPage));
+      if (listPage > pages) listPage = pages;
+      const start = (listPage - 1) * perPage;
+      const slice = filtered.slice(start, start + perPage);
+      body.innerHTML = filtered.length ? slice.map(p => {
         const dataFmt  = p.dataStr || new Date(p.dataISO).toLocaleDateString('pt-BR');
         const itensArr = p.itens || [];
         return `<tr onclick="openDetail('${p.id}')">
@@ -1263,8 +1294,35 @@ font-weight: 800;
       ${p.status === 'pendente' ? `<div class="act-btn danger" onclick="cancelar('${p.id}')" title="Cancelar"><i class="bi bi-x"></i></div>` : ''}
     </div></td>
   </tr>`;
-      }).join('');
-      document.getElementById('listInfo').textContent = `${filtered.length} pedido${filtered.length !== 1 ? 's' : ''}`;
+      }).join('') : '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px">Nenhum pedido encontrado</td></tr>';
+      renderListPagination(filtered.length, perPage);
+    }
+
+    function renderListPagination(total, perPage) {
+      const info = document.getElementById('listInfo');
+      const pg = document.getElementById('listPagination');
+      if (!info || !pg) return;
+      const pages = Math.max(1, Math.ceil(total / perPage));
+      if (listPage > pages) listPage = pages;
+      const start = total ? (listPage - 1) * perPage + 1 : 0;
+      const end = Math.min(listPage * perPage, total);
+      info.textContent = total
+        ? `Mostrando ${start}–${end} de ${total} pedido${total !== 1 ? 's' : ''}`
+        : '0 pedidos';
+      if (pages <= 1) { pg.innerHTML = ''; return; }
+      let html = `<button class="pg-btn" onclick="goListPage(${listPage - 1})" ${listPage === 1 ? 'disabled' : ''}><i class="bi bi-chevron-left"></i></button>`;
+      for (let i = 1; i <= pages; i++) {
+        html += `<button class="pg-btn ${i === listPage ? 'active' : ''}" onclick="goListPage(${i})">${i}</button>`;
+      }
+      html += `<button class="pg-btn" onclick="goListPage(${listPage + 1})" ${listPage === pages ? 'disabled' : ''}><i class="bi bi-chevron-right"></i></button>`;
+      pg.innerHTML = html;
+    }
+
+    function goListPage(p) {
+      const pages = Math.max(1, Math.ceil(getFiltered().length / getPedidosPerPage()));
+      if (p < 1 || p > pages) return;
+      listPage = p;
+      renderList();
     }
 
     // ═══════════════════════════════════════════════
@@ -1892,12 +1950,17 @@ font-weight: 800;
       document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
       el.classList.add('active');
       currentStatus = status;
+      listPage = 1;
       renderAll();
     }
     // ═══════════════════════════════════════════════
     // HELPERS
     // ═══════════════════════════════════════════════
     init();
+
+    window.addEventListener('resize', () => {
+      renderList();
+    });
   </script>
 </body>
 

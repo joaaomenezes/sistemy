@@ -518,6 +518,29 @@ font-size: 14px;
       height: 52px;
     }
 
+    .fin-detail-card {
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 250px);
+    }
+
+    .fin-detail-card .table-wrap {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .fin-detail-card .fin-table tbody tr {
+      height: 52px;
+    }
+
+    .fin-detail-card .fin-table tbody tr:last-child td {
+      border-bottom: 1px solid rgba(30, 42, 58, .7);
+    }
+
+    .fin-detail-footer {
+      min-height: 54px;
+    }
+
     .movim-footer {
       min-height: 54px;
     }
@@ -1343,7 +1366,7 @@ transition: border-color .15s;
 
       <!-- Contas a Pagar -->
       <div class="fin-panel" id="panel-contas-pagar">
-        <div class="card u-mt-20" >
+        <div class="card u-mt-20 fin-detail-card" >
           <div class="table-header">
             <div class="table-header-title"><i class="bi bi-arrow-up-circle-fill u-danger-mr"
                 ></i>Contas a Pagar</div>
@@ -1365,12 +1388,16 @@ transition: border-color .15s;
               <tbody id="tblPagarDetalhe"></tbody>
             </table>
           </div>
+          <div class="table-footer fin-detail-footer">
+            <span id="pagarDetalheInfo">—</span>
+            <div class="pagination" id="pagarDetalhePagination"></div>
+          </div>
         </div>
       </div>
 
       <!-- Contas a Receber -->
       <div class="fin-panel" id="panel-contas-receber">
-        <div class="card u-mt-20" >
+        <div class="card u-mt-20 fin-detail-card" >
           <div class="table-header">
             <div class="table-header-title"><i class="bi bi-arrow-down-circle-fill u-accent-mr"
                 ></i>Contas a Receber</div>
@@ -1391,6 +1418,10 @@ transition: border-color .15s;
               </thead>
               <tbody id="tblReceberDetalhe"></tbody>
             </table>
+          </div>
+          <div class="table-footer fin-detail-footer">
+            <span id="receberDetalheInfo">—</span>
+            <div class="pagination" id="receberDetalhePagination"></div>
           </div>
         </div>
       </div>
@@ -1941,13 +1972,23 @@ transition: border-color .15s;
     let PRODUTOS_DATA = [];
     let MOVS_DATA     = [];
     let movimPage     = 1;
+    let pagarDetalhePage = 1;
+    let receberDetalhePage = 1;
 
     function getMovimPerPage() {
       const card = document.querySelector('#panel-movimentacoes .movim-card');
       if (!card) return 10;
       const rect = card.getBoundingClientRect();
-      const usable = Math.max(260, rect.height - 112);
-      return Math.max(5, Math.floor(usable / 52));
+      const usable = Math.max(416, rect.height - 112);
+      return Math.max(8, Math.floor(usable / 52));
+    }
+
+    function getFinDetailPerPage(panelId) {
+      const card = document.querySelector(`#panel-${panelId} .fin-detail-card`);
+      if (!card) return 10;
+      const rect = card.getBoundingClientRect();
+      const usable = Math.max(52, rect.height - 112);
+      return Math.max(1, Math.floor(usable / 52));
     }
 
     // ═══════════════════════════════════════════════
@@ -2317,12 +2358,37 @@ transition: border-color .15s;
         h += `<button class="pg-btn" onclick="movimGoPage(${movimPage + 1})" ${movimPage === pages ? 'disabled' : ''}>›</button>`;
         pg.innerHTML = h;
       };
+      const _renderFinDetailPagination = (kind, total, perPage) => {
+        const isPagar = kind === 'pagar';
+        const info = document.getElementById(isPagar ? 'pagarDetalheInfo' : 'receberDetalheInfo');
+        const pg = document.getElementById(isPagar ? 'pagarDetalhePagination' : 'receberDetalhePagination');
+        if (!info || !pg) return;
+        const page = isPagar ? pagarDetalhePage : receberDetalhePage;
+        const pages = Math.max(1, Math.ceil(total / perPage));
+        const start = total ? (page - 1) * perPage + 1 : 0;
+        const end = Math.min(page * perPage, total);
+        const label = isPagar ? 'conta a pagar' : 'conta a receber';
+        info.textContent = total ? `Mostrando ${start}–${end} de ${total} ${label}${total !== 1 ? 's' : ''}` : `0 ${label}s`;
+        if (pages <= 1) { pg.innerHTML = ''; return; }
+        const fn = isPagar ? 'pagarDetalheGoPage' : 'receberDetalheGoPage';
+        let h = `<button class="pg-btn" onclick="${fn}(${page - 1})" ${page === 1 ? 'disabled' : ''}><i class="bi bi-chevron-left"></i></button>`;
+        for (let i = 1; i <= pages; i++) {
+          h += `<button class="pg-btn ${i === page ? 'active' : ''}" onclick="${fn}(${i})">${i}</button>`;
+        }
+        h += `<button class="pg-btn" onclick="${fn}(${page + 1})" ${page === pages ? 'disabled' : ''}><i class="bi bi-chevron-right"></i></button>`;
+        pg.innerHTML = h;
+      };
 
       const tblPD = document.getElementById('tblPagarDetalhe');
       if (tblPD) {
         const rows = lancamentos.filter(l => l.tipo === 'despesa' && l.status !== 'cancelado');
+        const perPage = getFinDetailPerPage('contas-pagar');
+        const pages = Math.max(1, Math.ceil(rows.length / perPage));
+        if (pagarDetalhePage > pages) pagarDetalhePage = pages;
+        const start = (pagarDetalhePage - 1) * perPage;
+        const slice = rows.slice(start, start + perPage);
         tblPD.innerHTML = rows.length
-          ? rows.map(l => { const st = _stLanc(l); return `<tr>
+          ? slice.map(l => { const st = _stLanc(l); return `<tr>
               <td>${escapeHTML(_fmtD(l.vencimento || l.data || ''))}</td>
               <td class="u-fw-500">${escapeHTML(l.parte || '—')}</td>
               <td class="u-muted">${escapeHTML(l.descricao || '')}</td>
@@ -2330,13 +2396,19 @@ transition: border-color .15s;
               <td>${pillHtml(st)}</td><td></td>
             </tr>`; }).join('')
           : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Nenhuma conta a pagar</td></tr>';
+        _renderFinDetailPagination('pagar', rows.length, perPage);
       }
 
       const tblRD = document.getElementById('tblReceberDetalhe');
       if (tblRD) {
         const rows = lancamentos.filter(l => l.tipo === 'receita' && l.status !== 'pago' && l.status !== 'cancelado' && l.status !== 'estornado');
+        const perPage = getFinDetailPerPage('contas-receber');
+        const pages = Math.max(1, Math.ceil(rows.length / perPage));
+        if (receberDetalhePage > pages) receberDetalhePage = pages;
+        const start = (receberDetalhePage - 1) * perPage;
+        const slice = rows.slice(start, start + perPage);
         tblRD.innerHTML = rows.length
-          ? rows.map(l => { const st = _stLanc(l); return `<tr>
+          ? slice.map(l => { const st = _stLanc(l); return `<tr>
               <td>${escapeHTML(_fmtD(l.vencimento || l.data || ''))}</td>
               <td class="u-fw-500">${escapeHTML(l.parte || l.descricao || '—')}</td>
               <td class="u-muted">${escapeHTML(l.descricao || '')}</td>
@@ -2344,6 +2416,7 @@ transition: border-color .15s;
               <td>${pillHtml(st)}</td><td></td>
             </tr>`; }).join('')
           : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Nenhuma conta a receber</td></tr>';
+        _renderFinDetailPagination('receber', rows.length, perPage);
       }
 
       const tblMov = document.getElementById('tblMovim');
@@ -2372,6 +2445,22 @@ transition: border-color .15s;
       const pages = Math.max(1, Math.ceil(lancamentos.length / perPage));
       if (p < 1 || p > pages) return;
       movimPage = p;
+      renderTabelas();
+    }
+
+    function pagarDetalheGoPage(p) {
+      const total = lancamentos.filter(l => l.tipo === 'despesa' && l.status !== 'cancelado').length;
+      const pages = Math.max(1, Math.ceil(total / getFinDetailPerPage('contas-pagar')));
+      if (p < 1 || p > pages) return;
+      pagarDetalhePage = p;
+      renderTabelas();
+    }
+
+    function receberDetalheGoPage(p) {
+      const total = lancamentos.filter(l => l.tipo === 'receita' && l.status !== 'pago' && l.status !== 'cancelado' && l.status !== 'estornado').length;
+      const pages = Math.max(1, Math.ceil(total / getFinDetailPerPage('contas-receber')));
+      if (p < 1 || p > pages) return;
+      receberDetalhePage = p;
       renderTabelas();
     }
 
@@ -2445,6 +2534,8 @@ transition: border-color .15s;
       document.getElementById('finDesc').textContent = desc;
       document.getElementById('topbarSub').textContent = title;
       closeMais();
+      if (panelId === 'contas-pagar') { pagarDetalhePage = 1; renderTabelas(); }
+      if (panelId === 'contas-receber') { receberDetalhePage = 1; renderTabelas(); }
       if (panelId === 'movimentacoes') { movimPage = 1; renderTabelas(); }
       if (panelId === 'fluxo-caixa') renderChartFluxo();
     }
@@ -2841,7 +2932,11 @@ transition: border-color .15s;
     init();
 
     window.addEventListener('resize', () => {
-      if (document.getElementById('panel-movimentacoes')?.classList.contains('active')) {
+      const shouldRender =
+        document.getElementById('panel-movimentacoes')?.classList.contains('active') ||
+        document.getElementById('panel-contas-pagar')?.classList.contains('active') ||
+        document.getElementById('panel-contas-receber')?.classList.contains('active');
+      if (shouldRender) {
         renderTabelas();
       }
     });

@@ -66,6 +66,32 @@
       box-shadow: 0 12px 32px rgba(0,0,0,.3);
     }
 
+    .hist-table-card {
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 335px);
+    }
+
+    .hist-table-card .table-wrap {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .hist-table-card tbody tr {
+      height: 54px;
+    }
+
+    .hist-table-card tbody tr:last-child td {
+      border-bottom: 1px solid rgba(30, 42, 58, .7);
+    }
+
+    .hist-footer-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
     .rel-card.hidden { display: none; }
 
     .rel-card-top {
@@ -302,7 +328,7 @@
         <i class="bi bi-clock-history" style="color:var(--accent)"></i>
         Relatórios Gerados
       </div>
-      <div class="table-card">
+      <div class="table-card hist-table-card">
         <div class="table-wrap">
           <table>
             <thead>
@@ -325,9 +351,12 @@
         </div>
         <div class="table-footer">
           <span id="histInfo">—</span>
-          <button class="btn-sm btn-ghost-sm" id="btnLimparHist" onclick="limparHistorico()" style="display:none">
-            <i class="bi bi-trash3"></i> Limpar histórico
-          </button>
+          <div class="hist-footer-actions">
+            <div class="pagination" id="histPagination"></div>
+            <button class="btn-sm btn-ghost-sm" id="btnLimparHist" onclick="limparHistorico()" style="display:none">
+              <i class="bi bi-trash3"></i> Limpar histórico
+            </button>
+          </div>
         </div>
       </div>
 
@@ -422,6 +451,12 @@
     };
     let historico  = [];
     let dataLoaded = false;
+    let histPage   = 1;
+
+    function getHistPerPage() {
+      const usable = window.innerHeight - 440;
+      return Math.max(1, Math.floor(usable / 54));
+    }
 
     // Busca tolerante a falha: nunca rejeita, retorna [] se a API falhar
     async function _fetchList(path) {
@@ -1051,7 +1086,10 @@
             formato:     'CSV',
           }),
         });
-        if (r && r.ok) historico.unshift(r.data);
+        if (r && r.ok) {
+          historico.unshift(r.data);
+          histPage = 1;
+        }
       } catch (_) {
         showToast('Relatório gerado, mas falhou ao salvar no histórico.', 'warning');
       }
@@ -1062,21 +1100,28 @@
       const body  = document.getElementById('histBody');
       const empty = document.getElementById('histEmpty');
       const info  = document.getElementById('histInfo');
+      const pg    = document.getElementById('histPagination');
       const btnL  = document.getElementById('btnLimparHist');
 
       if (!historico.length) {
         body.innerHTML = '';
         empty.classList.add('show');
-        info.textContent = '—';
+        info.textContent = '0 relatórios gerados';
+        if (pg) pg.innerHTML = '';
         btnL.style.display = 'none';
         return;
       }
 
       empty.classList.remove('show');
       btnL.style.display = 'flex';
-      info.textContent = `${historico.length} relatório${historico.length!==1?'s':''} gerado${historico.length!==1?'s':''}`;
+      const perPage = getHistPerPage();
+      const pages = Math.max(1, Math.ceil(historico.length / perPage));
+      if (histPage > pages) histPage = pages;
+      const start = (histPage - 1) * perPage;
+      const slice = historico.slice(start, start + perPage);
+      info.textContent = `Mostrando ${start + 1}–${Math.min(start + perPage, historico.length)} de ${historico.length} relatório${historico.length!==1?'s':''}`;
 
-      body.innerHTML = historico.map(r => `
+      body.innerHTML = slice.map(r => `
         <tr>
           <td style="font-weight:600;font-size:13px">${escapeHTML(r.titulo)}</td>
           <td><span class="status-pill ativo" style="background:${CAT_COLORS[r.cat]}18;color:${CAT_COLORS[r.cat]}">${CAT_LABELS[r.cat]||r.cat}</span></td>
@@ -1087,6 +1132,27 @@
             <div class="act-btn danger" onclick="removerHistorico('${r.id}')" title="Remover"><i class="bi bi-trash3"></i></div>
           </div></td>
         </tr>`).join('');
+      renderHistPagination(historico.length, perPage);
+    }
+
+    function renderHistPagination(total, perPage) {
+      const pg = document.getElementById('histPagination');
+      if (!pg) return;
+      const pages = Math.max(1, Math.ceil(total / perPage));
+      if (pages <= 1) { pg.innerHTML = ''; return; }
+      let h = `<button class="pg-btn" onclick="histGoPage(${histPage - 1})" ${histPage === 1 ? 'disabled' : ''}><i class="bi bi-chevron-left"></i></button>`;
+      for (let i = 1; i <= pages; i++) {
+        h += `<button class="pg-btn ${i === histPage ? 'active' : ''}" onclick="histGoPage(${i})">${i}</button>`;
+      }
+      h += `<button class="pg-btn" onclick="histGoPage(${histPage + 1})" ${histPage === pages ? 'disabled' : ''}><i class="bi bi-chevron-right"></i></button>`;
+      pg.innerHTML = h;
+    }
+
+    function histGoPage(p) {
+      const pages = Math.max(1, Math.ceil(historico.length / getHistPerPage()));
+      if (p < 1 || p > pages) return;
+      histPage = p;
+      renderHistorico();
     }
 
     async function removerHistorico(id) {
@@ -1101,6 +1167,7 @@
 
     async function limparHistorico() {
       historico = [];
+      histPage = 1;
       renderHistorico();
       try {
         await NexoAuth.apiFetch('/relatorios/historico', { method: 'DELETE' });
@@ -1118,6 +1185,10 @@
       renderHistorico(); // re-render com o histórico vindo da API
     }
     init();
+
+    window.addEventListener('resize', () => {
+      renderHistorico();
+    });
   </script>
 </body>
 

@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexoERP - Dashboard Financeiro Protótipo</title>
+    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --border: rgba(255, 255, 255, .05);
+            --border-h: rgba(255, 255, 255, .09);
+            --text: #ffffff;
+            --sub: #94a3b8;
+            --muted: #4a5568;
+            --green: #00d084;
+            --blue: #2f80ff;
+            --red: #ff4d6d;
+            --yellow: #f5b700;
+            --orange: #ff8c42;
+            --purple: #a78bfa;
+            --proto-bg: #f4f7fb;
+            --proto-panel: #ffffff;
+            --proto-border: #dfe6ef;
+            --proto-text: #0f172a;
+            --proto-muted: #64748b;
+            --proto-soft: #eef4fb;
+            --proto-blue: #2f80ed;
+            --proto-green: #31bf7b;
+            --proto-red: #ff4d57;
+            --proto-orange: #ff9f3f;
+            --proto-purple: #8b5cf6;
+            --proto-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        .topbar {
+            height: 56px !important;
+            padding: 0 20px !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            background: rgba(255, 255, 255, .88) !important;
+            border-bottom: 1px solid rgba(203, 213, 225, .72) !important;
+            box-shadow: 0 8px 28px rgba(15, 23, 42, .05) !important;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .page-title {
+            color: #0f172a;
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .search-box {
+            width: 320px !important;
+            height: 36px !important;
+            border-radius: 12px !important;
+            background: rgba(248, 251, 255, .94) !important;
+            border: 1px solid rgba(203, 213, 225, .9) !important;
+            position: relative !important;
+            transition: var(--ease) !important;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9);
+        }
+
+        .search-box:hover {
+            border-color: rgba(47, 128, 237, .32) !important;
+        }
+
+        #searchInput {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            outline: 0;
+            background: transparent;
+            color: #0f172a;
+            font-size: 12.5px;
+            font-family: var(--font-b);
+            padding: 0 12px 0 32px;
+        }
+
+        #searchInput::placeholder {
+            color: #64748b;
+        }
+
+        #searchIcon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 13px;
+            pointer-events: none;
+        }
+
+        .topbar .breadcrumb-sep,
+        .topbar-left span[style] {
+            color: #64748b !important;
+        }
+
+        .topbar .icon-btn {
+            background: rgba(248, 251, 255, .94);
+            border: 1px solid rgba(203, 213, 225, .9);
+            color: #334155;
+            box-shadow: 0 6px 16px rgba(15, 23, 42, .05);
+        }
+
+        .topbar .icon-btn:hover {
+            background: #ffffff;
+            border-color: rgba(47, 128, 237, .32);
+            color: #0f172a;
+        }
+
+        .topbar .icon-btn .dot {
+            background: var(--green);
+            border-color: #ffffff;
+        }
+
+        .topbar .user-avatar {
+            background: linear-gradient(135deg, #2f80ed, #0f5bd7) !important;
+            color: #ffffff !important;
+            box-shadow: 0 8px 18px rgba(47, 128, 237, .28);
+        }
+
+        .proto-page {
+            min-height: calc(100vh - 64px);
+            padding: 22px 28px 34px;
+            background:
+                radial-gradient(circle at 22% 0%, rgba(47, 128, 237, 0.07), transparent 34%),
+                linear-gradient(180deg, #f8fbff 0%, var(--proto-bg) 42%, #f3f6fa 100%);
+            color: var(--proto-text);
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .kpi-card,
+        .chart-card {
+            background: var(--proto-panel);
+            border: 1px solid var(--proto-border);
+            border-radius: 8px;
+            box-shadow: var(--proto-shadow);
+        }
+
+        .kpi-card {
+            min-height: 126px;
+            display: grid;
+            grid-template-columns: 52px minmax(0, 1fr);
+            gap: 14px;
+            align-items: center;
+            padding: 18px;
+        }
+
+        .kpi-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 22px;
+            box-shadow: inset 0 -10px 18px rgba(15, 23, 42, 0.1);
+        }
+
+        .kpi-label {
+            margin: 0 0 8px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #172033;
+        }
+
+        .kpi-value {
+            margin: 0;
+            color: var(--accent);
+            font-size: clamp(17px, 1.1vw, 22px);
+            line-height: 1.1;
+            font-weight: 800;
+        }
+
+        .kpi-trend {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            color: var(--proto-muted);
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .db-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .db-header-left h1 {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -.3px;
+            color: #0f172a;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        .db-header-left p {
+            font-size: 11.5px;
+            color: #64748b;
+            margin-top: 2px;
+            margin-bottom: 0;
+        }
+
+        .db-header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hbtn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 10px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: var(--ease);
+            text-decoration: none;
+        }
+
+        .hbtn-ghost {
+            background: rgba(11, 18, 32, .9);
+            border: 1px solid var(--border);
+            color: var(--sub);
+        }
+
+        .hbtn-ghost:hover {
+            background: rgba(14, 22, 40, .98);
+            border-color: var(--border-h);
+            color: var(--text);
+        }
+
+        .dp-wrap {
+            position: relative;
+        }
+
+        .dp-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 13px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: rgba(11, 18, 32, .9);
+            color: var(--sub);
+            font-size: 12.5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--ease);
+        }
+
+        .dp-btn:hover {
+            border-color: var(--border-h);
+            color: var(--text);
+        }
+
+        .dp-btn i {
+            font-size: 13px;
+        }
+
+        .dp-chevron {
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        .dp-drop {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: #0f1929;
+            border: 1px solid var(--border-h);
+            border-radius: 14px;
+            padding: 6px;
+            min-width: 190px;
+            z-index: 300;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, .55);
+            display: none;
+        }
+
+        .dp-drop.open {
+            display: block;
+            animation: fadeUp .15s ease both;
+        }
+
+        .dp-opt {
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            color: var(--sub);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background .1s, color .1s;
+        }
+
+        .dp-opt:hover {
+            background: rgba(255, 255, 255, .05);
+            color: var(--text);
+        }
+
+        .dp-opt.sel {
+            color: var(--green);
+        }
+
+        .dp-opt.sel::after {
+            content: '';
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--green);
+        }
+
+        .dp-sep {
+            height: 1px;
+            background: var(--border);
+            margin: 5px 0;
+        }
+
+        .dp-custom {
+            padding: 8px 12px 6px;
+        }
+
+        .dp-custom label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .dp-custom input[type="date"] {
+            width: 100%;
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--sub);
+            font-size: 12px;
+            padding: 5px 9px;
+            outline: none;
+            color-scheme: dark;
+            transition: border-color .15s;
+        }
+
+        .dp-custom input[type="date"]+input {
+            margin-top: 5px;
+        }
+
+        .dp-custom input[type="date"]:focus {
+            border-color: rgba(0, 208, 132, .4);
+            color: var(--text);
+        }
+
+        .dp-apply {
+            display: block;
+            width: 100%;
+            margin-top: 7px;
+            padding: 6px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(0, 208, 132, .12);
+            color: var(--green);
+            font-size: 11.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background .15s;
+        }
+
+        .dp-apply:hover {
+            background: rgba(0, 208, 132, .2);
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .kpi-trend strong {
+            color: var(--accent);
+            font-weight: 800;
+        }
+
+        .spark {
+            width: 58px;
+            height: 22px;
+            flex: 0 0 auto;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.9fr 1fr;
+            gap: 18px;
+        }
+
+        .chart-card {
+            min-height: 282px;
+            padding: 16px 18px 18px;
+            overflow: hidden;
+        }
+
+        .chart-card.wide {
+            grid-column: span 1;
+        }
+
+        .chart-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .chart-title {
+            margin: 0;
+            font-size: 17px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .chart-select {
+            height: 34px;
+            border: 1px solid var(--proto-border);
+            border-radius: 7px;
+            background: #fff;
+            padding: 0 10px;
+            font-size: 13px;
+            color: #0f172a;
+        }
+
+        .chart-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 8px;
+            color: #334155;
+            font-size: 12px;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 7px;
+        }
+
+        .line-chart {
+            width: 100%;
+            height: 200px;
+            display: block;
+        }
+
+        .donut-layout {
+            display: grid;
+            grid-template-columns: minmax(150px, 190px) minmax(0, 1fr);
+            align-items: center;
+            gap: 18px;
+            min-height: 208px;
+        }
+
+        .donut-svg {
+            width: 190px;
+            height: 190px;
+            display: block;
+        }
+
+        .donut-legend {
+            display: grid;
+            gap: 10px;
+            font-size: 12px;
+            color: #1e293b;
+        }
+
+        .donut-legend-row {
+            display: grid;
+            grid-template-columns: 1fr 48px 78px;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .bar-chart {
+            height: 214px;
+            display: grid;
+            grid-template-columns: 42px repeat(var(--bars, 6), minmax(0, 1fr));
+            grid-template-rows: 1fr 28px;
+            column-gap: 14px;
+            align-items: end;
+        }
+
+        .bar-axis {
+            grid-row: 1 / 3;
+            align-self: stretch;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: var(--proto-muted);
+            font-size: 11px;
+            padding: 4px 0 30px;
+            border-right: 1px solid #edf1f6;
+        }
+
+        .bar-item {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bar-value {
+            color: #0f172a;
+            font-size: 11px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .bar-fill {
+            width: min(54px, 68%);
+            min-height: 10px;
+            border-radius: 4px 4px 0 0;
+            background: var(--bar-color);
+            box-shadow: inset 0 -14px 18px rgba(15, 23, 42, 0.08);
+        }
+
+        .bar-label {
+            grid-row: 2;
+            align-self: start;
+            color: #334155;
+            font-size: 11px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .dre-table,
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .dre-table td,
+        .products-table th,
+        .products-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e8edf4;
+            color: #334155;
+        }
+
+        .products-table th {
+            text-align: left;
+            color: #475569;
+            font-size: 12px;
+        }
+
+        .products-table th:nth-child(n + 2),
+        .products-table td:nth-child(n + 2),
+        .dre-table td:nth-child(n + 2) {
+            text-align: right;
+        }
+
+        .dre-table tr.highlight td {
+            background: #f1f5f9;
+            color: #0f172a;
+            font-weight: 800;
+        }
+
+        .dre-table tr.result td {
+            background: #0f4aa0;
+            color: #fff;
+            border-bottom: 0;
+            font-weight: 800;
+        }
+
+        .positive {
+            color: #139b5a !important;
+            font-weight: 800;
+        }
+
+        .horizontal-bars {
+            display: grid;
+            gap: 18px;
+            padding-top: 10px;
+        }
+
+        .hbar-row {
+            display: grid;
+            grid-template-columns: 112px minmax(120px, 1fr) 44px;
+            gap: 12px;
+            align-items: center;
+            font-size: 12px;
+            color: #334155;
+        }
+
+        .hbar-track {
+            height: 20px;
+            background: #eef4fb;
+            overflow: hidden;
+        }
+
+        .hbar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2f80ed, #1f68d8);
+        }
+
+        .report-link {
+            display: block;
+            margin-top: 14px;
+            color: #1d6cf2;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .aq-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: var(--proto-muted);
+            margin: 18px 0 10px;
+        }
+
+        .aq-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            animation: fadeUp .35s .32s ease both;
+        }
+
+        .aq-card {
+            min-height: 68px;
+            background: var(--proto-panel);
+            border: 1px solid var(--proto-border);
+            border-radius: 8px;
+            padding: 14px 12px;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: var(--ease);
+            text-decoration: none;
+            box-shadow: var(--proto-shadow);
+        }
+
+        .aq-card:hover {
+            border-color: #c8d4e3;
+            background: #f8fbff;
+            transform: translateY(-2px);
+        }
+
+        .aq-card i {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: color-mix(in srgb, currentColor 13%, transparent);
+        }
+
+        .aq-card span {
+            font-size: 13px;
+            font-weight: 800;
+            color: #172033;
+            text-align: left;
+        }
+
+        @media (max-width: 1480px) {
+            .kpi-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 980px) {
+            .proto-page {
+                padding: 18px;
+            }
+
+            .db-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .db-header-right {
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .kpi-grid,
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .aq-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .donut-layout {
+                grid-template-columns: 1fr;
+                justify-items: center;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .db-header-right {
+                width: 100%;
+            }
+
+            .dp-wrap,
+            .dp-btn,
+            .hbtn {
+                width: 100%;
+            }
+
+            .dp-btn,
+            .hbtn {
+                flex: 1 1 auto;
+            }
+
+            .kpi-card {
+                grid-template-columns: 44px minmax(0, 1fr);
+                padding: 15px;
+            }
+
+            .kpi-icon {
+                width: 42px;
+                height: 42px;
+                font-size: 19px;
+            }
+
+            .chart-card {
+                padding: 14px;
+            }
+
+            .bar-chart {
+                column-gap: 8px;
+            }
+
+            .bar-value {
+                font-size: 10px;
+            }
+
+            .aq-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar-root"></div>
+    <script src="sidebar.js"></script>
+
+    <div class="main collapsed" id="mainContent">
+        <div class="topbar">
+            <div class="topbar-left">
+                <span class="page-title">Dashboard</span>
+                <span class="breadcrumb-sep">/</span>
+                <span style="color:var(--muted);font-size:13px">Visão Geral</span>
+            </div>
+            <div class="search-box" id="searchBox">
+                <i class="bi bi-search" id="searchIcon"></i>
+                <input type="text" id="searchInput" placeholder="Buscar clientes, pedidos, produtos..." autocomplete="off">
+            </div>
+            <div class="topbar-right">
+                <div class="icon-btn" title="Notificações">
+                    <i class="bi bi-bell"></i>
+                    <div class="dot"></div>
+                </div>
+                <div class="icon-btn" title="Ajuda">
+                    <i class="bi bi-question-circle"></i>
+                </div>
+                <div class="user-avatar" style="width:34px;height:34px;border-radius:9px;cursor:pointer;font-size:12px">JD</div>
+            </div>
+        </div>
+
+        <main class="proto-page">
+            <section class="db-header">
+                <div class="db-header-left">
+                    <h1>Boa noite, Dev 👋</h1>
+                    <p>Domingo, 7 de jun de 2026 · Operação de hoje</p>
+                </div>
+                <div class="db-header-right">
+                    <div class="dp-wrap">
+                        <button class="dp-btn" id="dpBtn" type="button" onclick="toggleDp()">
+                            <i class="bi bi-calendar3"></i>
+                            <span id="dpLabel">Jun 2026</span>
+                            <i class="bi bi-chevron-down dp-chevron"></i>
+                        </button>
+                        <div class="dp-drop" id="dpDrop">
+                            <div class="dp-opt sel" onclick="selPeriod(this,'Hoje')">Hoje</div>
+                            <div class="dp-opt" onclick="selPeriod(this,'Esta semana')">Esta semana</div>
+                            <div class="dp-opt" onclick="selPeriod(this,'Este mês')">Este mês</div>
+                            <div class="dp-opt" onclick="selPeriod(this,'Último trimestre')">Último trimestre</div>
+                            <div class="dp-opt" onclick="selPeriod(this,'Este ano')">Este ano</div>
+                            <div class="dp-sep"></div>
+                            <div class="dp-custom">
+                                <label>Período personalizado</label>
+                                <input type="date" id="dpS" style="margin-bottom:5px" oninput="updateDpCustomLabel()">
+                                <input type="date" id="dpE" oninput="updateDpCustomLabel()">
+                                <button class="dp-apply" type="button" onclick="applyDp()">Aplicar</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="hbtn hbtn-ghost" type="button" onclick="openPainelConfig()">
+                        <i class="bi bi-sliders"></i>
+                        Configurar Painel
+                    </button>
+                </div>
+            </section>
+
+            <section class="kpi-grid" id="kpiGrid"></section>
+
+            <section class="dashboard-grid">
+                <article class="chart-card">
+                    <div class="chart-title-row">
+                        <h3 class="chart-title">Faturamento x Receita x Despesas</h3>
+                        <select class="chart-select" aria-label="Período">
+                            <option>Diário</option>
+                            <option>Semanal</option>
+                            <option>Mensal</option>
+                        </select>
+                    </div>
+                    <div class="chart-legend">
+                        <span><i class="legend-dot" style="background:#31bf7b"></i>Faturamento</span>
+                        <span><i class="legend-dot" style="background:#2f80ed"></i>Receita Recebida</span>
+                        <span><i class="legend-dot" style="background:#ff4d57"></i>Despesas Pagas</span>
+                    </div>
+                    <svg class="line-chart" id="salesLineChart" viewBox="0 0 640 230" role="img" aria-label="Gráfico de faturamento, receita e despesas"></svg>
+                </article>
+
+                <article class="chart-card">
+                    <div class="chart-title-row">
+                        <h3 class="chart-title">Receitas por Forma de Pagamento</h3>
+                    </div>
+                    <div class="donut-layout">
+                        <svg class="donut-svg" id="paymentDonut" viewBox="0 0 220 220" role="img" aria-label="Receitas por forma de pagamento"></svg>
+                        <div class="donut-legend" id="paymentLegend"></div>
+                    </div>
+                </article>
+
+                <article class="chart-card">
+                    <div class="chart-title-row">
+                        <h3 class="chart-title">Contas a Receber por Vencimento</h3>
+                    </div>
+                    <div class="bar-chart" id="receivableBars"></div>
+                </article>
+
+                <article class="chart-card">
+                    <div class="chart-title-row">
+                        <h3 class="chart-title">Despesas por Centro de Custo</h3>
+                    </div>
+                    <div class="donut-layout">
+                        <svg class="donut-svg" id="expenseDonut" viewBox="0 0 220 220" role="img" aria-label="Despesas por centro de custo"></svg>
+                        <div class="donut-legend" id="expenseLegend"></div>
+                    </div>
+                </article>
+
+                <article class="chart-card">
+                    <div class="chart-title-row">
+                        <h3 class="chart-title">Contas a Pagar por Vencimento</h3>
+                    </div>
+                    <div class="bar-chart" id="payableBars"></div>
+                </article>
+
+                <article class="chart-card">
+                    <div class="chart-title-row">
+                        <h3 class="chart-title">Fluxo de Caixa</h3>
+                    </div>
+                    <div class="chart-legend">
+                        <span><i class="legend-dot" style="background:#31bf7b"></i>Entradas</span>
+                        <span><i class="legend-dot" style="background:#ff4d57"></i>Saídas</span>
+                        <span><i class="legend-dot" style="background:#2f80ed"></i>Saldo</span>
+                    </div>
+                    <svg class="line-chart" id="cashflowChart" viewBox="0 0 640 230" role="img" aria-label="Fluxo de caixa"></svg>
+                </article>
+
+            </section>
+
+            <section id="section-aq">
+                <div class="aq-title">Ações Rápidas</div>
+                <div class="aq-grid" id="aq-grid-container">
+                    <a class="aq-card" href="pdv.html" id="aq-novaVenda">
+                        <i class="bi bi-display" style="color:var(--green)"></i>
+                        <span>Nova Venda (PDV)</span>
+                    </a>
+                    <a class="aq-card" href="pedidos.html" id="aq-novoPedido">
+                        <i class="bi bi-file-earmark-plus" style="color:var(--blue)"></i>
+                        <span>Novo Pedido</span>
+                    </a>
+                    <a class="aq-card" href="clientes.html" id="aq-novoCliente">
+                        <i class="bi bi-person-plus" style="color:var(--orange)"></i>
+                        <span>Novo Cliente</span>
+                    </a>
+                    <a class="aq-card" href="produtos.html" id="aq-novoProduto">
+                        <i class="bi bi-box-seam" style="color:var(--purple)"></i>
+                        <span>Novo Produto</span>
+                    </a>
+                    <a class="aq-card" href="financeiro.html" id="aq-financeiro">
+                        <i class="bi bi-currency-dollar" style="color:var(--yellow)"></i>
+                        <span>Financeiro</span>
+                    </a>
+                    <a class="aq-card" href="estoque.html" id="aq-estoque">
+                        <i class="bi bi-stack" style="color:var(--red)"></i>
+                        <span>Estoque</span>
+                    </a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const money = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+        const shortMoney = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 });
+
+        const dashboardData = {
+            kpis: [
+                { label: 'Faturamento (Vendido)', value: 245780, delta: '18,6%', tone: '#31bf7b', icon: 'bi-cash-coin', spark: [28, 34, 31, 45, 52, 41, 58] },
+                { label: 'Receita Recebida', value: 182340, delta: '12,4%', tone: '#2f80ed', icon: 'bi-wallet2', spark: [30, 36, 34, 42, 54, 46, 61] },
+                { label: 'Contas a Receber', value: 96450, delta: '8,7%', tone: '#ff9f3f', icon: 'bi-receipt', spark: [22, 30, 55, 68, 60, 44, 38] },
+                { label: 'Despesas Pagas', value: 78650, delta: '5,3%', tone: '#ff4d57', icon: 'bi-basket2', spark: [24, 28, 22, 38, 42, 34, 28] },
+                { label: 'Contas a Pagar', value: 45230, delta: '-3,1%', tone: '#8b5cf6', icon: 'bi-clipboard2-check', spark: [42, 36, 34, 29, 31, 25, 22] },
+                { label: 'Saldo de Caixa', value: 103690, delta: '15,8%', tone: '#31bf7b', icon: 'bi-bank', spark: [28, 32, 45, 40, 52, 58, 63] }
+            ],
+            days: ['01/05', '05/05', '10/05', '15/05', '20/05', '25/05', '31/05'],
+            sales: [42, 50, 68, 72, 90, 78, 88],
+            received: [18, 24, 31, 42, 52, 47, 56],
+            expenses: [6, 8, 12, 16, 21, 23, 27],
+            payments: [
+                { label: 'Pix', value: 79590, color: '#2f80ed' },
+                { label: 'Cartão de Crédito', value: 52120, color: '#31bf7b' },
+                { label: 'Dinheiro', value: 27940, color: '#ff4d57' },
+                { label: 'Boleto', value: 13150, color: '#ff9f3f' },
+                { label: 'Cartão de Débito', value: 9500, color: '#f6b044' }
+            ],
+            receivables: [
+                { label: 'Vencidas', value: 18450, color: '#ff4d57' },
+                { label: 'Hoje', value: 4230, color: '#ff4d57' },
+                { label: '7 dias', value: 7890, color: '#2f80ed' },
+                { label: '15 dias', value: 12600, color: '#2f80ed' },
+                { label: '30 dias', value: 22750, color: '#2f80ed' },
+                { label: '+30 dias', value: 30530, color: '#2f80ed' }
+            ],
+            expenseCenters: [
+                { label: 'Administrativo', value: 25670, color: '#2f80ed' },
+                { label: 'Comercial', value: 17850, color: '#31bf7b' },
+                { label: 'Operacional', value: 14450, color: '#ff9f3f' },
+                { label: 'Financeiro', value: 10300, color: '#ff4d57' },
+                { label: 'Outros', value: 10380, color: '#64748b' }
+            ],
+            payables: [
+                { label: 'Vencidas', value: 9850, color: '#ff4d57' },
+                { label: 'Hoje', value: 3560, color: '#ff4d57' },
+                { label: '7 dias', value: 4890, color: '#ff4d57' },
+                { label: '15 dias', value: 7450, color: '#ff4d57' },
+                { label: '30 dias', value: 10230, color: '#ff4d57' },
+                { label: '+30 dias', value: 9250, color: '#ff4d57' }
+            ],
+            cashIn: [18, 25, 38, 44, 61, 49, 57],
+            cashOut: [-6, -4, -8, -3, -5, -2, 6],
+            cashBalance: [10, 14, 20, 18, 24, 23, 31],
+            dre: [
+                ['Faturamento Líquido', 245780, ''],
+                ['(-) Custo dos Produtos Vendidos', 123450, ''],
+                ['= Lucro Bruto', 122330, '49,8%', 'highlight'],
+                ['(-) Despesas Operacionais', 73680, ''],
+                ['(-) Despesas Financeiras', 4850, ''],
+                ['= Lucro Operacional', 43800, '17,8%', 'highlight'],
+                ['(+) Receitas Financeiras', 2150, ''],
+                ['= Resultado Líquido', 45950, '18,7%', 'result']
+            ],
+            margins: [
+                ['Eletrônicos', 32.6],
+                ['Informática', 28.4],
+                ['Móveis', 25.7],
+                ['Eletrodomésticos', 21.3],
+                ['Outros', 15.8]
+            ],
+            products: [
+                ['Smartphone X 128GB', '45 un', 8550, '34,2%'],
+                ['Notebook Pro 15', '18 un', 7920, '28,7%'],
+                ['Smart TV 50"', '25 un', 6250, '26,4%'],
+                ['Fone Bluetooth', '60 un', 3600, '41,7%'],
+                ['Console Game', '12 un', 3240, '24,8%']
+            ]
+        };
+
+        function createSpark(points, color) {
+            const width = 58;
+            const height = 22;
+            const max = Math.max(...points);
+            const min = Math.min(...points);
+            const coords = points.map((point, index) => {
+                const x = (index / (points.length - 1)) * width;
+                const y = height - ((point - min) / (max - min || 1)) * (height - 4) - 2;
+                return `${x.toFixed(1)},${y.toFixed(1)}`;
+            }).join(' ');
+
+            return `<svg class="spark" viewBox="0 0 ${width} ${height}" aria-hidden="true">
+                <polyline points="${coords}" fill="none" stroke="${color}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></polyline>
+            </svg>`;
+        }
+
+        function renderKpis() {
+            const grid = document.getElementById('kpiGrid');
+            grid.innerHTML = dashboardData.kpis.map(kpi => `
+                <article class="kpi-card" style="--accent:${kpi.tone}">
+                    <div class="kpi-icon" style="background:${kpi.tone}">
+                        <i class="bi ${kpi.icon}"></i>
+                    </div>
+                    <div>
+                        <p class="kpi-label">${kpi.label}</p>
+                        <p class="kpi-value">${money.format(kpi.value)}</p>
+                        <div class="kpi-trend">
+                            <span><strong>▲ ${kpi.delta}</strong> vs período anterior</span>
+                            ${createSpark(kpi.spark, kpi.tone)}
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        function renderLineChart(svgId, labels, series) {
+            const svg = document.getElementById(svgId);
+            const width = 640;
+            const height = 230;
+            const pad = { top: 16, right: 16, bottom: 30, left: 42 };
+            const allValues = series.flatMap(item => item.values);
+            const max = Math.max(...allValues) * 1.12;
+            const min = Math.min(0, ...allValues);
+            const innerW = width - pad.left - pad.right;
+            const innerH = height - pad.top - pad.bottom;
+            const x = index => pad.left + (index / (labels.length - 1)) * innerW;
+            const y = value => pad.top + innerH - ((value - min) / (max - min || 1)) * innerH;
+
+            const grid = [0, 0.25, 0.5, 0.75, 1].map(step => {
+                const yy = pad.top + innerH * step;
+                return `<line x1="${pad.left}" x2="${width - pad.right}" y1="${yy}" y2="${yy}" stroke="#e6edf5" stroke-width="1"></line>`;
+            }).join('');
+
+            const paths = series.map(item => {
+                const points = item.values.map((value, index) => `${x(index).toFixed(1)},${y(value).toFixed(1)}`).join(' ');
+                const dash = item.dashed ? 'stroke-dasharray="7 7"' : '';
+                return `<polyline points="${points}" fill="none" stroke="${item.color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" ${dash}></polyline>
+                    ${item.values.map((value, index) => `<circle cx="${x(index).toFixed(1)}" cy="${y(value).toFixed(1)}" r="3" fill="${item.color}"></circle>`).join('')}`;
+            }).join('');
+
+            const xLabels = labels.map((label, index) => `<text x="${x(index)}" y="${height - 7}" text-anchor="middle" font-size="12" fill="#475569">${label}</text>`).join('');
+            const yLabels = [0, 25, 50, 75, 100].map((value, index) => {
+                const yy = pad.top + innerH - (index / 4) * innerH;
+                return `<text x="28" y="${yy + 4}" text-anchor="end" font-size="11" fill="#64748b">${value}K</text>`;
+            }).join('');
+
+            svg.innerHTML = `${grid}${yLabels}${xLabels}${paths}`;
+        }
+
+        function describeArc(cx, cy, r, startAngle, endAngle) {
+            const start = polarToCartesian(cx, cy, r, endAngle);
+            const end = polarToCartesian(cx, cy, r, startAngle);
+            const largeArc = endAngle - startAngle <= 180 ? 0 : 1;
+            return ['M', start.x, start.y, 'A', r, r, 0, largeArc, 0, end.x, end.y].join(' ');
+        }
+
+        function polarToCartesian(cx, cy, r, angle) {
+            const radians = (angle - 90) * Math.PI / 180;
+            return {
+                x: cx + (r * Math.cos(radians)),
+                y: cy + (r * Math.sin(radians))
+            };
+        }
+
+        function renderDonut(svgId, legendId, data, centerLabel) {
+            const svg = document.getElementById(svgId);
+            const legend = document.getElementById(legendId);
+            const total = data.reduce((sum, item) => sum + item.value, 0);
+            let angle = 0;
+            const arcs = data.map(item => {
+                const portion = item.value / total;
+                const nextAngle = angle + portion * 360;
+                const arc = `<path d="${describeArc(110, 110, 76, angle, nextAngle)}" fill="none" stroke="${item.color}" stroke-width="38"></path>`;
+                angle = nextAngle;
+                return arc;
+            }).join('');
+
+            svg.innerHTML = `
+                <circle cx="110" cy="110" r="76" fill="none" stroke="#eef4fb" stroke-width="38"></circle>
+                ${arcs}
+                <circle cx="110" cy="110" r="48" fill="#fff"></circle>
+                <text x="110" y="107" text-anchor="middle" font-size="15" font-weight="800" fill="#0f172a">${money.format(total)}</text>
+                <text x="110" y="126" text-anchor="middle" font-size="12" fill="#64748b">${centerLabel}</text>
+            `;
+
+            legend.innerHTML = data.map(item => {
+                const percent = (item.value / total * 100).toFixed(1).replace('.', ',');
+                return `<div class="donut-legend-row">
+                    <span><i class="legend-dot" style="background:${item.color}"></i>${item.label}</span>
+                    <strong>${percent}%</strong>
+                    <span>${money.format(item.value)}</span>
+                </div>`;
+            }).join('');
+        }
+
+        function renderBarChart(containerId, data) {
+            const container = document.getElementById(containerId);
+            const max = Math.max(...data.map(item => item.value));
+            container.style.setProperty('--bars', data.length);
+            container.innerHTML = `
+                <div class="bar-axis"><span>40K</span><span>30K</span><span>20K</span><span>10K</span><span>0</span></div>
+                ${data.map(item => `
+                    <div class="bar-item">
+                        <span class="bar-value">${money.format(item.value)}</span>
+                        <div class="bar-fill" style="height:${Math.max(12, item.value / max * 150)}px; --bar-color:${item.color}"></div>
+                    </div>
+                `).join('')}
+                ${data.map(item => `<div class="bar-label">${item.label}</div>`).join('')}
+            `;
+        }
+
+        function renderDre() {
+            const table = document.getElementById('dreTable');
+            if (!table) return;
+            table.innerHTML = dashboardData.dre.map(row => `
+                <tr class="${row[3] || ''}">
+                    <td>${row[0]}</td>
+                    <td>${money.format(row[1])}</td>
+                    <td class="${row[2] ? 'positive' : ''}">${row[2]}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderMargins() {
+            const container = document.getElementById('marginBars');
+            if (!container) return;
+            container.innerHTML = dashboardData.margins.map(([label, value]) => `
+                <div class="hbar-row">
+                    <strong>${label}</strong>
+                    <div class="hbar-track">
+                        <div class="hbar-fill" style="width:${value / 40 * 100}%"></div>
+                    </div>
+                    <span>${value.toString().replace('.', ',')}%</span>
+                </div>
+            `).join('');
+        }
+
+        function renderProducts() {
+            const table = document.getElementById('productsTable');
+            if (!table) return;
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Vendido</th>
+                        <th>Lucro Bruto</th>
+                        <th>Margem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${dashboardData.products.map(row => `
+                        <tr>
+                            <td><strong>${row[0]}</strong></td>
+                            <td>${row[1]}</td>
+                            <td>${money.format(row[2])}</td>
+                            <td>${row[3]}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            `;
+        }
+
+        function toggleDp() {
+            document.getElementById('dpDrop')?.classList.toggle('open');
+        }
+
+        function selPeriod(option, label) {
+            document.querySelectorAll('.dp-opt').forEach(item => item.classList.remove('sel'));
+            option.classList.add('sel');
+            document.getElementById('dpLabel').textContent = label;
+            document.getElementById('dpDrop')?.classList.remove('open');
+        }
+
+        function updateDpCustomLabel() {
+            const start = document.getElementById('dpS')?.value;
+            const end = document.getElementById('dpE')?.value;
+            if (start && end) document.getElementById('dpLabel').textContent = 'Personalizado';
+        }
+
+        function applyDp() {
+            document.querySelectorAll('.dp-opt').forEach(item => item.classList.remove('sel'));
+            document.getElementById('dpLabel').textContent = 'Personalizado';
+            document.getElementById('dpDrop')?.classList.remove('open');
+        }
+
+        function openPainelConfig() {
+            return true;
+        }
+
+        function markDashboardMenu() {
+            const dashboardLink = document.querySelector('.nav-item[href="dashboard.html"]');
+            if (dashboardLink) dashboardLink.classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderKpis();
+            renderLineChart('salesLineChart', dashboardData.days, [
+                { values: dashboardData.sales, color: '#31bf7b' },
+                { values: dashboardData.received, color: '#2f80ed' },
+                { values: dashboardData.expenses, color: '#ff4d57' }
+            ]);
+            renderDonut('paymentDonut', 'paymentLegend', dashboardData.payments, 'Total');
+            renderBarChart('receivableBars', dashboardData.receivables);
+            renderDonut('expenseDonut', 'expenseLegend', dashboardData.expenseCenters, 'Total');
+            renderBarChart('payableBars', dashboardData.payables);
+            renderLineChart('cashflowChart', dashboardData.days, [
+                { values: dashboardData.cashIn, color: '#31bf7b' },
+                { values: dashboardData.cashOut, color: '#ff4d57' },
+                { values: dashboardData.cashBalance, color: '#2f80ed', dashed: true }
+            ]);
+            renderDre();
+            renderMargins();
+            renderProducts();
+            markDashboardMenu();
+        });
+    </script>
+</body>
+</html>

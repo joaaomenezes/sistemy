@@ -209,6 +209,29 @@
       background: rgba(255, 255, 255, .025);
     }
 
+    .stock-movs-card {
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 335px);
+    }
+
+    .stock-movs-card .table-wrap {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .stock-movs-card tbody tr {
+      height: 58px;
+    }
+
+    .stock-movs-card tbody tr:last-child td {
+      border-bottom: 1px solid rgba(30, 42, 58, .7);
+    }
+
+    .stock-movs-card .table-footer {
+      min-height: 56px;
+    }
+
     .prod-cell {
       display: flex;
       align-items: center;
@@ -962,7 +985,7 @@
           </div>
         </div>
 
-        <div class="table-card">
+        <div class="table-card stock-movs-card">
           <div class="table-wrap">
             <table>
               <thead>
@@ -986,6 +1009,7 @@
           </div>
           <div class="table-footer">
             <span id="movsInfo">—</span>
+            <div class="pagination" id="movsPagination"></div>
           </div>
         </div>
       </div>
@@ -1207,8 +1231,14 @@
     let filtered = [...products];
     let currentPage = 1;
     const perPage = 8;
+    let movsPage = 1;
     let movType = 'entrada';
     let editingMovProdId = null;
+
+    function getMovsPerPage() {
+      const usable = window.innerHeight - 438;
+      return Math.max(1, Math.floor(usable / 58));
+    }
 
     // ═══════════════════════════════════════════════
     // INIT
@@ -1399,6 +1429,7 @@
       document.querySelectorAll('#t-movimentacoes .filter-btn').forEach(b => b.classList.remove('active'));
       el.classList.add('active');
       movFilter = val;
+      movsPage = 1;
       renderMovs();
     }
 
@@ -1412,6 +1443,11 @@
 
       const body = document.getElementById('movsTableBody');
       const empty = document.getElementById('emptyMovs');
+      const perPage = getMovsPerPage();
+      const pages = Math.max(1, Math.ceil(list.length / perPage));
+      if (movsPage > pages) movsPage = pages;
+      const start = (movsPage - 1) * perPage;
+      const slice = list.slice(start, start + perPage);
       if (!list.length) { body.innerHTML = ''; empty.classList.add('show'); }
       else empty.classList.remove('show');
 
@@ -1422,7 +1458,7 @@
         transferencia: { icon: 'bi-arrow-left-right', color: '#a855f7', label: 'Transferência', cls: 'transf' },
       };
 
-      body.innerHTML = list.map(m => {
+      body.innerHTML = slice.map(m => {
         const tc = typeConfig[m.tipo] || typeConfig.entrada;
         const qtyDisplay = m.tipo === 'saida' ? -Math.abs(m.qty) : m.qty;
         const qtySign = qtyDisplay >= 0 ? 'pos' : 'neg';
@@ -1444,7 +1480,40 @@
     </tr>`;
       }).join('');
 
-      document.getElementById('movsInfo').textContent = `${list.length} movimentação${list.length !== 1 ? 'ões' : ''}`;
+      renderMovsPagination(list.length, perPage);
+    }
+
+    function renderMovsPagination(total, perPage) {
+      const info = document.getElementById('movsInfo');
+      const pg = document.getElementById('movsPagination');
+      if (!info || !pg) return;
+      const pages = Math.max(1, Math.ceil(total / perPage));
+      if (movsPage > pages) movsPage = pages;
+      const start = total ? (movsPage - 1) * perPage + 1 : 0;
+      const end = Math.min(movsPage * perPage, total);
+      info.textContent = total
+        ? `Mostrando ${start}–${end} de ${total} movimentação${total !== 1 ? 'ões' : ''}`
+        : '0 movimentações';
+      if (pages <= 1) { pg.innerHTML = ''; return; }
+      let html = `<button class="pg-btn" onclick="goMovsPage(${movsPage - 1})" ${movsPage === 1 ? 'disabled' : ''}><i class="bi bi-chevron-left"></i></button>`;
+      for (let i = 1; i <= pages; i++) {
+        html += `<button class="pg-btn ${i === movsPage ? 'active' : ''}" onclick="goMovsPage(${i})">${i}</button>`;
+      }
+      html += `<button class="pg-btn" onclick="goMovsPage(${movsPage + 1})" ${movsPage === pages ? 'disabled' : ''}><i class="bi bi-chevron-right"></i></button>`;
+      pg.innerHTML = html;
+    }
+
+    function goMovsPage(p) {
+      const q = (document.getElementById('movSearch')?.value || '').toLowerCase();
+      const total = movimentacoes.filter(m => {
+        const matchQ = !q || m.produto.toLowerCase().includes(q);
+        const matchF = movFilter === 'todos' || m.tipo === movFilter;
+        return matchQ && matchF;
+      }).length;
+      const pages = Math.max(1, Math.ceil(total / getMovsPerPage()));
+      if (p < 1 || p > pages) return;
+      movsPage = p;
+      renderMovs();
     }
 
     // ═══════════════════════════════════════════════
@@ -1677,6 +1746,7 @@
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
       el.classList.add('active');
       document.getElementById(panelId).classList.add('active');
+      if (panelId === 't-movimentacoes') renderMovs();
     }
 
     // ═══════════════════════════════════════════════
@@ -1935,6 +2005,12 @@
     // HELPERS
     // ═══════════════════════════════════════════════
     init();
+
+    window.addEventListener('resize', () => {
+      if (document.getElementById('t-movimentacoes')?.classList.contains('active')) {
+        renderMovs();
+      }
+    });
   </script>
 </body>
 
