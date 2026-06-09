@@ -5210,6 +5210,770 @@
       font-weight: 700;
       color: var(--muted);
     }
+
+    /* ══ CHECKOUT PDV — layout amplo inspirado no fluxo de pagamento ══ */
+    .pay-modal {
+      width: min(1380px, calc(100vw - 28px));
+      max-width: none;
+      max-height: calc(100vh - 28px);
+      border-radius: 14px;
+      background:
+        radial-gradient(circle at 24% 6%, rgba(0, 200, 150, .08), transparent 28%),
+        linear-gradient(135deg, #0c121b 0%, #0a0f16 48%, #101721 100%);
+      box-shadow: 0 26px 70px rgba(0, 0, 0, .55);
+    }
+
+    .pay-header {
+      padding: 18px 24px;
+      background: rgba(13, 19, 29, .78);
+      border-bottom: 1px solid rgba(30, 42, 58, .86);
+    }
+
+    .pay-header h2 {
+      font-size: 27px;
+      line-height: 1.08;
+      letter-spacing: -.7px;
+      margin: 0 0 6px;
+    }
+
+    .pay-header-sub {
+      font-size: 15px;
+      color: var(--sub);
+    }
+
+    .pay-header-right {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .pay-total-top {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 3px;
+    }
+
+    .pay-total-top span {
+      color: var(--sub);
+      font-size: 14px;
+    }
+
+    .pay-total-top strong,
+    .pay-total-badge {
+      font-family: 'Inter', sans-serif;
+      font-size: 35px;
+      line-height: 1;
+      letter-spacing: .2px;
+      color: var(--accent);
+      text-shadow: 0 0 20px rgba(0, 200, 150, .22);
+    }
+
+    .pay-header .modal-close {
+      width: 50px;
+      height: 50px;
+      border-radius: 11px;
+      margin-left: 0;
+      font-size: 20px;
+      background: rgba(16, 21, 30, .72);
+      border-color: rgba(48, 65, 88, .86);
+    }
+
+    .pay-shell {
+      min-height: 0;
+      flex: 1;
+      display: grid;
+      grid-template-columns: 430px minmax(0, 1fr);
+      overflow: hidden;
+    }
+
+    .pay-summary-panel {
+      min-height: 0;
+      padding: 16px 14px 16px 22px;
+      border-right: 1px solid rgba(30, 42, 58, .86);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+    }
+
+    .pay-summary-card,
+    .pay-ai-card {
+      border: 1px solid rgba(42, 58, 80, .9);
+      background: rgba(9, 14, 22, .42);
+      border-radius: 10px;
+    }
+
+    .pay-summary-card {
+      padding: 16px 18px 12px;
+    }
+
+    .pay-summary-title,
+    .pay-ai-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .pay-summary-title span,
+    .pay-ai-head span {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .pay-summary-title i,
+    .pay-ai-head i {
+      width: 38px;
+      height: 38px;
+      border-radius: 9px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 200, 150, .09);
+      color: var(--accent);
+      font-size: 18px;
+    }
+
+    .pay-summary-title strong,
+    .pay-ai-head strong {
+      padding: 8px 12px;
+      border-radius: 9px;
+      background: rgba(0, 200, 150, .08);
+      color: var(--accent);
+      font-size: 12px;
+    }
+
+    .pay-summary-items {
+      max-height: 246px;
+      overflow-y: auto;
+      padding-right: 3px;
+      border-bottom: 1px solid rgba(30, 42, 58, .86);
+      margin-bottom: 14px;
+    }
+
+    .pay-summary-item {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 0;
+    }
+
+    .pay-summary-item+.pay-summary-item {
+      border-top: 1px solid rgba(30, 42, 58, .52);
+    }
+
+    .pay-summary-emoji {
+      width: 42px;
+      height: 42px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, .05);
+      font-size: 24px;
+    }
+
+    .pay-summary-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pay-summary-code {
+      margin-top: 5px;
+      font-size: 12px;
+      color: var(--sub);
+    }
+
+    .pay-summary-money {
+      text-align: right;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .pay-summary-money span {
+      display: block;
+      margin-top: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--sub);
+    }
+
+    .pay-summary-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .pay-summary-lines div,
+    .pay-summary-total {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .pay-summary-lines span {
+      color: var(--sub);
+      font-size: 15px;
+    }
+
+    .pay-summary-lines strong {
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    .pay-summary-lines .disc {
+      color: var(--danger);
+    }
+
+    .pay-summary-lines .add {
+      color: var(--accent);
+    }
+
+    .pay-summary-total {
+      padding: 15px 16px;
+      border: 1px solid rgba(42, 58, 80, .9);
+      border-radius: 10px;
+      background: rgba(16, 21, 30, .58);
+    }
+
+    .pay-summary-total span {
+      font-size: 15px;
+      color: var(--text);
+      font-weight: 800;
+    }
+
+    .pay-summary-total strong {
+      font-size: 29px;
+      line-height: 1;
+      color: var(--text);
+      font-weight: 900;
+    }
+
+    .pay-obs-wrap {
+      margin: 0;
+      padding: 13px 14px;
+      border: 1px solid rgba(42, 58, 80, .9);
+      border-radius: 10px;
+      background: rgba(16, 21, 30, .58);
+    }
+
+    .pay-ai-card {
+      padding: 16px 18px;
+      border-color: rgba(0, 200, 150, .25);
+      background: linear-gradient(135deg, rgba(0, 200, 150, .1), rgba(9, 14, 22, .36));
+    }
+
+    .pay-ai-card p {
+      margin: 0 0 16px;
+      color: var(--sub);
+      line-height: 1.45;
+    }
+
+    .pay-ai-actions {
+      display: grid;
+      grid-template-columns: 1fr 1.35fr;
+      gap: 10px;
+    }
+
+    .pay-ai-actions button {
+      height: 48px;
+      border-radius: 8px;
+      border: 1px solid rgba(42, 58, 80, .9);
+      background: rgba(16, 21, 30, .72);
+      color: var(--sub);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .pay-ai-actions button.primary {
+      border: none;
+      background: var(--accent);
+      color: #021c14;
+    }
+
+    .pay-main-panel {
+      min-height: 0;
+      padding: 28px 22px 18px;
+      overflow-y: auto;
+    }
+
+    .pay-step-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .pay-step-row h3,
+    .pay-step h3 {
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: -.2px;
+      margin: 0;
+    }
+
+    .pay-split-top {
+      height: 42px;
+      padding: 0 20px;
+      border-radius: 8px;
+      border: 1px solid rgba(42, 58, 80, .9);
+      background: rgba(16, 21, 30, .55);
+      color: var(--sub);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .pay-methods {
+      grid-template-columns: repeat(4, minmax(130px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .pay-method {
+      min-height: 132px;
+      padding: 20px 10px 16px;
+      border-radius: 12px;
+      background: rgba(16, 21, 30, .5);
+      border: 1px solid rgba(42, 58, 80, .82);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .025);
+    }
+
+    .pay-method:hover {
+      transform: translateY(-1px);
+      border-color: rgba(148, 163, 184, .56);
+      background: rgba(16, 21, 30, .76);
+    }
+
+    .pay-method.selected {
+      border: 1.5px solid var(--accent);
+      background: radial-gradient(circle at 50% 12%, rgba(0, 200, 150, .18), rgba(0, 200, 150, .05) 58%, rgba(16, 21, 30, .62));
+      box-shadow: 0 0 0 1px rgba(0, 200, 150, .1), 0 18px 30px rgba(0, 0, 0, .18);
+    }
+
+    .pay-method i {
+      font-size: 35px;
+      margin: 0;
+      color: var(--sub);
+    }
+
+    .pay-method.selected i {
+      color: var(--accent);
+    }
+
+    .pay-method span {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .pay-method kbd {
+      min-width: 44px;
+      padding: 5px 9px;
+      border-radius: 7px;
+      border: none;
+      background: rgba(0, 200, 150, .07);
+      color: var(--accent);
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .pay-step {
+      margin-bottom: 28px;
+    }
+
+    .pay-step h3 {
+      margin-bottom: 14px;
+    }
+
+    .pay-value-section {
+      gap: 14px;
+    }
+
+    .pay-value-field {
+      min-height: 84px;
+      padding: 16px 20px;
+      border-radius: 11px;
+      border: 1px solid rgba(42, 58, 80, .9);
+      background: rgba(16, 21, 30, .52);
+      display: grid;
+      grid-template-columns: minmax(160px, 1fr) minmax(220px, 360px);
+      align-items: center;
+      gap: 16px;
+    }
+
+    .pay-value-field span {
+      color: var(--sub);
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .pay-value-input {
+      padding: 0;
+      border: none;
+      background: transparent;
+      font-size: 31px;
+      box-shadow: none;
+    }
+
+    .pay-value-input:focus {
+      box-shadow: none;
+    }
+
+    .quick-cash {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(86px, 1fr));
+      gap: 9px;
+    }
+
+    .qc-btn {
+      height: 40px;
+      padding: 0 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      background: rgba(16, 21, 30, .55);
+    }
+
+    .troco-box {
+      min-height: 102px;
+      border-radius: 11px;
+      background: rgba(16, 21, 30, .52);
+      border-color: rgba(42, 58, 80, .9);
+    }
+
+    .troco-box .t-val {
+      font-size: 29px;
+      color: var(--accent2);
+    }
+
+    .card-section,
+    .split-section {
+      padding: 18px;
+      border: 1px solid rgba(42, 58, 80, .9);
+      border-radius: 11px;
+      background: rgba(16, 21, 30, .42);
+    }
+
+    .card-section[style*="block"] {
+      display: flex !important;
+      flex-direction: column;
+    }
+
+    .brand-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(100px, 1fr));
+    }
+
+    .brand-btn {
+      justify-content: center;
+    }
+
+    .parcelas-grid {
+      grid-template-columns: repeat(6, 1fr);
+    }
+
+    .card-resumo {
+      background: rgba(9, 14, 22, .42);
+      border-color: rgba(42, 58, 80, .9);
+    }
+
+    .pix-inline-grid {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) minmax(220px, .55fr);
+      gap: 14px;
+      width: 100%;
+    }
+
+    .pix-section {
+      align-items: stretch;
+    }
+
+    .pix-section.show {
+      display: flex;
+    }
+
+    .pix-gen-btn {
+      min-height: 80px;
+      border-radius: 11px;
+      border-style: solid;
+    }
+
+    .pix-hint-card {
+      min-height: 80px;
+      padding: 16px;
+      border-radius: 11px;
+      border: 1px solid rgba(0, 119, 255, .42);
+      background: rgba(0, 119, 255, .08);
+      color: var(--sub);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pix-hint-card i {
+      color: var(--accent2);
+      font-size: 22px;
+    }
+
+    .pix-hint-card strong,
+    .pix-hint-card span {
+      display: block;
+    }
+
+    .pix-hint-card strong {
+      color: var(--text);
+      margin-bottom: 5px;
+    }
+
+    .pix-qr-wrap.show {
+      margin-top: 14px;
+    }
+
+    .split-rest-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--sub);
+      padding: 8px 0 0;
+    }
+
+    .split-rest-row span:last-child {
+      color: var(--accent);
+      font-weight: 900;
+    }
+
+    .pay-proof-step {
+      padding: 0 0 8px;
+    }
+
+    .pay-proof-grid {
+      border: 1px solid rgba(42, 58, 80, .9);
+      border-radius: 11px;
+      background: rgba(16, 21, 30, .42);
+      padding: 22px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .pay-check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--sub);
+      font-weight: 700;
+    }
+
+    .pay-check input {
+      accent-color: var(--accent);
+      width: 17px;
+      height: 17px;
+    }
+
+    .pay-check i {
+      color: var(--muted);
+    }
+
+    .pay-share-row {
+      grid-column: 2;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+    }
+
+    .pay-share-row button {
+      height: 42px;
+      border: 1px solid rgba(42, 58, 80, .9);
+      background: rgba(9, 14, 22, .24);
+      color: var(--sub);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .pay-share-row button:first-child {
+      border-radius: 8px 0 0 8px;
+    }
+
+    .pay-share-row button:last-child {
+      border-radius: 0 8px 8px 0;
+    }
+
+    .pay-footer {
+      padding: 18px 22px;
+      background: rgba(13, 19, 29, .78);
+      border-top-color: rgba(30, 42, 58, .86);
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pay-operator {
+      min-width: 360px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      color: var(--sub);
+      font-size: 15px;
+    }
+
+    .pay-operator strong {
+      color: var(--accent);
+    }
+
+    .pay-operator span:last-child {
+      padding: 9px 12px;
+      border-radius: 9px;
+      background: rgba(16, 21, 30, .5);
+    }
+
+    .pay-footer-actions {
+      display: grid;
+      grid-template-columns: 224px minmax(310px, 410px);
+      gap: 10px;
+    }
+
+    .btn-cancel-pay,
+    .btn-confirm-pay {
+      height: 52px;
+      border-radius: 9px;
+      padding: 0 18px;
+    }
+
+    .btn-cancel-pay {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: rgba(16, 21, 30, .4);
+    }
+
+    .btn-confirm-pay span {
+      padding: 4px 8px;
+      border-radius: 7px;
+      background: rgba(2, 28, 20, .16);
+      color: #021c14;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    @media(max-width:1120px) {
+      .pay-shell {
+        grid-template-columns: 1fr;
+        overflow-y: auto;
+      }
+
+      .pay-summary-panel {
+        border-right: none;
+        border-bottom: 1px solid rgba(30, 42, 58, .86);
+        max-height: none;
+      }
+
+      .pay-main-panel {
+        overflow: visible;
+      }
+
+      .pay-footer,
+      .pay-operator {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .pay-operator {
+        min-width: 0;
+      }
+
+      .pay-footer-actions {
+        grid-template-columns: 1fr 1.4fr;
+      }
+    }
+
+    @media(max-width:760px) {
+      .pay-modal {
+        width: 100vw;
+        max-height: 100vh;
+        border-radius: 0;
+      }
+
+      .pay-header,
+      .pay-footer {
+        padding: 14px;
+      }
+
+      .pay-header h2 {
+        font-size: 22px;
+      }
+
+      .pay-total-top strong,
+      .pay-total-badge {
+        font-size: 24px;
+      }
+
+      .pay-shell {
+        display: block;
+      }
+
+      .pay-summary-panel,
+      .pay-main-panel {
+        padding: 14px;
+      }
+
+      .pay-methods {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .pay-method {
+        min-height: 108px;
+      }
+
+      .pay-value-field,
+      .pix-inline-grid,
+      .pay-proof-grid,
+      .pay-footer-actions,
+      .pay-share-row {
+        grid-template-columns: 1fr;
+      }
+
+      .quick-cash,
+      .parcelas-grid,
+      .brand-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .pay-share-row {
+        grid-column: auto;
+        gap: 8px;
+      }
+
+      .pay-share-row button,
+      .pay-share-row button:first-child,
+      .pay-share-row button:last-child {
+        border-radius: 8px;
+      }
+    }
   </style>
 </head>
 
@@ -5404,171 +6168,252 @@
           <h2>Pagamento</h2>
           <div class="pay-header-sub">Escolha a forma de pagamento</div>
         </div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="pay-total-badge" id="payTotalBadge">R$ 0,00</div>
+        <div class="pay-header-right">
+          <div class="pay-total-top">
+            <span>Total da venda</span>
+            <strong id="payTotalBadge">R$ 0,00</strong>
+          </div>
           <div class="modal-close" onclick="closePayModal()"><i class="bi bi-x-lg"></i></div>
         </div>
       </div>
 
-      <div class="pay-body">
+      <div class="pay-shell">
+        <aside class="pay-summary-panel">
+          <div class="pay-summary-card">
+            <div class="pay-summary-title">
+              <span><i class="bi bi-cart3"></i> Resumo da venda</span>
+              <strong id="paySummaryCount">0 itens</strong>
+            </div>
+            <div class="pay-summary-items" id="paySummaryItems"></div>
+            <div class="pay-summary-lines">
+              <div><span>Subtotal</span><strong id="paySummarySubtotal">R$ 0,00</strong></div>
+              <div><span>Desconto</span><strong class="disc" id="paySummaryDiscount">- R$ 0,00</strong></div>
+              <div><span>Acréscimo</span><strong class="add">+ R$ 0,00</strong></div>
+            </div>
+            <div class="pay-summary-total">
+              <span>Total da venda</span>
+              <strong id="paySummaryTotal">R$ 0,00</strong>
+            </div>
+          </div>
 
-        <div class="pay-methods">
-          <div id="payMethodDinheiro" class="pay-method selected" onclick="selectMethod(this,'dinheiro')">
-            <i class="bi bi-cash-coin"></i><span>Dinheiro</span>
+          <div class="pay-obs-wrap">
+            <i class="bi bi-pencil-square"></i>
+            <input class="pay-obs-input" id="vendaObsInput" type="text" placeholder="Observação da venda"
+              maxlength="120" oninput="vendaObs = this.value.trim()">
           </div>
-          <div class="pay-method" onclick="selectMethod(this,'pix')">
-            <i class="bi bi-qr-code-scan"></i><span>PIX</span>
-          </div>
-          <div class="pay-method" onclick="selectMethod(this,'credito')">
-            <i class="bi bi-credit-card-fill"></i><span>Crédito</span>
-          </div>
-          <div class="pay-method" onclick="selectMethod(this,'debito')">
-            <i class="bi bi-credit-card"></i><span>Débito</span>
-          </div>
-          <div class="pay-method" onclick="selectMethod(this,'voucher')">
-            <i class="bi bi-ticket-perforated-fill"></i><span>Voucher</span>
-          </div>
-          <div class="pay-method" onclick="selectMethod(this,'split')">
-            <i class="bi bi-layout-split"></i><span>Dividir</span>
-          </div>
-        </div>
 
-        <!-- dinheiro / voucher / débito -->
-        <div id="payValueSection">
-          <div class="pay-section-label">Valor recebido</div>
-          <div class="pay-value-section">
-            <input class="pay-value-input" type="text" id="payValueInput" placeholder="R$ 0,00"
-              oninput="onPayValueInput()" autocomplete="off" inputmode="decimal">
-            <div class="quick-cash" id="quickCash"></div>
-            <div class="troco-box" id="trocoBox">
-              <span class="t-label">Troco</span>
-              <span class="t-val" id="trocoVal">R$ 0,00</span>
+          <div class="pay-ai-card">
+            <div class="pay-ai-head">
+              <span><i class="bi bi-stars"></i> Nexo AI</span>
+              <strong>Sugestão</strong>
+            </div>
+            <p id="payAiText">Confira pagamento, troco e comprovante antes de concluir.</p>
+            <div class="pay-ai-actions">
+              <button type="button" onclick="this.closest('.pay-ai-card').style.display='none'">Ignorar</button>
+              <button type="button" class="primary" onclick="closePayModal();document.getElementById('searchInput').focus()">Adicionar produtos</button>
             </div>
           </div>
-        </div>
+        </aside>
 
-        <!-- crédito / débito: bandeira + parcelas -->
-        <div class="card-section" id="cardSection" style="display:none">
-          <div>
-            <div class="pay-section-label">Bandeira</div>
-            <div class="brand-grid" id="brandGrid">
-              <button class="brand-btn selected" onclick="selectBrand(this,'Visa')">
-                <i class="bi bi-credit-card-fill"></i> Visa
-              </button>
-              <button class="brand-btn" onclick="selectBrand(this,'Master')">
-                <i class="bi bi-credit-card-fill"></i> Master
-              </button>
-              <button class="brand-btn" onclick="selectBrand(this,'Elo')">
-                <i class="bi bi-credit-card-fill"></i> Elo
-              </button>
-              <button class="brand-btn" onclick="selectBrand(this,'Amex')">
-                <i class="bi bi-credit-card-fill"></i> Amex
-              </button>
-              <button class="brand-btn" onclick="selectBrand(this,'Hiper')">
-                <i class="bi bi-credit-card-fill"></i> Hiper
-              </button>
-            </div>
-          </div>
-          <div id="parcelasWrap">
-            <div class="pay-section-label">Parcelas</div>
-            <div class="parcelas-grid" id="parcelasGrid"></div>
-          </div>
-          <div class="card-resumo" id="cardResumo">
-            <div class="card-resumo-info">
-              <p id="cardResumoDesc">1× no cartão Visa</p>
-              <span id="cardResumoTag" class="parcela-tag sem-juros">sem juros</span>
-            </div>
-            <div class="card-resumo-total" id="cardResumoTotal">R$ 0,00</div>
-          </div>
-        </div>
-
-        <!-- PIX -->
-        <div class="pix-section" id="pixSection">
-          <button class="pix-gen-btn" id="pixGenBtn" onclick="gerarPixQR()">
-            <i class="bi bi-qr-code"></i> Gerar QR Code PIX
-          </button>
-          <div class="pix-qr-wrap" id="pixQrWrap">
-            <div class="pix-qr-frame" id="pixQrFrame">
-              <div id="pixQrCanvas"></div>
-              <span class="pix-qr-status-badge aguardando" id="pixQrBadge">Aguardando</span>
-            </div>
-            <div style="width:100%">
-              <div class="pix-timer-wrap">
-                <i class="bi bi-clock" style="font-size:14px"></i>
-                <span>Expira em</span>
-                <span class="pix-timer" id="pixTimer">05:00</span>
-              </div>
-              <div class="pix-timer-bar" style="margin-top:6px">
-                <div class="pix-timer-bar-fill" id="pixTimerBar" style="width:100%"></div>
-              </div>
-            </div>
-            <div class="pix-key-wrap">
-              <span class="pix-key-label">Chave</span>
-              <span class="pix-key-value" id="pixKeyValue">—</span>
-              <button class="pix-copy-btn" id="pixCopyBtn" onclick="copiarChavePix()">
-                <i class="bi bi-copy"></i> Copiar
-              </button>
-            </div>
-            <div class="pix-status-row">
-              <div class="pix-status-dot" id="pixStatusDot"></div>
-              <span id="pixStatusText">Aguardando pagamento...</span>
-              <button class="pix-sim-btn" id="pixSimBtn" onclick="simularPagamentoPix()">
-                Simular pagamento
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- split / dividir -->
-        <div class="split-section" id="splitSection" style="display:none">
-          <div class="split-header">
-            <span class="split-title">Pagamentos parciais</span>
-            <span class="split-add-btn" onclick="addSplitItem()">
-              <i class="bi bi-plus-circle"></i> Adicionar
-            </span>
-          </div>
-          <div id="splitItems"></div>
-          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);padding:4px 0">
-            <span>Restante:</span>
-            <span id="splitRestante" style="color:var(--accent);font-weight:700">R$ 0,00</span>
-          </div>
-        </div>
-
-        <!-- maquininha / terminal -->
-        <div class="terminal-section" id="terminalSection">
-          <div class="term-icon-wrap" id="termIconWrap">
-            <i class="bi bi-phone" id="termIcon"></i>
-          </div>
-          <span class="term-badge enviando" id="termBadge">Conectando...</span>
-          <div class="term-msg" id="termMsg">Conectando à maquininha</div>
-          <div class="term-sub" id="termSub">Aguarde um instante</div>
-          <div class="term-total" id="termTotal">R$ 0,00</div>
-          <div class="term-chips">
-            <div class="term-chip"><i class="bi bi-credit-card-fill"></i> <span id="termBandeira">—</span></div>
-            <div class="term-chip"><i class="bi bi-hash"></i> <span id="termTipoLabel">—</span></div>
-          </div>
-          <div class="term-sim-btns" id="termSimBtns" style="display:none">
-            <button class="term-btn-aprovar" onclick="simularAprovacaoTerminal()">
-              <i class="bi bi-check2-circle"></i> Simular aprovação
+        <section class="pay-main-panel">
+          <div class="pay-step-row">
+            <h3>1. Escolha a forma de pagamento</h3>
+            <button class="pay-split-top" type="button" onclick="selectMethod(document.getElementById('payMethodSplit'),'split')">
+              <i class="bi bi-layout-split"></i> Dividir pagamento
             </button>
-            <button class="term-btn-recusar" onclick="simularRecusaTerminal()">Recusar</button>
           </div>
-          <span class="term-demo-label" id="termDemoLabel"></span>
-        </div>
 
-      </div>
+          <div class="pay-methods">
+            <div class="pay-method" onclick="selectMethod(this,'pix')">
+              <i class="bi bi-gem"></i><span>PIX</span><kbd>F1</kbd>
+            </div>
+            <div id="payMethodDinheiro" class="pay-method selected" onclick="selectMethod(this,'dinheiro')">
+              <i class="bi bi-cash-coin"></i><span>Dinheiro</span><kbd>F2</kbd>
+            </div>
+            <div class="pay-method" onclick="selectMethod(this,'debito')">
+              <i class="bi bi-credit-card"></i><span>Débito</span><kbd>F3</kbd>
+            </div>
+            <div class="pay-method" onclick="selectMethod(this,'credito')">
+              <i class="bi bi-credit-card-2-back-fill"></i><span>Crédito</span><kbd>F4</kbd>
+            </div>
+            <div class="pay-method" onclick="selectMethod(this,'voucher')">
+              <i class="bi bi-ticket-perforated-fill"></i><span>Voucher</span><kbd>F5</kbd>
+            </div>
+            <div class="pay-method" onclick="selectMethod(this,'carteira')">
+              <i class="bi bi-wallet2"></i><span>Carteira</span><kbd>F6</kbd>
+            </div>
+            <div class="pay-method" onclick="selectMethod(this,'vale')">
+              <i class="bi bi-cup-straw"></i><span>Vale refeição</span><kbd>F7</kbd>
+            </div>
+            <div id="payMethodSplit" class="pay-method" onclick="selectMethod(this,'split')">
+              <i class="bi bi-three-dots"></i><span>Outros</span><kbd>F8</kbd>
+            </div>
+          </div>
 
-      <div class="pay-obs-wrap">
-        <i class="bi bi-chat-left-text"></i>
-        <input class="pay-obs-input" id="vendaObsInput" type="text" placeholder="Observação / nota (opcional)"
-          maxlength="120" oninput="vendaObs = this.value.trim()">
+          <div class="pay-step">
+            <h3>2. Informar valores</h3>
+
+            <!-- dinheiro / voucher / débito -->
+            <div id="payValueSection">
+              <div class="pay-value-section">
+                <label class="pay-value-field">
+                  <span id="payValueLabel">Valor recebido</span>
+                  <input class="pay-value-input" type="text" id="payValueInput" placeholder="R$ 0,00"
+                    oninput="onPayValueInput()" autocomplete="off" inputmode="decimal">
+                </label>
+                <div class="quick-cash" id="quickCash"></div>
+                <div class="troco-box" id="trocoBox">
+                  <span class="t-label">Troco</span>
+                  <span class="t-val" id="trocoVal">R$ 0,00</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- crédito / débito: bandeira + parcelas -->
+            <div class="card-section" id="cardSection" style="display:none">
+              <div>
+                <div class="pay-section-label">Bandeira</div>
+                <div class="brand-grid" id="brandGrid">
+                  <button class="brand-btn selected" onclick="selectBrand(this,'Visa')">
+                    <i class="bi bi-credit-card-fill"></i> Visa
+                  </button>
+                  <button class="brand-btn" onclick="selectBrand(this,'Master')">
+                    <i class="bi bi-credit-card-fill"></i> Master
+                  </button>
+                  <button class="brand-btn" onclick="selectBrand(this,'Elo')">
+                    <i class="bi bi-credit-card-fill"></i> Elo
+                  </button>
+                  <button class="brand-btn" onclick="selectBrand(this,'Amex')">
+                    <i class="bi bi-credit-card-fill"></i> Amex
+                  </button>
+                  <button class="brand-btn" onclick="selectBrand(this,'Hiper')">
+                    <i class="bi bi-credit-card-fill"></i> Hiper
+                  </button>
+                </div>
+              </div>
+              <div id="parcelasWrap">
+                <div class="pay-section-label">Parcelas</div>
+                <div class="parcelas-grid" id="parcelasGrid"></div>
+              </div>
+              <div class="card-resumo" id="cardResumo">
+                <div class="card-resumo-info">
+                  <p id="cardResumoDesc">1× no cartão Visa</p>
+                  <span id="cardResumoTag" class="parcela-tag sem-juros">sem juros</span>
+                </div>
+                <div class="card-resumo-total" id="cardResumoTotal">R$ 0,00</div>
+              </div>
+            </div>
+
+            <!-- PIX -->
+            <div class="pix-section" id="pixSection">
+              <div class="pix-inline-grid">
+                <button class="pix-gen-btn" id="pixGenBtn" onclick="gerarPixQR()">
+                  <i class="bi bi-qr-code"></i> Gerar QR Code PIX
+                </button>
+                <div class="pix-hint-card">
+                  <i class="bi bi-info-circle"></i>
+                  <div>
+                    <strong>Pagamento via PIX</strong>
+                    <span>O QR Code será gerado após confirmar o valor.</span>
+                  </div>
+                </div>
+              </div>
+              <div class="pix-qr-wrap" id="pixQrWrap">
+                <div class="pix-qr-frame" id="pixQrFrame">
+                  <div id="pixQrCanvas"></div>
+                  <span class="pix-qr-status-badge aguardando" id="pixQrBadge">Aguardando</span>
+                </div>
+                <div style="width:100%">
+                  <div class="pix-timer-wrap">
+                    <i class="bi bi-clock" style="font-size:14px"></i>
+                    <span>Expira em</span>
+                    <span class="pix-timer" id="pixTimer">05:00</span>
+                  </div>
+                  <div class="pix-timer-bar" style="margin-top:6px">
+                    <div class="pix-timer-bar-fill" id="pixTimerBar" style="width:100%"></div>
+                  </div>
+                </div>
+                <div class="pix-key-wrap">
+                  <span class="pix-key-label">Chave</span>
+                  <span class="pix-key-value" id="pixKeyValue">—</span>
+                  <button class="pix-copy-btn" id="pixCopyBtn" onclick="copiarChavePix()">
+                    <i class="bi bi-copy"></i> Copiar
+                  </button>
+                </div>
+                <div class="pix-status-row">
+                  <div class="pix-status-dot" id="pixStatusDot"></div>
+                  <span id="pixStatusText">Aguardando pagamento...</span>
+                  <button class="pix-sim-btn" id="pixSimBtn" onclick="simularPagamentoPix()">
+                    Simular pagamento
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- split / dividir -->
+            <div class="split-section" id="splitSection" style="display:none">
+              <div class="split-header">
+                <span class="split-title">Pagamentos parciais</span>
+                <span class="split-add-btn" onclick="addSplitItem()">
+                  <i class="bi bi-plus-circle"></i> Adicionar
+                </span>
+              </div>
+              <div id="splitItems"></div>
+              <div class="split-rest-row">
+                <span>Restante:</span>
+                <span id="splitRestante">R$ 0,00</span>
+              </div>
+            </div>
+
+            <!-- maquininha / terminal -->
+            <div class="terminal-section" id="terminalSection">
+              <div class="term-icon-wrap" id="termIconWrap">
+                <i class="bi bi-phone" id="termIcon"></i>
+              </div>
+              <span class="term-badge enviando" id="termBadge">Conectando...</span>
+              <div class="term-msg" id="termMsg">Conectando à maquininha</div>
+              <div class="term-sub" id="termSub">Aguarde um instante</div>
+              <div class="term-total" id="termTotal">R$ 0,00</div>
+              <div class="term-chips">
+                <div class="term-chip"><i class="bi bi-credit-card-fill"></i> <span id="termBandeira">—</span></div>
+                <div class="term-chip"><i class="bi bi-hash"></i> <span id="termTipoLabel">—</span></div>
+              </div>
+              <div class="term-sim-btns" id="termSimBtns" style="display:none">
+                <button class="term-btn-aprovar" onclick="simularAprovacaoTerminal()">
+                  <i class="bi bi-check2-circle"></i> Simular aprovação
+                </button>
+                <button class="term-btn-recusar" onclick="simularRecusaTerminal()">Recusar</button>
+              </div>
+              <span class="term-demo-label" id="termDemoLabel"></span>
+            </div>
+          </div>
+
+          <div class="pay-step pay-proof-step">
+            <h3>3. NFC-e e comprovante</h3>
+            <div class="pay-proof-grid">
+              <label class="pay-check"><input type="checkbox" checked> <span>Emitir NFC-e</span> <i class="bi bi-question-circle"></i></label>
+              <label class="pay-check"><input type="checkbox" checked> <span>Enviar comprovante</span> <i class="bi bi-question-circle"></i></label>
+              <div class="pay-share-row">
+                <button type="button"><i class="bi bi-whatsapp"></i> WhatsApp</button>
+                <button type="button"><i class="bi bi-envelope-fill"></i> E-mail</button>
+                <button type="button"><i class="bi bi-printer-fill"></i> Imprimir</button>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
 
       <div class="pay-footer">
-        <button class="btn-cancel-pay" id="btnCancelPay" onclick="handleCancelPay()">Cancelar</button>
-        <button class="btn-confirm-pay" id="btnConfirmPay" onclick="confirmPayment()">
-          <i class="bi bi-check2"></i> Confirmar pagamento
-        </button>
+        <div class="pay-operator">
+          <span>Operador: <strong id="payOperatorName">PDV</strong></span>
+          <span><i class="bi bi-cash-register"></i> Caixa: 01</span>
+        </div>
+        <div class="pay-footer-actions">
+          <button class="btn-cancel-pay" id="btnCancelPay" onclick="handleCancelPay()"><i class="bi bi-x-lg"></i> Cancelar</button>
+          <button class="btn-confirm-pay" id="btnConfirmPay" onclick="confirmPayment()">
+            <i class="bi bi-check2"></i> Confirmar pagamento <span>F12</span>
+          </button>
+        </div>
       </div>
 
     </div>
@@ -7138,11 +7983,57 @@
     let selectedBrand = 'Visa';
     let selectedParcela = 1;
 
+    function renderPaySummary() {
+      const { subtotal, disc, total } = calcCart();
+      const itemCount = cart.reduce((s, c) => s + c.qty, 0);
+      const summaryItems = document.getElementById('paySummaryItems');
+      const session = NexoAuth.getSession();
+      const operatorName = session?.user?.name || session?.user?.email || 'PDV';
+
+      if (summaryItems) {
+        summaryItems.innerHTML = cart.map(item => `
+          <div class="pay-summary-item">
+            <div class="pay-summary-emoji">${item.emoji || '📦'}</div>
+            <div>
+              <div class="pay-summary-name">${escapeHtml(item.nome || 'Produto')}</div>
+              <div class="pay-summary-code">Código: ${escapeHtml(String(item.codigo || item.cod || item.id || '—'))}</div>
+            </div>
+            <div class="pay-summary-money">
+              R$ ${fmt(item.preco * item.qty)}
+              <span>x${item.qty}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      const setText = (id, text) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+      };
+      setText('paySummaryCount', `${itemCount} ${itemCount === 1 ? 'item' : 'itens'}`);
+      setText('paySummarySubtotal', `R$ ${fmt(subtotal)}`);
+      setText('paySummaryDiscount', disc > 0 ? `- R$ ${fmt(disc)}` : '- R$ 0,00');
+      setText('paySummaryTotal', `R$ ${fmt(total)}`);
+      setText('payOperatorName', operatorName);
+
+      const aiCard = document.querySelector('.pay-ai-card');
+      if (aiCard) aiCard.style.display = '';
+
+      const aiText = document.getElementById('payAiText');
+      if (aiText) {
+        const topItem = cart.slice().sort((a, b) => (b.preco * b.qty) - (a.preco * a.qty))[0];
+        aiText.textContent = topItem
+          ? `Venda com ${itemCount} ${itemCount === 1 ? 'item' : 'itens'}. Confira ${topItem.nome} e o valor recebido antes de concluir.`
+          : 'Confira pagamento, troco e comprovante antes de concluir.';
+      }
+    }
+
     function openPayModal() {
       if (!cart.length) return;
       const total = getTotal();
       document.getElementById('payTotalBadge').textContent = `R$ ${fmt(total)}`;
       document.getElementById('payValueInput').value = `R$ ${fmt(total)}`;
+      renderPaySummary();
       document.getElementById('payOverlay').classList.add('open');
       selectMethod(document.getElementById('payMethodDinheiro'), 'dinheiro');
       calcTroco();
@@ -7173,6 +8064,8 @@
       const isCard = method === 'credito' || method === 'debito';
       const isSplit = method === 'split';
       const isVoucher = method === 'voucher';
+      const isWallet = method === 'carteira';
+      const isVale = method === 'vale';
 
       // mostra/esconde seções
       resetTerminalPanel();
@@ -7184,13 +8077,24 @@
 
       if (!isPix) resetPixPanel();
 
+      const valueLabel = document.getElementById('payValueLabel');
+      if (valueLabel) {
+        const labels = {
+          dinheiro: 'Valor recebido em dinheiro',
+          voucher: 'Valor recebido em voucher',
+          carteira: 'Valor recebido na carteira',
+          vale: 'Valor recebido no vale refeição',
+        };
+        valueLabel.textContent = labels[method] || 'Valor recebido';
+      }
+
       const confirmBtn = document.getElementById('btnConfirmPay');
       if (isPix) {
         confirmBtn.disabled = true;
-        confirmBtn.innerHTML = '<i class="bi bi-clock"></i> Aguardando PIX...';
+        confirmBtn.innerHTML = '<i class="bi bi-clock"></i> Aguardando PIX... <span>F12</span>';
       } else if (!terminalAtivo) {
         confirmBtn.disabled = false;
-        confirmBtn.innerHTML = '<i class="bi bi-check2"></i> Confirmar pagamento';
+        confirmBtn.innerHTML = '<i class="bi bi-check2"></i> Confirmar pagamento <span>F12</span>';
       }
 
       if (isCard) {
@@ -7206,7 +8110,7 @@
 
       if (isSplit) { renderSplitItems(); updateSplitRestante(); }
 
-      if (isVoucher) {
+      if (isVoucher || isWallet || isVale) {
         const total = getTotal();
         document.getElementById('payValueInput').value = `R$ ${fmt(total)}`;
         calcTroco();
@@ -7459,7 +8363,7 @@
         const btn = document.getElementById('btnConfirmPay');
         if (btn) {
           btn.disabled = false;
-          btn.innerHTML = '<i class="bi bi-check2"></i> Confirmar pagamento';
+          btn.innerHTML = '<i class="bi bi-check2"></i> Confirmar pagamento <span>F12</span>';
         }
       }, 800);
     }
@@ -8306,6 +9210,32 @@
       if (tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT' && !anyModalOpen) {
         if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
           document.getElementById('searchInput').focus();
+        }
+      }
+
+      if (document.getElementById('payOverlay').classList.contains('open')) {
+        const payShortcutMap = {
+          F1: ['pix', '.pay-method:nth-child(1)'],
+          F2: ['dinheiro', '#payMethodDinheiro'],
+          F3: ['debito', '.pay-method:nth-child(3)'],
+          F4: ['credito', '.pay-method:nth-child(4)'],
+          F5: ['voucher', '.pay-method:nth-child(5)'],
+          F6: ['carteira', '.pay-method:nth-child(6)'],
+          F7: ['vale', '.pay-method:nth-child(7)'],
+          F8: ['split', '#payMethodSplit'],
+        };
+
+        if (payShortcutMap[e.key]) {
+          e.preventDefault();
+          const [method, selector] = payShortcutMap[e.key];
+          const el = document.querySelector(selector);
+          if (el) selectMethod(el, method);
+          return;
+        }
+        if (e.key === 'F12') {
+          e.preventDefault();
+          document.getElementById('btnConfirmPay')?.click();
+          return;
         }
       }
 

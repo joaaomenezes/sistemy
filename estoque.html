@@ -970,7 +970,7 @@
         <div class="toolbar" style="margin-bottom:20px">
           <div class="search-input">
             <i class="bi bi-search" style="color:var(--muted)"></i>
-            <input type="text" id="movSearch" placeholder="Buscar movimentação..." oninput="renderMovs()">
+            <input type="text" id="movSearch" placeholder="Buscar movimentação..." oninput="loadMovsPage(1)">
           </div>
           <div class="filter-group">
             <button class="filter-btn active" onclick="setMovFilter(this,'todos')">Todas</button>
@@ -1225,14 +1225,19 @@
     let products      = [];
     let movimentacoes = [];
     let depositos     = [];
+    let stockRows     = [];
+    let movRows       = [];
 
     let currentFilter = 'todos';
     let movFilter = 'todos';
-    let sortDir = 1;
+    let stockSortKey = 'nome';
+    let stockSortDir = 'asc';
     let filtered = [...products];
     let currentPage = 1;
     const perPage = 8;
     let movsPage = 1;
+    let stockPageMeta = { page: 1, limit: perPage, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
+    let movsPageMeta = { page: 1, limit: 1, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
     let movType = 'entrada';
     let editingMovProdId = null;
 
@@ -1246,6 +1251,7 @@
     // ═══════════════════════════════════════════════
     async function init() {
       document.getElementById('stockTableBody').innerHTML = NexoSkeleton.tableRows(8, 5);
+      document.getElementById('movsTableBody').innerHTML = NexoSkeleton.tableRows(8, 7);
       const [rProd, rMovs, rDep] = await Promise.all([
         NexoAuth.apiFetch('/produtos'),
         NexoAuth.apiFetch('/estoque/movimentacoes'),
@@ -1257,8 +1263,10 @@
 
       NexoAuth.renderCurrentUser();
       populateDepositoSelects();
-      applyFilters();
-      renderMovs();
+      await Promise.all([
+        loadStockPage(1, false),
+        loadMovsPage(1, false),
+      ]);
       renderDepositos();
       renderAlertas();
       updateKPIs();
@@ -1335,41 +1343,116 @@
       applyFilters();
     }
 
-    function applyFilters() {
+    function buildStockQuery(page = currentPage) {
+      const params = new URLSearchParams();
+      const q = (document.getElementById('searchInput').value || '').trim();
+      const dep = document.getElementById('depFilter').value;
+
+      params.set('page', String(page));
+      params.set('limit', String(perPage));
+      if (q) params.set('q', q);
+      if (dep) params.set('deposito', dep);
+      if (currentFilter === 'baixo') params.set('estoqueStatus', 'baixo');
+      if (currentFilter === 'zero') params.set('estoqueStatus', 'zerado');
+      if (stockSortKey) {
+        params.set('sortBy', stockSortKey);
+        params.set('sortDir', stockSortDir);
+      }
+
+      return params.toString();
+    }
+
+    function filterStockLocal() {
       const q = (document.getElementById('searchInput').value || '').toLowerCase();
       const dep = document.getElementById('depFilter').value;
-      filtered = products.filter(p => {
-        const matchQ = !q || p.nome.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q);
+      const list = products.filter(p => {
+        const matchQ = !q || String(p.nome || '').toLowerCase().includes(q) || String(p.sku || '').toLowerCase().includes(q);
         const matchDep = !dep || p.deposito === dep;
         const s = stockStatus(p);
         const matchF = currentFilter === 'todos' || s === currentFilter;
         return matchQ && matchDep && matchF;
       });
+
+      list.sort((a, b) => {
+        const av = typeof a[stockSortKey] === 'number' ? a[stockSortKey] : String(a[stockSortKey] || '').toLowerCase();
+        const bv = typeof b[stockSortKey] === 'number' ? b[stockSortKey] : String(b[stockSortKey] || '').toLowerCase();
+        return stockSortDir === 'asc'
+          ? (av > bv ? 1 : av < bv ? -1 : 0)
+          : (av < bv ? 1 : av > bv ? -1 : 0);
+      });
+
+      return list;
+    }
+
+    function applyFilters() {
       currentPage = 1;
+      loadStockPage(1);
+    }
+
+    async function loadStockPage(page = currentPage, showLoading = true) {
+      currentPage = page;
+      if (showLoading) document.getElementById('stockTableBody').innerHTML = NexoSkeleton.tableRows(8, 5);
+
+      if (currentFilter === 'ok') {
+        const local = filterStockLocal();
+        const pages = Math.max(1, Math.ceil(local.length / perPage));
+        if (currentPage > pages) currentPage = pages;
+        const start = (currentPage - 1) * perPage;
+        stockRows = local.slice(start, start + perPage);
+        filtered = local;
+        stockPageMeta = {
+          page: currentPage,
+          limit: perPage,
+          total: local.length,
+          totalPages: pages,
+          hasNextPage: currentPage < pages,
+          hasPrevPage: currentPage > 1,
+        };
+        renderTable();
+        return;
+      }
+
+      const res = await NexoAuth.apiFetch('/produtos?' + buildStockQuery(page));
+      if (!res.ok) {
+        showToast(res.message || 'Erro ao carregar posição de estoque.');
+        stockRows = [];
+        filtered = [];
+        renderTable();
+        return;
+      }
+
+      stockRows = res.data || [];
+      filtered = [...stockRows];
+      stockPageMeta = res.pagination || {
+        page,
+        limit: perPage,
+        total: stockRows.length,
+        totalPages: Math.max(1, Math.ceil(stockRows.length / perPage)),
+        hasNextPage: false,
+        hasPrevPage: page > 1,
+      };
+      currentPage = stockPageMeta.page || page;
       renderTable();
     }
 
     function sortStock(key) {
-      filtered.sort((a, b) => {
-        const av = typeof a[key] === 'number' ? a[key] : a[key].toLowerCase();
-        const bv = typeof b[key] === 'number' ? b[key] : b[key].toLowerCase();
-        return av > bv ? sortDir : av < bv ? -sortDir : 0;
-      });
-      sortDir *= -1;
-      renderTable();
+      if (stockSortKey === key) stockSortDir = stockSortDir === 'asc' ? 'desc' : 'asc';
+      else {
+        stockSortKey = key;
+        stockSortDir = 'asc';
+      }
+      loadStockPage(1);
     }
 
     function renderTable() {
       const body = document.getElementById('stockTableBody');
       const empty = document.getElementById('emptyStock');
-      const start = (currentPage - 1) * perPage;
-      const slice = filtered.slice(start, start + perPage);
-      const total = filtered.length;
+      const total = stockPageMeta.total || stockRows.length;
 
       if (!total) { body.innerHTML = ''; empty.classList.add('show'); }
       else empty.classList.remove('show');
 
-      body.innerHTML = slice.map(p => {
+      body.innerHTML = stockRows.map(p => {
         const ativo = p.status === 'ativo';
         const s = stockStatus(p);
         const pct = Math.min(100, p.estoqueMax > 0 ? (p.estoque / p.estoqueMax) * 100 : 0);
@@ -1403,13 +1486,15 @@
     </tr>`;
       }).join('');
 
+      const start = total ? (currentPage - 1) * perPage + 1 : 0;
+      const end = Math.min(currentPage * perPage, total);
       document.getElementById('tableInfo').textContent =
-        `Mostrando ${Math.min(start + 1, total)}–${Math.min(start + perPage, total)} de ${total} produtos`;
+        total ? `Mostrando ${start}–${end} de ${total} produtos` : '0 produtos';
       renderPagination(total);
     }
 
     function renderPagination(total) {
-      const pages = Math.ceil(total / perPage);
+      const pages = stockPageMeta.totalPages || Math.ceil(total / perPage);
       const pg = document.getElementById('pagination');
       if (pages <= 1) { pg.innerHTML = ''; return; }
       let html = `<button class="pg-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}><i class="bi bi-chevron-left"></i></button>`;
@@ -1418,9 +1503,9 @@
       pg.innerHTML = html;
     }
     function goPage(p) {
-      const pages = Math.ceil(filtered.length / perPage);
+      const pages = stockPageMeta.totalPages || Math.ceil((stockPageMeta.total || 0) / perPage);
       if (p < 1 || p > pages) return;
-      currentPage = p; renderTable();
+      loadStockPage(p);
     }
 
     // ═══════════════════════════════════════════════
@@ -1431,25 +1516,56 @@
       el.classList.add('active');
       movFilter = val;
       movsPage = 1;
+      loadMovsPage(1);
+    }
+
+    function buildMovsQuery(page = movsPage) {
+      const params = new URLSearchParams();
+      const q = (document.getElementById('movSearch')?.value || '').trim();
+
+      params.set('page', String(page));
+      params.set('limit', String(getMovsPerPage()));
+      if (q) params.set('q', q);
+      if (movFilter !== 'todos') params.set('tipo', movFilter);
+
+      return params.toString();
+    }
+
+    async function loadMovsPage(page = movsPage, showLoading = true) {
+      movsPage = page;
+      const body = document.getElementById('movsTableBody');
+      if (showLoading && body) body.innerHTML = NexoSkeleton.tableRows(8, 7);
+
+      const res = await NexoAuth.apiFetch('/estoque/movimentacoes?' + buildMovsQuery(page));
+      if (!res.ok) {
+        showToast(res.message || 'Erro ao carregar movimentações.');
+        movRows = [];
+        movsPageMeta = { page, limit: getMovsPerPage(), total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
+        renderMovs();
+        return;
+      }
+
+      movRows = res.data || [];
+      movsPageMeta = res.pagination || {
+        page,
+        limit: getMovsPerPage(),
+        total: movRows.length,
+        totalPages: Math.max(1, Math.ceil(movRows.length / getMovsPerPage())),
+        hasNextPage: false,
+        hasPrevPage: page > 1,
+      };
+      movsPage = movsPageMeta.page || page;
       renderMovs();
     }
 
     function renderMovs() {
-      const q = (document.getElementById('movSearch')?.value || '').toLowerCase();
-      const list = movimentacoes.filter(m => {
-        const matchQ = !q || m.produto.toLowerCase().includes(q);
-        const matchF = movFilter === 'todos' || m.tipo === movFilter;
-        return matchQ && matchF;
-      });
-
       const body = document.getElementById('movsTableBody');
       const empty = document.getElementById('emptyMovs');
-      const perPage = getMovsPerPage();
-      const pages = Math.max(1, Math.ceil(list.length / perPage));
+      const perPage = movsPageMeta.limit || getMovsPerPage();
+      const total = movsPageMeta.total || movRows.length;
+      const pages = Math.max(1, movsPageMeta.totalPages || Math.ceil(total / perPage));
       if (movsPage > pages) movsPage = pages;
-      const start = (movsPage - 1) * perPage;
-      const slice = list.slice(start, start + perPage);
-      if (!list.length) { body.innerHTML = ''; empty.classList.add('show'); }
+      if (!total) { body.innerHTML = ''; empty.classList.add('show'); }
       else empty.classList.remove('show');
 
       const typeConfig = {
@@ -1459,7 +1575,7 @@
         transferencia: { icon: 'bi-arrow-left-right', color: '#a855f7', label: 'Transferência', cls: 'transf' },
       };
 
-      body.innerHTML = slice.map(m => {
+      body.innerHTML = movRows.map(m => {
         const tc = typeConfig[m.tipo] || typeConfig.entrada;
         const qtyDisplay = m.tipo === 'saida' ? -Math.abs(m.qty) : m.qty;
         const qtySign = qtyDisplay >= 0 ? 'pos' : 'neg';
@@ -1481,7 +1597,7 @@
     </tr>`;
       }).join('');
 
-      renderMovsPagination(list.length, perPage);
+      renderMovsPagination(total, perPage);
     }
 
     function renderMovsPagination(total, perPage) {
@@ -1505,16 +1621,9 @@
     }
 
     function goMovsPage(p) {
-      const q = (document.getElementById('movSearch')?.value || '').toLowerCase();
-      const total = movimentacoes.filter(m => {
-        const matchQ = !q || m.produto.toLowerCase().includes(q);
-        const matchF = movFilter === 'todos' || m.tipo === movFilter;
-        return matchQ && matchF;
-      }).length;
-      const pages = Math.max(1, Math.ceil(total / getMovsPerPage()));
+      const pages = movsPageMeta.totalPages || Math.max(1, Math.ceil((movsPageMeta.total || 0) / getMovsPerPage()));
       if (p < 1 || p > pages) return;
-      movsPage = p;
-      renderMovs();
+      loadMovsPage(p);
     }
 
     // ═══════════════════════════════════════════════
@@ -1729,8 +1838,8 @@
       movimentacoes.unshift(res.data);
       populateProdSelect();
       closeMov();
-      applyFilters();
-      renderMovs();
+      await loadStockPage(currentPage, false);
+      await loadMovsPage(1, false);
       renderDepositos();
       renderAlertas();
       updateKPIs();
@@ -1747,7 +1856,7 @@
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
       el.classList.add('active');
       document.getElementById(panelId).classList.add('active');
-      if (panelId === 't-movimentacoes') renderMovs();
+      if (panelId === 't-movimentacoes') loadMovsPage(movsPage, false);
     }
 
     // ═══════════════════════════════════════════════
@@ -1948,7 +2057,9 @@
       }
 
       populateProdSelect(); closeMov();
-      applyFilters(); renderMovs(); renderDepositos(); renderAlertas(); updateKPIs();
+      await loadStockPage(currentPage, false);
+      await loadMovsPage(1, false);
+      renderDepositos(); renderAlertas(); updateKPIs();
       const msg = criados > 0
         ? `${active.length} produto(s) importados (${criados} criados)`
         : `${active.length} produto(s) importados da NF-e`;
@@ -1981,7 +2092,7 @@
         filename = 'movimentacoes-estoque.csv';
       } else {
         header = ['SKU', 'Nome', 'Categoria', 'Depósito', 'Estoque Atual', 'Est. Mínimo', 'Est. Máximo', 'Status'];
-        rows = filtered.map(p => [
+        rows = filterStockLocal().map(p => [
           p.sku, p.nome, p.cat || '—', p.deposito || '—',
           p.estoque, p.estoqueMin || 0, p.estoqueMax || 0,
           p.status === 'ativo' ? 'Ativo' : 'Inativo',
@@ -2009,7 +2120,7 @@
 
     window.addEventListener('resize', () => {
       if (document.getElementById('t-movimentacoes')?.classList.contains('active')) {
-        renderMovs();
+        loadMovsPage(movsPage, false);
       }
     });
   </script>

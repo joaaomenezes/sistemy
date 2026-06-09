@@ -1975,6 +1975,8 @@ transition: border-color .15s;
     let movimPage     = 1;
     let pagarDetalhePage = 1;
     let receberDetalhePage = 1;
+    let movimRows     = [];
+    let movimMeta     = { page: 1, limit: 8, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
 
     function getMovimPerPage() {
       const card = document.querySelector('#panel-movimentacoes .movim-card');
@@ -1985,11 +1987,52 @@ transition: border-color .15s;
     }
 
     function getFinDetailPerPage(panelId) {
-      const card = document.querySelector(`#panel-${panelId} .fin-detail-card`);
+      const panel = document.getElementById(`panel-${panelId}`);
+      const card = panel?.querySelector('.fin-detail-card');
       if (!card) return 10;
+
       const rect = card.getBoundingClientRect();
-      const usable = Math.max(52, rect.height - 112);
+      const header = card.querySelector('.table-header')?.getBoundingClientRect().height || 58;
+      const footer = card.querySelector('.fin-detail-footer')?.getBoundingClientRect().height || 54;
+      const pageBottomGap = 28;
+      const cardBottom = window.innerHeight - rect.top - pageBottomGap;
+      const usable = Math.min(Math.max(cardBottom, 52), window.innerHeight - 250) - header - footer;
+
       return Math.max(1, Math.floor(usable / 52));
+    }
+
+    function buildMovimQuery(page = movimPage) {
+      const params = new URLSearchParams();
+      params.set('page', String(page));
+      params.set('limit', String(getMovimPerPage()));
+      return params.toString();
+    }
+
+    async function loadMovimPage(page = movimPage, showLoading = true, shouldRender = true) {
+      movimPage = page;
+      const body = document.getElementById('tblMovim');
+      if (showLoading && body) body.innerHTML = NexoSkeleton.tableRows(8, 5);
+
+      const res = await NexoAuth.apiFetch('/financeiro?' + buildMovimQuery(page));
+      if (!res.ok) {
+        showToast(res.message || 'Erro ao carregar movimentações financeiras.', 'error');
+        movimRows = [];
+        movimMeta = { page, limit: getMovimPerPage(), total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
+        if (shouldRender) renderTabelas();
+        return;
+      }
+
+      movimRows = res.data || [];
+      movimMeta = res.pagination || {
+        page,
+        limit: getMovimPerPage(),
+        total: movimRows.length,
+        totalPages: Math.max(1, Math.ceil(movimRows.length / getMovimPerPage())),
+        hasNextPage: false,
+        hasPrevPage: page > 1,
+      };
+      movimPage = movimMeta.page || page;
+      if (shouldRender) renderTabelas();
     }
 
     // ═══════════════════════════════════════════════
@@ -2422,14 +2465,13 @@ transition: border-color .15s;
 
       const tblMov = document.getElementById('tblMovim');
       if (tblMov) {
-        const movs = [...lancamentos].sort((a, b) => _movTime(b) - _movTime(a));
-        const perPage = getMovimPerPage();
-        const pages = Math.max(1, Math.ceil(movs.length / perPage));
+        const movs = movimRows;
+        const perPage = movimMeta.limit || getMovimPerPage();
+        const total = movimMeta.total || movs.length;
+        const pages = Math.max(1, movimMeta.totalPages || Math.ceil(total / perPage));
         if (movimPage > pages) movimPage = pages;
-        const start = (movimPage - 1) * perPage;
-        const slice = movs.slice(start, start + perPage);
-        tblMov.innerHTML = movs.length
-          ? slice.map(l => `<tr>
+        tblMov.innerHTML = total
+          ? movs.map(l => `<tr>
               <td>${escapeHTML(_fmtDateTime(_movDateRaw(l)))}</td>
               <td class="u-fw-500">${escapeHTML(l.descricao || '—')}</td>
               <td class="u-muted">${escapeHTML(l.categoria || '—')}</td>
@@ -2437,16 +2479,15 @@ transition: border-color .15s;
               <td>${_movValorHtml(l)}</td>
             </tr>`).join('')
           : '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Nenhuma movimentação registrada</td></tr>';
-        _renderMovimPagination(movs.length, perPage);
+        _renderMovimPagination(total, perPage);
       }
     }
 
     function movimGoPage(p) {
-      const perPage = getMovimPerPage();
-      const pages = Math.max(1, Math.ceil(lancamentos.length / perPage));
+      const perPage = movimMeta.limit || getMovimPerPage();
+      const pages = movimMeta.totalPages || Math.max(1, Math.ceil((movimMeta.total || 0) / perPage));
       if (p < 1 || p > pages) return;
-      movimPage = p;
-      renderTabelas();
+      loadMovimPage(p);
     }
 
     function pagarDetalheGoPage(p) {
@@ -2516,6 +2557,7 @@ transition: border-color .15s;
       lancamentos.unshift(res.data);
       showToast(`Lançamento salvo com sucesso!`);
       closeModal();
+      await loadMovimPage(1, false, false);
       renderKPIs();
       renderDonut();
       renderTabelas();
@@ -2537,7 +2579,7 @@ transition: border-color .15s;
       closeMais();
       if (panelId === 'contas-pagar') { pagarDetalhePage = 1; renderTabelas(); }
       if (panelId === 'contas-receber') { receberDetalhePage = 1; renderTabelas(); }
-      if (panelId === 'movimentacoes') { movimPage = 1; renderTabelas(); }
+      if (panelId === 'movimentacoes') { movimPage = 1; loadMovimPage(1, false); }
       if (panelId === 'fluxo-caixa') renderChartFluxo();
     }
 
@@ -2922,6 +2964,7 @@ transition: border-color .15s;
       if (rCustos.ok) custosData   = rCustos.data;
       if (rProd.ok)   PRODUTOS_DATA = rProd.data;
       if (rMovs.ok)   MOVS_DATA     = rMovs.data;
+      await loadMovimPage(1, false, false);
 
       NexoAuth.renderCurrentUser();
       renderKPIs();
@@ -2933,8 +2976,11 @@ transition: border-color .15s;
     init();
 
     window.addEventListener('resize', () => {
+      if (document.getElementById('panel-movimentacoes')?.classList.contains('active')) {
+        loadMovimPage(movimPage, false);
+        return;
+      }
       const shouldRender =
-        document.getElementById('panel-movimentacoes')?.classList.contains('active') ||
         document.getElementById('panel-contas-pagar')?.classList.contains('active') ||
         document.getElementById('panel-contas-receber')?.classList.contains('active');
       if (shouldRender) {
