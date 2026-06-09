@@ -328,6 +328,22 @@
       color: var(--muted);
     }
 
+    .method-badge.voucher,
+    .method-badge.vale {
+      background: rgba(20, 184, 166, .1);
+      color: #14b8a6;
+    }
+
+    .method-badge.fiado {
+      background: rgba(245, 158, 11, .12);
+      color: #f59e0b;
+    }
+
+    .method-badge.split {
+      background: rgba(107, 127, 150, .1);
+      color: var(--muted);
+    }
+
     /* valor */
     .valor-cell {
       font-weight: 800;
@@ -641,9 +657,9 @@
           <button class="filter-btn active" onclick="setFilter(this,'todos')">Todas</button>
           <button class="filter-btn" id="filterConcluidas" onclick="setFilter(this,'concluida')"><i class="bi bi-check-circle"></i>
             Concluídas</button>
-          <button class="filter-btn" onclick="setFilter(this,'faturada')"><i class="bi bi-receipt"></i>
+          <button class="filter-btn" id="filterFaturadas" onclick="setFilter(this,'faturada')"><i class="bi bi-receipt"></i>
             Faturadas</button>
-          <button class="filter-btn" onclick="setFilter(this,'cancelada')"><i class="bi bi-x-circle"></i>
+          <button class="filter-btn" id="filterCanceladas" onclick="setFilter(this,'cancelada')"><i class="bi bi-x-circle"></i>
             Canceladas</button>
           <button class="filter-btn" onclick="setFilter(this,'estornada')"><i class="bi bi-arrow-counterclockwise"></i>
             Estornadas</button>
@@ -849,6 +865,46 @@
     let filterTimer = null;
     let currentVendaId = null;
 
+    const PDV_METHOD_OPTIONS = [
+      ['dinheiro', 'Dinheiro'],
+      ['pix', 'PIX'],
+      ['credito', 'Crédito'],
+      ['debito', 'Débito'],
+      ['voucher', 'Voucher'],
+      ['fiado', 'Fiado'],
+      ['vale', 'Vale refeição'],
+      ['split', 'Dividido / Outros'],
+    ];
+
+    const PEDIDO_METHOD_OPTIONS = [
+      ['dinheiro', 'Dinheiro'],
+      ['pix', 'PIX'],
+      ['credito', 'Crédito'],
+      ['debito', 'Débito'],
+      ['multiplo', 'Múltiplo'],
+      ['boleto', 'Boleto bancário'],
+      ['duplicata', 'Duplicata'],
+      ['transferencia', 'Transferência / PIX'],
+      ['cheque', 'Cheque'],
+    ];
+
+    function updateToolbarForSection() {
+      const isPdv = currentSection === 'pdv';
+      const faturadas = document.getElementById('filterFaturadas');
+      const canceladas = document.getElementById('filterCanceladas');
+      if (faturadas) faturadas.style.display = isPdv ? 'none' : '';
+      if (canceladas) canceladas.style.display = isPdv ? 'none' : '';
+
+      if (isPdv && ['faturada', 'cancelada'].includes(currentFilter)) currentFilter = 'todos';
+
+      const metodo = document.getElementById('metodoPag');
+      const options = isPdv ? PDV_METHOD_OPTIONS : PEDIDO_METHOD_OPTIONS;
+      const currentValue = options.some(([value]) => value === metodo.value) ? metodo.value : '';
+      metodo.innerHTML = `<option value="">Todos os métodos</option>` +
+        options.map(([value, label]) => `<option value="${value}">${label}</option>`).join('');
+      metodo.value = currentValue;
+    }
+
     function getVendasPerPage() {
       const usable = window.innerHeight - 445;
       return Math.max(1, Math.floor(usable / 62));
@@ -960,6 +1016,8 @@
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       document.querySelector('.filter-btn[onclick*="todos"]').classList.add('active');
       document.getElementById('searchInput').value = '';
+      document.getElementById('metodoPag').value = '';
+      updateToolbarForSection();
       const hoje = new Date();
       const inicio = new Date(hoje); inicio.setDate(inicio.getDate() - 30);
       document.getElementById('dataInicio').value = inicio.toISOString().slice(0, 10);
@@ -977,6 +1035,7 @@
       document.getElementById('dataInicio').value = inicio.toISOString().slice(0, 10);
       document.getElementById('dataFim').value = hoje.toISOString().slice(0, 10);
       document.getElementById('vendasBody').innerHTML = NexoSkeleton.tableRows(8, 6);
+      updateToolbarForSection();
       await refreshVendas(1, false);
     }
 
@@ -1047,12 +1106,14 @@
     const methodIcons = {
       dinheiro: 'bi-cash-coin', pix: 'bi-qr-code-scan',
       credito: 'bi-credit-card-fill', debito: 'bi-credit-card', multiplo: 'bi-layout-split',
+      voucher: 'bi-ticket-perforated-fill', fiado: 'bi-journal-text', vale: 'bi-cup-straw', split: 'bi-layout-split',
       boleto: 'bi-upc-scan', duplicata: 'bi-file-earmark-text', transferencia: 'bi-bank',
       cheque: 'bi-journal-check', outro: 'bi-credit-card-2-front'
     };
     const methodLabels = {
       dinheiro: 'Dinheiro', pix: 'PIX', credito: 'Crédito', debito: 'Débito', multiplo: 'Múltiplo',
       boleto: 'Boleto bancário', duplicata: 'Duplicata', transferencia: 'Transferência / PIX',
+      voucher: 'Voucher', fiado: 'Fiado', vale: 'Vale refeição', split: 'Dividido / Outros',
       cheque: 'Cheque', outro: 'Outro'
     };
     const statusLabels = { concluida: 'Concluída', faturada: 'Faturada', cancelada: 'Cancelada', estornada: 'Estornada', pendente: 'Pendente' };
@@ -1062,11 +1123,21 @@
       return statusLabels[status] || status || '—';
     }
 
+    function canEstornar(status) {
+      return currentSection === 'pdv'
+        ? status === 'concluida'
+        : ['concluida', 'faturada'].includes(status);
+    }
+
     function getMethodMeta(raw) {
       const label = String(raw || '').trim();
       const n = label.toLowerCase();
       let key = 'outro';
-      if (['dinheiro', 'pix', 'credito', 'debito', 'multiplo'].includes(n)) key = n;
+      if (['dinheiro', 'pix', 'credito', 'debito', 'multiplo', 'voucher', 'fiado', 'vale', 'split'].includes(n)) key = n;
+      else if (n.includes('vale')) key = 'vale';
+      else if (n.includes('fiado')) key = 'fiado';
+      else if (n.includes('voucher')) key = 'voucher';
+      else if (n.includes('divid') || n.includes('split') || n.includes('outros')) key = 'split';
       else if (n.includes('pix') || n.includes('transfer')) key = 'transferencia';
       else if (n.includes('cart')) key = 'credito';
       else if (n.includes('boleto')) key = 'boleto';
@@ -1076,7 +1147,7 @@
       return {
         key,
         icon: methodIcons[key] || methodIcons.outro,
-        label: label || methodLabels[key] || methodLabels.outro,
+        label: key === 'outro' && label ? label : (methodLabels[key] || methodLabels.outro),
       };
     }
 
@@ -1115,7 +1186,7 @@
       <td><div class="action-cell" onclick="event.stopPropagation()">
         <div class="act-btn" title="Ver detalhes" onclick="openDetail('${v.id}')"><i class="bi bi-eye"></i></div>
         <div class="act-btn" title="Imprimir" onclick="printVendaId('${v.id}')"><i class="bi bi-printer"></i></div>
-        ${['concluida', 'faturada'].includes(v.status) ? `<div class="act-btn danger" title="Estornar Venda" onclick="openEstornoById('${v.id}')"><i class="bi bi-arrow-counterclockwise"></i></div>` : ''}
+        ${canEstornar(v.status) ? `<div class="act-btn danger" title="Estornar Venda" onclick="openEstornoById('${v.id}')"><i class="bi bi-arrow-counterclockwise"></i></div>` : ''}
       </div></td>
     </tr>`;
       }).join('');
@@ -1209,7 +1280,7 @@
 
       // botão estornar
       const btnEst = document.getElementById('btnEstornar');
-      btnEst.disabled = !['concluida', 'faturada'].includes(v.status);
+      btnEst.disabled = !canEstornar(v.status);
 
       document.getElementById('detailPanel').classList.add('open');
     }

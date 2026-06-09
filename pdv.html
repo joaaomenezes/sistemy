@@ -5297,19 +5297,21 @@
       overflow-y: auto;
     }
 
-    .pay-summary-card,
-    .pay-ai-card {
+    .pay-summary-card {
       border: 1px solid rgba(42, 58, 80, .9);
       background: rgba(9, 14, 22, .42);
       border-radius: 10px;
+      min-height: 0;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
     }
 
     .pay-summary-card {
       padding: 16px 18px 12px;
     }
 
-    .pay-summary-title,
-    .pay-ai-head {
+    .pay-summary-title {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -5317,8 +5319,7 @@
       margin-bottom: 14px;
     }
 
-    .pay-summary-title span,
-    .pay-ai-head span {
+    .pay-summary-title span {
       display: flex;
       align-items: center;
       gap: 10px;
@@ -5327,8 +5328,7 @@
       color: var(--text);
     }
 
-    .pay-summary-title i,
-    .pay-ai-head i {
+    .pay-summary-title i {
       width: 38px;
       height: 38px;
       border-radius: 9px;
@@ -5340,8 +5340,7 @@
       font-size: 18px;
     }
 
-    .pay-summary-title strong,
-    .pay-ai-head strong {
+    .pay-summary-title strong {
       padding: 8px 12px;
       border-radius: 9px;
       background: rgba(0, 200, 150, .08);
@@ -5350,7 +5349,9 @@
     }
 
     .pay-summary-items {
-      max-height: 246px;
+      min-height: 220px;
+      max-height: none;
+      flex: 1;
       overflow-y: auto;
       padding-right: 3px;
       border-bottom: 1px solid rgba(30, 42, 58, .86);
@@ -5469,40 +5470,7 @@
       border: 1px solid rgba(42, 58, 80, .9);
       border-radius: 10px;
       background: rgba(16, 21, 30, .58);
-    }
-
-    .pay-ai-card {
-      padding: 16px 18px;
-      border-color: rgba(0, 200, 150, .25);
-      background: linear-gradient(135deg, rgba(0, 200, 150, .1), rgba(9, 14, 22, .36));
-    }
-
-    .pay-ai-card p {
-      margin: 0 0 16px;
-      color: var(--sub);
-      line-height: 1.45;
-    }
-
-    .pay-ai-actions {
-      display: grid;
-      grid-template-columns: 1fr 1.35fr;
-      gap: 10px;
-    }
-
-    .pay-ai-actions button {
-      height: 48px;
-      border-radius: 8px;
-      border: 1px solid rgba(42, 58, 80, .9);
-      background: rgba(16, 21, 30, .72);
-      color: var(--sub);
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .pay-ai-actions button.primary {
-      border: none;
-      background: var(--accent);
-      color: #021c14;
+      flex-shrink: 0;
     }
 
     .pay-main-panel {
@@ -5582,6 +5550,51 @@
     }
 
     .pay-method.selected i {
+      color: var(--accent);
+    }
+
+    .pix-logo-icon {
+      width: 35px;
+      height: 35px;
+      position: relative;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .pix-logo-icon span {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      background: currentColor;
+      transform: rotate(45deg);
+    }
+
+    .pix-logo-icon span:nth-child(1) {
+      left: 10px;
+      top: 0;
+    }
+
+    .pix-logo-icon span:nth-child(2) {
+      right: 0;
+      top: 10px;
+    }
+
+    .pix-logo-icon span:nth-child(3) {
+      left: 10px;
+      bottom: 0;
+    }
+
+    .pix-logo-icon span:nth-child(4) {
+      left: 0;
+      top: 10px;
+    }
+
+    .pay-method .pix-logo-icon {
+      color: var(--sub);
+    }
+
+    .pay-method.selected .pix-logo-icon {
       color: var(--accent);
     }
 
@@ -5823,6 +5836,583 @@
       border-radius: 0 8px 8px 0;
     }
 
+    .fiado-section {
+      display: none;
+      gap: 24px;
+      min-height: 100%;
+    }
+
+    .fiado-section.show {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 250px;
+      align-items: start;
+    }
+
+    .fiado-main {
+      min-width: 0;
+    }
+
+    .fiado-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-bottom: 1px solid rgba(42, 58, 80, .9);
+      margin-bottom: 22px;
+    }
+
+    .fiado-step {
+      position: relative;
+      padding: 0 0 14px;
+      color: var(--sub);
+      font-size: 15px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .fiado-step.active {
+      color: var(--text);
+    }
+
+    .fiado-step.active::after {
+      content: "";
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      bottom: -1px;
+      height: 2px;
+      border-radius: 100px;
+      background: var(--accent);
+    }
+
+    .fiado-search-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 180px;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .fiado-search-wrap {
+      height: 54px;
+      border-radius: 9px;
+      border: 1px solid rgba(42, 58, 80, .9);
+      background: rgba(16, 21, 30, .52);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 16px;
+    }
+
+    .fiado-search-wrap input {
+      flex: 1;
+      min-width: 0;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      font: 600 15px 'Inter', sans-serif;
+    }
+
+    .fiado-search-wrap input::placeholder {
+      color: var(--sub);
+    }
+
+    .fiado-search-wrap i {
+      color: var(--sub);
+      font-size: 20px;
+    }
+
+    .fiado-new-btn {
+      height: 54px;
+      border-radius: 9px;
+      border: 1px solid rgba(42, 58, 80, .9);
+      background: rgba(16, 21, 30, .52);
+      color: var(--text);
+      font: 800 14px 'Inter', sans-serif;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .fiado-new-btn:hover,
+    .fiado-client:hover {
+      border-color: rgba(0, 200, 150, .35);
+      background: rgba(16, 21, 30, .78);
+    }
+
+    .fiado-block-title {
+      margin: 0 0 12px;
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .fiado-clients {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 28px;
+    }
+
+    .fiado-client {
+      min-height: 76px;
+      border-radius: 8px;
+      border: 1px solid rgba(42, 58, 80, .9);
+      background: rgba(16, 21, 30, .42);
+      padding: 12px 16px;
+      cursor: pointer;
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) auto 20px;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .fiado-client.selected {
+      border-color: var(--accent);
+      background: rgba(0, 200, 150, .08);
+    }
+
+    .fiado-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(148, 163, 184, .1);
+      color: var(--sub);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 23px;
+    }
+
+    .fiado-client-name {
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .fiado-client-doc,
+    .fiado-empty {
+      color: var(--sub);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .fiado-client-limit {
+      color: var(--sub);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .fiado-client-limit strong {
+      color: var(--accent);
+      font-size: 13px;
+    }
+
+    .fiado-client>i {
+      color: var(--sub);
+      font-size: 20px;
+    }
+
+    .fiado-quick-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px 18px;
+    }
+
+    .fiado-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .fiado-field.full {
+      grid-column: 1 / -1;
+    }
+
+    .fiado-field label {
+      color: var(--sub);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .fiado-field input,
+    .fiado-field textarea {
+      width: 100%;
+      border: 1px solid rgba(42, 58, 80, .9);
+      border-radius: 9px;
+      background: rgba(16, 21, 30, .52);
+      color: var(--text);
+      outline: none;
+      font: 700 15px 'Inter', sans-serif;
+    }
+
+    .fiado-field input {
+      height: 52px;
+      padding: 0 16px;
+    }
+
+    .fiado-field textarea {
+      min-height: 92px;
+      resize: vertical;
+      padding: 14px 16px;
+    }
+
+    .fiado-field input:focus,
+    .fiado-field textarea:focus,
+    .fiado-search-wrap:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 200, 150, .08);
+    }
+
+    .fiado-credit-card {
+      border: 1px solid rgba(42, 58, 80, .9);
+      border-radius: 10px;
+      background: rgba(9, 14, 22, .42);
+      padding: 24px 22px;
+      position: sticky;
+      top: 0;
+    }
+
+    .fiado-credit-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 900;
+      margin-bottom: 24px;
+    }
+
+    .fiado-credit-title i {
+      color: var(--accent2);
+      font-size: 20px;
+    }
+
+    .fiado-credit-row {
+      padding: 0 0 20px;
+      margin-bottom: 20px;
+      border-bottom: 1px dashed rgba(42, 58, 80, .9);
+    }
+
+    .fiado-credit-row:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .fiado-credit-row span {
+      display: block;
+      color: var(--sub);
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .fiado-credit-row strong {
+      color: var(--text);
+      font-size: 21px;
+      font-weight: 900;
+    }
+
+    .fiado-credit-row strong.good {
+      color: var(--accent);
+    }
+
+    .fiado-credit-row strong.bad {
+      color: var(--danger);
+    }
+
+    .pix-flow-section {
+      display: none;
+      min-height: 100%;
+    }
+
+    .pix-flow-section.show {
+      display: block;
+    }
+
+    .pix-progress {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .pix-progress-step {
+      color: var(--sub);
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      position: relative;
+    }
+
+    .pix-progress-step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      right: 8px;
+      top: 14px;
+      width: 42%;
+      height: 1px;
+      background: rgba(148, 163, 184, .35);
+    }
+
+    .pix-progress-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid rgba(148, 163, 184, .45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+    }
+
+    .pix-progress-step.active {
+      color: var(--accent);
+    }
+
+    .pix-progress-step.active .pix-progress-num {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .pix-progress-step strong,
+    .pix-progress-step span {
+      display: block;
+    }
+
+    .pix-progress-step strong {
+      color: inherit;
+      font-size: 14px;
+      margin-bottom: 3px;
+    }
+
+    .pix-progress-step span {
+      color: var(--sub);
+      font-size: 12px;
+    }
+
+    .pix-payment-card,
+    .pix-wait-card {
+      border: 1px solid rgba(42, 58, 80, .9);
+      border-radius: 10px;
+      background: rgba(9, 14, 22, .42);
+    }
+
+    .pix-payment-card {
+      padding: 20px 24px;
+      margin-bottom: 12px;
+    }
+
+    .pix-payment-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 14px;
+    }
+
+    .pix-payment-title {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--text);
+    }
+
+    .pix-payment-title i {
+      color: var(--accent);
+      font-size: 27px;
+    }
+
+    .pix-payment-title .pix-logo-icon {
+      color: var(--accent);
+      width: 31px;
+      height: 31px;
+    }
+
+    .pix-payment-title .pix-logo-icon span {
+      width: 12px;
+      height: 12px;
+      border-radius: 4px;
+    }
+
+    .pix-payment-title .pix-logo-icon span:nth-child(1) {
+      left: 9px;
+    }
+
+    .pix-payment-title .pix-logo-icon span:nth-child(2) {
+      top: 9px;
+    }
+
+    .pix-payment-title .pix-logo-icon span:nth-child(3) {
+      left: 9px;
+    }
+
+    .pix-payment-title .pix-logo-icon span:nth-child(4) {
+      top: 9px;
+    }
+
+    .pix-payment-title h3 {
+      margin: 0 0 5px;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .pix-payment-title p {
+      margin: 0;
+      color: var(--sub);
+      font-size: 14px;
+    }
+
+    .pix-flow-timer-box {
+      min-width: 150px;
+      border: 1px solid rgba(42, 58, 80, .9);
+      border-radius: 9px;
+      padding: 12px 18px;
+      text-align: center;
+      color: var(--sub);
+    }
+
+    .pix-flow-timer-box strong {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--accent);
+      font-size: 24px;
+      margin-top: 5px;
+    }
+
+    .pix-flow-qr-frame {
+      width: 258px;
+      height: 258px;
+      margin: 0 auto 16px;
+      border-radius: 10px;
+      background: #fff;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 20px 44px rgba(0, 0, 0, .28);
+    }
+
+    #pixFlowQrCanvas img {
+      width: 230px !important;
+      height: 230px !important;
+      display: block !important;
+    }
+
+    #pixFlowQrCanvas canvas {
+      display: none !important;
+    }
+
+    .pix-or-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 18px;
+      align-items: center;
+      color: var(--text);
+      font-weight: 900;
+      max-width: 680px;
+      margin: 0 auto 14px;
+    }
+
+    .pix-or-row::before,
+    .pix-or-row::after {
+      content: "";
+      height: 1px;
+      background: rgba(42, 58, 80, .9);
+    }
+
+    .pix-copy-row {
+      max-width: 680px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 126px;
+      gap: 12px;
+    }
+
+    .pix-copy-row label {
+      grid-column: 1 / -1;
+      color: var(--sub);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .pix-copy-code {
+      height: 46px;
+      border-radius: 8px;
+      border: 1px solid rgba(42, 58, 80, .9);
+      background: rgba(16, 21, 30, .52);
+      color: var(--sub);
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-family: 'Courier New', monospace;
+      font-size: 16px;
+    }
+
+    .pix-flow-copy-btn {
+      height: 46px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 200, 150, .5);
+      background: rgba(0, 200, 150, .06);
+      color: var(--accent);
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .pix-wait-card {
+      padding: 16px 22px;
+      margin-bottom: 12px;
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .pix-wait-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse 1.5s infinite;
+    }
+
+    .pix-wait-card h4 {
+      margin: 0 0 5px;
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    .pix-wait-card p {
+      margin: 0;
+      color: var(--sub);
+      line-height: 1.35;
+    }
+
+    .pix-flow-sim-btn {
+      border: 1px solid rgba(0, 119, 255, .4);
+      background: rgba(0, 119, 255, .08);
+      color: var(--accent2);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
     .pay-footer {
       padding: 18px 22px;
       background: rgba(13, 19, 29, .78);
@@ -5856,7 +6446,16 @@
       gap: 10px;
     }
 
+    .pay-footer-actions.fiado-mode {
+      grid-template-columns: 180px 250px minmax(260px, 390px);
+    }
+
+    .pay-footer-actions.pix-mode {
+      grid-template-columns: 180px 250px minmax(260px, 390px);
+    }
+
     .btn-cancel-pay,
+    .btn-back-pay,
     .btn-confirm-pay {
       height: 52px;
       border-radius: 9px;
@@ -5869,6 +6468,30 @@
       justify-content: center;
       gap: 10px;
       background: rgba(16, 21, 30, .4);
+    }
+
+    .btn-back-pay {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: 1px solid rgba(42, 58, 80, .9);
+      background: rgba(16, 21, 30, .4);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .pay-footer-actions.fiado-mode .btn-back-pay,
+    .pay-footer-actions.pix-mode .btn-back-pay {
+      display: flex;
+    }
+
+    .btn-back-pay:hover {
+      border-color: var(--accent);
+      color: var(--accent);
     }
 
     .btn-confirm-pay span {
@@ -5908,6 +6531,14 @@
 
       .pay-footer-actions {
         grid-template-columns: 1fr 1.4fr;
+      }
+
+      .pay-footer-actions.fiado-mode {
+        grid-template-columns: 1fr;
+      }
+
+      .pay-footer-actions.pix-mode {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -5972,6 +6603,37 @@
       .pay-share-row button:first-child,
       .pay-share-row button:last-child {
         border-radius: 8px;
+      }
+
+      .fiado-section.show,
+      .fiado-search-row,
+      .fiado-quick-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .fiado-credit-card {
+        position: static;
+      }
+
+      .pix-progress,
+      .pix-payment-head,
+      .pix-copy-row,
+      .pix-wait-card {
+        grid-template-columns: 1fr;
+      }
+
+      .pix-progress-step:not(:last-child)::after {
+        display: none;
+      }
+
+      .pix-flow-qr-frame {
+        width: 230px;
+        height: 230px;
+      }
+
+      #pixFlowQrCanvas img {
+        width: 198px !important;
+        height: 198px !important;
       }
     }
   </style>
@@ -6201,18 +6863,6 @@
             <input class="pay-obs-input" id="vendaObsInput" type="text" placeholder="Observação da venda"
               maxlength="120" oninput="vendaObs = this.value.trim()">
           </div>
-
-          <div class="pay-ai-card">
-            <div class="pay-ai-head">
-              <span><i class="bi bi-stars"></i> Nexo AI</span>
-              <strong>Sugestão</strong>
-            </div>
-            <p id="payAiText">Confira pagamento, troco e comprovante antes de concluir.</p>
-            <div class="pay-ai-actions">
-              <button type="button" onclick="this.closest('.pay-ai-card').style.display='none'">Ignorar</button>
-              <button type="button" class="primary" onclick="closePayModal();document.getElementById('searchInput').focus()">Adicionar produtos</button>
-            </div>
-          </div>
         </aside>
 
         <section class="pay-main-panel">
@@ -6225,7 +6875,7 @@
 
           <div class="pay-methods">
             <div class="pay-method" onclick="selectMethod(this,'pix')">
-              <i class="bi bi-gem"></i><span>PIX</span><kbd>F1</kbd>
+              <span class="pix-logo-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span><span>PIX</span><kbd>F1</kbd>
             </div>
             <div id="payMethodDinheiro" class="pay-method selected" onclick="selectMethod(this,'dinheiro')">
               <i class="bi bi-cash-coin"></i><span>Dinheiro</span><kbd>F2</kbd>
@@ -6239,8 +6889,8 @@
             <div class="pay-method" onclick="selectMethod(this,'voucher')">
               <i class="bi bi-ticket-perforated-fill"></i><span>Voucher</span><kbd>F5</kbd>
             </div>
-            <div class="pay-method" onclick="selectMethod(this,'carteira')">
-              <i class="bi bi-wallet2"></i><span>Carteira</span><kbd>F6</kbd>
+            <div class="pay-method" onclick="selectMethod(this,'fiado')">
+              <i class="bi bi-journal-text"></i><span>Fiado</span><kbd>F6</kbd>
             </div>
             <div class="pay-method" onclick="selectMethod(this,'vale')">
               <i class="bi bi-cup-straw"></i><span>Vale refeição</span><kbd>F7</kbd>
@@ -6248,6 +6898,133 @@
             <div id="payMethodSplit" class="pay-method" onclick="selectMethod(this,'split')">
               <i class="bi bi-three-dots"></i><span>Outros</span><kbd>F8</kbd>
             </div>
+          </div>
+
+          <div class="fiado-section" id="fiadoSection">
+            <div class="fiado-main">
+              <div class="fiado-steps">
+                <div class="fiado-step active">1. Cliente</div>
+                <div class="fiado-step">2. Detalhes</div>
+                <div class="fiado-step">3. Confirmar</div>
+              </div>
+
+              <div class="fiado-search-row">
+                <div class="fiado-search-wrap">
+                  <input id="fiadoSearchInput" type="text" placeholder="Buscar cliente..." oninput="renderFiadoClientes()">
+                  <i class="bi bi-search"></i>
+                </div>
+                <button class="fiado-new-btn" type="button" onclick="focusFiadoQuickClient()">
+                  <i class="bi bi-plus-lg"></i> Novo cliente
+                </button>
+              </div>
+
+              <h3 class="fiado-block-title">Clientes recentes</h3>
+              <div class="fiado-clients" id="fiadoClientesList">
+                <div class="fiado-empty">Carregando clientes...</div>
+              </div>
+
+              <h3 class="fiado-block-title">Ou venda fiada rápida</h3>
+              <div class="fiado-quick-grid">
+                <div class="fiado-field full">
+                  <label for="fiadoNomeInput">Nome do cliente</label>
+                  <input id="fiadoNomeInput" type="text" placeholder="Ex.: Consumidor Final" oninput="onFiadoQuickInput()">
+                </div>
+                <div class="fiado-field">
+                  <label for="fiadoLimiteInput">Limite de crédito</label>
+                  <input id="fiadoLimiteInput" type="text" value="R$ 100,00" inputmode="decimal" oninput="onFiadoQuickInput()">
+                </div>
+                <div class="fiado-field">
+                  <label for="fiadoVencInput">Vencimento</label>
+                  <input id="fiadoVencInput" type="date" onchange="updateFiadoSummary()">
+                </div>
+                <div class="fiado-field full">
+                  <label for="fiadoObsInput">Observação (opcional)</label>
+                  <textarea id="fiadoObsInput" placeholder="Ex.: Pagamento na próxima semana" oninput="updateFiadoSummary()"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <aside class="fiado-credit-card">
+              <div class="fiado-credit-title">
+                <i class="bi bi-info-circle"></i>
+                <span>Resumo de crédito</span>
+              </div>
+              <div class="fiado-credit-row">
+                <span>Limite de crédito</span>
+                <strong class="good" id="fiadoResumoLimite">R$ 100,00</strong>
+              </div>
+              <div class="fiado-credit-row">
+                <span>Total da compra</span>
+                <strong id="fiadoResumoTotal">R$ 0,00</strong>
+              </div>
+              <div class="fiado-credit-row">
+                <span>Após esta compra</span>
+                <strong class="good" id="fiadoResumoDepois">R$ 100,00</strong>
+              </div>
+              <div class="fiado-credit-row">
+                <span>Vencimento</span>
+                <strong class="good" id="fiadoResumoVenc">--/--/----</strong>
+              </div>
+            </aside>
+          </div>
+
+          <div class="pix-flow-section" id="pixFlowSection">
+            <div class="pix-progress">
+              <div class="pix-progress-step active">
+                <div class="pix-progress-num">1</div>
+                <div><strong>Forma de pagamento</strong><span>PIX</span></div>
+              </div>
+              <div class="pix-progress-step">
+                <div class="pix-progress-num">2</div>
+                <div><strong>Pagamento</strong><span id="pixFlowProgressStatus">Aguardando</span></div>
+              </div>
+              <div class="pix-progress-step">
+                <div class="pix-progress-num">3</div>
+                <div><strong>Confirmação</strong><span id="pixFlowConfirmStatus">Pendente</span></div>
+              </div>
+            </div>
+
+            <div class="pix-payment-card">
+              <div class="pix-payment-head">
+                <div class="pix-payment-title">
+                  <span class="pix-logo-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+                  <div>
+                    <h3>Pagamento via PIX</h3>
+                    <p>Escaneie o QR Code com o app do seu banco</p>
+                  </div>
+                </div>
+                <div class="pix-flow-timer-box">
+                  <span>Expira em</span>
+                  <strong><i class="bi bi-clock"></i> <span id="pixFlowTimer">05:00</span></strong>
+                </div>
+              </div>
+
+              <div class="pix-flow-qr-frame">
+                <div id="pixFlowQrCanvas"></div>
+              </div>
+
+              <div class="pix-or-row">OU</div>
+
+              <div class="pix-copy-row">
+                <label>Copie o código PIX</label>
+                <div class="pix-copy-code" id="pixFlowPayload">—</div>
+                <button class="pix-flow-copy-btn" id="pixFlowCopyBtn" type="button" onclick="copiarChavePix()">
+                  <i class="bi bi-copy"></i> Copiar
+                </button>
+              </div>
+            </div>
+
+            <div class="pix-wait-card">
+              <div class="pix-wait-icon" id="pixFlowWaitIcon"><i class="bi bi-shield-check"></i></div>
+              <div>
+                <h4 id="pixFlowStatusTitle">Aguardando pagamento...</h4>
+                <p id="pixFlowStatusText">Assim que recebermos a confirmação do seu banco, a venda poderá ser finalizada.</p>
+              </div>
+              <button class="pix-flow-sim-btn" id="pixFlowSimBtn" type="button" onclick="simularPagamentoPix()">
+                Simular pagamento
+              </button>
+            </div>
+
           </div>
 
           <div class="pay-step">
@@ -6410,6 +7187,9 @@
         </div>
         <div class="pay-footer-actions">
           <button class="btn-cancel-pay" id="btnCancelPay" onclick="handleCancelPay()"><i class="bi bi-x-lg"></i> Cancelar</button>
+          <button class="btn-back-pay" id="btnBackPayMethods" onclick="returnToPayMethods()">
+            <i class="bi bi-arrow-left"></i> Formas de pagamento
+          </button>
           <button class="btn-confirm-pay" id="btnConfirmPay" onclick="confirmPayment()">
             <i class="bi bi-check2"></i> Confirmar pagamento <span>F12</span>
           </button>
@@ -7982,6 +8762,9 @@
     // ── configurações de cartão ──
     let selectedBrand = 'Visa';
     let selectedParcela = 1;
+    let fiadoClientes = [];
+    let selectedFiadoCliente = null;
+    let fiadoClientesLoaded = false;
 
     function renderPaySummary() {
       const { subtotal, disc, total } = calcCart();
@@ -8015,17 +8798,6 @@
       setText('paySummaryDiscount', disc > 0 ? `- R$ ${fmt(disc)}` : '- R$ 0,00');
       setText('paySummaryTotal', `R$ ${fmt(total)}`);
       setText('payOperatorName', operatorName);
-
-      const aiCard = document.querySelector('.pay-ai-card');
-      if (aiCard) aiCard.style.display = '';
-
-      const aiText = document.getElementById('payAiText');
-      if (aiText) {
-        const topItem = cart.slice().sort((a, b) => (b.preco * b.qty) - (a.preco * a.qty))[0];
-        aiText.textContent = topItem
-          ? `Venda com ${itemCount} ${itemCount === 1 ? 'item' : 'itens'}. Confira ${topItem.nome} e o valor recebido antes de concluir.`
-          : 'Confira pagamento, troco e comprovante antes de concluir.';
-      }
     }
 
     function openPayModal() {
@@ -8033,6 +8805,7 @@
       const total = getTotal();
       document.getElementById('payTotalBadge').textContent = `R$ ${fmt(total)}`;
       document.getElementById('payValueInput').value = `R$ ${fmt(total)}`;
+      resetFiadoForm();
       renderPaySummary();
       document.getElementById('payOverlay').classList.add('open');
       selectMethod(document.getElementById('payMethodDinheiro'), 'dinheiro');
@@ -8046,6 +8819,7 @@
       resetTerminalPanel();
       splitItems = [];
       vendaObs = '';
+      selectedFiadoCliente = null;
       const obsEl = document.getElementById('vendaObsInput');
       if (obsEl) obsEl.value = '';
     }
@@ -8064,7 +8838,7 @@
       const isCard = method === 'credito' || method === 'debito';
       const isSplit = method === 'split';
       const isVoucher = method === 'voucher';
-      const isWallet = method === 'carteira';
+      const isFiado = method === 'fiado';
       const isVale = method === 'vale';
 
       // mostra/esconde seções
@@ -8074,15 +8848,28 @@
       document.getElementById('splitSection').style.display = isSplit ? 'block' : 'none';
       document.getElementById('pixSection').classList.toggle('show', isPix);
       document.getElementById('quickCash').style.display = isCash ? 'flex' : 'none';
+      document.querySelector('.pay-footer-actions')?.classList.toggle('fiado-mode', isFiado);
+      if (!pixFlowAtivo) document.querySelector('.pay-footer-actions')?.classList.remove('pix-mode');
 
       if (!isPix) resetPixPanel();
+
+      document.querySelector('.pay-step-row').style.display = isFiado ? 'none' : 'flex';
+      document.querySelector('.pay-methods').style.display = isFiado ? 'none' : 'grid';
+      document.querySelector('.pay-step:not(.pay-proof-step)').style.display = isFiado ? 'none' : '';
+      document.querySelector('.pay-proof-step').style.display = isFiado ? 'none' : '';
+      document.getElementById('fiadoSection').classList.toggle('show', isFiado);
+
+      const title = document.querySelector('.pay-header h2');
+      const sub = document.querySelector('.pay-header-sub');
+      if (title) title.textContent = isFiado ? 'Pagamento no Fiado' : 'Pagamento';
+      if (sub) sub.textContent = isFiado ? 'Selecione o cliente ou cadastre uma venda fiada' : 'Escolha a forma de pagamento';
 
       const valueLabel = document.getElementById('payValueLabel');
       if (valueLabel) {
         const labels = {
           dinheiro: 'Valor recebido em dinheiro',
           voucher: 'Valor recebido em voucher',
-          carteira: 'Valor recebido na carteira',
+          fiado: 'Valor fiado',
           vale: 'Valor recebido no vale refeição',
         };
         valueLabel.textContent = labels[method] || 'Valor recebido';
@@ -8094,7 +8881,9 @@
         confirmBtn.innerHTML = '<i class="bi bi-clock"></i> Aguardando PIX... <span>F12</span>';
       } else if (!terminalAtivo) {
         confirmBtn.disabled = false;
-        confirmBtn.innerHTML = '<i class="bi bi-check2"></i> Confirmar pagamento <span>F12</span>';
+        confirmBtn.innerHTML = isFiado
+          ? '<i class="bi bi-check2"></i> Confirmar fiado <span>F12</span>'
+          : '<i class="bi bi-check2"></i> Confirmar pagamento <span>F12</span>';
       }
 
       if (isCard) {
@@ -8110,11 +8899,169 @@
 
       if (isSplit) { renderSplitItems(); updateSplitRestante(); }
 
-      if (isVoucher || isWallet || isVale) {
+      if (isVoucher || isFiado || isVale) {
         const total = getTotal();
         document.getElementById('payValueInput').value = `R$ ${fmt(total)}`;
         calcTroco();
       }
+
+      if (isFiado) {
+        ensureFiadoDefaults();
+        loadFiadoClientes();
+        updateFiadoSummary();
+      }
+    }
+
+    function returnToPayMethods() {
+      selectMethod(document.getElementById('payMethodDinheiro'), 'dinheiro');
+    }
+
+    function parseMoneyInput(value) {
+      const normalized = String(value || '')
+        .replace(/\s/g, '')
+        .replace('R$', '')
+        .replace(/\./g, '')
+        .replace(',', '.')
+        .replace(/[^\d.]/g, '');
+      return parseFloat(normalized) || 0;
+    }
+
+    function formatDateBR(iso) {
+      if (!iso) return '--/--/----';
+      const [y, m, d] = iso.split('-');
+      return y && m && d ? `${d}/${m}/${y}` : iso;
+    }
+
+    function defaultFiadoDueDate() {
+      const d = new Date();
+      d.setDate(d.getDate() + 30);
+      return d.toISOString().slice(0, 10);
+    }
+
+    function ensureFiadoDefaults() {
+      const limite = document.getElementById('fiadoLimiteInput');
+      const venc = document.getElementById('fiadoVencInput');
+      if (limite && !limite.value.trim()) limite.value = 'R$ 100,00';
+      if (venc && !venc.value) venc.value = defaultFiadoDueDate();
+    }
+
+    function resetFiadoForm() {
+      selectedFiadoCliente = null;
+      const search = document.getElementById('fiadoSearchInput');
+      const nome = document.getElementById('fiadoNomeInput');
+      const limite = document.getElementById('fiadoLimiteInput');
+      const venc = document.getElementById('fiadoVencInput');
+      const obs = document.getElementById('fiadoObsInput');
+      if (search) search.value = '';
+      if (nome) nome.value = '';
+      if (limite) limite.value = 'R$ 100,00';
+      if (venc) venc.value = defaultFiadoDueDate();
+      if (obs) obs.value = '';
+      updateFiadoSummary();
+    }
+
+    async function loadFiadoClientes() {
+      if (fiadoClientesLoaded) {
+        renderFiadoClientes();
+        return;
+      }
+      const list = document.getElementById('fiadoClientesList');
+      if (list) list.innerHTML = '<div class="fiado-empty">Carregando clientes...</div>';
+      try {
+        const r = await NexoAuth.apiFetch('/clientes?secao=clientes&status=ativo');
+        fiadoClientes = r.ok ? (r.data || []).slice(0, 20) : [];
+        fiadoClientesLoaded = true;
+      } catch (_) {
+        fiadoClientes = [];
+      }
+      renderFiadoClientes();
+    }
+
+    function renderFiadoClientes() {
+      const list = document.getElementById('fiadoClientesList');
+      if (!list) return;
+      const q = (document.getElementById('fiadoSearchInput')?.value || '').trim().toLowerCase();
+      const filtered = fiadoClientes
+        .filter(c => !q || `${c.nome || ''} ${c.doc || ''}`.toLowerCase().includes(q))
+        .slice(0, 5);
+
+      if (!filtered.length) {
+        list.innerHTML = '<div class="fiado-empty">Nenhum cliente encontrado. Use a venda fiada rápida abaixo.</div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map(c => {
+        const limite = Number(c.limite || 100) || 100;
+        const selected = selectedFiadoCliente?.id === c.id ? ' selected' : '';
+        return `
+          <div class="fiado-client${selected}" onclick="selectFiadoCliente('${c.id}')">
+            <div class="fiado-avatar"><i class="bi bi-person"></i></div>
+            <div>
+              <div class="fiado-client-name">${escapeHtml(c.nome || 'Cliente')}</div>
+              <div class="fiado-client-doc">${escapeHtml(c.doc || 'CPF nao informado')}</div>
+            </div>
+            <div class="fiado-client-limit">Limite disponivel: <strong>R$ ${fmt(limite)}</strong></div>
+            <i class="bi bi-chevron-right"></i>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectFiadoCliente(id) {
+      selectedFiadoCliente = fiadoClientes.find(c => c.id === id) || null;
+      const nome = document.getElementById('fiadoNomeInput');
+      const limite = document.getElementById('fiadoLimiteInput');
+      if (nome) nome.value = '';
+      if (limite && selectedFiadoCliente) limite.value = `R$ ${fmt(Number(selectedFiadoCliente.limite || 100) || 100)}`;
+      renderFiadoClientes();
+      updateFiadoSummary();
+    }
+
+    function focusFiadoQuickClient() {
+      selectedFiadoCliente = null;
+      renderFiadoClientes();
+      document.getElementById('fiadoNomeInput')?.focus();
+      updateFiadoSummary();
+    }
+
+    function onFiadoQuickInput() {
+      selectedFiadoCliente = null;
+      renderFiadoClientes();
+      updateFiadoSummary();
+    }
+
+    function getFiadoData() {
+      const total = getTotal();
+      const quickName = document.getElementById('fiadoNomeInput')?.value.trim() || '';
+      const clienteNome = selectedFiadoCliente?.nome || quickName;
+      const limite = selectedFiadoCliente
+        ? (Number(selectedFiadoCliente.limite || 100) || 100)
+        : parseMoneyInput(document.getElementById('fiadoLimiteInput')?.value || '100');
+      const vencimento = document.getElementById('fiadoVencInput')?.value || defaultFiadoDueDate();
+      const obs = document.getElementById('fiadoObsInput')?.value.trim() || '';
+      return {
+        clienteId: selectedFiadoCliente?.id || null,
+        clienteNome,
+        limite,
+        total,
+        depois: limite - total,
+        vencimento,
+        obs,
+      };
+    }
+
+    function updateFiadoSummary() {
+      const data = getFiadoData();
+      const setText = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+      };
+      setText('fiadoResumoLimite', `R$ ${fmt(data.limite)}`);
+      setText('fiadoResumoTotal', `R$ ${fmt(data.total)}`);
+      setText('fiadoResumoDepois', `R$ ${fmt(Math.abs(data.depois))}`);
+      setText('fiadoResumoVenc', formatDateBR(data.vencimento));
+      const depois = document.getElementById('fiadoResumoDepois');
+      if (depois) depois.className = data.depois < 0 ? 'bad' : 'good';
     }
 
     function selectBrand(el, brand) {
@@ -8225,6 +9172,8 @@
     let pixTimerInterval = null;
     let pixSecondsLeft = PIX_TIMEOUT;
     let pixPago = false;
+    let pixPayloadAtual = '';
+    let pixFlowAtivo = false;
 
     // ── helpers para geração de payload EMV-PIX ──────────────────────
     function _pixField(id, value) {
@@ -8269,22 +9218,21 @@
         PDV_CONFIG.pixBeneficiario || PDV_CONFIG.lojaNome || 'LOJA',
         PDV_CONFIG.pixCidade || 'BRASIL'
       );
+      pixPayloadAtual = payload;
 
-      document.getElementById('pixGenBtn').style.display = 'none';
-      document.getElementById('pixQrWrap').classList.add('show');
-      document.getElementById('pixKeyValue').textContent = chave;
+      showPixFlowScreen();
+      document.getElementById('pixFlowPayload').textContent = payload;
+      document.getElementById('pixKeyValue').textContent = payload;
       document.getElementById('pixSimBtn').style.display = 'inline';
 
-      // qrcodejs precisa de uma <div> limpa — cria img internamente
-      const container = document.getElementById('pixQrCanvas');
+      const container = document.getElementById('pixFlowQrCanvas');
       container.innerHTML = '';
       if (window._pixQrInstance) { try { window._pixQrInstance.clear(); } catch (e) { } }
 
-      // setTimeout garante que o DOM está pronto antes de gerar
       setTimeout(() => {
         window._pixQrInstance = new QRCode(container, {
           text: payload,
-          width: 162, height: 162,
+          width: 230, height: 230,
           colorDark: '#000000', colorLight: '#ffffff',
           correctLevel: QRCode.CorrectLevel.M,
         });
@@ -8304,31 +9252,85 @@
       }, 1000);
     }
 
+    function showPixFlowScreen() {
+      pixFlowAtivo = true;
+      document.querySelector('.pay-step-row').style.display = 'none';
+      document.querySelector('.pay-methods').style.display = 'none';
+      document.querySelector('.pay-step:not(.pay-proof-step)').style.display = 'none';
+      document.querySelector('.pay-proof-step').style.display = 'none';
+      document.getElementById('fiadoSection').classList.remove('show');
+      document.getElementById('pixFlowSection').classList.add('show');
+      document.querySelector('.pay-footer-actions')?.classList.remove('fiado-mode');
+      document.querySelector('.pay-footer-actions')?.classList.add('pix-mode');
+      const title = document.querySelector('.pay-header h2');
+      const sub = document.querySelector('.pay-header-sub');
+      if (title) title.textContent = 'Pagamento via PIX';
+      if (sub) sub.textContent = 'Escaneie o QR Code ou copie o código PIX';
+      const cancelBtn = document.getElementById('btnCancelPay');
+      if (cancelBtn) cancelBtn.innerHTML = '<i class="bi bi-x-lg"></i> Cancelar venda';
+      const confirmBtn = document.getElementById('btnConfirmPay');
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = 'Aguardando pagamento... <i class="bi bi-arrow-repeat"></i>';
+      }
+      const progress = document.getElementById('pixFlowProgressStatus');
+      const confirm = document.getElementById('pixFlowConfirmStatus');
+      const statusTitle = document.getElementById('pixFlowStatusTitle');
+      const statusText = document.getElementById('pixFlowStatusText');
+      if (progress) progress.textContent = 'Aguardando';
+      if (confirm) confirm.textContent = 'Pendente';
+      if (statusTitle) statusTitle.textContent = 'Aguardando pagamento...';
+      if (statusText) statusText.textContent = 'Assim que recebermos a confirmação do seu banco, a venda poderá ser finalizada.';
+      document.getElementById('pixFlowSimBtn').style.display = '';
+    }
+
+    function hidePixFlowScreen() {
+      pixFlowAtivo = false;
+      document.getElementById('pixFlowSection')?.classList.remove('show');
+      document.querySelector('.pay-footer-actions')?.classList.remove('pix-mode');
+      const cancelBtn = document.getElementById('btnCancelPay');
+      if (cancelBtn) cancelBtn.textContent = 'Cancelar';
+    }
+
     function atualizarTimerPix() {
       const min = String(Math.floor(pixSecondsLeft / 60)).padStart(2, '0');
       const sec = String(pixSecondsLeft % 60).padStart(2, '0');
       const timerEl = document.getElementById('pixTimer');
       const barEl = document.getElementById('pixTimerBar');
-      if (!timerEl) return;
-
-      timerEl.textContent = `${min}:${sec}`;
+      const flowTimer = document.getElementById('pixFlowTimer');
+      if (timerEl) timerEl.textContent = `${min}:${sec}`;
+      if (flowTimer) flowTimer.textContent = `${min}:${sec}`;
       const pct = (pixSecondsLeft / PIX_TIMEOUT) * 100;
 
-      barEl.style.width = `${pct}%`;
-      barEl.classList.toggle('warn', pct <= 40 && pct > 20);
-      barEl.classList.toggle('urgent', pct <= 20);
-      timerEl.classList.toggle('urgente', pixSecondsLeft <= 60);
+      if (barEl) {
+        barEl.style.width = `${pct}%`;
+        barEl.classList.toggle('warn', pct <= 40 && pct > 20);
+        barEl.classList.toggle('urgent', pct <= 20);
+      }
+      if (timerEl) timerEl.classList.toggle('urgente', pixSecondsLeft <= 60);
+      if (flowTimer) flowTimer.classList.toggle('urgente', pixSecondsLeft <= 60);
     }
 
     function expirarPix() {
-      document.getElementById('pixQrBadge').className = 'pix-qr-status-badge expirado';
-      document.getElementById('pixQrBadge').textContent = 'Expirado';
-      document.getElementById('pixStatusDot').className = 'pix-status-dot expirado';
-      document.getElementById('pixStatusText').textContent = 'QR Code expirado. Gere um novo.';
+      const badge = document.getElementById('pixQrBadge');
+      if (badge) { badge.className = 'pix-qr-status-badge expirado'; badge.textContent = 'Expirado'; }
+      const dot = document.getElementById('pixStatusDot');
+      if (dot) dot.className = 'pix-status-dot expirado';
+      const txt = document.getElementById('pixStatusText');
+      if (txt) txt.textContent = 'QR Code expirado. Gere um novo.';
       document.getElementById('pixSimBtn').style.display = 'none';
-      document.getElementById('pixTimerBar').style.width = '0%';
-      document.getElementById('pixTimer').textContent = '00:00';
-      // Mostra botão para gerar novo
+      const bar = document.getElementById('pixTimerBar');
+      if (bar) bar.style.width = '0%';
+      const timer = document.getElementById('pixTimer');
+      if (timer) timer.textContent = '00:00';
+      const flowTimer = document.getElementById('pixFlowTimer');
+      if (flowTimer) flowTimer.textContent = '00:00';
+      const statusTitle = document.getElementById('pixFlowStatusTitle');
+      const statusText = document.getElementById('pixFlowStatusText');
+      if (statusTitle) statusTitle.textContent = 'QR Code expirado';
+      if (statusText) statusText.textContent = 'Volte para as formas de pagamento e gere um novo QR Code PIX.';
+      const simFlow = document.getElementById('pixFlowSimBtn');
+      if (simFlow) simFlow.style.display = 'none';
       const genBtn = document.getElementById('pixGenBtn');
       genBtn.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Gerar novo QR Code';
       genBtn.style.display = '';
@@ -8341,20 +9343,37 @@
       clearInterval(pixTimerInterval);
 
       // Atualiza badge do QR
-      document.getElementById('pixQrBadge').className = 'pix-qr-status-badge pago';
-      document.getElementById('pixQrBadge').textContent = 'Pago ✓';
+      const badge = document.getElementById('pixQrBadge');
+      if (badge) { badge.className = 'pix-qr-status-badge pago'; badge.textContent = 'Pago ✓'; }
 
       // Atualiza status dot e texto
-      document.getElementById('pixStatusDot').className = 'pix-status-dot pago';
-      document.getElementById('pixStatusText').textContent = 'Pagamento confirmado!';
+      const dot = document.getElementById('pixStatusDot');
+      if (dot) dot.className = 'pix-status-dot pago';
+      const txt = document.getElementById('pixStatusText');
+      if (txt) txt.textContent = 'Pagamento confirmado!';
       document.getElementById('pixSimBtn').style.display = 'none';
+      const flowStatus = document.getElementById('pixFlowProgressStatus');
+      const flowConfirm = document.getElementById('pixFlowConfirmStatus');
+      const statusTitle = document.getElementById('pixFlowStatusTitle');
+      const statusText = document.getElementById('pixFlowStatusText');
+      const flowIcon = document.getElementById('pixFlowWaitIcon');
+      if (flowStatus) flowStatus.textContent = 'Confirmado';
+      if (flowConfirm) flowConfirm.textContent = 'Pronto';
+      if (statusTitle) statusTitle.textContent = 'Pagamento confirmado!';
+      if (statusText) statusText.textContent = 'PIX recebido. Confirme para finalizar a venda.';
+      if (flowIcon) { flowIcon.style.animation = 'none'; flowIcon.innerHTML = '<i class="bi bi-check-lg"></i>'; }
+      document.getElementById('pixFlowSimBtn').style.display = 'none';
 
       // Para a barra no verde total
       const bar = document.getElementById('pixTimerBar');
-      bar.style.width = '100%';
-      bar.style.background = 'var(--accent)';
-      document.getElementById('pixTimer').textContent = '✓';
-      document.getElementById('pixTimer').classList.remove('urgente');
+      if (bar) {
+        bar.style.width = '100%';
+        bar.style.background = 'var(--accent)';
+      }
+      const timer = document.getElementById('pixTimer');
+      if (timer) { timer.textContent = '✓'; timer.classList.remove('urgente'); }
+      const flowTimer = document.getElementById('pixFlowTimer');
+      if (flowTimer) { flowTimer.textContent = '✓'; flowTimer.classList.remove('urgente'); }
 
       NexoToast.success('PIX recebido! Confirme o pagamento.');
 
@@ -8369,14 +9388,21 @@
     }
 
     function copiarChavePix() {
-      const chave = document.getElementById('pixKeyValue').textContent;
+      const chave = pixPayloadAtual || document.getElementById('pixFlowPayload')?.textContent || document.getElementById('pixKeyValue')?.textContent || '';
       navigator.clipboard.writeText(chave).then(() => {
         const btn = document.getElementById('pixCopyBtn');
-        btn.classList.add('copied');
-        btn.innerHTML = '<i class="bi bi-check2"></i> Copiado!';
+        const flowBtn = document.getElementById('pixFlowCopyBtn');
+        if (btn) {
+          btn.classList.add('copied');
+          btn.innerHTML = '<i class="bi bi-check2"></i> Copiado!';
+        }
+        if (flowBtn) flowBtn.innerHTML = '<i class="bi bi-check2"></i> Copiado!';
         setTimeout(() => {
-          btn.classList.remove('copied');
-          btn.innerHTML = '<i class="bi bi-copy"></i> Copiar';
+          if (btn) {
+            btn.classList.remove('copied');
+            btn.innerHTML = '<i class="bi bi-copy"></i> Copiar';
+          }
+          if (flowBtn) flowBtn.innerHTML = '<i class="bi bi-copy"></i> Copiar';
         }, 2000);
       }).catch(() => {
         NexoToast.warning('Não foi possível copiar automaticamente.');
@@ -8387,6 +9413,8 @@
       clearInterval(pixTimerInterval);
       pixPago = false;
       pixSecondsLeft = PIX_TIMEOUT;
+      pixPayloadAtual = '';
+      hidePixFlowScreen();
 
       const genBtn = document.getElementById('pixGenBtn');
       if (genBtn) {
@@ -8413,6 +9441,12 @@
 
       const timer = document.getElementById('pixTimer');
       if (timer) { timer.textContent = '05:00'; timer.classList.remove('urgente'); }
+      const flowTimer = document.getElementById('pixFlowTimer');
+      if (flowTimer) { flowTimer.textContent = '05:00'; flowTimer.classList.remove('urgente'); }
+      const flowPayload = document.getElementById('pixFlowPayload');
+      if (flowPayload) flowPayload.textContent = '—';
+      const flowQr = document.getElementById('pixFlowQrCanvas');
+      if (flowQr) flowQr.innerHTML = '';
     }
 
     // ── split ──────────────────────────────────────────────────────
@@ -8738,6 +9772,19 @@
         NexoToast.warning('Aguardando confirmação do PIX.');
         return;
       }
+      if (selectedMethod === 'fiado') {
+        const fiado = getFiadoData();
+        if (!fiado.clienteNome) {
+          NexoToast.warning('Selecione um cliente ou informe o nome para vender fiado.');
+          document.getElementById('fiadoNomeInput')?.focus();
+          return;
+        }
+        if (fiado.depois < 0) {
+          NexoToast.warning('Limite de crédito insuficiente para esta venda.');
+          document.getElementById('fiadoLimiteInput')?.focus();
+          return;
+        }
+      }
       if (selectedMethod === 'split') {
         const total = getTotal();
         const paid = splitItems.reduce((s, x) => s + (parseFloat((x.value || '0').replace(',', '.')) || 0), 0);
@@ -8883,6 +9930,8 @@
     function _buildSale(total) {
       const subtotal = cart.reduce((s, c) => s + (c.preco * c.qty), 0);
       const isCard = selectedMethod === 'credito' || selectedMethod === 'debito';
+      const isFiado = selectedMethod === 'fiado';
+      const fiadoData = isFiado ? getFiadoData() : null;
 
       let troco = 0;
       if (selectedMethod === 'dinheiro') {
@@ -8899,6 +9948,8 @@
       if (isCard) {
         const n = selectedMethod === 'debito' ? 1 : selectedParcela;
         methodLabel = `${selectedBrand} ${n}×`;
+      } else if (isFiado) {
+        methodLabel = 'Fiado';
       }
 
       return {
@@ -8910,9 +9961,14 @@
         method: methodLabel,
         brand: isCard ? selectedBrand : null,
         parcelas: isCard ? (selectedMethod === 'debito' ? 1 : selectedParcela) : null,
-        client: cpfNota ? `CPF: ${cpfNota}` : 'Venda Balcão',
+        client: isFiado
+          ? (fiadoData.clienteNome || 'Venda fiada')
+          : (cpfNota ? `CPF: ${cpfNota}` : 'Venda Balcão'),
         cupom: cupomAtivo ? cupomAtivo.codigo : null,
-        obs: vendaObs || null,
+        obs: isFiado
+          ? [vendaObs, fiadoData.obs, `Vencimento: ${formatDateBR(fiadoData.vencimento)}`].filter(Boolean).join(' · ')
+          : (vendaObs || null),
+        fiado: fiadoData,
         time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
         items: cart.reduce((s, c) => s + c.qty, 0),
         cartSnapshot: cart.map(c => ({ ...c })),
@@ -8941,6 +9997,7 @@
         subtotal: sale.subtotal,
         desconto: sale.desconto || 0,
         total,
+        obs: sale.obs || null,
         tipo: 'pdv',
         dataStr: now.toLocaleDateString('pt-BR'),
         horaStr: sale.time || now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
@@ -9220,7 +10277,7 @@
           F3: ['debito', '.pay-method:nth-child(3)'],
           F4: ['credito', '.pay-method:nth-child(4)'],
           F5: ['voucher', '.pay-method:nth-child(5)'],
-          F6: ['carteira', '.pay-method:nth-child(6)'],
+          F6: ['fiado', '.pay-method:nth-child(6)'],
           F7: ['vale', '.pay-method:nth-child(7)'],
           F8: ['split', '#payMethodSplit'],
         };
