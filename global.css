@@ -684,7 +684,8 @@ body {
   color: var(--danger);
 }
 
-.status-pill.estornada {
+.status-pill.estornada,
+.status-pill.estornado {
   background: rgba(255, 140, 66, .1);
   color: var(--warn);
 }
@@ -699,7 +700,8 @@ body {
   color: var(--accent2);
 }
 
-.status-pill.faturado {
+.status-pill.faturado,
+.status-pill.faturada {
   background: rgba(167, 139, 250, .1);
   color: var(--purple);
 }

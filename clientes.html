@@ -1104,6 +1104,8 @@
     let sortDir = 1;
     let editingId = null;
     let currentDetailId = null;
+    let vendedorFormGroup = null;
+    let vendedorFormAnchor = null;
 
     function activeData() { return currentSection === 'clientes' ? clients : currentSection === 'fornecedores' ? fornecedores : vendedores; }
     function setActiveData(d) { if (currentSection === 'clientes') clients = d; else if (currentSection === 'fornecedores') fornecedores = d; else vendedores = d; }
@@ -1114,7 +1116,7 @@
       const params = new URLSearchParams();
       const q = document.getElementById('searchInput')?.value.trim();
 
-      if (currentSection !== 'vendedores') params.set('secao', currentSection);
+      if (currentSection === 'clientes') params.set('secao', 'clientes');
       if (withPagination) {
         params.set('page', String(page));
         params.set('limit', String(perPage));
@@ -1131,11 +1133,17 @@
     }
 
     function endpointForCurrentSection() {
-      return currentSection === 'vendedores' ? '/vendedores' : '/clientes';
+      if (currentSection === 'vendedores') return '/vendedores';
+      if (currentSection === 'fornecedores') return '/fornecedores';
+      return '/clientes';
     }
 
     async function loadResumo(section = currentSection) {
-      const endpoint = section === 'vendedores' ? '/vendedores/resumo' : `/clientes/resumo?secao=${section}`;
+      const endpoint = section === 'vendedores'
+        ? '/vendedores/resumo'
+        : section === 'fornecedores'
+          ? '/fornecedores/resumo'
+          : '/clientes/resumo?secao=clientes';
       const res = await NexoAuth.apiFetch(endpoint);
       if (res.ok) resumoBySection[section] = { ...resumoBySection[section], ...res.data };
       updateKPIs();
@@ -1182,6 +1190,31 @@
     }
 
     // ─── INIT ────────────────────────────────────────────────
+    function updateFormBySection() {
+      const isCliente = currentSection === 'clientes';
+      if (!vendedorFormGroup) {
+        const vendedorField = document.getElementById('f-vendedor');
+        vendedorFormGroup = vendedorField?.closest('.form-group') || null;
+        if (vendedorFormGroup) {
+          vendedorFormAnchor = document.createComment('vendedor-field-anchor');
+          vendedorFormGroup.parentNode.insertBefore(vendedorFormAnchor, vendedorFormGroup);
+        }
+      }
+
+      if (!vendedorFormGroup) return;
+
+      const vendedorField = vendedorFormGroup.querySelector('#f-vendedor');
+      if (isCliente) {
+        if (!vendedorFormGroup.isConnected && vendedorFormAnchor?.parentNode) {
+          vendedorFormAnchor.parentNode.insertBefore(vendedorFormGroup, vendedorFormAnchor.nextSibling);
+        }
+        populateVendedorSelect();
+      } else {
+        if (vendedorField) vendedorField.value = '';
+        if (vendedorFormGroup.isConnected) vendedorFormGroup.remove();
+      }
+    }
+
     async function init() {
       document.getElementById('tableBody').innerHTML = NexoSkeleton.tableRows(8, 5);
       await Promise.all([
@@ -1191,6 +1224,7 @@
         loadVendedoresOptions(),
         loadEntityPage(1, false),
       ]);
+      updateFormBySection();
     }
 
     // ─── SECTION SWITCH ──────────────────────────────────────
@@ -1223,6 +1257,7 @@
       document.getElementById('th-col4').textContent = isVend ? 'E-mail' : 'Telefone';
       document.getElementById('th-compras').style.display = isVend ? 'none' : '';
       if (!isVend) document.getElementById('th-compras').firstChild.textContent = isCli ? 'Compras ' : 'Pedidos ';
+      updateFormBySection();
       currentFilter = 'todos';
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       document.querySelector('.filter-btn[onclick*="todos"]').classList.add('active');
@@ -1379,6 +1414,7 @@
       document.getElementById('modalTitle').textContent = `Novo ${entityLabel()}`;
       document.getElementById('modalSub').textContent = `Preencha os dados do ${entityLabel().toLowerCase()}`;
       if (reset) { resetForm(); wizardGoTo(1); }
+      updateFormBySection();
       document.getElementById('modalOverlay').classList.add('open');
     }
     function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
@@ -1456,10 +1492,11 @@
     async function saveEntity() {
       const existing = editingId ? activeData().find(x => x.id === editingId) : null;
       const limiteRaw = document.getElementById('f-limite').value.replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '');
+      const vendedorField = document.getElementById('f-vendedor');
       const payload = {
         nome: document.getElementById('f-nome').value.trim(),
         tipo: tipoSel,
-        secao: currentSection,
+        secao: 'clientes',
         doc: document.getElementById('f-cpf').value.trim() || undefined,
         rg: document.getElementById('f-rg').value.trim() || undefined,
         nascimento: document.getElementById('f-nasc').value.trim() || undefined,
@@ -1479,8 +1516,6 @@
         limite: parseFloat(limiteRaw) || 0,
         desconto: document.getElementById('f-desconto').value.trim() || undefined,
         condicao: document.getElementById('f-condicao').value || undefined,
-        vendedor: document.getElementById('f-vendedor').options[document.getElementById('f-vendedor').selectedIndex]?.text || undefined,
-        vendedorId: document.getElementById('f-vendedor').value || undefined,
         grupo: document.getElementById('f-grupo').value || undefined,
         origem: document.getElementById('f-origem').value || undefined,
         tags: document.getElementById('f-tags').value.trim() || undefined,
@@ -1488,9 +1523,17 @@
         cadastro: existing?.cadastro || new Date().toLocaleDateString('pt-BR'),
       };
 
+      if (currentSection === 'clientes' && vendedorField) {
+        payload.vendedor = vendedorField.options[vendedorField.selectedIndex]?.text || undefined;
+        payload.vendedorId = vendedorField.value || undefined;
+      } else {
+        delete payload.secao;
+      }
+
+      const endpoint = endpointForCurrentSection();
       const res = editingId
-        ? await NexoAuth.apiFetch(`/clientes/${editingId}`, { method: 'PUT', body: JSON.stringify(payload) })
-        : await NexoAuth.apiFetch('/clientes', { method: 'POST', body: JSON.stringify(payload) });
+        ? await NexoAuth.apiFetch(`${endpoint}/${editingId}`, { method: 'PUT', body: JSON.stringify(payload) })
+        : await NexoAuth.apiFetch(endpoint, { method: 'POST', body: JSON.stringify(payload) });
 
       if (!res.ok) {
         const errMsg = res.errors?.map(e => `campo "${e.path}": ${e.message}`).join(', ') || res.message;
@@ -1513,6 +1556,7 @@
       document.getElementById('modalTitle').textContent = `Editar ${entityLabel()}`;
       document.getElementById('modalSub').textContent = c.nome;
       resetForm();
+      updateFormBySection();
       document.getElementById('f-nome').value = c.nome;
       document.getElementById('f-cpf').value = c.doc || '';
       document.getElementById('f-rg').value = c.rg || '';
@@ -1558,7 +1602,7 @@
         `Excluir ${entityLabel().toLowerCase()}`,
         `"${entry.nome}" será removido permanentemente.`,
         async () => {
-          const endpoint = currentSection === 'vendedores' ? `/vendedores/${id}` : `/clientes/${id}`;
+          const endpoint = `${endpointForCurrentSection()}/${id}`;
           const res = await NexoAuth.apiFetch(endpoint, { method: 'DELETE' });
           if (!res.ok) { showToast('❌ ' + res.message); return; }
           if (currentDetailId === id) closeDetail();
@@ -1585,13 +1629,14 @@
       const isCli = currentSection === 'clientes';
       const movLabel = isCli ? 'Compras' : 'Pedidos';
       const movVal = isCli ? (c.compras || 0) + ' pedidos' : (c.pedidos || 0) + ' ordens';
-      const parteLabel = isCli ? 'Vendedor' : 'Comprador';
-
-      document.getElementById('dp-info').innerHTML = [
+      const infoRows = [
         ['Tipo', typeLabel], ['Telefone', c.tel], ['E-mail', c.email || '—'],
-        [parteLabel, c.vendedor || '—'], ['Grupo', c.grupo || '—'], ['Status', statusLabel],
+        ['Grupo', c.grupo || '—'], ['Status', statusLabel],
         ['Cadastro', c.cadastro], [movLabel, movVal]
-      ].map(([l, v]) => `<div class="dp-row"><span class="dp-label">${l}</span><span class="dp-val">${v}</span></div>`).join('');
+      ];
+      if (isCli) infoRows.splice(3, 0, ['Vendedor', c.vendedor || '—']);
+
+      document.getElementById('dp-info').innerHTML = infoRows.map(([l, v]) => `<div class="dp-row"><span class="dp-label">${l}</span><span class="dp-val">${v}</span></div>`).join('');
 
       const addr = [c.logradouro, c.numero, c.bairro, c.cidade, c.estado, c.cep].filter(Boolean).join(', ') || '—';
       document.getElementById('dp-addr').innerHTML =

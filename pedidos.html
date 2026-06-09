@@ -786,7 +786,7 @@ font-weight: 800;
           <div class="kpi-mini-icon p"><i class="bi bi-receipt"></i></div>
           <div>
             <div class="kpi-mini-val" id="kpi-faturados">0</div>
-            <div class="kpi-mini-lbl">Faturados</div>
+            <div class="kpi-mini-lbl">Faturados/Concluídos sem NF-e</div>
           </div>
         </div>
         <div class="kpi-mini">
@@ -809,8 +809,9 @@ font-weight: 800;
       <div class="status-tabs">
         <div class="status-tab active" onclick="setStatusTab(this,'todos')">Todos <span class="tab-count" id="tc-todos">0</span></div>
         <div class="status-tab" onclick="setStatusTab(this,'pendente')">Pendente <span class="tab-count" id="tc-pendente">0</span></div>
-        <div class="status-tab" onclick="setStatusTab(this,'concluido')">Concluído <span class="tab-count" id="tc-concluido">0</span></div>
+        <div class="status-tab" onclick="setStatusTab(this,'concluido')">Concluído sem NF-e <span class="tab-count" id="tc-concluido">0</span></div>
         <div class="status-tab" onclick="setStatusTab(this,'faturado')">Faturado <span class="tab-count" id="tc-faturado">0</span></div>
+        <div class="status-tab" onclick="setStatusTab(this,'estornado')">Estornado <span class="tab-count" id="tc-estornado">0</span></div>
         <div class="status-tab" onclick="setStatusTab(this,'cancelado')">Cancelado <span class="tab-count" id="tc-cancelado">0</span></div>
       </div>
 
@@ -1156,7 +1157,7 @@ font-weight: 800;
     }
 
     const STATUS_LABELS = {
-      pendente: 'Pendente', faturado: 'Faturado', concluido: 'Concluído', cancelado: 'Cancelado',
+      pendente: 'Pendente', faturado: 'Faturado', concluido: 'Concluído sem NF-e', estornado: 'Estornado', cancelado: 'Cancelado',
     };
 
     // ═══════════════════════════════════════════════
@@ -1166,9 +1167,19 @@ font-weight: 800;
     let currentStatus = 'todos';
     let currentPedidoId = null;
     let listPage = 1;
+    let listMeta = { page: 1, limit: 8, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
+    let pedidosResumo = {
+      total: 0,
+      pendentes: 0,
+      faturados: 0,
+      faturamento: 0,
+      aReceber: 0,
+      statusCounts: { pendente: 0, concluido: 0, faturado: 0, estornado: 0, cancelado: 0 },
+    };
     let itensPedido = [];
     let editingId = null;
     let confirmCb = null;
+    let filterTimer = null;
 
     function getPedidosPerPage() {
       const usable = window.innerHeight - 440;
@@ -1180,19 +1191,17 @@ font-weight: 800;
     // ═══════════════════════════════════════════════
     async function init() {
       document.getElementById('listBody').innerHTML = NexoSkeleton.tableRows(8, 6);
-      const [rp, rc, rv, rped] = await Promise.all([
+      const [rp, rc, rv] = await Promise.all([
         NexoAuth.apiFetch('/produtos?status=ativo'),
         NexoAuth.apiFetch('/clientes?secao=clientes&status=ativo'),
         NexoAuth.apiFetch('/vendedores?status=ativo'),
-        NexoAuth.apiFetch('/pedidos'),
       ]);
       if (rp.ok)   PRODUTOS_MOCK   = rp.data;
       if (rc.ok)   CLIENTES_DATA   = rc.data;
       if (rv.ok)   VENDEDORES_DATA = rv.data;
-      if (rped.ok) pedidos         = rped.data;
 
       populateSelects();
-      renderAll();
+      await Promise.all([loadPedidosResumo(), loadPedidosPage(1, false)]);
 
       const hoje    = new Date().toISOString().slice(0, 10);
       const validade = new Date(Date.now() + 15 * 864e5).toISOString().slice(0, 10);
@@ -1225,17 +1234,66 @@ font-weight: 800;
     // ═══════════════════════════════════════════════
     // RENDER
     // ═══════════════════════════════════════════════
-    function getFiltered() {
-      const q  = (document.getElementById('searchInput').value || '').toLowerCase();
+    function condicaoFilterValue() {
+      const label = document.getElementById('condicaoFilter').value;
+      const found = Object.entries(COND_LABELS).find(([, value]) => value === label);
+      return found ? found[0] : '';
+    }
+
+    function buildPedidosQuery(page = listPage) {
+      const params = new URLSearchParams();
+      const q  = (document.getElementById('searchInput').value || '').trim();
       const cl = document.getElementById('clienteFilter').value;
-      const co = document.getElementById('condicaoFilter').value;
-      return pedidos.filter(p => {
-        const matchQ  = !q  || p.id.toLowerCase().includes(q) || (p.cliente||'').toLowerCase().includes(q);
-        const matchS  = currentStatus === 'todos' || p.status === currentStatus;
-        const matchCl = !cl || p.clienteId === cl;
-        const matchCo = !co || condLabel(p.condicao) === co;
-        return matchQ && matchS && matchCl && matchCo;
-      });
+      const co = condicaoFilterValue();
+
+      params.set('page', String(page));
+      params.set('limit', String(getPedidosPerPage()));
+      if (currentStatus !== 'todos') params.set('status', currentStatus);
+      if (q) params.set('q', q);
+      if (cl) params.set('clienteId', cl);
+      if (co) params.set('condicao', co);
+
+      return params.toString();
+    }
+
+    async function loadPedidosResumo() {
+      const res = await NexoAuth.apiFetch('/pedidos/resumo');
+      if (!res.ok) {
+        NexoToast.error(res.message || 'Erro ao carregar resumo de pedidos.');
+        return;
+      }
+      pedidosResumo = { ...pedidosResumo, ...res.data };
+      updateKPIs();
+      updateTabCounts();
+    }
+
+    function renderListLoading() {
+      document.getElementById('listBody').innerHTML = NexoSkeleton.tableRows(8, 6);
+      document.getElementById('listInfo').textContent = 'Carregando pedidos...';
+      document.getElementById('listPagination').innerHTML = '';
+    }
+
+    async function loadPedidosPage(page = 1, showLoading = true) {
+      listPage = page;
+      if (showLoading) renderListLoading();
+
+      const res = await NexoAuth.apiFetch('/pedidos?' + buildPedidosQuery(page));
+      if (!res.ok) {
+        NexoToast.error(res.message || 'Erro ao carregar pedidos.');
+        return;
+      }
+
+      pedidos = res.data || [];
+      listMeta = res.pagination || {
+        page,
+        limit: getPedidosPerPage(),
+        total: pedidos.length,
+        totalPages: Math.max(1, Math.ceil(pedidos.length / getPedidosPerPage())),
+        hasNextPage: false,
+        hasPrevPage: page > 1,
+      };
+      listPage = listMeta.page;
+      renderList();
     }
 
     function renderAll() {
@@ -1243,25 +1301,29 @@ font-weight: 800;
       updateTabCounts();
       renderList();
     }
-    function renderView() { listPage = 1; renderAll(); }
+    async function refreshPedidos(page = listPage) {
+      await Promise.all([
+        loadPedidosResumo(),
+        loadPedidosPage(page, false),
+      ]);
+    }
+    function renderView() {
+      listPage = 1;
+      clearTimeout(filterTimer);
+      filterTimer = setTimeout(() => loadPedidosPage(1), 250);
+    }
 
     function updateKPIs() {
-      const total = pedidos.length;
-      const pend = pedidos.filter(p => p.status === 'pendente').length;
-      const fat = pedidos.filter(p => ['faturado','concluido'].includes(p.status)).reduce((s, p) => s + p.total, 0);
-      const fatQ = pedidos.filter(p => ['faturado','concluido'].includes(p.status)).length;
-      const aRec = pedidos.filter(p => p.status === 'pendente').reduce((s, p) => s + p.total, 0);
-      document.getElementById('kpi-total').textContent = total;
-      document.getElementById('kpi-pendentes').textContent = pend;
-      document.getElementById('kpi-faturamento').textContent = 'R$ ' + fmt(fat);
-      document.getElementById('kpi-faturados').textContent = fatQ;
-      document.getElementById('kpi-areceber').textContent = 'R$ ' + fmt(aRec);
+      document.getElementById('kpi-total').textContent = pedidosResumo.total || 0;
+      document.getElementById('kpi-pendentes').textContent = pedidosResumo.pendentes || 0;
+      document.getElementById('kpi-faturamento').textContent = 'R$ ' + fmt(pedidosResumo.faturamento || 0);
+      document.getElementById('kpi-faturados').textContent = pedidosResumo.faturados || 0;
+      document.getElementById('kpi-areceber').textContent = 'R$ ' + fmt(pedidosResumo.aReceber || 0);
     }
 
     function updateTabCounts() {
-      const counts = { pendente: 0, concluido: 0, faturado: 0, cancelado: 0 };
-      pedidos.forEach(p => { if (counts[p.status] !== undefined) counts[p.status]++; });
-      document.getElementById('tc-todos').textContent = pedidos.length;
+      const counts = pedidosResumo.statusCounts || { pendente: 0, concluido: 0, faturado: 0, estornado: 0, cancelado: 0 };
+      document.getElementById('tc-todos').textContent = pedidosResumo.total || 0;
       Object.entries(counts).forEach(([k, v]) => {
         const el = document.getElementById(`tc-${k}`);
         if (el) el.textContent = v;
@@ -1269,14 +1331,12 @@ font-weight: 800;
     }
 
     function renderList() {
-      const filtered = getFiltered();
       const body = document.getElementById('listBody');
       const perPage = getPedidosPerPage();
-      const pages = Math.max(1, Math.ceil(filtered.length / perPage));
+      const total = listMeta.total || 0;
+      const pages = listMeta.totalPages || Math.max(1, Math.ceil(total / perPage));
       if (listPage > pages) listPage = pages;
-      const start = (listPage - 1) * perPage;
-      const slice = filtered.slice(start, start + perPage);
-      body.innerHTML = filtered.length ? slice.map(p => {
+      body.innerHTML = total ? pedidos.map(p => {
         const dataFmt  = p.dataStr || new Date(p.dataISO).toLocaleDateString('pt-BR');
         const itensArr = p.itens || [];
         return `<tr onclick="openDetail('${p.id}')">
@@ -1291,22 +1351,22 @@ font-weight: 800;
     <td><div class="action-cell" onclick="event.stopPropagation()">
       <div class="act-btn" onclick="openDetail('${p.id}')"><i class="bi bi-eye"></i></div>
       ${p.status === 'pendente' ? `<div class="act-btn ok" onclick="faturar('${p.id}')" title="Faturar"><i class="bi bi-receipt"></i></div>` : ''}
-      ${p.status === 'pendente' ? `<div class="act-btn ok" onclick="concluir('${p.id}')" title="Concluir Venda"><i class="bi bi-check2-circle"></i></div>` : ''}
+      ${p.status === 'pendente' ? `<div class="act-btn ok" onclick="concluir('${p.id}')" title="Concluir sem NF-e"><i class="bi bi-check2-circle"></i></div>` : ''}
       ${p.status === 'pendente' ? `<div class="act-btn danger" onclick="cancelar('${p.id}')" title="Cancelar"><i class="bi bi-x"></i></div>` : ''}
     </div></td>
   </tr>`;
       }).join('') : '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px">Nenhum pedido encontrado</td></tr>';
-      renderListPagination(filtered.length, perPage);
+      renderListPagination(total, perPage);
     }
 
     function renderListPagination(total, perPage) {
       const info = document.getElementById('listInfo');
       const pg = document.getElementById('listPagination');
       if (!info || !pg) return;
-      const pages = Math.max(1, Math.ceil(total / perPage));
+      const pages = listMeta.totalPages || Math.max(1, Math.ceil(total / perPage));
       if (listPage > pages) listPage = pages;
       const start = total ? (listPage - 1) * perPage + 1 : 0;
-      const end = Math.min(listPage * perPage, total);
+      const end = Math.min(start + pedidos.length - 1, total);
       info.textContent = total
         ? `Mostrando ${start}–${end} de ${total} pedido${total !== 1 ? 's' : ''}`
         : '0 pedidos';
@@ -1320,10 +1380,9 @@ font-weight: 800;
     }
 
     function goListPage(p) {
-      const pages = Math.max(1, Math.ceil(getFiltered().length / getPedidosPerPage()));
+      const pages = listMeta.totalPages || 1;
       if (p < 1 || p > pages) return;
-      listPage = p;
-      renderList();
+      loadPedidosPage(p);
     }
 
     // ═══════════════════════════════════════════════
@@ -1359,7 +1418,7 @@ font-weight: 800;
 
       if (p.status === 'pendente') {
         acts.push(`<button class="det-btn primary" onclick="faturar('${p.id}')"><i class="bi bi-receipt"></i> Emitir NF-e → Faturar</button>`);
-        acts.push(`<button class="det-btn green" onclick="concluir('${p.id}')"><i class="bi bi-check2-circle"></i> Concluir venda</button>`);
+        acts.push(`<button class="det-btn green" onclick="concluir('${p.id}')"><i class="bi bi-check2-circle"></i> Concluir sem NF-e</button>`);
         acts.push(`<button class="det-btn" onclick="openEdit('${p.id}');closeDetail()"><i class="bi bi-pencil"></i> Editar</button>`);
         acts.push(`<button class="det-btn danger" onclick="excluir('${p.id}')"><i class="bi bi-trash3"></i> Excluir pedido</button>`);
       }
@@ -1378,7 +1437,7 @@ font-weight: 800;
           acts.push(`<button class="det-btn green" onclick="gerarBoleto('${p.id}')"><i class="bi bi-file-text"></i> Gerar Boleto</button>`);
         acts.push(`<button class="det-btn danger" onclick="estornarVenda('${p.id}')"><i class="bi bi-arrow-counterclockwise"></i> Estornar Venda</button>`);
       }
-      if (p.status === 'cancelado') {
+      if (p.status === 'cancelado' || p.status === 'estornado') {
         quickActs.splice(0, quickActs.length, `<button class="det-btn" onclick="NexoToast.info('Em breve.')"><i class="bi bi-printer"></i> Imprimir</button>`);
       }
       document.getElementById('dp-quick-actions').innerHTML = quickActs.join('');
@@ -1475,6 +1534,7 @@ font-weight: 800;
         nfe_emitida: 'green',
         boleto_gerado: 'yellow',
         pedido_concluido: 'green',
+        pedido_estornado: 'yellow',
         pedido_cancelado: 'red'
       };
       const eventos = historicoPedido.filter(e => e && typeof e === 'object').map(e => ({
@@ -1494,10 +1554,13 @@ font-weight: 800;
         eventos.push({ tipo: 'boleto_gerado', titulo: 'Boleto gerado', dataISO: p.dataISO, usuario: p.criadoPor || '' });
       }
       if (p.status === 'concluido' && !temEvento('pedido_concluido')) {
-        eventos.push({ tipo: 'pedido_concluido', titulo: 'Venda concluída', dataISO: p.dataISO, usuario: p.criadoPor || '' });
+        eventos.push({ tipo: 'pedido_concluido', titulo: 'Venda concluída sem NF-e', dataISO: p.dataISO, usuario: p.criadoPor || '' });
       }
       if (p.status === 'cancelado' && !temEvento('pedido_cancelado')) {
         eventos.push({ tipo: 'pedido_cancelado', titulo: 'Pedido cancelado', dataISO: p.dataISO, usuario: p.criadoPor || '' });
+      }
+      if (p.status === 'estornado' && !temEvento('pedido_estornado')) {
+        eventos.push({ tipo: 'pedido_estornado', titulo: 'Venda estornada', dataISO: p.dataISO, usuario: p.criadoPor || '' });
       }
       const tlTime = (iso) => {
         const t = new Date(iso).getTime();
@@ -1551,7 +1614,7 @@ font-weight: 800;
       const idx = pedidos.findIndex(x => x.id === id);
       if (idx >= 0) pedidos[idx] = res.data;
       if (currentPedidoId === id) openDetail(id);
-      renderAll();
+      await refreshPedidos();
       NexoToast.success(`Pedido ${id} faturado.`);
     }
     async function concluir(id) {
@@ -1562,8 +1625,8 @@ font-weight: 800;
       const idx = pedidos.findIndex(x => x.id === id);
       if (idx >= 0) pedidos[idx] = res.data;
       if (currentPedidoId === id) openDetail(id);
-      renderAll();
-      NexoToast.success(`Pedido ${id} concluído.`);
+      await refreshPedidos();
+      NexoToast.success(`Pedido ${id} concluído sem NF-e.`);
     }
     function excluir(id) {
       const p = pedidos.find(x => x.id === id); if (!p) return;
@@ -1573,7 +1636,7 @@ font-weight: 800;
         const idx = pedidos.findIndex(x => x.id === id);
         if (idx >= 0) pedidos.splice(idx, 1);
         closeDetail();
-        renderAll();
+        await refreshPedidos();
         NexoToast.success('Pedido excluído.');
       }, { title: 'Excluir pedido', sub: 'Esta ação é permanente e não pode ser desfeita.', btnLabel: 'Excluir', icon: 'bi-trash3' });
     }
@@ -1585,7 +1648,7 @@ font-weight: 800;
         const idx = pedidos.findIndex(x => x.id === id);
         if (idx >= 0) pedidos[idx].status = 'cancelado';
         closeDetail();
-        renderAll();
+        await refreshPedidos();
         NexoToast.success('Pedido cancelado.');
       }, { title: 'Cancelar pedido', sub: 'O pedido será marcado como cancelado e o estoque revertido.', btnLabel: 'Cancelar pedido', icon: 'bi-x-circle' });
     }
@@ -1595,9 +1658,9 @@ font-weight: 800;
         const res = await NexoAuth.apiFetch(`/pedidos/${id}`, { method: 'DELETE' });
         if (!res.ok) { NexoToast.error(res.message); return; }
         const idx = pedidos.findIndex(x => x.id === id);
-        if (idx >= 0) pedidos[idx].status = 'cancelado';
+        if (idx >= 0) pedidos[idx].status = 'estornado';
         closeDetail();
-        renderAll();
+        await refreshPedidos();
         NexoToast.success('Venda estornada.');
       }, {
         title: 'Estornar venda',
@@ -1609,7 +1672,7 @@ font-weight: 800;
     async function gerarBoleto(id) {
       const p = pedidos.find(x => x.id === id);
       if (!p || !['faturado', 'concluido'].includes(p.status) || !isFormaBoleto(p.forma)) {
-        NexoToast.warning('O boleto só pode ser gerado para pedidos faturados/concluídos com forma de pagamento Boleto.');
+        NexoToast.warning('O boleto só pode ser gerado para pedidos faturados/concluídos sem NF-e com forma de pagamento Boleto.');
         return;
       }
       const res = await NexoAuth.apiFetch(`/pedidos/${id}`, { method: 'PUT', body: JSON.stringify({ temBoleto: true }) });
@@ -1617,6 +1680,7 @@ font-weight: 800;
       const idx = pedidos.findIndex(x => x.id === id);
       if (idx >= 0) pedidos[idx] = res.data;
       if (currentPedidoId === id) openDetail(id);
+      await refreshPedidos();
       NexoToast.success('Boleto vinculado ao pedido.');
     }
     function openConfirm(msg, cb, { title = 'Confirmar', sub = '', btnLabel = 'Confirmar', icon = 'bi-x-circle' } = {}) {
@@ -1905,7 +1969,7 @@ font-weight: 800;
       }
       editingId = null;
       closeModal();
-      renderAll();
+      await refreshPedidos(isEdit ? listPage : 1);
       NexoToast.success(isEdit ? `Pedido ${saved.id} atualizado.` : `Pedido ${saved.id} criado.`);
     }
 
@@ -1952,7 +2016,7 @@ font-weight: 800;
       el.classList.add('active');
       currentStatus = status;
       listPage = 1;
-      renderAll();
+      loadPedidosPage(1);
     }
     // ═══════════════════════════════════════════════
     // HELPERS
@@ -1960,7 +2024,8 @@ font-weight: 800;
     init();
 
     window.addEventListener('resize', () => {
-      renderList();
+      clearTimeout(filterTimer);
+      filterTimer = setTimeout(() => loadPedidosPage(1), 200);
     });
   </script>
 </body>

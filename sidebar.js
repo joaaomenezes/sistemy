@@ -4,7 +4,7 @@
     { label: 'PDV', href: 'pdv.html', icon: 'bi-display', section: 'Principal', perm: 'pdv' },
     { label: 'Pedidos de Vendas', href: 'pedidos.html', icon: 'bi-file-earmark-text-fill', section: 'Principal', perm: 'pedidos' },
     { label: 'Vendas', href: 'vendas.html', icon: 'bi-cart4', section: 'Principal', perm: 'vendas' },
-    { label: 'Clientes', href: 'clientes.html', icon: 'bi-people-fill', section: 'Principal', perm: 'clientes' },
+    { label: 'Parceiros', href: 'clientes.html', icon: 'bi-briefcase-fill', section: 'Principal', perm: 'clientes' },
     { label: 'Produtos', href: 'produtos.html', icon: 'bi-box-seam-fill', section: 'Principal', perm: 'produtos' },
     { label: 'Catálogo', href: 'catalogo.html', icon: 'bi-grid-3x3-gap-fill', section: 'Principal', perm: null, newTab: true },
     { label: 'Estoque', href: 'estoque.html', icon: 'bi-stack', section: 'Principal', perm: 'estoque' },

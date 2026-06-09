@@ -639,8 +639,10 @@
         </div>
         <div class="filter-group">
           <button class="filter-btn active" onclick="setFilter(this,'todos')">Todas</button>
-          <button class="filter-btn" onclick="setFilter(this,'concluida')"><i class="bi bi-check-circle"></i>
+          <button class="filter-btn" id="filterConcluidas" onclick="setFilter(this,'concluida')"><i class="bi bi-check-circle"></i>
             Concluídas</button>
+          <button class="filter-btn" onclick="setFilter(this,'faturada')"><i class="bi bi-receipt"></i>
+            Faturadas</button>
           <button class="filter-btn" onclick="setFilter(this,'cancelada')"><i class="bi bi-x-circle"></i>
             Canceladas</button>
           <button class="filter-btn" onclick="setFilter(this,'estornada')"><i class="bi bi-arrow-counterclockwise"></i>
@@ -690,7 +692,7 @@
           <table>
             <thead>
               <tr>
-                <th onclick="sortVendas('id')">Nº Venda ↕</th>
+                <th id="numeroHeader" onclick="sortVendas(currentSection === 'pedidos' ? 'pedidoId' : 'id')">Nº Venda ↕</th>
                 <th onclick="sortVendas('cliente')">Cliente ↕</th>
                 <th>Itens</th>
                 <th>Método</th>
@@ -807,6 +809,21 @@
     // ═══════════════════════════════════════════════
     let currentSection = 'pdv';
 
+    function normalizeVenda(v) {
+      v.data = new Date(v.dataISO);
+      if (!v.dataStr) v.dataStr = v.data.toLocaleDateString('pt-BR');
+      if (!v.horaStr) v.horaStr = v.data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      return v;
+    }
+
+    function vendaNumero(v) {
+      return currentSection === 'pedidos' ? (v.pedidoId || v.id) : v.id;
+    }
+
+    function numeroLabel() {
+      return currentSection === 'pedidos' ? 'Nº Pedido' : 'Nº Venda';
+    }
+
     async function loadVendas(tipo) {
       try {
         const r = await NexoAuth.apiFetch(`/vendas?tipo=${tipo}`);
@@ -823,15 +840,94 @@
     }
 
     let vendas = [];
-    let filtered = [...vendas];
     let currentFilter = 'todos';
     let currentPage = 1;
+    let pageMeta = { page: 1, limit: 8, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
+    let resumoVendas = { concluidas: 0, faturamento: 0, ticketMedio: 0, estornos: 0 };
     let sortDir = -1;
+    let sortKey = 'data';
+    let filterTimer = null;
     let currentVendaId = null;
 
     function getVendasPerPage() {
       const usable = window.innerHeight - 445;
       return Math.max(1, Math.floor(usable / 62));
+    }
+
+    function tipoAtual() {
+      return currentSection === 'pedidos' ? 'pedido' : 'pdv';
+    }
+
+    function buildVendasQuery(page = currentPage, withPagination = true) {
+      const params = new URLSearchParams();
+      const q = (document.getElementById('searchInput')?.value || '').trim();
+      const metodo = document.getElementById('metodoPag')?.value || '';
+      const dIni = document.getElementById('dataInicio')?.value || '';
+      const dFim = document.getElementById('dataFim')?.value || '';
+
+      params.set('tipo', tipoAtual());
+      if (withPagination) {
+        params.set('page', String(page));
+        params.set('limit', String(getVendasPerPage()));
+      }
+      if (currentFilter !== 'todos') params.set('status', currentFilter);
+      if (q) params.set('q', q);
+      if (metodo) params.set('metodo', metodo);
+      if (dIni) params.set('dataInicio', dIni);
+      if (dFim) params.set('dataFim', dFim);
+      if (sortKey) {
+        params.set('sortBy', sortKey);
+        params.set('sortDir', sortDir === 1 ? 'asc' : 'desc');
+      }
+
+      return params.toString();
+    }
+
+    function renderLoadingState() {
+      document.getElementById('vendasBody').innerHTML = NexoSkeleton.tableRows(8, 6);
+      document.getElementById('emptyState').classList.remove('show');
+      document.getElementById('tableInfo').textContent = 'Carregando vendas...';
+      document.getElementById('pagination').innerHTML = '';
+    }
+
+    async function loadVendasResumo() {
+      const res = await NexoAuth.apiFetch('/vendas/resumo?' + buildVendasQuery(1, false));
+      if (!res.ok) {
+        showToast(res.message || 'Erro ao carregar resumo.', 'error');
+        return;
+      }
+      resumoVendas = { ...resumoVendas, ...res.data };
+      updateKPIs();
+    }
+
+    async function loadVendasPage(page = 1, showLoading = true) {
+      currentPage = page;
+      if (showLoading) renderLoadingState();
+
+      const res = await NexoAuth.apiFetch('/vendas?' + buildVendasQuery(page));
+      if (!res.ok) {
+        showToast(res.message || 'Erro ao carregar vendas.', 'error');
+        return;
+      }
+
+      vendas = (res.data || []).map(normalizeVenda);
+      pageMeta = res.pagination || {
+        page,
+        limit: getVendasPerPage(),
+        total: vendas.length,
+        totalPages: Math.max(1, Math.ceil(vendas.length / getVendasPerPage())),
+        hasNextPage: false,
+        hasPrevPage: page > 1,
+      };
+      currentPage = pageMeta.page;
+      renderTable();
+    }
+
+    async function refreshVendas(page = currentPage, showLoading = false) {
+      await Promise.all([
+        loadVendasResumo(),
+        loadVendasPage(page, showLoading),
+      ]);
     }
 
     // ═══════════════════════════════════════════════
@@ -842,6 +938,7 @@
       const isPdv = section === 'pdv';
       document.getElementById('sec-pdv').classList.toggle('active', isPdv);
       document.getElementById('sec-pedidos').classList.toggle('active', !isPdv);
+      document.getElementById('numeroHeader').textContent = isPdv ? 'Nº Venda ↕' : 'Nº Pedido ↕';
       document.getElementById('operatorHeader').textContent = isPdv ? 'Operador' : 'Vendedor';
       const btnAbrir = document.getElementById('btnAbrirOrigem');
       if (btnAbrir) {
@@ -853,8 +950,11 @@
       document.getElementById('emptyStateMsg').textContent = isPdv
         ? 'Ajuste os filtros ou realize vendas pelo PDV.'
         : 'Ajuste os filtros ou fature pedidos em Pedidos de Venda.';
-      vendas = await loadVendas(isPdv ? 'pdv' : 'pedido');
-      filtered = [...vendas];
+      document.getElementById('searchInput').placeholder = isPdv
+        ? 'Buscar por nº venda, cliente, valor...'
+        : 'Buscar por nº pedido, cliente, valor...';
+      const btnConcluidas = document.getElementById('filterConcluidas');
+      if (btnConcluidas) btnConcluidas.childNodes[1].textContent = isPdv ? ' Concluídas' : ' Concluídas sem NF-e';
       currentFilter = 'todos';
       currentPage = 1;
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -864,7 +964,7 @@
       const inicio = new Date(hoje); inicio.setDate(inicio.getDate() - 30);
       document.getElementById('dataInicio').value = inicio.toISOString().slice(0, 10);
       document.getElementById('dataFim').value = hoje.toISOString().slice(0, 10);
-      applyFilters();
+      await refreshVendas(1, true);
     }
 
     // ═══════════════════════════════════════════════
@@ -877,9 +977,7 @@
       document.getElementById('dataInicio').value = inicio.toISOString().slice(0, 10);
       document.getElementById('dataFim').value = hoje.toISOString().slice(0, 10);
       document.getElementById('vendasBody').innerHTML = NexoSkeleton.tableRows(8, 6);
-      vendas = await loadVendas('pdv');
-      filtered = [...vendas];
-      applyFilters();
+      await refreshVendas(1, false);
     }
 
     // ═══════════════════════════════════════════════
@@ -893,7 +991,8 @@
       applyFilters();
     }
 
-    function applyFilters() {
+    function applyFiltersLegacyUnused() {
+      return applyFilters();
       const q = (document.getElementById('searchInput').value || '').toLowerCase();
       const metodo = document.getElementById('metodoPag').value;
       const dIni = document.getElementById('dataInicio').value;
@@ -920,16 +1019,17 @@
     // ═══════════════════════════════════════════════
     // KPIs
     // ═══════════════════════════════════════════════
-    function updateKPIs() {
-      const concluidas = filtered.filter(v => v.status === 'concluida');
-      const total = concluidas.reduce((s, v) => s + v.total, 0);
-      const ticket = concluidas.length > 0 ? total / concluidas.length : 0;
-      const estornos = filtered.filter(v => v.status === 'estornada').length;
+    function applyFilters() {
+      currentPage = 1;
+      clearTimeout(filterTimer);
+      filterTimer = setTimeout(() => refreshVendas(1, true), 250);
+    }
 
-      document.getElementById('kpi-total').textContent = 'R$ ' + fmt(total);
-      document.getElementById('kpi-qtd').textContent = concluidas.length;
-      document.getElementById('kpi-ticket').textContent = 'R$ ' + fmt(ticket);
-      document.getElementById('kpi-estornos').textContent = estornos;
+    function updateKPIs() {
+      document.getElementById('kpi-total').textContent = 'R$ ' + fmt(resumoVendas.faturamento || 0);
+      document.getElementById('kpi-qtd').textContent = resumoVendas.concluidas || 0;
+      document.getElementById('kpi-ticket').textContent = 'R$ ' + fmt(resumoVendas.ticketMedio || 0);
+      document.getElementById('kpi-estornos').textContent = resumoVendas.estornos || 0;
     }
 
     // ═══════════════════════════════════════════════
@@ -955,7 +1055,12 @@
       boleto: 'Boleto bancário', duplicata: 'Duplicata', transferencia: 'Transferência / PIX',
       cheque: 'Cheque', outro: 'Outro'
     };
-    const statusLabels = { concluida: 'Concluída', cancelada: 'Cancelada', estornada: 'Estornada', pendente: 'Pendente' };
+    const statusLabels = { concluida: 'Concluída', faturada: 'Faturada', cancelada: 'Cancelada', estornada: 'Estornada', pendente: 'Pendente' };
+
+    function statusLabel(status) {
+      if (currentSection === 'pedidos' && status === 'concluida') return 'Concluída sem NF-e';
+      return statusLabels[status] || status || '—';
+    }
 
     function getMethodMeta(raw) {
       const label = String(raw || '').trim();
@@ -978,23 +1083,23 @@
     function renderTable() {
       const body = document.getElementById('vendasBody');
       const empty = document.getElementById('emptyState');
-      const total = filtered.length;
+      const total = pageMeta.total || 0;
       const perPage = getVendasPerPage();
-      const pages = Math.max(1, Math.ceil(total / perPage));
+      const pages = pageMeta.totalPages || Math.max(1, Math.ceil(total / perPage));
       if (currentPage > pages) currentPage = pages;
       const start = (currentPage - 1) * perPage;
-      const slice = filtered.slice(start, start + perPage);
 
       if (!total) { body.innerHTML = ''; empty.classList.add('show'); }
       else empty.classList.remove('show');
 
-      body.innerHTML = slice.map(v => {
+      body.innerHTML = vendas.map(v => {
         const [bg, fg] = colorFor(v.cliente);
         const isNeg = v.status === 'estornada' || v.status === 'cancelada';
         const metodo = getMethodMeta(v.metodo);
+        const numero = vendaNumero(v);
         return `<tr onclick="openDetail('${v.id}')">
       <td>
-        <div class="venda-id">${v.id}</div>
+        <div class="venda-id">${escapeHTML(numero)}</div>
         <div class="venda-data">${v.dataStr} · ${v.horaStr}</div>
       </td>
       <td><div class="client-cell">
@@ -1004,24 +1109,24 @@
       <td style="color:var(--muted);font-size:13px">${v.itens.length} ${v.itens.length === 1 ? 'item' : 'itens'}</td>
       <td><span class="method-badge ${metodo.key}"><i class="bi ${metodo.icon}"></i>${escapeHTML(metodo.label)}</span></td>
       <td><span class="valor-cell ${isNeg ? 'neg' : 'pos'}">R$ ${fmt(v.total)}</span></td>
-      <td><span class="status-pill ${v.status}">${statusLabels[v.status]}</span></td>
+      <td><span class="status-pill ${v.status}">${statusLabel(v.status)}</span></td>
       <td style="color:var(--muted);font-size:12px">${v.dataStr}<br>${v.horaStr}</td>
       <td style="color:var(--muted);font-size:12px">${v.operador || '—'}</td>
       <td><div class="action-cell" onclick="event.stopPropagation()">
         <div class="act-btn" title="Ver detalhes" onclick="openDetail('${v.id}')"><i class="bi bi-eye"></i></div>
         <div class="act-btn" title="Imprimir" onclick="printVendaId('${v.id}')"><i class="bi bi-printer"></i></div>
-        ${v.status === 'concluida' ? `<div class="act-btn danger" title="Estornar Venda" onclick="openEstornoById('${v.id}')"><i class="bi bi-arrow-counterclockwise"></i></div>` : ''}
+        ${['concluida', 'faturada'].includes(v.status) ? `<div class="act-btn danger" title="Estornar Venda" onclick="openEstornoById('${v.id}')"><i class="bi bi-arrow-counterclockwise"></i></div>` : ''}
       </div></td>
     </tr>`;
       }).join('');
 
       document.getElementById('tableInfo').textContent =
-        total ? `Mostrando ${start + 1}–${Math.min(start + perPage, total)} de ${total} vendas` : '0 vendas';
+        total ? `Mostrando ${start + 1}–${Math.min(start + vendas.length, total)} de ${total} vendas` : '0 vendas';
       renderPagination(total, perPage);
     }
 
     function renderPagination(total, perPage) {
-      const pages = Math.ceil(total / perPage);
+      const pages = pageMeta.totalPages || Math.ceil(total / perPage);
       const pg = document.getElementById('pagination');
       if (pages <= 1) { pg.innerHTML = ''; return; }
       let html = `<button class="pg-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}><i class="bi bi-chevron-left"></i></button>`;
@@ -1030,25 +1135,18 @@
       pg.innerHTML = html;
     }
     function goPage(p) {
-      const perPage = getVendasPerPage();
-      const pages = Math.ceil(filtered.length / perPage);
+      const pages = pageMeta.totalPages || 1;
       if (p < 1 || p > pages) return;
-      currentPage = p; renderTable();
+      loadVendasPage(p);
     }
 
     // ═══════════════════════════════════════════════
     // SORT
     // ═══════════════════════════════════════════════
-    let sortKey = 'data';
     function sortVendas(key) {
       if (sortKey === key) sortDir *= -1;
       else { sortKey = key; sortDir = -1; }
-      filtered.sort((a, b) => {
-        const av = key === 'total' ? a[key] : key === 'data' ? a[key].getTime() : String(a[key]).toLowerCase();
-        const bv = key === 'total' ? b[key] : key === 'data' ? b[key].getTime() : String(b[key]).toLowerCase();
-        return av > bv ? sortDir : av < bv ? -sortDir : 0;
-      });
-      renderTable();
+      loadVendasPage(1);
     }
 
     // ═══════════════════════════════════════════════
@@ -1059,7 +1157,7 @@
       if (!v) return;
       currentVendaId = id;
 
-      document.getElementById('dp-id').textContent = v.id;
+      document.getElementById('dp-id').textContent = vendaNumero(v);
       document.getElementById('dp-data').textContent = `${v.dataStr} às ${v.horaStr}`;
 
       // meta badges
@@ -1068,7 +1166,7 @@
       const metodo = getMethodMeta(v.metodo);
       const safeMetodo = escapeHTML(metodo.key);
       document.getElementById('dp-meta').innerHTML = `
-    <span class="status-pill ${safeStatus}">${escapeHTML(statusLabels[v.status])}</span>
+    <span class="status-pill ${safeStatus}">${escapeHTML(statusLabel(v.status))}</span>
     <span class="method-badge ${safeMetodo}"><i class="bi ${escapeHTML(metodo.icon)}"></i>${escapeHTML(metodo.label)}</span>
   `;
       const dpTotal = document.getElementById('dp-total');
@@ -1077,10 +1175,11 @@
 
       // info
       document.getElementById('dp-info').innerHTML = [
+        currentSection === 'pedidos' && v.pedidoId && v.pedidoId !== v.id ? ['Nº venda interno', v.id] : null,
         ['Cliente', v.cliente || 'Venda Balcão'],
         [currentSection === 'pedidos' ? 'Vendedor' : 'Operador', v.operador || '—'],
         ['Data/Hora', (v.dataStr || v.horaStr) ? `${v.dataStr || ''} ${v.horaStr ? 'às ' + v.horaStr : ''}`.trim() : '—'],
-        ['Status', statusLabels[v.status]],
+        ['Status', statusLabel(v.status)],
         ['Método', metodo.label],
         v.estornoMotivo ? ['Motivo estorno', v.estornoMotivo] : null,
       ].filter(Boolean).map(([l, val]) =>
@@ -1110,7 +1209,7 @@
 
       // botão estornar
       const btnEst = document.getElementById('btnEstornar');
-      btnEst.disabled = v.status !== 'concluida';
+      btnEst.disabled = !['concluida', 'faturada'].includes(v.status);
 
       document.getElementById('detailPanel').classList.add('open');
     }
@@ -1157,8 +1256,9 @@
         v.estornoMotivo = motivo;
 
         closeEstornoModal();
-        applyFilters();
-        openDetail(currentVendaId);
+        await refreshVendas(currentPage, false);
+        if (vendas.some(x => x.id === currentVendaId)) openDetail(currentVendaId);
+        else closeDetail();
         showToast(`Venda ${v.id} estornada com sucesso.`);
       } catch (_) {
         showToast('Erro ao estornar. Tente novamente.', 'error');
@@ -1174,20 +1274,23 @@
     function printVendaId(id) {
       const v = vendas.find(x => x.id === id);
       if (!v) return;
-      showToast(`Imprimindo ${v.id}...`);
+      showToast(`Imprimindo ${vendaNumero(v)}...`);
     }
     // ═══════════════════════════════════════════════
     // EXPORT CSV
     // ═══════════════════════════════════════════════
-    function exportCSV() {
-      const header = ['Nº Venda', 'Cliente', 'Qtd Itens', 'Método', 'Subtotal (R$)', 'Desconto (R$)', 'Total (R$)', 'Status', 'Data', 'Hora', currentSection === 'pedidos' ? 'Vendedor' : 'Operador'];
-      const rows = filtered.map(v => [
-        v.id, v.cliente, v.itens.length,
+    async function exportCSV() {
+      const header = [numeroLabel(), 'Cliente', 'Qtd Itens', 'Método', 'Subtotal (R$)', 'Desconto (R$)', 'Total (R$)', 'Status', 'Data', 'Hora', currentSection === 'pedidos' ? 'Vendedor' : 'Operador'];
+      const res = await NexoAuth.apiFetch('/vendas?' + buildVendasQuery(1, false));
+      if (!res.ok) { showToast(res.message || 'Erro ao exportar CSV.', 'error'); return; }
+      const exportRows = (res.data || []).map(normalizeVenda);
+      const rows = exportRows.map(v => [
+        vendaNumero(v), v.cliente, v.itens.length,
         getMethodMeta(v.metodo).label,
         String(v.subtotal || v.total || 0).replace('.', ','),
         String(v.desconto || 0).replace('.', ','),
         String(v.total || 0).replace('.', ','),
-        statusLabels[v.status] || v.status,
+        statusLabel(v.status),
         v.dataStr, v.horaStr, v.operador || ''
       ]);
       const d = new Date();
@@ -1205,7 +1308,8 @@
     init();
 
     window.addEventListener('resize', () => {
-      renderTable();
+      clearTimeout(filterTimer);
+      filterTimer = setTimeout(() => loadVendasPage(1), 200);
     });
 
     // ── Date picker vendas ──
