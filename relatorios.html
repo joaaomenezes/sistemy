@@ -186,6 +186,10 @@
       margin-bottom: 10px;
     }
 
+    .rel-modal-section i {
+      display: none;
+    }
+
     .rel-period-btns {
       display: flex;
       gap: 6px;
@@ -273,6 +277,121 @@
     }
 
     .btn-generate:hover { opacity: .88; }
+
+    .rel-pro-modal,
+    .rel-sales-modal {
+      max-width: 760px !important;
+    }
+
+    .rel-pro-modal .modal-body,
+    .rel-sales-modal .modal-body {
+      display: grid;
+      gap: 14px;
+    }
+
+    .rel-pro-modal .rel-modal-card,
+    .rel-sales-modal .rel-modal-card {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.025);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .rel-pro-modal .rel-modal-section,
+    .rel-sales-modal .rel-modal-section {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .rel-pro-modal .rel-modal-section i,
+    .rel-sales-modal .rel-modal-section i {
+      display: inline-block;
+      color: var(--accent);
+      font-size: 13px;
+    }
+
+    .rel-pro-modal .rel-filters-wrap,
+    .rel-sales-modal .rel-filters-wrap {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .rel-sales-summary {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border: 1px solid rgba(0,200,150,.22);
+      background: rgba(0,200,150,.075);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+
+    .rel-pro-modal .rel-sales-summary,
+    .rel-sales-modal .rel-sales-summary {
+      display: flex;
+    }
+
+    .rel-sales-summary-main {
+      min-width: 0;
+    }
+
+    .rel-sales-summary-kicker {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .rel-sales-summary-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .rel-sales-summary-meta {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .rel-sales-pill {
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(2,28,20,.38);
+      color: var(--sub);
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    @media(max-width:720px) {
+      .rel-pro-modal .rel-filters-wrap,
+      .rel-sales-modal .rel-filters-wrap,
+      .rel-date-row {
+        grid-template-columns: 1fr;
+      }
+
+      .rel-sales-summary {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .rel-sales-summary-meta {
+        justify-content: flex-start;
+      }
+    }
 
     @media(max-width:900px) {
       .rel-grid { grid-template-columns: 1fr 1fr; }
@@ -365,7 +484,7 @@
 
   <!-- MODAL CONFIGURAR RELATÓRIO -->
   <div class="modal-overlay" id="relModalOverlay" onclick="if(event.target===this)closeRelModal()">
-    <div class="modal" style="max-width:520px">
+    <div class="modal" id="relModal" style="max-width:520px">
       <div class="modal-header">
         <div>
           <h2 id="relModalTitle">Gerar Relatório</h2>
@@ -375,36 +494,46 @@
       </div>
       <div class="modal-body">
 
-        <div class="rel-modal-section">Período</div>
-        <div class="rel-period-btns" id="relPeriodBtns">
-          <button class="rel-period-btn" onclick="setRelPeriod(this,'today')">Hoje</button>
-          <button class="rel-period-btn" onclick="setRelPeriod(this,'week')">Esta semana</button>
-          <button class="rel-period-btn active" onclick="setRelPeriod(this,'month')">Este mês</button>
-          <button class="rel-period-btn" onclick="setRelPeriod(this,'quarter')">Trimestre</button>
-          <button class="rel-period-btn" onclick="setRelPeriod(this,'year')">Este ano</button>
-        </div>
-        <div class="rel-date-row">
-          <div>
-            <label class="lbl">De</label>
-            <div class="inp-wrap"><i class="bi bi-calendar pre"></i>
-              <input class="field" type="date" id="rel-dp-start">
-            </div>
+        <div class="rel-sales-summary" id="relSalesSummary">
+          <div class="rel-sales-summary-main">
+            <div class="rel-sales-summary-kicker">Resumo da exportação</div>
+            <div class="rel-sales-summary-title" id="relSalesSummaryTitle">Relatório</div>
           </div>
-          <div>
-            <label class="lbl">Até</label>
-            <div class="inp-wrap"><i class="bi bi-calendar pre"></i>
-              <input class="field" type="date" id="rel-dp-end">
+          <div class="rel-sales-summary-meta" id="relSalesSummaryMeta"></div>
+        </div>
+
+        <div class="rel-modal-card">
+          <div class="rel-modal-section"><i class="bi bi-calendar3"></i><span>Período</span></div>
+          <div class="rel-period-btns" id="relPeriodBtns">
+            <button class="rel-period-btn" onclick="setRelPeriod(this,'today')">Hoje</button>
+            <button class="rel-period-btn" onclick="setRelPeriod(this,'week')">Esta semana</button>
+            <button class="rel-period-btn active" onclick="setRelPeriod(this,'month')">Este mês</button>
+            <button class="rel-period-btn" onclick="setRelPeriod(this,'quarter')">Trimestre</button>
+            <button class="rel-period-btn" onclick="setRelPeriod(this,'year')">Este ano</button>
+          </div>
+          <div class="rel-date-row">
+            <div>
+              <label class="lbl">De</label>
+              <div class="inp-wrap"><i class="bi bi-calendar pre"></i>
+                <input class="field" type="date" id="rel-dp-start">
+              </div>
+            </div>
+            <div>
+              <label class="lbl">Até</label>
+              <div class="inp-wrap"><i class="bi bi-calendar pre"></i>
+                <input class="field" type="date" id="rel-dp-end">
+              </div>
             </div>
           </div>
         </div>
 
-        <div id="relFiltrosExtra" style="display:none">
-          <div class="rel-modal-section" style="margin-top:4px">Filtros</div>
+        <div class="rel-modal-card" id="relFiltrosExtra" style="display:none">
+          <div class="rel-modal-section" style="margin-top:4px"><i class="bi bi-sliders2"></i><span>Filtros</span></div>
           <div class="rel-filters-wrap" id="relFiltrosWrap"></div>
         </div>
 
-        <div style="margin-top:16px">
-          <div class="rel-modal-section">Formato</div>
+        <div class="rel-modal-card">
+          <div class="rel-modal-section"><i class="bi bi-file-earmark-arrow-down"></i><span>Formato</span></div>
           <div class="rel-fmt-row">
             <button class="rel-fmt-btn active" id="fmt-csv" onclick="setFmt('csv')">
               <i class="bi bi-filetype-csv"></i> CSV
@@ -420,10 +549,10 @@
 
       </div>
       <div class="modal-footer">
-        <div style="color:var(--muted);font-size:12px">Os dados são lidos em tempo real.</div>
+        <div style="color:var(--muted);font-size:12px" id="relFooterHint">Os dados são lidos em tempo real.</div>
         <div style="display:flex;gap:10px">
           <button class="btn-sm btn-ghost-sm" onclick="closeRelModal()">Cancelar</button>
-          <button class="btn-generate" onclick="gerarRelatorio()"><i class="bi bi-download"></i> Gerar e Baixar</button>
+          <button class="btn-generate" id="relGenerateBtn" onclick="gerarRelatorio()"><i class="bi bi-download"></i> Gerar e Baixar</button>
         </div>
       </div>
     </div>
@@ -448,6 +577,7 @@
       custos:     [],
       movs:       [],
       categorias: [],
+      clientes:   [],
     };
     let historico  = [];
     let dataLoaded = false;
@@ -484,13 +614,14 @@
     // Carrega todos os dados em paralelo (uma chamada de vendas, separada por tipo)
     async function loadAllData() {
       setStatus('load', 'Carregando dados dos relatórios…');
-      const [prod, vend, fin, cst, mov, cat, hist] = await Promise.all([
+      const [prod, vend, fin, cst, mov, cat, cli, hist] = await Promise.all([
         _fetchList('/produtos'),
         _fetchList('/vendas'),
         _fetchList('/financeiro'),
         _fetchList('/custos'),
         _fetchList('/estoque/movimentacoes'),
         _fetchList('/categorias'),
+        _fetchList('/clientes'),
         _fetchList('/relatorios/historico'),
       ]);
 
@@ -501,6 +632,7 @@
       DATA.custos     = cst.data;
       DATA.movs       = mov.data;
       DATA.categorias = cat.data.map(c => c.nome).filter(Boolean);
+      DATA.clientes   = cli.data;
       historico       = hist.data;
       dataLoaded      = true;
 
@@ -530,8 +662,9 @@
         tags: ['PDV', 'Pedidos'],
         filtros: [
           { id: 'rf-status',  label: 'Status',  opts: ['Todos', 'concluida', 'estornada', 'cancelada'] },
-          { id: 'rf-metodo',  label: 'Método',  opts: ['Todos', 'dinheiro', 'pix', 'credito', 'debito', 'multiplo'] },
           { id: 'rf-fonte',   label: 'Fonte',   opts: ['Todos', 'PDV', 'Pedidos de Venda'] },
+          { id: 'rf-metodo',  label: 'Método',  opts: [] },
+          { id: 'rf-cliente', label: 'Cliente', opts: [] },
         ],
       },
       {
@@ -575,7 +708,13 @@
         icon: 'bi-arrow-left-right', cor: '#a855f7',
         tags: ['Entradas', 'Saídas', 'Ajustes'],
         filtros: [
-          { id: 'rf-tipo-mov', label: 'Tipo', opts: ['Todos', 'entrada', 'saida', 'ajuste', 'transferencia'] },
+          { id: 'rf-tipo-mov', label: 'Tipo', opts: [
+            { value: 'Todos', label: 'Todos' },
+            { value: 'entrada', label: 'Entrada' },
+            { value: 'saida', label: 'Saída' },
+            { value: 'ajuste', label: 'Ajuste' },
+            { value: 'transferencia', label: 'Transferência' },
+          ] },
         ],
       },
       {
@@ -733,9 +872,166 @@
     }
 
     // ── Modal ────────────────────────────────────────────────
+    function escapeHTML(value) {
+      return String(value ?? '').replace(/[&<>"']/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+      }[ch]));
+    }
+
+    function getClienteOptions() {
+      const clientes = DATA.clientes
+        .map(c => ({ id: String(c.id || ''), nome: c.nome || c.razaoSocial || c.name || '' }))
+        .filter(c => c.nome)
+        .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+
+      const vistos = new Set();
+      return [
+        { value: 'Todos', label: 'Todos' },
+        ...clientes.filter(c => {
+          const chave = c.id || c.nome.toLowerCase();
+          if (vistos.has(chave)) return false;
+          vistos.add(chave);
+          return true;
+        }).map(c => ({ value: c.id || c.nome, label: c.nome })),
+      ];
+    }
+
+    const REL_PDV_METHOD_OPTIONS = [
+      { value: 'dinheiro', label: 'Dinheiro' },
+      { value: 'pix', label: 'PIX' },
+      { value: 'credito', label: 'Crédito' },
+      { value: 'debito', label: 'Débito' },
+      { value: 'voucher', label: 'Voucher' },
+      { value: 'fiado', label: 'Fiado' },
+      { value: 'vale', label: 'Vale refeição' },
+      { value: 'split', label: 'Dividido / Outros' },
+    ];
+
+    const REL_PEDIDO_METHOD_OPTIONS = [
+      { value: 'dinheiro', label: 'Dinheiro' },
+      { value: 'pix', label: 'PIX' },
+      { value: 'credito', label: 'Crédito' },
+      { value: 'debito', label: 'Débito' },
+      { value: 'multiplo', label: 'Múltiplo' },
+      { value: 'boleto', label: 'Boleto bancário' },
+      { value: 'duplicata', label: 'Duplicata' },
+      { value: 'transferencia', label: 'Transferência / PIX' },
+      { value: 'cheque', label: 'Cheque' },
+    ];
+
+    function getMetodoOptionsByFonte(fonte) {
+      if (fonte === 'PDV') return [{ value: 'Todos', label: 'Todos' }, ...REL_PDV_METHOD_OPTIONS];
+      if (fonte === 'Pedidos de Venda') return [{ value: 'Todos', label: 'Todos' }, ...REL_PEDIDO_METHOD_OPTIONS];
+
+      const vistos = new Set();
+      const all = [...REL_PDV_METHOD_OPTIONS, ...REL_PEDIDO_METHOD_OPTIONS].filter(opt => {
+        if (vistos.has(opt.value)) return false;
+        vistos.add(opt.value);
+        return true;
+      });
+      return [{ value: 'Todos', label: 'Todos' }, ...all];
+    }
+
+    function updateMetodoOptionsForFonte() {
+      const metodo = document.getElementById('rf-metodo');
+      if (!metodo) return;
+
+      const fonte = document.getElementById('rf-fonte')?.value || 'Todos';
+      const current = metodo.value || 'Todos';
+      const opts = getMetodoOptionsByFonte(fonte);
+      metodo.innerHTML = opts
+        .map(o => `<option value="${escapeHTML(o.value)}">${escapeHTML(o.label)}</option>`)
+        .join('');
+      metodo.value = opts.some(o => o.value === current) ? current : 'Todos';
+    }
+
+    function getSelectText(id) {
+      const el = document.getElementById(id);
+      return el?.selectedOptions?.[0]?.textContent || 'Todos';
+    }
+
+    function updateRelSummary() {
+      const modal = document.getElementById('relModal');
+      if (!modal?.classList.contains('rel-pro-modal')) return;
+
+      const dr = getDateRange();
+      const fmtLabel = currentFmt === 'excel' ? 'Excel' : currentFmt.toUpperCase();
+      let pills = [dr.label, fmtLabel];
+
+      if (currentReport?.id === 'vendas-historico') {
+        const status = getSelectText('rf-status');
+        const metodo = getSelectText('rf-metodo');
+        const fonte = getSelectText('rf-fonte');
+        const cliente = getSelectText('rf-cliente');
+        pills = [
+          dr.label,
+          cliente !== 'Todos' ? cliente : 'Todos os clientes',
+          fonte,
+          status !== 'Todos' ? status : 'Todos os status',
+          metodo !== 'Todos' ? metodo : 'Todos os métodos',
+          fmtLabel,
+        ];
+      }
+
+      if (currentReport?.id === 'estoque-movs') {
+        const tipo = getSelectText('rf-tipo-mov');
+        pills = [
+          dr.label,
+          tipo !== 'Todos' ? tipo : 'Todas as movimentações',
+          fmtLabel,
+        ];
+      }
+
+      document.getElementById('relSalesSummaryTitle').textContent = currentReport?.titulo || 'Relatório';
+      document.getElementById('relSalesSummaryMeta').innerHTML = pills.map(item => `<span class="rel-sales-pill">${escapeHTML(item)}</span>`).join('');
+
+      const btn = document.getElementById('relGenerateBtn');
+      if (btn) btn.innerHTML = `<i class="bi bi-download"></i> Baixar ${fmtLabel}`;
+    }
+
+    function setRelModalMode() {
+      const modal = document.getElementById('relModal');
+      const footerHint = document.getElementById('relFooterHint');
+      const isSalesHistory = currentReport?.id === 'vendas-historico';
+      const isStockMovs = currentReport?.id === 'estoque-movs';
+      const isProModal = isSalesHistory || isStockMovs;
+      modal?.classList.toggle('rel-pro-modal', isProModal);
+      modal?.classList.toggle('rel-sales-modal', isSalesHistory);
+
+      if (footerHint) {
+        footerHint.textContent = isSalesHistory
+          ? 'A exportação respeita período, cliente, status, método e fonte selecionados.'
+          : isStockMovs
+            ? 'A exportação respeita período e tipo de movimentação selecionados.'
+            : 'Os dados são lidos em tempo real.';
+      }
+
+      if (!isProModal) {
+        const btn = document.getElementById('relGenerateBtn');
+        if (btn) btn.innerHTML = '<i class="bi bi-download"></i> Gerar e Baixar';
+      }
+    }
+
+    function bindRelModalSummary() {
+      ['rel-dp-start', 'rel-dp-end', 'rf-status', 'rf-metodo', 'rf-fonte', 'rf-cliente', 'rf-tipo-mov'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.onchange = updateRelSummary;
+      });
+      const fonte = document.getElementById('rf-fonte');
+      if (fonte) {
+        fonte.onchange = () => {
+          updateMetodoOptionsForFonte();
+          updateRelSummary();
+        };
+      }
+      updateMetodoOptionsForFonte();
+      updateRelSummary();
+    }
+
     function openRelModal(id) {
       currentReport = REPORTS.find(r => r.id === id);
       if (!currentReport) return;
+      setRelModalMode();
 
       document.getElementById('relModalTitle').textContent = currentReport.titulo;
 
@@ -755,13 +1051,23 @@
       if (currentReport.filtros.length) {
         wrap.innerHTML = currentReport.filtros.map(f => {
           // Categorias de estoque vêm do cache carregado via API (dinâmicas)
-          const opts = f.id === 'rf-cat-est' ? ['Todas', ...DATA.categorias] : f.opts;
+          const opts = f.id === 'rf-cat-est'
+            ? ['Todas', ...DATA.categorias]
+            : f.id === 'rf-cliente'
+              ? getClienteOptions()
+              : f.id === 'rf-metodo'
+                ? getMetodoOptionsByFonte(document.getElementById('rf-fonte')?.value || 'Todos')
+              : f.opts;
           return `
           <div class="form-group">
             <label class="lbl">${f.label}</label>
             <div class="inp-wrap"><i class="bi bi-funnel pre"></i>
               <select class="field" id="${f.id}">
-                ${opts.map(o => `<option value="${o}">${o}</option>`).join('')}
+                ${opts.map(o => {
+                  const value = typeof o === 'object' ? o.value : o;
+                  const label = typeof o === 'object' ? o.label : o;
+                  return `<option value="${escapeHTML(value)}">${escapeHTML(label)}</option>`;
+                }).join('')}
               </select>
             </div>
           </div>`;
@@ -773,7 +1079,10 @@
       }
 
       // reset formato
+      currentFmt = 'csv';
+      document.querySelectorAll('.rel-fmt-btn').forEach(b => b.classList.remove('active'));
       document.getElementById('fmt-csv').classList.add('active');
+      bindRelModalSummary();
 
       document.getElementById('relModalOverlay').classList.add('open');
     }
@@ -794,6 +1103,7 @@
       if (tipo === 'year')    { ini = new Date(hoje.getFullYear(), 0, 1); }
       document.getElementById('rel-dp-start').value = ini.toISOString().slice(0, 10);
       document.getElementById('rel-dp-end').value   = hoje.toISOString().slice(0, 10);
+      updateRelSummary();
     }
 
     let currentFmt = 'csv';
@@ -802,6 +1112,7 @@
       currentFmt = fmt;
       document.querySelectorAll('.rel-fmt-btn').forEach(b => b.classList.remove('active'));
       document.getElementById(`fmt-${fmt}`)?.classList.add('active');
+      updateRelSummary();
     }
 
     function downloadData(filename, rows) {
@@ -893,6 +1204,41 @@
       return '—';
     }
 
+    function getVendaClienteId(venda) {
+      return String(
+        venda.clienteId ||
+        venda.cliente_id ||
+        (typeof venda.cliente === 'object' ? venda.cliente?.id : '') ||
+        ''
+      );
+    }
+
+    function getVendaClienteNome(venda) {
+      if (typeof venda.cliente === 'object') {
+        return venda.cliente?.nome || venda.cliente?.razaoSocial || venda.cliente?.name || '';
+      }
+      return venda.cliente || venda.clienteNome || venda.nomeCliente || '';
+    }
+
+    function getClienteNomeById(id) {
+      const cliente = DATA.clientes.find(c => String(c.id || '') === String(id || ''));
+      return cliente ? (cliente.nome || cliente.razaoSocial || cliente.name || '') : '';
+    }
+
+    function getVendaMetodoKey(venda) {
+      const raw = String(venda.metodo || '').trim().toLowerCase();
+      const n = raw.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      if (['dinheiro', 'pix', 'credito', 'debito', 'multiplo', 'voucher', 'fiado', 'vale', 'split', 'boleto', 'duplicata', 'transferencia', 'cheque'].includes(n)) return n;
+      if (n.includes('fiado')) return 'fiado';
+      if (n.includes('boleto')) return 'boleto';
+      if (n.includes('duplicata')) return 'duplicata';
+      if (n.includes('cheque')) return 'cheque';
+      if (n.includes('transfer') || n.includes('pix')) return 'transferencia';
+      if (n.includes('credito') || n.includes('cartao')) return 'credito';
+      if (n.includes('debito')) return 'debito';
+      return n;
+    }
+
     function gerarRelatorio() {
       if (!currentReport) return;
       if (!dataLoaded) { showToast('Aguarde o carregamento dos dados.', 'warning'); return; }
@@ -905,12 +1251,22 @@
           const filtroStatus = document.getElementById('rf-status')?.value || 'Todos';
           const filtroMetodo = document.getElementById('rf-metodo')?.value || 'Todos';
           const filtroFonte  = document.getElementById('rf-fonte')?.value  || 'Todos';
+          const filtroCliente = document.getElementById('rf-cliente')?.value || 'Todos';
           let vendas = [];
-          if (filtroFonte !== 'Pedidos de Venda') vendas = vendas.concat(DATA.pdvVendas.map(v=>({...v,fonte:'PDV'})));
-          if (filtroFonte !== 'PDV')              vendas = vendas.concat(DATA.pedVendas.map(v=>({...v,fonte:'Pedidos'})));
+          if (filtroFonte !== 'Pedidos de Venda') vendas = vendas.concat(DATA.pdvVendas.map(v=>({...v,cliente:getVendaClienteNome(v)||v.cliente,fonte:'PDV'})));
+          if (filtroFonte !== 'PDV')              vendas = vendas.concat(DATA.pedVendas.map(v=>({...v,cliente:getVendaClienteNome(v)||v.cliente,fonte:'Pedidos'})));
           vendas = filterByPeriod(vendas, dr);
           if (filtroStatus !== 'Todos') vendas = vendas.filter(v => v.status === filtroStatus);
-          if (filtroMetodo !== 'Todos') vendas = vendas.filter(v => v.metodo === filtroMetodo);
+          if (filtroMetodo !== 'Todos') vendas = vendas.filter(v => getVendaMetodoKey(v) === filtroMetodo);
+          if (filtroCliente !== 'Todos') {
+            const clienteFiltroNome = getClienteNomeById(filtroCliente);
+            vendas = vendas.filter(v => {
+              const vendaClienteNome = getVendaClienteNome(v);
+              return getVendaClienteId(v) === filtroCliente ||
+                vendaClienteNome === filtroCliente ||
+                (!!clienteFiltroNome && vendaClienteNome === clienteFiltroNome);
+            });
+          }
           const h = ['Nº Venda','Cliente','Operador','Método','Subtotal','Desconto','Total','Status','Data','Hora','Fonte'];
           downloadData(`vendas_historico_${today}.csv`, [h, ...vendas.map(v=>[v.id,v.cliente||'Venda Balcão',v.operador,v.metodo,fmtVal(v.subtotal),fmtVal(v.desconto),fmtVal(v.total),v.status,v.dataStr,v.horaStr,v.fonte])]);
           break;
