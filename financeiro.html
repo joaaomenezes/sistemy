@@ -1019,6 +1019,15 @@ transition: border-color .15s;
     .cc-confirm-text p  { font-size:13px; color:var(--muted); }
     .btn-del { padding:10px 20px; border-radius:9px; border:none; background:var(--danger); color:#fff; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:7px; transition:opacity .18s; }
     .btn-del:hover { opacity:.85; }
+    .btn-receber { padding:10px 20px; border-radius:9px; border:none; background:var(--accent); color:#04130d; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:7px; transition:opacity .18s; }
+    .btn-receber:hover { opacity:.85; }
+    .btn-receber-sm { padding:5px 12px; border-radius:7px; border:1px solid var(--accent); background:transparent; color:var(--accent); font-size:12px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all .15s; white-space:nowrap; }
+    .btn-receber-sm:hover { background:var(--accent); color:#04130d; }
+    .rc-confirm-icon { width:42px; height:42px; border-radius:10px; background:rgba(0,200,150,.12); display:flex; align-items:center; justify-content:center; font-size:20px; color:var(--accent); flex-shrink:0; }
+    .rc-confirm-row { display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-bottom:1px dashed var(--border, rgba(255,255,255,.08)); }
+    .rc-confirm-row:last-child { border-bottom:none; }
+    .rc-confirm-row span { color:var(--muted); }
+    .rc-confirm-row strong { color:var(--text); font-weight:700; }
 
     /* ── Tipo tabs (Todos/Custos/Despesas) ── */
     .custos-tipo-tabs { display:flex; gap:6px; margin-bottom:16px; }
@@ -1863,6 +1872,29 @@ transition: border-color .15s;
     </div>
   </div>
 
+  <!-- MODAL CONFIRMAR RECEBIMENTO -->
+  <div class="modal-overlay" id="receberOverlay" onclick="if(event.target===this)closeReceberModal()">
+    <div class="modal" style="max-width:420px">
+      <div class="cc-confirm-body">
+        <div class="rc-confirm-icon"><i class="bi bi-cash-coin"></i></div>
+        <div class="cc-confirm-text" style="flex:1">
+          <h3>Confirmar recebimento</h3>
+          <p>O valor será registrado como receita recebida e entra no saldo.</p>
+          <div style="margin-top:14px">
+            <div class="rc-confirm-row"><span>Cliente</span><strong id="rcCliente">—</strong></div>
+            <div class="rc-confirm-row"><span>Descrição</span><strong id="rcDesc">—</strong></div>
+            <div class="rc-confirm-row"><span>Valor</span><strong id="rcValor" style="color:var(--accent)">—</strong></div>
+            <div class="rc-confirm-row"><span>Recebido em</span><strong id="rcData">—</strong></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content:flex-end;gap:10px">
+        <button class="btn-cancel" onclick="closeReceberModal()">Cancelar</button>
+        <button class="btn-receber" id="btnConfirmReceber" onclick="confirmarReceber()"><i class="bi bi-check2"></i> Confirmar recebimento</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL LANÇAMENTO -->
   <div class="modal-overlay" id="modalOverlay" onclick="handleOverlay(event)">
     <div class="modal" style="max-width:520px">
@@ -2077,7 +2109,10 @@ transition: border-color .15s;
       lancamentos.forEach(l => {
         if (l.status === 'cancelado' || l.status === 'estornado') return;
         const v = l.valor || 0;
-        const d = _parseLancDate(l);
+        // Pago conta no mês do recebimento (pagoEm); pendente, no vencimento.
+        const d = (l.status === 'pago' && l.pagoEm)
+          ? _parseLancDate({ data: l.pagoEm })
+          : _parseLancDate(l);
         const isMes = d && (d.getFullYear() * 100 + d.getMonth()) === mesAtual;
         if (l.tipo === 'receita') {
           if (l.status === 'pago' && isMes) receitas += v;
@@ -2462,7 +2497,10 @@ transition: border-color .15s;
               <td class="u-fw-500">${escapeHTML(l.parte || l.descricao || '—')}</td>
               <td class="u-muted">${escapeHTML(l.descricao || '')}</td>
               <td class="${st === 'pago' ? '' : st === 'vencida' ? 'val-negativo' : 'val-positivo'}" style="${st === 'pago' ? 'color:var(--muted)' : ''}">R$ ${fmt(l.valor || 0)}</td>
-              <td>${pillHtml(st)}</td><td></td>
+              <td>${pillHtml(st)}</td>
+              <td style="text-align:right">${st !== 'pago'
+                ? `<button class="btn-sm btn-receber-sm" onclick="openReceberModal('${l.id}')"><i class="bi bi-check2"></i> Receber</button>`
+                : ''}</td>
             </tr>`; }).join('')
           : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Nenhuma conta a receber</td></tr>';
         _renderFinDetailPagination('receber', rows.length, perPage);
@@ -2613,7 +2651,10 @@ transition: border-color .15s;
     }
 
     function _dreInPeriod(l, start, end) {
-      const d = _parseLancDate(l);
+      // Pago entra no período pela data de recebimento/pagamento (pagoEm).
+      const d = (l.status === 'pago' && l.pagoEm)
+        ? _parseLancDate({ data: l.pagoEm })
+        : _parseLancDate(l);
       return d && d >= start && d <= end;
     }
 
@@ -3436,6 +3477,53 @@ transition: border-color .15s;
     function closeCcConfirm() { document.getElementById('ccConfirmOverlay').classList.remove('open'); ccConfirmCb=null; ccSerieCb=null; }
     function doCcConfirm()    { if(ccConfirmCb) ccConfirmCb(); closeCcConfirm(); }
     function doDelSerie()     { if(ccSerieCb)   ccSerieCb();   closeCcConfirm(); }
+
+    // ── Receber conta (baixa de lançamento avencer/vencida → pago) ──
+    let _receberId = null;
+
+    function openReceberModal(id) {
+      const l = lancamentos.find(x => x.id === id);
+      if (!l) return;
+      _receberId = id;
+      const hojeBR = new Date().toLocaleDateString('pt-BR');
+      document.getElementById('rcCliente').textContent = l.parte || l.descricao || '—';
+      document.getElementById('rcDesc').textContent    = l.descricao || '—';
+      document.getElementById('rcValor').textContent   = `R$ ${fmt(l.valor || 0)}`;
+      document.getElementById('rcData').textContent    = hojeBR;
+      document.getElementById('receberOverlay').classList.add('open');
+    }
+
+    function closeReceberModal() {
+      document.getElementById('receberOverlay').classList.remove('open');
+      _receberId = null;
+    }
+
+    async function confirmarReceber() {
+      if (!_receberId) return;
+      const l = lancamentos.find(x => x.id === _receberId);
+      if (!l) { closeReceberModal(); return; }
+
+      const btn = document.getElementById('btnConfirmReceber');
+      btn.disabled = true;
+      const hoje = new Date().toISOString().slice(0, 10);
+      const res = await NexoAuth.apiFetch(`/financeiro/${_receberId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ status: 'pago', pagoEm: hoje }),
+      });
+      btn.disabled = false;
+
+      if (!res.ok) { showToast(res.message || 'Erro ao registrar recebimento.', 'error'); return; }
+
+      // Atualiza estado local + saldo histórico (endpoint /resumo soma só pago)
+      Object.assign(l, { status: 'pago', pagoEm: hoje });
+      const rResumo = await NexoAuth.apiFetch('/financeiro/resumo');
+      if (rResumo.ok) finResumo = rResumo.data;
+
+      const valorTxt = fmt(l.valor || 0);
+      closeReceberModal();
+      renderKPIs(); renderDonut(); renderTabelas();
+      showToast(`Recebimento de R$ ${valorTxt} confirmado.`, 'success');
+    }
 
     function deleteCusto(id) {
       const c=custosData.find(x=>x.id===id); if (!c) return;

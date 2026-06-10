@@ -1367,6 +1367,73 @@
       border-color: var(--muted);
     }
 
+    /* ══ MODAL NOVO CLIENTE (fiado) ══ */
+    .nc-modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 400px;
+      transform: translateY(16px) scale(.97);
+      transition: transform .25s cubic-bezier(.34,1.2,.64,1);
+      overflow: hidden;
+    }
+    .modal-overlay.open .nc-modal {
+      transform: none;
+    }
+    .nc-header {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nc-header h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0;
+    }
+    .nc-header p {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 2px 0 0;
+    }
+    .nc-body {
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .nc-field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+    .nc-field input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+      padding: 9px 12px;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color .15s;
+    }
+    .nc-field input:focus { border-color: var(--accent); }
+    .nc-field input.err   { border-color: #ef4444; }
+    .nc-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
     /* body scroll */
     .pay-body {
       padding: 18px 22px;
@@ -6923,23 +6990,10 @@
                 <div class="fiado-empty">Carregando clientes...</div>
               </div>
 
-              <h3 class="fiado-block-title">Ou venda fiada rápida</h3>
               <div class="fiado-quick-grid">
-                <div class="fiado-field full">
-                  <label for="fiadoNomeInput">Nome do cliente</label>
-                  <input id="fiadoNomeInput" type="text" placeholder="Ex.: Consumidor Final" oninput="onFiadoQuickInput()">
-                </div>
                 <div class="fiado-field">
-                  <label for="fiadoLimiteInput">Limite de crédito</label>
-                  <input id="fiadoLimiteInput" type="text" value="R$ 100,00" inputmode="decimal" oninput="onFiadoQuickInput()">
-                </div>
-                <div class="fiado-field">
-                  <label for="fiadoVencInput">Vencimento</label>
+                  <label for="fiadoVencInput">Vencimento *</label>
                   <input id="fiadoVencInput" type="date" onchange="updateFiadoSummary()">
-                </div>
-                <div class="fiado-field full">
-                  <label for="fiadoObsInput">Observação (opcional)</label>
-                  <textarea id="fiadoObsInput" placeholder="Ex.: Pagamento na próxima semana" oninput="updateFiadoSummary()"></textarea>
                 </div>
               </div>
             </div>
@@ -6951,7 +7005,7 @@
               </div>
               <div class="fiado-credit-row">
                 <span>Limite de crédito</span>
-                <strong class="good" id="fiadoResumoLimite">R$ 100,00</strong>
+                <strong class="good" id="fiadoResumoLimite">R$ —</strong>
               </div>
               <div class="fiado-credit-row">
                 <span>Total da compra</span>
@@ -6959,11 +7013,7 @@
               </div>
               <div class="fiado-credit-row">
                 <span>Após esta compra</span>
-                <strong class="good" id="fiadoResumoDepois">R$ 100,00</strong>
-              </div>
-              <div class="fiado-credit-row">
-                <span>Vencimento</span>
-                <strong class="good" id="fiadoResumoVenc">--/--/----</strong>
+                <strong class="good" id="fiadoResumoDepois">R$ —</strong>
               </div>
             </aside>
           </div>
@@ -7694,6 +7744,42 @@
     </div>
   </div>
 
+  <!-- MODAL NOVO CLIENTE (fiado) -->
+  <div class="modal-overlay" id="novoClienteOverlay" onclick="if(event.target===this)closeNovoClienteModal()">
+    <div class="nc-modal">
+      <div class="nc-header">
+        <div>
+          <h3><i class="bi bi-person-plus" style="color:var(--accent);margin-right:6px"></i>Novo cliente</h3>
+          <p>Cadastro rápido para venda fiado</p>
+        </div>
+        <div class="modal-close" onclick="closeNovoClienteModal()"><i class="bi bi-x-lg"></i></div>
+      </div>
+      <div class="nc-body">
+        <div class="nc-field">
+          <label for="ncNome">Nome completo *</label>
+          <input id="ncNome" type="text" placeholder="Ex.: João Silva" autocomplete="off"
+            onkeydown="if(event.key==='Enter')document.getElementById('ncTel').focus()">
+        </div>
+        <div class="nc-field">
+          <label for="ncTel">Telefone *</label>
+          <input id="ncTel" type="tel" placeholder="(00) 00000-0000" autocomplete="off"
+            onkeydown="if(event.key==='Enter')document.getElementById('ncCpf').focus()">
+        </div>
+        <div class="nc-field">
+          <label for="ncCpf">CPF / CNPJ <span style="color:var(--muted);font-weight:400">(opcional)</span></label>
+          <input id="ncCpf" type="text" placeholder="000.000.000-00" autocomplete="off"
+            onkeydown="if(event.key==='Enter')criarClienteFiado()">
+        </div>
+      </div>
+      <div class="nc-footer">
+        <button class="btn-cancel-pay" onclick="closeNovoClienteModal()">Cancelar</button>
+        <button class="btn-confirm-pay" onclick="criarClienteFiado()">
+          <i class="bi bi-person-check"></i> Cadastrar e selecionar
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL RÓTULO SUSPENSÃO -->
   <div class="modal-overlay" id="suspendLabelOverlay" onclick="if(event.target===this)closeSuspendLabelModal()">
     <div class="suspend-label-modal">
@@ -8121,7 +8207,10 @@
 
         let count = 0, total = 0;
         hojeVendas.forEach(v => {
-          if (v.status !== 'estornada') { count++; total += v.total || 0; }
+          if (v.status !== 'estornada') {
+            count++;
+            if ((v.metodo || '').toLowerCase() !== 'fiado') total += v.total || 0;
+          }
         });
         todayStats = { count, total };
 
@@ -8939,24 +9028,17 @@
     }
 
     function ensureFiadoDefaults() {
-      const limite = document.getElementById('fiadoLimiteInput');
       const venc = document.getElementById('fiadoVencInput');
-      if (limite && !limite.value.trim()) limite.value = 'R$ 100,00';
       if (venc && !venc.value) venc.value = defaultFiadoDueDate();
     }
 
     function resetFiadoForm() {
       selectedFiadoCliente = null;
       const search = document.getElementById('fiadoSearchInput');
-      const nome = document.getElementById('fiadoNomeInput');
-      const limite = document.getElementById('fiadoLimiteInput');
-      const venc = document.getElementById('fiadoVencInput');
-      const obs = document.getElementById('fiadoObsInput');
+      const venc   = document.getElementById('fiadoVencInput');
       if (search) search.value = '';
-      if (nome) nome.value = '';
-      if (limite) limite.value = 'R$ 100,00';
       if (venc) venc.value = defaultFiadoDueDate();
-      if (obs) obs.value = '';
+      closeNovoClienteModal();
       updateFiadoSummary();
     }
 
@@ -8969,7 +9051,7 @@
       if (list) list.innerHTML = '<div class="fiado-empty">Carregando clientes...</div>';
       try {
         const r = await NexoAuth.apiFetch('/clientes?secao=clientes&status=ativo');
-        fiadoClientes = r.ok ? (r.data || []).slice(0, 20) : [];
+        fiadoClientes = r.ok ? (r.data || []).slice(0, 3) : [];
         fiadoClientesLoaded = true;
       } catch (_) {
         fiadoClientes = [];
@@ -8986,21 +9068,22 @@
         .slice(0, 5);
 
       if (!filtered.length) {
-        list.innerHTML = '<div class="fiado-empty">Nenhum cliente encontrado. Use a venda fiada rápida abaixo.</div>';
+        list.innerHTML = '<div class="fiado-empty">Nenhum cliente encontrado. Clique em <strong>+ Novo cliente</strong> para cadastrar.</div>';
         return;
       }
 
       list.innerHTML = filtered.map(c => {
-        const limite = Number(c.limite || 100) || 100;
+        const limite = Number(c.limite) || 0;
+        const limiteLabel = limite > 0 ? `R$ ${fmt(limite)}` : 'Sem limite';
         const selected = selectedFiadoCliente?.id === c.id ? ' selected' : '';
         return `
           <div class="fiado-client${selected}" onclick="selectFiadoCliente('${c.id}')">
             <div class="fiado-avatar"><i class="bi bi-person"></i></div>
             <div>
               <div class="fiado-client-name">${escapeHtml(c.nome || 'Cliente')}</div>
-              <div class="fiado-client-doc">${escapeHtml(c.doc || 'CPF nao informado')}</div>
+              <div class="fiado-client-doc">${escapeHtml(c.doc || 'CPF não informado')}</div>
             </div>
-            <div class="fiado-client-limit">Limite disponivel: <strong>R$ ${fmt(limite)}</strong></div>
+            <div class="fiado-client-limit">Limite: <strong>${limiteLabel}</strong></div>
             <i class="bi bi-chevron-right"></i>
           </div>
         `;
@@ -9009,44 +9092,69 @@
 
     function selectFiadoCliente(id) {
       selectedFiadoCliente = fiadoClientes.find(c => c.id === id) || null;
-      const nome = document.getElementById('fiadoNomeInput');
-      const limite = document.getElementById('fiadoLimiteInput');
-      if (nome) nome.value = '';
-      if (limite && selectedFiadoCliente) limite.value = `R$ ${fmt(Number(selectedFiadoCliente.limite || 100) || 100)}`;
       renderFiadoClientes();
       updateFiadoSummary();
     }
 
     function focusFiadoQuickClient() {
-      selectedFiadoCliente = null;
-      renderFiadoClientes();
-      document.getElementById('fiadoNomeInput')?.focus();
-      updateFiadoSummary();
+      openNovoClienteModal();
     }
 
-    function onFiadoQuickInput() {
-      selectedFiadoCliente = null;
+    function openNovoClienteModal() {
+      document.getElementById('ncNome').value = '';
+      document.getElementById('ncTel').value  = '';
+      document.getElementById('ncCpf').value  = '';
+      ['ncNome','ncTel','ncCpf'].forEach(id => document.getElementById(id).classList.remove('err'));
+      document.getElementById('novoClienteOverlay').classList.add('open');
+      setTimeout(() => document.getElementById('ncNome').focus(), 80);
+    }
+
+    function closeNovoClienteModal() {
+      document.getElementById('novoClienteOverlay').classList.remove('open');
+    }
+
+    async function criarClienteFiado() {
+      const nomeEl = document.getElementById('ncNome');
+      const telEl  = document.getElementById('ncTel');
+      const nome = nomeEl.value.trim();
+      const tel  = telEl.value.trim();
+      const doc  = document.getElementById('ncCpf').value.trim() || null;
+
+      let ok = true;
+      if (!nome) { nomeEl.classList.add('err'); ok = false; }
+      else nomeEl.classList.remove('err');
+      if (!tel)  { telEl.classList.add('err');  ok = false; }
+      else telEl.classList.remove('err');
+      if (!ok) { NexoToast.warning('Preencha os campos obrigatórios.'); return; }
+
+      const r = await NexoAuth.apiFetch('/clientes', {
+        method: 'POST',
+        body: JSON.stringify({ nome, tel, doc, tipo: 'pf', secao: 'clientes' }),
+      });
+      if (!r.ok) { NexoToast.error(r.message || 'Erro ao cadastrar cliente.'); return; }
+
+      fiadoClientes.unshift(r.data);
+      selectedFiadoCliente = r.data;
+      closeNovoClienteModal();
       renderFiadoClientes();
       updateFiadoSummary();
+      NexoToast.success(`Cliente ${r.data.nome} cadastrado.`);
     }
 
     function getFiadoData() {
-      const total = getTotal();
-      const quickName = document.getElementById('fiadoNomeInput')?.value.trim() || '';
-      const clienteNome = selectedFiadoCliente?.nome || quickName;
-      const limite = selectedFiadoCliente
-        ? (Number(selectedFiadoCliente.limite || 100) || 100)
-        : parseMoneyInput(document.getElementById('fiadoLimiteInput')?.value || '100');
-      const vencimento = document.getElementById('fiadoVencInput')?.value || defaultFiadoDueDate();
-      const obs = document.getElementById('fiadoObsInput')?.value.trim() || '';
+      const total       = getTotal();
+      const clienteNome = selectedFiadoCliente?.nome || '';
+      const limite      = Number(selectedFiadoCliente?.limite || 0);
+      const vencimento  = document.getElementById('fiadoVencInput')?.value || defaultFiadoDueDate();
+      // Se limite = 0, cliente não tem teto configurado → sem restrição (depois = 0)
+      const depois = limite > 0 ? limite - total : 0;
       return {
         clienteId: selectedFiadoCliente?.id || null,
         clienteNome,
         limite,
         total,
-        depois: limite - total,
+        depois,
         vencimento,
-        obs,
       };
     }
 
@@ -9056,7 +9164,7 @@
         const el = document.getElementById(id);
         if (el) el.textContent = value;
       };
-      setText('fiadoResumoLimite', `R$ ${fmt(data.limite)}`);
+      setText('fiadoResumoLimite', data.limite > 0 ? `R$ ${fmt(data.limite)}` : 'Sem limite');
       setText('fiadoResumoTotal', `R$ ${fmt(data.total)}`);
       setText('fiadoResumoDepois', `R$ ${fmt(Math.abs(data.depois))}`);
       setText('fiadoResumoVenc', formatDateBR(data.vencimento));
@@ -9774,14 +9882,18 @@
       }
       if (selectedMethod === 'fiado') {
         const fiado = getFiadoData();
-        if (!fiado.clienteNome) {
-          NexoToast.warning('Selecione um cliente ou informe o nome para vender fiado.');
-          document.getElementById('fiadoNomeInput')?.focus();
+        if (!fiado.clienteId) {
+          NexoToast.warning('Para venda fiado, selecione ou cadastre um cliente.');
+          document.getElementById('fiadoSearchInput')?.focus();
+          return;
+        }
+        if (!fiado.vencimento) {
+          NexoToast.warning('Informe o vencimento do fiado.');
+          document.getElementById('fiadoVencInput')?.focus();
           return;
         }
         if (fiado.depois < 0) {
           NexoToast.warning('Limite de crédito insuficiente para esta venda.');
-          document.getElementById('fiadoLimiteInput')?.focus();
           return;
         }
       }
@@ -9981,8 +10093,10 @@
       const operadorId = session?.user?.id || null;
       const now = new Date();
 
+      const _isFiado = selectedMethod === 'fiado';
       const payload = {
         cliente: sale.client || 'Venda Balcão',
+        ...(_isFiado && sale.fiado?.clienteId ? { clienteId: sale.fiado.clienteId } : {}),
         operador,
         operadorId,
         metodo: selectedMethod || 'dinheiro',
@@ -10001,6 +10115,13 @@
         tipo: 'pdv',
         dataStr: now.toLocaleDateString('pt-BR'),
         horaStr: sale.time || now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+        ...(_isFiado && sale.fiado ? {
+          vencimentoFiado: sale.fiado.vencimento,
+          fiado: {
+            clienteId:  sale.fiado.clienteId,
+            vencimento: sale.fiado.vencimento,
+          },
+        } : {}),
       };
 
       const r = await NexoAuth.apiFetch('/vendas', { method: 'POST', body: JSON.stringify(payload) });
@@ -10011,7 +10132,7 @@
 
       salesHistory.unshift(sale);
       todayStats.count++;
-      todayStats.total += total;
+      if (selectedMethod !== 'fiado') todayStats.total += total;
       updateStats();
       cupomAtivo = null;
       updateCupomBadge();
@@ -10089,7 +10210,7 @@
         _mostrarSucesso(sale, total);
         clearCart();
       } catch (err) {
-        NexoToast.error('Erro ao registrar venda. Tente novamente.');
+        NexoToast.error(err.message || 'Erro ao registrar venda. Tente novamente.');
       } finally {
         if (btn) btn.disabled = false;
       }
@@ -10204,7 +10325,8 @@
             sale.estornada = true;
             const val = parseFloat(String(sale.total).replace(/\./g, '').replace(',', '.')) || 0;
             todayStats.count = Math.max(0, todayStats.count - 1);
-            todayStats.total = Math.max(0, todayStats.total - val);
+            if ((sale.method || '').toLowerCase() !== 'fiado')
+              todayStats.total = Math.max(0, todayStats.total - val);
 
             // Reverte estoque local
             (sale.cartSnapshot || []).forEach(item => {
