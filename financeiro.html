@@ -2073,21 +2073,25 @@ transition: border-color .15s;
     function buildKPIs() {
       const now = new Date();
       const mesAtual = now.getFullYear() * 100 + now.getMonth();
-      let receitas = 0, despesas = 0, saldoRec = 0, saldoDes = 0, pendRec = 0, pendDes = 0;
+      let receitas = 0, despesas = 0, pendRec = 0, pendDes = 0;
       lancamentos.forEach(l => {
         if (l.status === 'cancelado' || l.status === 'estornado') return;
         const v = l.valor || 0;
         const d = _parseLancDate(l);
         const isMes = d && (d.getFullYear() * 100 + d.getMonth()) === mesAtual;
         if (l.tipo === 'receita') {
-          if (l.status === 'pago') { saldoRec += v; if (isMes) receitas += v; }
-          else pendRec += v;
+          if (l.status === 'pago' && isMes) receitas += v;
+          else if (l.status !== 'pago') pendRec += v;
         } else {
-          if (l.status === 'pago') { saldoDes += v; if (isMes) despesas += v; }
-          else pendDes += v;
+          if (l.status === 'pago' && isMes) despesas += v;
+          else if (l.status !== 'pago') pendDes += v;
         }
       });
-      return { receitas, despesas, resultado: receitas - despesas, saldo: saldoRec - saldoDes, fluxo: pendRec - pendDes };
+      // Saldo histórico vem do endpoint /resumo (todos os lançamentos pagos)
+      const saldo = finResumo
+        ? finResumo.receitas - finResumo.despesas
+        : lancamentos.filter(l => l.status === 'pago').reduce((a, l) => a + (l.tipo === 'receita' ? l.valor : -l.valor), 0);
+      return { receitas, despesas, resultado: receitas - despesas, saldo, fluxo: pendRec - pendDes };
     }
 
     function buildChartData(period) {
@@ -2153,6 +2157,7 @@ transition: border-color .15s;
     }
 
     let lancamentos = [];
+    let finResumo   = null; // totais all-time de /financeiro/resumo
 
     // Deriva RECEBER e PAGAR a partir dos lançamentos reais
     function buildReceberPagar() {
@@ -2954,14 +2959,16 @@ transition: border-color .15s;
         const el = document.getElementById(id);
         if (el) el.innerHTML = NexoSkeleton.tableRows(6, 5);
       });
-      const [rLanc, rCustos, rProd, rMovs] = await Promise.all([
+      const [rLanc, rResumo, rCustos, rProd, rMovs] = await Promise.all([
         NexoAuth.apiFetch('/financeiro'),
+        NexoAuth.apiFetch('/financeiro/resumo'),
         NexoAuth.apiFetch('/custos'),
         NexoAuth.apiFetch('/produtos'),
         NexoAuth.apiFetch('/estoque/movimentacoes'),
       ]);
-      if (rLanc.ok)   lancamentos  = rLanc.data;
-      if (rCustos.ok) custosData   = rCustos.data;
+      if (rLanc.ok)   lancamentos   = rLanc.data;
+      if (rResumo.ok) finResumo     = rResumo.data;
+      if (rCustos.ok) custosData    = rCustos.data;
       if (rProd.ok)   PRODUTOS_DATA = rProd.data;
       if (rMovs.ok)   MOVS_DATA     = rMovs.data;
       await loadMovimPage(1, false, false);

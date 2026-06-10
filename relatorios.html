@@ -611,42 +611,77 @@
       el.innerHTML = `<i class="bi ${cor.ic}"></i><span>${msg}</span>`;
     }
 
-    // Carrega todos os dados em paralelo (uma chamada de vendas, separada por tipo)
+    // Carrega dados de apoio (filtros de modal). Dados de transações são buscados sob demanda.
     async function loadAllData() {
-      setStatus('load', 'Carregando dados dos relatórios…');
-      const [prod, vend, fin, cst, mov, cat, cli, hist] = await Promise.all([
-        _fetchList('/produtos'),
-        _fetchList('/vendas'),
-        _fetchList('/financeiro'),
-        _fetchList('/custos'),
-        _fetchList('/estoque/movimentacoes'),
+      setStatus('load', 'Carregando…');
+      const [cat, cli, hist] = await Promise.all([
         _fetchList('/categorias'),
         _fetchList('/clientes'),
         _fetchList('/relatorios/historico'),
       ]);
 
-      DATA.produtos   = prod.data;
-      DATA.pdvVendas  = vend.data.filter(v => v.tipo === 'pdv');
-      DATA.pedVendas  = vend.data.filter(v => v.tipo === 'pedido');
-      DATA.financeiro = fin.data;
-      DATA.custos     = cst.data;
-      DATA.movs       = mov.data;
       DATA.categorias = cat.data.map(c => c.nome).filter(Boolean);
       DATA.clientes   = cli.data;
       historico       = hist.data;
       dataLoaded      = true;
 
-      const falhas = [
-        !prod.ok && 'produtos', !vend.ok && 'vendas', !fin.ok && 'financeiro',
-        !cst.ok && 'custos', !mov.ok && 'movimentações', !cat.ok && 'categorias',
-        !hist.ok && 'histórico',
-      ].filter(Boolean);
-
+      const falhas = [!cat.ok && 'categorias', !hist.ok && 'histórico'].filter(Boolean);
       if (falhas.length) {
-        setStatus('erro', `Falha ao carregar: ${falhas.join(', ')}. Alguns relatórios podem sair incompletos. Recarregue a página para tentar de novo.`);
+        setStatus('erro', `Falha ao carregar: ${falhas.join(', ')}. Recarregue a página.`);
       } else {
         setStatus(null);
       }
+    }
+
+    // Busca os dados de transação para um relatório com filtro de data quando possível.
+    // Vendas e movimentações usam dataISO (DateTime) → filtro server-side seguro.
+    // Lancamentos e custos usam vencimento/data (strings) → cliente filtra com filterByPeriod.
+    async function _fetchReportData(reportId, startStr, endStr) {
+      const dateQS = startStr && endStr ? `dataInicio=${startStr}&dataFim=${endStr}` : '';
+
+      const VENDAS_IDS  = ['vendas-historico', 'vendas-ranking', 'vendas-ticket'];
+      const PRODUTO_IDS = ['estoque-posicao', 'estoque-critico', 'produtos-catalogo', 'produtos-margem'];
+      const MOV_IDS     = ['estoque-movs'];
+      const FIN_IDS     = ['fin-fluxo', 'fin-pagar', 'fin-receber', 'fin-dre'];
+      const CUSTO_IDS   = ['fin-custos', 'fin-despesas'];
+
+      const fetches = [];
+
+      if (VENDAS_IDS.includes(reportId)) {
+        fetches.push(_fetchList(`/vendas${dateQS ? '?'+dateQS : ''}`).then(r => {
+          DATA.pdvVendas = r.data.filter(v => v.tipo === 'pdv');
+          DATA.pedVendas = r.data.filter(v => v.tipo === 'pedido');
+          if (!r.ok) throw new Error('vendas');
+        }));
+      }
+      if (PRODUTO_IDS.includes(reportId)) {
+        fetches.push(_fetchList('/produtos').then(r => {
+          DATA.produtos = r.data;
+          if (!r.ok) throw new Error('produtos');
+        }));
+      }
+      if (MOV_IDS.includes(reportId)) {
+        fetches.push(_fetchList(`/estoque/movimentacoes${dateQS ? '?'+dateQS : ''}`).then(r => {
+          DATA.movs = r.data;
+          if (!r.ok) throw new Error('movimentações');
+        }));
+      }
+      if (FIN_IDS.includes(reportId)) {
+        // Sem filtro server-side: vencimento é string, o cliente filtra com filterByPeriod
+        fetches.push(_fetchList('/financeiro').then(r => {
+          DATA.financeiro = r.data;
+          if (!r.ok) throw new Error('financeiro');
+        }));
+      }
+      if (CUSTO_IDS.includes(reportId)) {
+        // Sem filtro server-side: campo data é string, o cliente filtra com filterByPeriod
+        fetches.push(_fetchList('/custos').then(r => {
+          DATA.custos = r.data;
+          if (!r.ok) throw new Error('custos');
+        }));
+      }
+
+      await Promise.all(fetches);
     }
 
     // ── Catálogo de relatórios ────────────────────────────────
@@ -1239,9 +1274,25 @@
       return n;
     }
 
-    function gerarRelatorio() {
+    async function gerarRelatorio() {
       if (!currentReport) return;
-      if (!dataLoaded) { showToast('Aguarde o carregamento dos dados.', 'warning'); return; }
+      if (!dataLoaded) { showToast('Aguarde o carregamento.', 'warning'); return; }
+
+      const btn = document.getElementById('relGenerateBtn');
+      const origHtml = btn ? btn.innerHTML : '';
+      if (btn) { btn.disabled = true; btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Carregando…'; }
+
+      const startStr = document.getElementById('rel-dp-start').value;
+      const endStr   = document.getElementById('rel-dp-end').value;
+      try {
+        await _fetchReportData(currentReport.id, startStr, endStr);
+      } catch (e) {
+        if (btn) { btn.disabled = false; btn.innerHTML = origHtml; }
+        showToast(`Erro ao buscar dados: ${e.message}. Tente novamente.`, 'error');
+        return;
+      }
+      if (btn) { btn.disabled = false; btn.innerHTML = origHtml; }
+
       const dr    = getDateRange();
       const today = new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
 
