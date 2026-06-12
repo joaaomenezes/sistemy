@@ -1023,14 +1023,16 @@
   <!-- DETAIL PANEL -->
   <div class="detail-panel" id="detailPanel">
     <div class="dp-header">
-      <div style="display:flex;align-items:center;gap:14px">
-        <div class="dp-avatar" id="dp-avatar"></div>
-        <div>
-          <div class="dp-name" id="dp-name"></div>
-          <div class="dp-doc" id="dp-doc"></div>
+      <div class="dp-top">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div class="dp-avatar" id="dp-avatar"></div>
+          <div>
+            <div class="dp-name" id="dp-name"></div>
+            <div class="dp-doc" id="dp-doc"></div>
+          </div>
         </div>
+        <div class="modal-close" onclick="closeDetail()"><i class="bi bi-x-lg"></i></div>
       </div>
-      <div class="modal-close" onclick="closeDetail()"><i class="bi bi-x-lg"></i></div>
     </div>
     <div class="dp-body">
       <div class="dp-section">
@@ -1489,6 +1491,36 @@
       return ok;
     }
 
+    async function checkDuplicate(endpoint, doc, tel, excludeId) {
+      const secaoParam = currentSection === 'clientes' ? '&secao=clientes' : '';
+
+      if (doc) {
+        const digits = doc.replace(/\D/g, '');
+        if (digits.length >= 11) {
+          // Busca com valor formatado: "47665684866" não é substring de "476.656.848-66"
+          const res = await NexoAuth.apiFetch(`${endpoint}?q=${encodeURIComponent(doc)}&limit=20${secaoParam}`);
+          if (res.ok) {
+            const dup = (res.data || []).find(x => x.id !== excludeId && x.doc && x.doc.replace(/\D/g, '') === digits);
+            if (dup) return { field: 'CPF/CNPJ', nome: dup.nome };
+          }
+        }
+      }
+
+      if (tel) {
+        const digits = tel.replace(/\D/g, '');
+        if (digits.length >= 10) {
+          // Busca com valor formatado: "17991154091" não é substring de "(17) 99115-4091"
+          const res = await NexoAuth.apiFetch(`${endpoint}?q=${encodeURIComponent(tel)}&limit=20${secaoParam}`);
+          if (res.ok) {
+            const dup = (res.data || []).find(x => x.id !== excludeId && x.tel && x.tel.replace(/\D/g, '') === digits);
+            if (dup) return { field: 'Telefone', nome: dup.nome };
+          }
+        }
+      }
+
+      return null;
+    }
+
     async function saveEntity() {
       const existing = editingId ? activeData().find(x => x.id === editingId) : null;
       const limiteRaw = document.getElementById('f-limite').value.replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '');
@@ -1531,6 +1563,13 @@
       }
 
       const endpoint = endpointForCurrentSection();
+
+      const dup = await checkDuplicate(endpoint, payload.doc, payload.tel, editingId);
+      if (dup) {
+        showToast(`❌ ${dup.field} já cadastrado para: ${dup.nome}`);
+        return;
+      }
+
       const res = editingId
         ? await NexoAuth.apiFetch(`${endpoint}/${editingId}`, { method: 'PUT', body: JSON.stringify(payload) })
         : await NexoAuth.apiFetch(endpoint, { method: 'POST', body: JSON.stringify(payload) });
@@ -1643,11 +1682,36 @@
         `<div class="dp-row"><span class="dp-label">Endereço</span><span class="dp-val" style="max-width:200px;text-align:right">${addr}</span></div>`;
 
       const limFmt = c.limite ? 'R$ ' + fmt(parseFloat(c.limite) || 0) : '—';
-      document.getElementById('dp-fin').innerHTML = [
-        ['Limite', limFmt], ['Condição', c.condicao || '—']
-      ].map(([l, v]) => `<div class="dp-row"><span class="dp-label">${escapeHTML(l)}</span><span class="dp-val">${escapeHTML(v)}</span></div>`).join('');
+      document.getElementById('dp-fin').innerHTML =
+        `<div class="dp-row"><span class="dp-label">Limite</span><span class="dp-val">${escapeHTML(limFmt)}</span></div>` +
+        `<div class="dp-row"><span class="dp-label">Condição</span><span class="dp-val">${escapeHTML(c.condicao || '—')}</span></div>` +
+        (isCli ? `<div id="dp-credito"><div class="dp-credito-loading">Carregando crédito...</div></div>` : '');
 
       document.getElementById('detailPanel').classList.add('open');
+
+      if (isCli) loadDetalheCredito(c.id);
+    }
+
+    async function loadDetalheCredito(clienteId) {
+      const container = document.getElementById('dp-credito');
+      if (!container) return;
+      const r = await NexoAuth.apiFetch(`/clientes/${clienteId}/credito`);
+      if (!r.ok) { container.innerHTML = ''; return; }
+      const d = r.data;
+      const dispColor = d.limiteCredito > 0 && d.limiteDisponivel < 0 ? 'color:#ef4444;font-weight:700' : 'color:var(--accent);font-weight:700';
+      container.innerHTML =
+        `<div class="dp-credito-cards">` +
+          `<div class="dp-credito-card">` +
+            `<div class="dp-credito-label">Em aberto</div>` +
+            `<div class="dp-credito-val"${d.totalEmAberto > 0 ? ' style="color:#f59e0b;font-weight:700"' : ''}>R$ ${fmt(d.totalEmAberto)}</div>` +
+          `</div>` +
+          `<div class="dp-credito-card">` +
+            `<div class="dp-credito-label">Disponível</div>` +
+            `<div class="dp-credito-val" style="${d.limiteCredito > 0 ? dispColor : 'color:var(--muted)'}">` +
+              `${d.limiteCredito > 0 ? 'R$ ' + fmt(d.limiteDisponivel) : '—'}` +
+            `</div>` +
+          `</div>` +
+        `</div>`;
     }
     function closeDetail() { document.getElementById('detailPanel').classList.remove('open'); currentDetailId = null; }
     function editClient() { if (currentDetailId) { closeDetail(); openEdit(currentDetailId); } }
@@ -1817,6 +1881,9 @@
           ? (vendedores.find(v => v.id === editingVendId)?.cadastro || new Date().toLocaleDateString('pt-BR'))
           : new Date().toLocaleDateString('pt-BR'),
       };
+
+      const vendDup = await checkDuplicate('/vendedores', doc, tel, editingVendId);
+      if (vendDup) { showToast(`❌ ${vendDup.field} já cadastrado para: ${vendDup.nome}`); return; }
 
       const res = editingVendId
         ? await NexoAuth.apiFetch(`/vendedores/${editingVendId}`, { method: 'PUT', body: JSON.stringify(payload) })

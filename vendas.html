@@ -185,6 +185,101 @@
       background: rgba(0, 208, 132, .2);
     }
 
+    /* ── Client filter autocomplete ── */
+    .vnd-cliente-wrap {
+      position: relative;
+    }
+
+    .vnd-cliente-field {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 10px;
+      height: 36px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      transition: border-color .15s;
+    }
+
+    .vnd-cliente-field:focus-within {
+      border-color: rgba(0, 208, 132, .4);
+    }
+
+    .vnd-cliente-field input {
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 12.5px;
+      font-family: var(--font-b);
+      outline: none;
+      width: 170px;
+    }
+
+    .vnd-cliente-field input::placeholder {
+      color: var(--muted);
+    }
+
+    .vnd-cliente-clear {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      line-height: 1;
+      transition: color .15s;
+    }
+
+    .vnd-cliente-clear:hover {
+      color: var(--text);
+    }
+
+    .vnd-cliente-drop {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      min-width: 240px;
+      background: #0f1929;
+      border: 1px solid rgba(255, 255, 255, .09);
+      border-radius: 12px;
+      padding: 4px;
+      z-index: 300;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .45);
+      display: none;
+    }
+
+    .vnd-cliente-drop.open {
+      display: block;
+    }
+
+    .vnd-cliente-opt {
+      padding: 8px 11px;
+      font-size: 12.5px;
+      font-family: var(--font-b);
+      color: var(--sub);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background .1s, color .1s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .vnd-cliente-opt:hover {
+      background: rgba(255, 255, 255, .05);
+      color: var(--text);
+    }
+
+    .vnd-cliente-empty {
+      padding: 8px 11px;
+      font-size: 12px;
+      color: var(--muted);
+      font-family: var(--font-b);
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -676,6 +771,17 @@
           <option value="transferencia">Transferência / PIX</option>
           <option value="cheque">Cheque</option>
         </select>
+        <div class="vnd-cliente-wrap" id="vndClienteWrap">
+          <div class="vnd-cliente-field">
+            <i class="bi bi-person" style="color:var(--muted);font-size:13px"></i>
+            <input type="text" id="clienteFilterInput" placeholder="Filtrar por cliente..."
+              oninput="onClienteFilterInput()" autocomplete="off">
+            <button class="vnd-cliente-clear" id="clienteFilterClear" onclick="clearClienteFilter()" style="display:none">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+          <div class="vnd-cliente-drop" id="clienteFilterDrop"></div>
+        </div>
         <div class="toolbar-right">
           <div class="vnd-dp-wrap">
             <button class="vnd-dp-btn" id="vndDpBtn" onclick="toggleVndDp()">
@@ -864,6 +970,8 @@
     let sortKey = 'data';
     let filterTimer = null;
     let currentVendaId = null;
+    let selectedClienteId = null;
+    let clienteFilterTimer = null;
 
     const PDV_METHOD_OPTIONS = [
       ['dinheiro', 'Dinheiro'],
@@ -914,6 +1022,54 @@
       return currentSection === 'pedidos' ? 'pedido' : 'pdv';
     }
 
+    // ── Client filter ────────────────────────────────
+    function onClienteFilterInput() {
+      clearTimeout(clienteFilterTimer);
+      const inp = document.getElementById('clienteFilterInput');
+      const q = inp.value.trim();
+      const clearBtn = document.getElementById('clienteFilterClear');
+      clearBtn.style.display = q ? '' : 'none';
+
+      if (selectedClienteId) {
+        selectedClienteId = null;
+        applyFilters();
+      }
+
+      if (q.length < 2) {
+        document.getElementById('clienteFilterDrop').classList.remove('open');
+        return;
+      }
+
+      clienteFilterTimer = setTimeout(async () => {
+        const r = await NexoAuth.apiFetch(`/clientes?q=${encodeURIComponent(q)}&limit=20`);
+        const drop = document.getElementById('clienteFilterDrop');
+        if (!r.ok || !(r.data || []).length) {
+          drop.innerHTML = '<div class="vnd-cliente-empty">Nenhum cliente encontrado</div>';
+        } else {
+          drop.innerHTML = (r.data || []).map(c =>
+            `<div class="vnd-cliente-opt" onclick="selectClienteFilter('${c.id}','${c.nome.replace(/'/g, "\\'")}')">${c.nome}</div>`
+          ).join('');
+        }
+        drop.classList.add('open');
+      }, 280);
+    }
+
+    function selectClienteFilter(id, nome) {
+      selectedClienteId = id;
+      document.getElementById('clienteFilterInput').value = nome;
+      document.getElementById('clienteFilterClear').style.display = '';
+      document.getElementById('clienteFilterDrop').classList.remove('open');
+      applyFilters();
+    }
+
+    function clearClienteFilter() {
+      selectedClienteId = null;
+      document.getElementById('clienteFilterInput').value = '';
+      document.getElementById('clienteFilterClear').style.display = 'none';
+      document.getElementById('clienteFilterDrop').classList.remove('open');
+      applyFilters();
+    }
+
     function buildVendasQuery(page = currentPage, withPagination = true) {
       const params = new URLSearchParams();
       const q = (document.getElementById('searchInput')?.value || '').trim();
@@ -931,6 +1087,7 @@
       if (metodo) params.set('metodo', metodo);
       if (dIni) params.set('dataInicio', dIni);
       if (dFim) params.set('dataFim', dFim);
+      if (selectedClienteId) params.set('clienteId', selectedClienteId);
       if (sortKey) {
         params.set('sortBy', sortKey);
         params.set('sortDir', sortDir === 1 ? 'asc' : 'desc');
@@ -1017,6 +1174,7 @@
       document.querySelector('.filter-btn[onclick*="todos"]').classList.add('active');
       document.getElementById('searchInput').value = '';
       document.getElementById('metodoPag').value = '';
+      clearClienteFilter();
       updateToolbarForSection();
       const hoje = new Date();
       const inicio = new Date(hoje); inicio.setDate(inicio.getDate() - 30);
@@ -1429,6 +1587,10 @@
       const dd = document.getElementById('vndDpDrop');
       if (btn && dd && !btn.contains(ev.target) && !dd.contains(ev.target)) {
         dd.classList.remove('open');
+      }
+      const wrap = document.getElementById('vndClienteWrap');
+      if (wrap && !wrap.contains(ev.target)) {
+        document.getElementById('clienteFilterDrop')?.classList.remove('open');
       }
     });
 

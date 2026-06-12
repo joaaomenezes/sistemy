@@ -3,7 +3,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistemy — Estoque</title>
   <link rel="stylesheet" href="global.css">
@@ -1028,21 +1029,26 @@
       <h2 id="depModalTitle" style="font-size:17px;font-weight:700">Novo Depósito</h2>
       <div>
         <label style="font-size:12px;color:var(--muted);margin-bottom:4px;display:block">Nome *</label>
-        <input id="dep-nome" type="text" placeholder="Ex: Loja Centro" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:14px">
+        <input id="dep-nome" type="text" placeholder="Ex: Loja Centro"
+          style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:14px">
       </div>
       <div style="display:flex;gap:12px">
         <div style="flex:0 0 80px">
           <label style="font-size:12px;color:var(--muted);margin-bottom:4px;display:block">Ícone</label>
-          <input id="dep-icone" type="text" placeholder="🏭" maxlength="4" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:18px;text-align:center">
+          <input id="dep-icone" type="text" placeholder="🏭" maxlength="4"
+            style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:18px;text-align:center">
         </div>
         <div style="flex:1">
           <label style="font-size:12px;color:var(--muted);margin-bottom:4px;display:block">Endereço (opcional)</label>
-          <input id="dep-endereco" type="text" placeholder="Rua, número — Cidade" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:14px">
+          <input id="dep-endereco" type="text" placeholder="Rua, número — Cidade"
+            style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:14px">
         </div>
       </div>
       <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px">
-        <button onclick="closeDepModal()" style="padding:9px 18px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-size:13px">Cancelar</button>
-        <button onclick="saveDeposito()" style="padding:9px 18px;border-radius:8px;background:var(--accent);color:#021c14;font-weight:700;border:none;cursor:pointer;font-size:13px">Salvar</button>
+        <button onclick="closeDepModal()"
+          style="padding:9px 18px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-size:13px">Cancelar</button>
+        <button onclick="saveDeposito()"
+          style="padding:9px 18px;border-radius:8px;background:var(--accent);color:#021c14;font-weight:700;border:none;cursor:pointer;font-size:13px">Salvar</button>
       </div>
     </div>
   </div>
@@ -1075,93 +1081,97 @@
         <!-- modo entrada -->
         <div id="entradaModeRow" style="display:none;margin-bottom:16px">
           <div class="mode-toggle">
-            <button class="mode-btn active" id="btnModeManual" onclick="setEntradaMode('manual')"><i class="bi bi-pencil-fill"></i> Manual</button>
-            <button class="mode-btn" id="btnModeXml" onclick="setEntradaMode('xml')"><i class="bi bi-file-earmark-code-fill"></i> Importar XML (NF-e)</button>
+            <button class="mode-btn active" id="btnModeManual" onclick="setEntradaMode('manual')"><i
+                class="bi bi-pencil-fill"></i> Manual</button>
+            <button class="mode-btn" id="btnModeXml" onclick="setEntradaMode('xml')"><i
+                class="bi bi-file-earmark-code-fill"></i> Importar XML (NF-e)</button>
           </div>
         </div>
 
         <div id="manualForm">
-        <!-- produto preview -->
-        <div class="prod-preview" id="prodPreview" style="display:none">
-          <div class="pp-emoji" id="ppEmoji">📦</div>
-          <div>
-            <div class="pp-name" id="ppName">—</div>
-            <div class="pp-stock">Estoque atual: <strong id="ppStock">0</strong> un · Mín: <strong id="ppMin">0</strong>
-              · Máx: <strong id="ppMax">0</strong></div>
-          </div>
-        </div>
-
-        <!-- produto select -->
-        <div class="form-group">
-          <label class="lbl">Produto *</label>
-          <div class="inp-wrap"><i class="bi bi-box-seam pre"></i>
-            <select class="field" id="movProduto" onchange="onProdutoChange()">
-              <option value="">Selecione o produto...</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- quantidade -->
-        <div class="form-group">
-          <label class="lbl">Quantidade *</label>
-          <div class="qty-big-wrap">
-            <div class="qty-big-btn" onclick="changeMovQty(-1)">−</div>
-            <input class="qty-big-input" type="number" id="movQty" value="1" min="1">
-            <div class="qty-big-btn" onclick="changeMovQty(1)">+</div>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="lbl">Depósito</label>
-            <div class="inp-wrap"><i class="bi bi-building pre"></i>
-              <select class="field" id="movDeposito"></select>
+          <!-- produto preview -->
+          <div class="prod-preview" id="prodPreview" style="display:none">
+            <div class="pp-emoji" id="ppEmoji">📦</div>
+            <div>
+              <div class="pp-name" id="ppName">—</div>
+              <div class="pp-stock">Estoque atual: <strong id="ppStock">0</strong> un · Mín: <strong
+                  id="ppMin">0</strong>
+                · Máx: <strong id="ppMax">0</strong></div>
             </div>
           </div>
-          <div class="form-group" id="movDepDestinoGrp" style="display:none">
-            <label class="lbl">Depósito Destino</label>
-            <div class="inp-wrap"><i class="bi bi-building-fill pre"></i>
-              <select class="field" id="movDepDestino"></select>
-            </div>
-          </div>
-        </div>
 
-        <div class="form-row">
+          <!-- produto select -->
           <div class="form-group">
-            <label class="lbl">Motivo</label>
-            <div class="inp-wrap"><i class="bi bi-chat-text pre"></i>
-              <select class="field" id="movMotivo">
-                <option>Compra de fornecedor</option>
-                <option>Devolução de cliente</option>
-                <option>Acerto de inventário</option>
-                <option>Transferência interna</option>
-                <option>Venda PDV</option>
-                <option>Perda / Avaria</option>
-                <option>Outro</option>
+            <label class="lbl">Produto *</label>
+            <div class="inp-wrap"><i class="bi bi-box-seam pre"></i>
+              <select class="field" id="movProduto" onchange="onProdutoChange()">
+                <option value="">Selecione o produto...</option>
               </select>
             </div>
           </div>
+
+          <!-- quantidade -->
           <div class="form-group">
-            <label class="lbl">Custo unitário (R$)</label>
-            <div class="inp-wrap"><i class="bi bi-currency-dollar pre"></i>
-              <input class="field" type="text" id="movCusto" placeholder="0,00">
+            <label class="lbl">Quantidade *</label>
+            <div class="qty-big-wrap">
+              <div class="qty-big-btn" onclick="changeMovQty(-1)">−</div>
+              <input class="qty-big-input" type="number" id="movQty" value="1" min="1">
+              <div class="qty-big-btn" onclick="changeMovQty(1)">+</div>
             </div>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label class="lbl">Observação</label>
-          <div class="inp-wrap"><i class="bi bi-pencil pre"></i>
-            <input class="field" type="text" id="movObs" placeholder="Nota fiscal, referência, detalhe...">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="lbl">Depósito</label>
+              <div class="inp-wrap"><i class="bi bi-building pre"></i>
+                <select class="field" id="movDeposito"></select>
+              </div>
+            </div>
+            <div class="form-group" id="movDepDestinoGrp" style="display:none">
+              <label class="lbl">Depósito Destino</label>
+              <div class="inp-wrap"><i class="bi bi-building-fill pre"></i>
+                <select class="field" id="movDepDestino"></select>
+              </div>
+            </div>
           </div>
-        </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="lbl">Motivo</label>
+              <div class="inp-wrap"><i class="bi bi-chat-text pre"></i>
+                <select class="field" id="movMotivo">
+                  <option>Compra de fornecedor</option>
+                  <option>Devolução de cliente</option>
+                  <option>Acerto de inventário</option>
+                  <option>Transferência interna</option>
+                  <option>Venda PDV</option>
+                  <option>Perda / Avaria</option>
+                  <option>Outro</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="lbl">Custo unitário (R$)</label>
+              <div class="inp-wrap"><i class="bi bi-currency-dollar pre"></i>
+                <input class="field" type="text" id="movCusto" placeholder="0,00">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="lbl">Observação</label>
+            <div class="inp-wrap"><i class="bi bi-pencil pre"></i>
+              <input class="field" type="text" id="movObs" placeholder="Nota fiscal, referência, detalhe...">
+            </div>
+          </div>
         </div><!-- /manualForm -->
 
         <!-- XML Panel -->
         <div id="xmlPanel" style="display:none">
           <div id="xmlDropzoneArea">
             <div class="xml-dropzone" id="xmlDropzone">
-              <input type="file" id="xmlFileInput" accept=".xml" style="display:none" onchange="handleXmlFile(this.files[0])">
+              <input type="file" id="xmlFileInput" accept=".xml" style="display:none"
+                onchange="handleXmlFile(this.files[0])">
               <i class="bi bi-file-earmark-arrow-up" style="font-size:36px;color:var(--accent)"></i>
               <div style="font-size:14px;font-weight:600;color:var(--text)">Arraste o XML da NF-e aqui</div>
               <div style="font-size:12px">ou clique para selecionar arquivo</div>
@@ -1175,19 +1185,23 @@
           <div id="xmlReviewPanel" style="display:none">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
               <span style="font-size:13px;font-weight:700">Produtos da Nota</span>
-              <button onclick="resetXml()" style="font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;transition:color .15s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
+              <button onclick="resetXml()"
+                style="font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;transition:color .15s"
+                onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
                 <i class="bi bi-arrow-counterclockwise"></i> Outro XML
               </button>
             </div>
             <div style="max-height:220px;overflow-y:auto;border-radius:10px;border:1px solid var(--border)">
               <table class="xml-review-table">
-                <thead><tr>
-                  <th>Produto (XML)</th>
-                  <th>Produto ERP</th>
-                  <th style="text-align:center">Qtd</th>
-                  <th style="text-align:center">Custo</th>
-                  <th style="text-align:center">Pular</th>
-                </tr></thead>
+                <thead>
+                  <tr>
+                    <th>Produto (XML)</th>
+                    <th>Produto ERP</th>
+                    <th style="text-align:center">Qtd</th>
+                    <th style="text-align:center">Custo</th>
+                    <th style="text-align:center">Pular</th>
+                  </tr>
+                </thead>
                 <tbody id="xmlItemsBody"></tbody>
               </table>
             </div>
@@ -1222,11 +1236,11 @@
     // ═══════════════════════════════════════════════
     // DATA
     // ═══════════════════════════════════════════════
-    let products      = [];
+    let products = [];
     let movimentacoes = [];
-    let depositos     = [];
-    let stockRows     = [];
-    let movRows       = [];
+    let depositos = [];
+    let stockRows = [];
+    let movRows = [];
 
     let currentFilter = 'todos';
     let movFilter = 'todos';
@@ -1257,9 +1271,9 @@
         NexoAuth.apiFetch('/estoque/movimentacoes'),
         NexoAuth.apiFetch('/estoque/depositos'),
       ]);
-      if (rProd.ok) products      = rProd.data;
+      if (rProd.ok) products = rProd.data;
       if (rMovs.ok) movimentacoes = rMovs.data;
-      if (rDep.ok)  depositos     = rDep.data.length ? rDep.data : [{ id: null, nome: 'Depósito Principal', icone: '🏭', cor: 'var(--accent)', endereco: '' }];
+      if (rDep.ok) depositos = rDep.data.length ? rDep.data : [{ id: null, nome: 'Depósito Principal', icone: '🏭', cor: 'var(--accent)', endereco: '' }];
 
       NexoAuth.renderCurrentUser();
       populateDepositoSelects();
@@ -1462,20 +1476,20 @@
         <div class="prod-emoji">${p.emoji}</div>
         <div><div class="prod-name">${p.nome}</div><div class="prod-sku">SKU: ${p.sku}</div></div>
       </div></td>
-      <td style="font-size:12px;color:var(--muted)">${p.deposito||'—'}</td>
+      <td style="font-size:12px;color:var(--muted)">${p.deposito || '—'}</td>
       <td class="stock-cell">
         <div class="stock-nums">
-          <span class="stock-val ${s}">${p.estoque} <span style="font-size:10px;font-weight:400">${p.unidade||'un'}</span></span>
+          <span class="stock-val ${s}">${p.estoque} <span style="font-size:10px;font-weight:400">${p.unidade || 'un'}</span></span>
           <span class="stock-minmax">mín ${p.estoqueMin} · máx ${p.estoqueMax}</span>
         </div>
         <div class="stock-bar-bg"><div class="stock-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
       </td>
       <td>${ativo
-        ? `<span class="status-pill ${s}">${stockLabel(p)}</span>`
-        : `<span class="status-pill" style="background:rgba(107,127,150,.15);color:var(--muted);border-color:var(--muted)">Inativo</span>`
-      }</td>
-      <td style="font-size:12px;color:var(--muted)">${p.ultimaEntrada||'—'}</td>
-      <td style="font-size:12px;color:var(--muted)">${p.fornecedor||'—'}</td>
+            ? `<span class="status-pill ${s}">${stockLabel(p)}</span>`
+            : `<span class="status-pill" style="background:rgba(107,127,150,.15);color:var(--muted);border-color:var(--muted)">Inativo</span>`
+          }</td>
+      <td style="font-size:12px;color:var(--muted)">${p.ultimaEntrada || '—'}</td>
+      <td style="font-size:12px;color:var(--muted)">${p.fornecedor || '—'}</td>
       <td><div class="action-cell" onclick="event.stopPropagation()">
         ${ativo ? `
         <div class="act-btn up"   title="Entrada" onclick="openMov('${p.id}','entrada')"><i class="bi bi-arrow-down-circle"></i></div>
@@ -1580,7 +1594,7 @@
         const qtyDisplay = m.tipo === 'saida' ? -Math.abs(m.qty) : m.qty;
         const qtySign = qtyDisplay >= 0 ? 'pos' : 'neg';
         const qtyStr = (qtyDisplay > 0 ? '+' : '') + qtyDisplay;
-        const dataFmt = m.data || (m.dataISO ? new Date(m.dataISO).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—');
+        const dataFmt = m.data || (m.dataISO ? new Date(m.dataISO).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—');
         return `<tr>
       <td>
         <div style="display:flex;align-items:center;gap:8px">
@@ -1590,9 +1604,9 @@
       </td>
       <td><div class="prod-name" style="font-size:13px">${m.produto}</div></td>
       <td><span style="font-weight:800;font-size:14px;color:${qtySign === 'pos' ? 'var(--accent)' : 'var(--danger)'}">${qtyStr}</span></td>
-      <td style="font-size:12px;color:var(--muted)">${m.deposito||'—'}${m.destino ? ' → ' + m.destino : ''}</td>
-      <td style="font-size:12px;color:var(--muted)">${m.motivo||'—'}</td>
-      <td style="font-size:12px;color:var(--muted)">${m.operador||'—'}</td>
+      <td style="font-size:12px;color:var(--muted)">${m.deposito || '—'}${m.destino ? ' → ' + m.destino : ''}</td>
+      <td style="font-size:12px;color:var(--muted)">${m.motivo || '—'}</td>
+      <td style="font-size:12px;color:var(--muted)">${m.operador || '—'}</td>
       <td style="font-size:11px;color:var(--muted)">${dataFmt}</td>
     </tr>`;
       }).join('');
@@ -1638,7 +1652,7 @@
         const valor = prods.reduce((s, p) => s + p.estoque * p.custo, 0);
         const alertas = prods.filter(p => p.estoque <= p.estoqueMin).length;
         const icone = d.icone || '🏭';
-        const cor   = d.cor   || 'var(--accent)';
+        const cor = d.cor || 'var(--accent)';
         return `<div class="dep-card">
       <div class="dep-header">
         <div class="dep-icon">${icone}</div>
@@ -1679,8 +1693,8 @@
       editingDepId = id || null;
       const d = id ? depositos.find(x => x.id === id) : null;
       document.getElementById('depModalTitle').textContent = d ? 'Editar Depósito' : 'Novo Depósito';
-      document.getElementById('dep-nome').value    = d?.nome    || '';
-      document.getElementById('dep-icone').value   = d?.icone   || '🏭';
+      document.getElementById('dep-nome').value = d?.nome || '';
+      document.getElementById('dep-icone').value = d?.icone || '🏭';
       document.getElementById('dep-endereco').value = d?.endereco || '';
       document.getElementById('depModalOverlay').classList.add('open');
     }
@@ -1688,9 +1702,9 @@
     async function saveDeposito() {
       const nome = document.getElementById('dep-nome').value.trim();
       if (!nome) { showToast('Informe o nome do depósito.'); return; }
-      const icone    = document.getElementById('dep-icone').value.trim() || '🏭';
+      const icone = document.getElementById('dep-icone').value.trim() || '🏭';
       const endereco = document.getElementById('dep-endereco').value.trim();
-      const cores    = ['var(--accent)', 'var(--accent2)', 'var(--warn)', '#a855f7', '#f472b6'];
+      const cores = ['var(--accent)', 'var(--accent2)', 'var(--warn)', '#a855f7', '#f472b6'];
 
       if (editingDepId) {
         const res = await NexoAuth.apiFetch(`/estoque/depositos/${editingDepId}`, { method: 'PUT', body: JSON.stringify({ nome, icone, endereco }) });
@@ -1711,13 +1725,13 @@
 
     function populateDepositoSelects() {
       const opts = depositos.map(d => `<option>${d.nome}</option>`).join('');
-      const sel  = document.getElementById('movDeposito');
+      const sel = document.getElementById('movDeposito');
       const dest = document.getElementById('movDepDestino');
       const filt = document.getElementById('depFilter');
       const xmlDep = document.getElementById('movDepositoXml');
-      if (sel)    sel.innerHTML    = opts;
-      if (dest)   dest.innerHTML   = opts;
-      if (filt)   filt.innerHTML   = '<option value="">Todos os depósitos</option>' + opts;
+      if (sel) sel.innerHTML = opts;
+      if (dest) dest.innerHTML = opts;
+      if (filt) filt.innerHTML = '<option value="">Todos os depósitos</option>' + opts;
       if (xmlDep) xmlDep.innerHTML = opts;
     }
 
@@ -1810,18 +1824,18 @@
 
     async function saveMov() {
       const prodId = document.getElementById('movProduto').value;
-      const qty    = parseInt(document.getElementById('movQty').value) || 1;
-      const dep    = document.getElementById('movDeposito').value;
+      const qty = parseInt(document.getElementById('movQty').value) || 1;
+      const dep = document.getElementById('movDeposito').value;
       const motivo = document.getElementById('movObs').value || document.getElementById('movMotivo').value;
 
       if (!prodId) { showToast('Selecione um produto.'); return; }
       const p = products.find(x => x.id === prodId);
       if (!p) return;
 
-      const now      = new Date();
-      const dataStr  = `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+      const now = new Date();
+      const dataStr = `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
       const operador = (NexoAuth.getSession()?.user?.name || 'Sistema').split(' ').slice(0, 2).join(' ');
-      const destino  = movType === 'transferencia' ? document.getElementById('movDepDestino').value : '';
+      const destino = movType === 'transferencia' ? document.getElementById('movDepDestino').value : '';
 
       const res = await NexoAuth.apiFetch('/estoque/movimentacoes', {
         method: 'POST',
@@ -1830,9 +1844,9 @@
       if (!res.ok) { showToast('Erro: ' + res.message); return; }
 
       // Atualiza estado local
-      if (movType === 'entrada')       { p.estoque += qty; p.ultimaEntrada = now.toLocaleDateString('pt-BR'); }
-      else if (movType === 'saida')    { p.estoque = Math.max(0, p.estoque - qty); }
-      else if (movType === 'ajuste')   { p.estoque = qty; }
+      if (movType === 'entrada') { p.estoque += qty; p.ultimaEntrada = now.toLocaleDateString('pt-BR'); }
+      else if (movType === 'saida') { p.estoque = Math.max(0, p.estoque - qty); }
+      else if (movType === 'ajuste') { p.estoque = qty; }
       else if (movType === 'transferencia') { p.deposito = destino; }
 
       movimentacoes.unshift(res.data);
@@ -1983,7 +1997,7 @@
       document.getElementById('xmlItemsBody').innerHTML = xmlItems.map((item, idx) => {
         const icon = item.matchedId ? '✅' : '⚠️';
         const opts = `<option value="">— Criar produto —</option>` +
-          products.map(p => `<option value="${p.id}"${String(p.id) === String(item.matchedId) ? ' selected' : ''}>${p.emoji||'📦'} ${p.nome}</option>`).join('');
+          products.map(p => `<option value="${p.id}"${String(p.id) === String(item.matchedId) ? ' selected' : ''}>${p.emoji || '📦'} ${p.nome}</option>`).join('');
         return `<tr>
           <td style="font-size:12px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${item.xProd}">${icon} ${item.xProd}</td>
           <td><select class="field" style="font-size:11px;padding:5px 8px;width:100%" onchange="xmlItems[${idx}].matchedId=this.value||null;renderXmlReview()">${opts}</select></td>
@@ -2005,28 +2019,30 @@
 
     async function saveXmlMov() {
       if (!xmlItems.length) { showToast('Importe um arquivo XML primeiro.'); return; }
-      const dep    = document.getElementById('movDepositoXml').value;
+      const dep = document.getElementById('movDepositoXml').value;
       const active = xmlItems.filter(i => !i.skip);
       if (!active.length) { showToast('Nenhum produto selecionado para importar.'); return; }
 
-      const now      = new Date();
-      const dataStr  = `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+      const now = new Date();
+      const dataStr = `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
       const operador = (NexoAuth.getSession()?.user?.name || 'Sistema').split(' ').slice(0, 2).join(' ');
-      const motivo   = `NF-e ${nfInfo.numero || ''}/${nfInfo.serie || ''} — ${nfInfo.fornecedor || 'XML'}`;
+      const motivo = `NF-e ${nfInfo.numero || ''}/${nfInfo.serie || ''} — ${nfInfo.fornecedor || 'XML'}`;
 
       let criados = 0;
       for (const item of active) {
         if (!item.matchedId) {
-          const rNew = await NexoAuth.apiFetch('/produtos', { method: 'POST', body: JSON.stringify({
-            nome: item.xProd,
-            sku:  item.cProd || ('XML' + Date.now()),
-            cat:  'Importado',
-            deposito:  dep,
-            custo:     item.vUnCom,
-            preco:     parseFloat((item.vUnCom * 1.3).toFixed(2)),
-            fornecedor: nfInfo.fornecedor || '',
-            ean:  (item.cEAN && item.cEAN !== 'SEM GTIN') ? item.cEAN : '',
-          }) });
+          const rNew = await NexoAuth.apiFetch('/produtos', {
+            method: 'POST', body: JSON.stringify({
+              nome: item.xProd,
+              sku: item.cProd || ('XML' + Date.now()),
+              cat: 'Importado',
+              deposito: dep,
+              custo: item.vUnCom,
+              preco: parseFloat((item.vUnCom * 1.3).toFixed(2)),
+              fornecedor: nfInfo.fornecedor || '',
+              ean: (item.cEAN && item.cEAN !== 'SEM GTIN') ? item.cEAN : '',
+            })
+          });
           if (!rNew.ok) continue;
           products.push(rNew.data);
           item.matchedId = rNew.data.id;
@@ -2036,10 +2052,12 @@
         const p = products.find(x => x.id === item.matchedId);
         if (!p) continue;
 
-        const rMov = await NexoAuth.apiFetch('/estoque/movimentacoes', { method: 'POST', body: JSON.stringify({
-          tipo: 'entrada', prodId: p.id, produto: p.nome,
-          qty: item.qCom, deposito: dep, motivo, operador, data: dataStr,
-        }) });
+        const rMov = await NexoAuth.apiFetch('/estoque/movimentacoes', {
+          method: 'POST', body: JSON.stringify({
+            tipo: 'entrada', prodId: p.id, produto: p.nome,
+            qty: item.qCom, deposito: dep, motivo, operador, data: dataStr,
+          })
+        });
         if (rMov.ok) {
           p.estoque += item.qCom;
           p.ultimaEntrada = now.toLocaleDateString('pt-BR');
@@ -2047,11 +2065,13 @@
         }
 
         // Atualiza custo e fornecedor do produto
-        NexoAuth.apiFetch(`/produtos/${p.id}`, { method: 'PUT', body: JSON.stringify({
-          custo: item.vUnCom,
-          ...(nfInfo.fornecedor ? { fornecedor: nfInfo.fornecedor } : {}),
-          ultimaEntrada: now.toLocaleDateString('pt-BR'),
-        }) });
+        NexoAuth.apiFetch(`/produtos/${p.id}`, {
+          method: 'PUT', body: JSON.stringify({
+            custo: item.vUnCom,
+            ...(nfInfo.fornecedor ? { fornecedor: nfInfo.fornecedor } : {}),
+            ultimaEntrada: now.toLocaleDateString('pt-BR'),
+          })
+        });
         p.custo = item.vUnCom;
         if (nfInfo.fornecedor) p.fornecedor = nfInfo.fornecedor;
       }

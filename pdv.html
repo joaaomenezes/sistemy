@@ -1426,6 +1426,33 @@
     }
     .nc-field input:focus { border-color: var(--accent); }
     .nc-field input.err   { border-color: #ef4444; }
+    .nc-err {
+      display: none;
+      font-size: 11px;
+      color: #ef4444;
+      margin-top: 4px;
+    }
+    .nc-err.show { display: block; }
+    .fiado-aviso-limite {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #f59e0b;
+      background: rgba(245,158,11,.1);
+      border: 1px solid rgba(245,158,11,.3);
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-top: 8px;
+    }
+    .fiado-aviso-limite.show { display: flex; }
+    .fiado-credit-sep {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 8px 0;
+    }
+    .fiado-credit-row--dest span { font-weight: 600; color: var(--text); }
+    .fiado-credit-row--dest strong { font-size: 15px; }
     .nc-footer {
       padding: 14px 20px;
       border-top: 1px solid var(--border);
@@ -7004,16 +7031,33 @@
                 <span>Resumo de crédito</span>
               </div>
               <div class="fiado-credit-row">
-                <span>Limite de crédito</span>
-                <strong class="good" id="fiadoResumoLimite">R$ —</strong>
+                <span>Limite cadastrado</span>
+                <strong id="fiadoResumoLimite">—</strong>
               </div>
               <div class="fiado-credit-row">
-                <span>Total da compra</span>
+                <span>Total em aberto</span>
+                <strong id="fiadoResumoEmAberto">—</strong>
+              </div>
+              <div class="fiado-credit-row fiado-credit-row--dest">
+                <span>Limite disponível</span>
+                <strong id="fiadoResumoDisponivel">—</strong>
+              </div>
+              <hr class="fiado-credit-sep">
+              <div class="fiado-credit-row">
+                <span>Total desta compra</span>
                 <strong id="fiadoResumoTotal">R$ 0,00</strong>
               </div>
               <div class="fiado-credit-row">
                 <span>Após esta compra</span>
-                <strong class="good" id="fiadoResumoDepois">R$ —</strong>
+                <strong id="fiadoResumoDepois">—</strong>
+              </div>
+              <div class="fiado-aviso-limite" id="fiadoAvisoLimite">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                Cliente sem limite de crédito cadastrado.
+              </div>
+              <div class="fiado-aviso-limite" id="fiadoAvisoAcimaLimite">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                Venda acima do limite disponível.
               </div>
             </aside>
           </div>
@@ -7759,15 +7803,25 @@
           <label for="ncNome">Nome completo *</label>
           <input id="ncNome" type="text" placeholder="Ex.: João Silva" autocomplete="off"
             onkeydown="if(event.key==='Enter')document.getElementById('ncTel').focus()">
+          <span class="nc-err" id="ncNomeErr">Informe o nome.</span>
         </div>
         <div class="nc-field">
           <label for="ncTel">Telefone *</label>
           <input id="ncTel" type="tel" placeholder="(00) 00000-0000" autocomplete="off"
+            oninput="maskPhone(this)"
             onkeydown="if(event.key==='Enter')document.getElementById('ncCpf').focus()">
+          <span class="nc-err" id="ncTelErr">Informe o telefone.</span>
         </div>
         <div class="nc-field">
-          <label for="ncCpf">CPF / CNPJ <span style="color:var(--muted);font-weight:400">(opcional)</span></label>
+          <label for="ncCpf">CPF *</label>
           <input id="ncCpf" type="text" placeholder="000.000.000-00" autocomplete="off"
+            oninput="maskCPF(this)"
+            onkeydown="if(event.key==='Enter')document.getElementById('ncLimite').focus()">
+          <span class="nc-err" id="ncCpfErr">CPF inválido ou não informado.</span>
+        </div>
+        <div class="nc-field">
+          <label for="ncLimite">Limite de crédito</label>
+          <input id="ncLimite" type="number" placeholder="0.00" min="0" step="0.01" autocomplete="off"
             onkeydown="if(event.key==='Enter')criarClienteFiado()">
         </div>
       </div>
@@ -8854,6 +8908,7 @@
     let fiadoClientes = [];
     let selectedFiadoCliente = null;
     let fiadoClientesLoaded = false;
+    let fiadoCreditoData = null;
 
     function renderPaySummary() {
       const { subtotal, disc, total } = calcCart();
@@ -9034,6 +9089,7 @@
 
     function resetFiadoForm() {
       selectedFiadoCliente = null;
+      fiadoCreditoData = null;
       const search = document.getElementById('fiadoSearchInput');
       const venc   = document.getElementById('fiadoVencInput');
       if (search) search.value = '';
@@ -9092,7 +9148,16 @@
 
     function selectFiadoCliente(id) {
       selectedFiadoCliente = fiadoClientes.find(c => c.id === id) || null;
+      fiadoCreditoData = null;
       renderFiadoClientes();
+      updateFiadoSummary();
+      if (selectedFiadoCliente) loadFiadoCredito(selectedFiadoCliente.id);
+    }
+
+    async function loadFiadoCredito(clienteId) {
+      if (!clienteId) { fiadoCreditoData = null; updateFiadoSummary(); return; }
+      const r = await NexoAuth.apiFetch(`/clientes/${clienteId}/credito`);
+      fiadoCreditoData = r.ok ? r.data : null;
       updateFiadoSummary();
     }
 
@@ -9101,75 +9166,141 @@
     }
 
     function openNovoClienteModal() {
-      document.getElementById('ncNome').value = '';
-      document.getElementById('ncTel').value  = '';
-      document.getElementById('ncCpf').value  = '';
-      ['ncNome','ncTel','ncCpf'].forEach(id => document.getElementById(id).classList.remove('err'));
+      ['ncNome', 'ncTel', 'ncCpf', 'ncLimite'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.value = ''; el.classList.remove('err'); }
+      });
+      ['ncNomeErr', 'ncTelErr', 'ncCpfErr'].forEach(id => {
+        document.getElementById(id)?.classList.remove('show');
+      });
       document.getElementById('novoClienteOverlay').classList.add('open');
       setTimeout(() => document.getElementById('ncNome').focus(), 80);
     }
 
     function closeNovoClienteModal() {
       document.getElementById('novoClienteOverlay').classList.remove('open');
+      ['ncNome', 'ncTel', 'ncCpf', 'ncLimite'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.value = ''; el.classList.remove('err'); }
+      });
+      ['ncNomeErr', 'ncTelErr', 'ncCpfErr'].forEach(id => {
+        document.getElementById(id)?.classList.remove('show');
+      });
+    }
+
+    function ncSetErr(inputId, errId, show) {
+      document.getElementById(inputId).classList.toggle('err', show);
+      document.getElementById(errId).classList.toggle('show', show);
     }
 
     async function criarClienteFiado() {
-      const nomeEl = document.getElementById('ncNome');
-      const telEl  = document.getElementById('ncTel');
-      const nome = nomeEl.value.trim();
-      const tel  = telEl.value.trim();
-      const doc  = document.getElementById('ncCpf').value.trim() || null;
+      const nomeEl  = document.getElementById('ncNome');
+      const telEl   = document.getElementById('ncTel');
+      const cpfEl   = document.getElementById('ncCpf');
+      const nome    = nomeEl.value.trim();
+      const tel     = telEl.value.trim();
+      const cpfRaw  = cpfEl.value.trim();
+      const cpfDigits = cpfRaw.replace(/\D/g, '');
 
       let ok = true;
-      if (!nome) { nomeEl.classList.add('err'); ok = false; }
-      else nomeEl.classList.remove('err');
-      if (!tel)  { telEl.classList.add('err');  ok = false; }
-      else telEl.classList.remove('err');
-      if (!ok) { NexoToast.warning('Preencha os campos obrigatórios.'); return; }
+
+      if (!nome) { ncSetErr('ncNome', 'ncNomeErr', true); ok = false; }
+      else ncSetErr('ncNome', 'ncNomeErr', false);
+
+      if (!tel) { ncSetErr('ncTel', 'ncTelErr', true); ok = false; }
+      else ncSetErr('ncTel', 'ncTelErr', false);
+
+      if (!cpfDigits || cpfDigits.length !== 11 || !isValidCpf(cpfDigits)) {
+        ncSetErr('ncCpf', 'ncCpfErr', true); ok = false;
+      } else ncSetErr('ncCpf', 'ncCpfErr', false);
+
+      if (!ok) return;
+
+      // Deduplicação por CPF (busca com valor formatado — dígitos puros não são substring do CPF mascarado)
+      const busca = await NexoAuth.apiFetch(`/clientes?q=${encodeURIComponent(cpfRaw)}&secao=clientes&limit=10`);
+      if (busca.ok) {
+        const existente = (busca.data || []).find(c => c.doc && c.doc.replace(/\D/g, '') === cpfDigits);
+        if (existente) {
+          selectedFiadoCliente = existente;
+          if (!fiadoClientes.find(c => c.id === existente.id)) fiadoClientes.unshift(existente);
+          closeNovoClienteModal();
+          renderFiadoClientes();
+          updateFiadoSummary();
+          NexoToast.warning(`CPF já cadastrado — cliente ${existente.nome} selecionado.`);
+          return;
+        }
+      }
+
+      const limite = parseFloat(document.getElementById('ncLimite').value) || 0;
 
       const r = await NexoAuth.apiFetch('/clientes', {
         method: 'POST',
-        body: JSON.stringify({ nome, tel, doc, tipo: 'pf', secao: 'clientes' }),
+        body: JSON.stringify({
+          nome,
+          tel,
+          doc: cpfRaw,
+          tipo: 'pf',
+          secao: 'clientes',
+          limite,
+          status: 'ativo',
+          cadastro: new Date().toLocaleDateString('pt-BR'),
+        }),
       });
       if (!r.ok) { NexoToast.error(r.message || 'Erro ao cadastrar cliente.'); return; }
 
       fiadoClientes.unshift(r.data);
       selectedFiadoCliente = r.data;
+      fiadoCreditoData = null;
       closeNovoClienteModal();
       renderFiadoClientes();
       updateFiadoSummary();
+      loadFiadoCredito(r.data.id);
       NexoToast.success(`Cliente ${r.data.nome} cadastrado.`);
     }
 
     function getFiadoData() {
-      const total       = getTotal();
-      const clienteNome = selectedFiadoCliente?.nome || '';
-      const limite      = Number(selectedFiadoCliente?.limite || 0);
-      const vencimento  = document.getElementById('fiadoVencInput')?.value || defaultFiadoDueDate();
-      // Se limite = 0, cliente não tem teto configurado → sem restrição (depois = 0)
-      const depois = limite > 0 ? limite - total : 0;
+      const total        = getTotal();
+      const clienteNome  = selectedFiadoCliente?.nome || '';
+      const vencimento   = document.getElementById('fiadoVencInput')?.value || defaultFiadoDueDate();
+      const loading      = !!selectedFiadoCliente && fiadoCreditoData === null;
+      const limiteCredito   = fiadoCreditoData?.limiteCredito  ?? Number(selectedFiadoCliente?.limite || 0);
+      const totalEmAberto   = fiadoCreditoData?.totalEmAberto  ?? 0;
+      const limiteDisponivel = fiadoCreditoData?.limiteDisponivel ?? (limiteCredito > 0 ? limiteCredito : 0);
+      const depois = limiteCredito > 0 ? limiteDisponivel - total : 0;
       return {
         clienteId: selectedFiadoCliente?.id || null,
         clienteNome,
-        limite,
+        limiteCredito,
+        totalEmAberto,
+        limiteDisponivel,
         total,
         depois,
         vencimento,
+        loading,
       };
     }
 
     function updateFiadoSummary() {
-      const data = getFiadoData();
-      const setText = (id, value) => {
-        const el = document.getElementById(id);
-        if (el) el.textContent = value;
-      };
-      setText('fiadoResumoLimite', data.limite > 0 ? `R$ ${fmt(data.limite)}` : 'Sem limite');
-      setText('fiadoResumoTotal', `R$ ${fmt(data.total)}`);
-      setText('fiadoResumoDepois', `R$ ${fmt(Math.abs(data.depois))}`);
-      setText('fiadoResumoVenc', formatDateBR(data.vencimento));
-      const depois = document.getElementById('fiadoResumoDepois');
-      if (depois) depois.className = data.depois < 0 ? 'bad' : 'good';
+      const d = getFiadoData();
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      const dash = d.loading ? '...' : '—';
+      const hasLimite = d.limiteCredito > 0;
+
+      set('fiadoResumoLimite',    !selectedFiadoCliente ? '—' : d.loading ? '...' : hasLimite ? `R$ ${fmt(d.limiteCredito)}` : 'Sem limite');
+      set('fiadoResumoEmAberto',  !selectedFiadoCliente ? '—' : d.loading ? '...' : `R$ ${fmt(d.totalEmAberto)}`);
+      set('fiadoResumoDisponivel',!selectedFiadoCliente ? '—' : d.loading ? '...' : hasLimite ? `R$ ${fmt(d.limiteDisponivel)}` : '—');
+      set('fiadoResumoTotal',     `R$ ${fmt(d.total)}`);
+      set('fiadoResumoDepois',    !selectedFiadoCliente ? '—' : hasLimite ? `R$ ${fmt(d.depois)}` : '—');
+
+      const dispEl = document.getElementById('fiadoResumoDisponivel');
+      if (dispEl) dispEl.className = (hasLimite && d.limiteDisponivel < 0) ? 'bad' : 'good';
+      const depoisEl = document.getElementById('fiadoResumoDepois');
+      if (depoisEl) depoisEl.className = (hasLimite && d.depois < 0) ? 'bad' : 'good';
+
+      const avisoSem = document.getElementById('fiadoAvisoLimite');
+      if (avisoSem) avisoSem.classList.toggle('show', !!selectedFiadoCliente && !d.loading && !hasLimite);
+      const avisoAcima = document.getElementById('fiadoAvisoAcimaLimite');
+      if (avisoAcima) avisoAcima.classList.toggle('show', !!selectedFiadoCliente && !d.loading && hasLimite && d.depois < 0);
     }
 
     function selectBrand(el, brand) {
