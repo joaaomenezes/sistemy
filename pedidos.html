@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="global.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
-    .detail-panel { right: -760px; width: 740px; }
+    .detail-panel { right: -760px; width: 740px; max-width: calc(100vw - var(--sidebar-c)); }
 
     .kpi-mini-icon.p {
       background: rgba(168, 85, 247, .1);
@@ -118,7 +118,7 @@
 
     .pedidos-list-card .table-wrap {
       flex: 1;
-      overflow: hidden;
+      overflow: auto;
     }
 
     .pedidos-list-card tbody tr {
@@ -140,7 +140,7 @@
 
     /* pedidos tem 5 KPIs */
     .kpi-strip {
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(5, minmax(0, 1fr));
     }
 
     /* footer com espaço entre info e botões */
@@ -163,6 +163,8 @@
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 16px;
+      min-width: 0;
+      overflow-x: auto;
     }
 
     .card-title {
@@ -592,9 +594,42 @@ font-weight: 800;
       .kanban-wrap {
         grid-template-columns: repeat(2, 1fr);
       }
+
+      .kpi-strip {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
     }
 
-    @media(max-width:900px) {}
+    @media(max-width:900px) {
+      .kpi-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .status-tabs,
+      .toolbar,
+      .toolbar-right,
+      .filter-group {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .toolbar,
+      .toolbar-right {
+        align-items: stretch;
+        flex-wrap: wrap;
+      }
+
+      .toolbar-right > *,
+      .search-input,
+      .select-filter {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .pedido-grid {
+        grid-template-columns: 1fr;
+      }
+    }
 
     /* ── Novo detail panel ── */
     .det-header { padding:20px 22px 16px; border-bottom:1px solid var(--border); flex-shrink:0; }
@@ -679,7 +714,7 @@ font-weight: 800;
     .cliente-info { color:var(--muted); font-size:12px; margin-top:2px; }
     .cliente-link { margin-left:auto; color:var(--accent); font-size:12px; cursor:pointer; white-space:nowrap; }
     .cliente-link:hover { text-decoration:underline; }
-    .itens-table { width:100%; border-collapse:collapse; }
+    .itens-table { width:100%; min-width:760px; border-collapse:collapse; }
     .itens-table thead th { padding:8px 10px; font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; background:var(--card); border:1px solid var(--border); text-align:left; }
     .itens-table tbody td { padding:10px; border:1px solid var(--border); font-size:13px; vertical-align:middle; }
     .itens-table tbody tr:hover { background:rgba(255,255,255,.02); }
@@ -719,6 +754,10 @@ font-weight: 800;
     .det-drop-item { padding:8px 12px; border-radius:6px; font-size:12px; font-weight:500; cursor:pointer; color:var(--text); display:flex; align-items:center; gap:8px; transition:background .12s; white-space:nowrap; border:none; background:none; text-align:left; width:100%; }
     .det-drop-item:hover { background:rgba(255,255,255,.06); }
     @media(max-width:760px) {
+      .kpi-strip {
+        grid-template-columns: 1fr;
+      }
+
       .det-header-row1 { flex-wrap:wrap; }
       .det-quick-actions { width:100%; justify-content:flex-start; margin-left:0; }
       .det-actions { display:grid; grid-template-columns:1fr 1fr; }

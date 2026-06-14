@@ -12,7 +12,7 @@
   <style>
     /* estoque tem 5 KPIs */
     .kpi-strip {
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(5, minmax(0, 1fr));
     }
 
     .kpi-mini-icon.p {
@@ -107,9 +107,11 @@
     /* ══ TABS ══ */
     .tabs-row {
       display: flex;
+      flex-wrap: wrap;
       gap: 0;
       border-bottom: 1px solid var(--border);
       margin-bottom: 20px;
+      max-width: 100%;
     }
 
     .tab-btn {
@@ -124,6 +126,7 @@
       display: flex;
       align-items: center;
       gap: 7px;
+      min-width: 0;
       white-space: nowrap;
     }
 
@@ -218,7 +221,7 @@
 
     .stock-movs-card .table-wrap {
       flex: 1;
-      overflow: hidden;
+      overflow: auto;
     }
 
     .stock-movs-card tbody tr {
@@ -819,6 +822,53 @@
       }
 
       .mov-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .kpi-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .tabs-row,
+      .toolbar,
+      .toolbar-right,
+      .filter-group {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .toolbar,
+      .toolbar-right {
+        align-items: stretch;
+        flex-wrap: wrap;
+      }
+
+      .toolbar-right > *,
+      .search-input,
+      .select-filter {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .filter-group {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .filter-btn,
+      .tab-btn {
+        justify-content: center;
+      }
+    }
+
+    @media(max-width:640px) {
+      .kpi-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .tabs-row,
+      .filter-group {
+        display: grid;
         grid-template-columns: 1fr;
       }
     }

@@ -74,7 +74,7 @@
 
     .hist-table-card .table-wrap {
       flex: 1;
-      overflow: hidden;
+      overflow: auto;
     }
 
     .hist-table-card tbody tr {
@@ -395,6 +395,36 @@
 
     @media(max-width:900px) {
       .rel-grid { grid-template-columns: 1fr 1fr; }
+
+      .rel-cats,
+      .hist-footer-actions,
+      .rel-card-footer {
+        width: 100%;
+        max-width: 100%;
+      }
+    }
+
+    @media(max-width:640px) {
+      .rel-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .rel-cats {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .rel-cat-btn,
+      .rel-fmt-btn,
+      .btn-generate {
+        justify-content: center;
+      }
+
+      .rel-card-footer,
+      .hist-footer-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
     }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>

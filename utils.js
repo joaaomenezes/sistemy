@@ -22,7 +22,7 @@ function showToast(msg, type) {
   t.className = `toast ${type}`;
   const icon = t.querySelector('i');
   if (icon) {
-    const icons = { success: 'bi-check-circle-fill', warning: 'bi-exclamation-triangle-fill', error: 'bi-x-circle-fill' };
+    const icons = { success: 'bi-check-circle-fill', warning: 'bi-exclamation-triangle-fill', error: 'bi-x-circle-fill', info: 'bi-info-circle-fill' };
     icon.className = `bi ${icons[type] || icons.success}`;
   }
   document.getElementById('toastMsg').textContent = msg;
@@ -172,13 +172,37 @@ window.NexoSkeleton = {
   tableRows(count = 7, cols = 5) {
     const widths = [55, 75, 40, 50, 35, 65, 45];
     const cells = Array.from({ length: cols }, (_, i) =>
-      `<td style="padding:14px 12px"><span class="skeleton" style="display:block;height:12px;width:${widths[i % widths.length]}%"></span></td>`
+      `<td style="padding:14px 12px"><span class="skeleton skeleton-line" style="width:${widths[i % widths.length]}%"></span></td>`
     ).join('');
     return Array.from({ length: count }, () => `<tr>${cells}</tr>`).join('');
   },
   // Gera um bloco skeleton para valor de KPI
   kpiVal(w = '90px', h = '28px') {
     return `<span class="skeleton" style="width:${w};height:${h}"></span>`;
+  },
+  kpiCards(count = 4) {
+    return Array.from({ length: count }, () => `
+      <div class="kpi-mini" aria-busy="true">
+        <span class="skeleton skeleton-avatar"></span>
+        <span class="skeleton-stack" style="flex:1">
+          <span class="skeleton skeleton-title"></span>
+          <span class="skeleton skeleton-line" style="width:56%"></span>
+        </span>
+      </div>
+    `).join('');
+  },
+  card(titleWidth = '48%') {
+    return `
+      <div class="skeleton-stack" aria-busy="true">
+        <span class="skeleton skeleton-title" style="width:${titleWidth}"></span>
+        <span class="skeleton skeleton-line"></span>
+        <span class="skeleton skeleton-line" style="width:82%"></span>
+        <span class="skeleton skeleton-line" style="width:64%"></span>
+      </div>
+    `;
+  },
+  empty(icon = 'bi-inbox', title = 'Nenhum registro encontrado', text = 'Tente ajustar os filtros ou cadastre um novo item.') {
+    return `<div class="empty-state show"><i class="bi ${icon}"></i><h3>${escapeHTML(title)}</h3><p>${escapeHTML(text)}</p></div>`;
   },
 };
 

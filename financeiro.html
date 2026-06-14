@@ -10,27 +10,52 @@
   <style>
     /* ── KPIs ── */
     .kpi-strip {
-      grid-template-columns: repeat(5, 1fr);
-      margin-top: 20px;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      margin-top: 12px;
+    }
+
+    .main,
+    .content,
+    .fin-panel,
+    .fin-grid,
+    .fin-grid-full,
+    .fin-tables,
+    .card,
+    .table-wrap {
+      min-width: 0;
+    }
+
+    .content {
+      overflow-x: hidden;
     }
 
     /* ── ABAS HÍBRIDAS ── */
     .tab-bar {
       display: flex;
       align-items: flex-end;
+      flex-wrap: wrap;
       gap: 2px;
       margin-bottom: 0;
+      max-width: 100%;
+      min-width: 0;
+      row-gap: 4px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+      overflow: visible;
+      position: relative;
+      z-index: 50;
     }
 
     .fin-tab {
       display: flex;
       align-items: center;
       gap: 7px;
-      padding: 10px 14px;
+      padding: 8px 12px;
       color: var(--muted);
       font-size: 13px;
       font-weight: 500;
       cursor: pointer;
+      flex: 0 1 auto;
       white-space: nowrap;
       border-bottom: 2px solid transparent;
       border-radius: 6px 6px 0 0;
@@ -53,6 +78,11 @@
       background: rgba(0, 200, 150, .05);
     }
 
+    .fin-tab-more-only,
+    .mais-main-tab-only {
+      display: none !important;
+    }
+
     .tab-sep {
       width: 1px;
       height: 28px;
@@ -63,16 +93,20 @@
 
     .tab-mais-drop {
       display: none;
-      position: absolute;
-      top: calc(100% + 4px);
+      position: fixed;
+      top: 0;
       left: 0;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 12px;
       min-width: 210px;
-      z-index: 200;
+      max-width: calc(100vw - 24px);
+      max-height: calc(100vh - 96px);
+      overflow-y: auto;
+      z-index: 2500;
       padding: 6px;
       box-shadow: 0 16px 48px rgba(0, 0, 0, .5);
+      transform: translate3d(0, 0, 0);
     }
 
     .tab-mais-drop.open {
@@ -151,7 +185,7 @@
     /* ── GRID PRINCIPAL ── */
     .fin-grid {
       display: grid;
-      grid-template-columns: 1fr 420px;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
       gap: 20px;
       margin-bottom: 20px;
     }
@@ -164,19 +198,21 @@
     .card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: var(--radius, 14px);
+      border-radius: var(--radius-lg, var(--radius, 14px));
     }
 
     .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 12px;
       padding: 18px 20px;
       border-bottom: 1px solid var(--border);
     }
 
     .card-title {
-font-size: 15px;
+      min-width: 0;
+      font-size: 15px;
       font-weight: 700;
       letter-spacing: -.3px;
       display: flex;
@@ -191,6 +227,7 @@ font-size: 15px;
     /* ── FILTRO PERÍODO ── */
     .period-btns {
       display: flex;
+      flex-wrap: wrap;
       gap: 4px;
     }
 
@@ -352,8 +389,10 @@ cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-wrap: wrap;
       gap: 28px;
       padding: 8px 0;
+      min-width: 0;
     }
 
     .donut-svg {
@@ -364,6 +403,7 @@ cursor: pointer;
       display: flex;
       flex-direction: column;
       gap: 16px;
+      min-width: 0;
     }
 
     .donut-item {
@@ -381,9 +421,10 @@ cursor: pointer;
     }
 
     .donut-val {
-font-size: 22px;
+      font-size: clamp(18px, 1.7vw, 22px);
       font-weight: 800;
       letter-spacing: -1px;
+      overflow-wrap: anywhere;
     }
 
     .donut-sub {
@@ -442,7 +483,7 @@ font-size: 14px;
     /* ── TABELAS FINANCEIRAS ── */
     .fin-tables {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 20px;
     }
 
@@ -450,12 +491,14 @@ font-size: 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
       padding: 16px 20px;
       border-bottom: 1px solid var(--border);
     }
 
     .table-header-title {
-font-size: 14px;
+      min-width: 0;
+      font-size: 14px;
       font-weight: 700;
     }
 
@@ -473,6 +516,7 @@ font-size: 14px;
 
     .fin-table {
       width: 100%;
+      min-width: 620px;
       border-collapse: collapse;
     }
 
@@ -511,7 +555,7 @@ font-size: 14px;
 
     .movim-card .table-wrap {
       flex: 1;
-      overflow: hidden;
+      overflow: auto;
     }
 
     .movim-card .fin-table tbody tr {
@@ -526,7 +570,7 @@ font-size: 14px;
 
     .fin-detail-card .table-wrap {
       flex: 1;
-      overflow: hidden;
+      overflow: auto;
     }
 
     .fin-detail-card .fin-table tbody tr {
@@ -597,19 +641,47 @@ font-size: 14px;
       margin-top: 3px;
     }
 
+    .modal.fin-form-modal { width:min(560px, calc(100vw - 64px)); max-width:560px; }
+    .modal.fin-form-modal.sm { width:min(500px, calc(100vw - 64px)); max-width:500px; }
+    .modal.fin-form-modal.confirm { width:min(460px, calc(100vw - 64px)); max-width:460px; }
+    .fin-form-modal .modal-header { align-items:flex-start; padding:20px 24px 16px; }
+    .fin-form-modal .modal-body { padding:20px 24px; }
+    .fin-form-title { display:flex; align-items:center; gap:10px; margin:0; font-size:17px !important; letter-spacing:-.25px; }
+    .fin-form-title-ico { width:34px; height:34px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid var(--border); background:rgba(255,255,255,.04); color:var(--accent); font-size:16px; }
+    .fin-form-title-ico.danger { background:rgba(255,71,87,.12); border-color:rgba(255,71,87,.2); color:var(--danger); }
+    .fin-form-title-ico.cost { background:rgba(255,107,53,.11); border-color:rgba(255,107,53,.22); color:#ff6b35; }
+    .fin-form-title-ico.category { background:rgba(47,128,255,.11); border-color:rgba(47,128,255,.22); color:var(--accent2); }
+    .fin-form-card { background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015)); border:1px solid var(--border); border-radius:14px; padding:14px; }
+    .fin-form-modal .form-grid { gap:14px; }
+    .fin-form-modal .form-group { margin-bottom:0; }
+    .fin-form-modal .field { color-scheme:dark; }
+    .fin-form-modal textarea.field { min-height:84px; line-height:1.45; resize:vertical; }
+    .fin-form-modal input[type="date"].field::-webkit-calendar-picker-indicator { filter:invert(1); opacity:.68; cursor:pointer; }
+    .fin-modal-footer { justify-content:space-between; gap:14px; }
+    .fin-modal-note { display:flex; align-items:center; gap:7px; color:var(--muted); font-size:12px; min-width:0; }
+    .fin-modal-note i { color:var(--accent); }
+    .fin-modal-note.danger i { color:var(--danger); }
+    .fin-modal-actions { display:flex; align-items:center; justify-content:flex-end; gap:10px; min-width:0; }
+    .cc-cat-add { white-space:nowrap; min-height:42px; }
+    .modal-field-section { margin-bottom:14px !important; }
+
     .tipo-toggle {
       display: flex;
       gap: 8px;
       margin-bottom: 16px;
+      padding: 3px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255,255,255,.025);
     }
 
     .tipo-btn {
       flex: 1;
       padding: 10px;
       border-radius: 9px;
-      border: 1px solid var(--border);
-      background: none;
-font-size: 13px;
+      border: 1px solid transparent;
+      background: transparent;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       display: flex;
@@ -805,7 +877,7 @@ transition: border-color .15s;
 
     /* KPIs */
     .dre-kpis {
-      display: grid; grid-template-columns: repeat(5,1fr);
+      display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 12px; margin-bottom: 20px;
     }
     .dre-kpi {
@@ -823,18 +895,19 @@ transition: border-color .15s;
     .dre-kpi-val {
       font-family: var(--font-h); font-size: 17px; font-weight: 800;
       letter-spacing: -.5px; color: var(--text); margin-bottom: 6px;
+      overflow-wrap: anywhere;
     }
     .dre-kpi-delta { font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 3px; }
     .dre-kpi-delta.up   { color: var(--accent); }
     .dre-kpi-delta.down { color: var(--danger); }
 
     /* Grid */
-    .dre-grid { display: grid; grid-template-columns: 1fr 360px; gap: 16px; align-items: start; }
+    .dre-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 360px); gap: 16px; align-items: start; }
 
     /* Tabela */
     .dre-table-card {
       background: var(--card); border: 1px solid var(--border);
-      border-radius: 16px; overflow: hidden;
+      border-radius: 16px; overflow: auto;
     }
     .dre-table-head {
       display: flex; align-items: center; justify-content: space-between;
@@ -846,7 +919,7 @@ transition: border-color .15s;
     }
     .dre-table-note { font-size: 11px; color: var(--muted); }
 
-    table.dre-tbl { width: 100%; border-collapse: collapse; }
+    table.dre-tbl { width: 100%; min-width: 720px; border-collapse: collapse; }
     table.dre-tbl thead th {
       padding: 10px 18px; font-size: 10.5px; font-weight: 700;
       text-transform: uppercase; letter-spacing: .6px;
@@ -890,7 +963,7 @@ transition: border-color .15s;
     .dre-var-down { color: var(--danger);  font-size: 11.5px; font-weight: 600; }
 
     /* Lateral */
-    .dre-side { display: flex; flex-direction: column; gap: 14px; }
+    .dre-side { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
     .dre-side-card {
       background: var(--card); border: 1px solid var(--border);
       border-radius: 16px; overflow: hidden;
@@ -909,7 +982,7 @@ transition: border-color .15s;
     .dre-line-xlbl { display: flex; justify-content: space-between; padding: 4px 0 0; }
     .dre-line-xlbl span { font-size: 10px; color: var(--muted); }
 
-    .dre-donut-wrap { display: flex; align-items: center; gap: 16px; }
+    .dre-donut-wrap { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; }
     .dre-donut-legend { flex: 1; display: flex; flex-direction: column; gap: 7px; }
     .dre-leg-row { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--sub); }
     .dre-leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
@@ -938,6 +1011,7 @@ transition: border-color .15s;
     /* ── DRE spacing — igual ao Relatórios ── */
     #panel-dre {
       padding: 0 28px;
+      min-width: 0;
     }
 
     /* Fix KPI cards — ensure styles apply inside fin-panel */
@@ -951,12 +1025,12 @@ transition: border-color .15s;
     /* Fix grid inside fin-panel */
     #panel-dre .dre-grid {
       display: grid !important;
-      grid-template-columns: 1fr 360px !important;
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 360px) !important;
     }
 
     #panel-dre .dre-kpis {
       display: grid !important;
-      grid-template-columns: repeat(5,1fr) !important;
+      grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
     }
 
     /* Fix table card */
@@ -964,6 +1038,7 @@ transition: border-color .15s;
       background: var(--card) !important;
       border: 1px solid var(--border) !important;
       border-radius: 16px !important;
+      overflow-x: auto !important;
     }
 
     /* Fix side cards */
@@ -978,19 +1053,21 @@ transition: border-color .15s;
     @media (max-width: 1200px) {
       .dre-grid { grid-template-columns: 1fr; }
       .dre-kpis { grid-template-columns: repeat(3,1fr); }
+      #panel-dre .dre-grid { grid-template-columns: 1fr !important; }
+      #panel-dre .dre-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
     }
 
     /* ── CENTRO DE CUSTOS ── */
     .custos-toolbar { display:flex; justify-content:space-between; align-items:center; margin:20px 0 16px; gap:12px; flex-wrap:wrap; }
-    .custos-kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
+    .custos-kpis { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:14px; margin-bottom:20px; }
     .custos-kpi { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 18px; transition:var(--ease); }
     .custos-kpi:hover { border-color:var(--border-h); transform:translateY(-2px); }
     .custos-kpi-lbl { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
-    .custos-kpi-val { font-size:20px; font-weight:800; letter-spacing:-1px; }
+    .custos-kpi-val { font-size:20px; font-weight:800; letter-spacing:-1px; overflow-wrap:anywhere; }
     .custos-kpi-delta { font-size:11px; margin-top:5px; display:flex; align-items:center; gap:3px; }
     .custos-kpi-delta.up { color:var(--danger); }
     .custos-kpi-delta.down { color:var(--accent); }
-    .custos-grid { display:grid; grid-template-columns:300px 1fr; gap:20px; align-items:start; }
+    .custos-grid { display:grid; grid-template-columns:minmax(0, 300px) minmax(0, 1fr); gap:20px; align-items:start; }
     .custos-donut-wrap { position:relative; width:180px; height:180px; margin:0 auto 20px; }
     .custos-donut { width:180px; height:180px; border-radius:50%; background:var(--border); }
     .custos-donut-hole { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:108px; height:108px; border-radius:50%; background:var(--card); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
@@ -1003,31 +1080,85 @@ transition: border-color .15s;
     .cc-cat-badge { display:inline-block; padding:2px 8px; border-radius:100px; font-size:11px; font-weight:600; }
 
     /* ── CATEGORIES MODAL ── */
-    .cc-cat-form { display:flex; gap:8px; margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--border); }
-    .cc-cat-items { display:flex; flex-direction:column; gap:5px; max-height:380px; overflow-y:auto; }
-    .cc-cat-row { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:10px; background:var(--surface); border:1px solid var(--border); transition:border-color .15s, background .15s; }
-    .cc-cat-row:hover { border-color:rgba(255,255,255,.1); background:rgba(255,255,255,.02); }
-    .cc-cat-accent { width:4px; min-height:32px; border-radius:4px; flex-shrink:0; }
+    .cc-cat-form { display:flex; gap:10px; margin-bottom:16px; padding:12px; border:1px solid var(--border); border-radius:14px; background:rgba(255,255,255,.025); }
+    .cc-cat-items { display:flex; flex-direction:column; gap:7px; max-height:380px; overflow-y:auto; padding-right:2px; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
+    .cc-cat-row { display:flex; align-items:center; gap:10px; padding:11px 14px; border-radius:12px; background:rgba(255,255,255,.025); border:1px solid var(--border); transition:border-color .15s, background .15s, transform .15s; }
+    .cc-cat-row:hover { border-color:rgba(255,255,255,.12); background:rgba(255,255,255,.04); transform:translateY(-1px); }
+    .cc-cat-accent { width:4px; min-height:34px; border-radius:4px; flex-shrink:0; }
     .cc-cat-name { flex:1; font-size:13px; font-weight:600; }
     .cc-cat-pill { font-size:10px; font-weight:700; padding:2px 8px; border-radius:100px; white-space:nowrap; }
-    .cc-cat-edit-inp { flex:1; background:none; border:none; border-bottom:1px solid var(--accent); color:var(--text); font-size:13px; font-weight:600; outline:none; padding:2px 0; }
+    .cc-cat-edit-inp { flex:1; background:rgba(255,255,255,.04); border:1px solid var(--accent); border-radius:9px; color:var(--text); font-size:13px; font-weight:600; outline:none; padding:8px 10px; }
 
     /* ── MODAL CONFIRM (custos) ── */
-    .cc-confirm-body { padding:24px 28px; display:flex; gap:16px; align-items:flex-start; }
+    .cc-confirm-body { padding:24px; display:flex; gap:16px; align-items:flex-start; }
     .cc-confirm-icon { width:42px; height:42px; border-radius:10px; background:rgba(255,71,87,.12); display:flex; align-items:center; justify-content:center; font-size:20px; color:var(--danger); flex-shrink:0; }
-    .cc-confirm-text h3 { font-size:15px; font-weight:700; margin-bottom:4px; }
-    .cc-confirm-text p  { font-size:13px; color:var(--muted); }
-    .btn-del { padding:10px 20px; border-radius:9px; border:none; background:var(--danger); color:#fff; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:7px; transition:opacity .18s; }
-    .btn-del:hover { opacity:.85; }
-    .btn-receber { padding:10px 20px; border-radius:9px; border:none; background:var(--accent); color:#04130d; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:7px; transition:opacity .18s; }
-    .btn-receber:hover { opacity:.85; }
+    .cc-confirm-text h3 { font-size:15px; font-weight:800; margin-bottom:4px; }
+    .cc-confirm-text p  { font-size:13px; color:var(--muted); line-height:1.45; }
+    .btn-del { min-height:40px; padding:0 16px; border-radius:10px; border:1px solid rgba(255,71,87,.24); background:linear-gradient(135deg,var(--danger),#d93645); color:#fff; font-size:13px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:7px; transition:opacity .18s, transform .18s; white-space:nowrap; }
+    .btn-del:hover { opacity:.9; transform:translateY(-1px); }
+    .btn-receber { min-height:42px; padding:0 18px; border-radius:10px; border:1px solid rgba(0,208,132,.24); background:linear-gradient(135deg,var(--accent),#00b875); color:#021c14; font-size:13px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:opacity .18s, transform .18s, box-shadow .18s; box-shadow:0 12px 26px rgba(0,208,132,.18); white-space:nowrap; }
+    .btn-receber:hover { opacity:.9; transform:translateY(-1px); }
+    .btn-receber:disabled { opacity:.65; cursor:wait; transform:none; box-shadow:none; }
     .btn-receber-sm { padding:5px 12px; border-radius:7px; border:1px solid var(--accent); background:transparent; color:var(--accent); font-size:12px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all .15s; white-space:nowrap; }
     .btn-receber-sm:hover { background:var(--accent); color:#04130d; }
+    .modal.receber-modal { width:min(560px, calc(100vw - 64px)); max-width:560px; }
+    .receber-modal .modal-header { align-items:flex-start; padding:16px 18px 13px; }
+    .receber-modal .modal-body { padding:14px 18px 16px; }
+    .receber-title { display:flex; align-items:center; gap:9px; margin:0; font-size:16px !important; letter-spacing:-.2px; }
+    .receber-title-ico { width:32px; height:32px; border-radius:9px; background:rgba(0,200,150,.12); border:1px solid rgba(0,200,150,.18); display:inline-flex; align-items:center; justify-content:center; color:var(--accent); font-size:15px; flex-shrink:0; }
+    .rc-summary-card { background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.018)); border:1px solid var(--border); border-radius:12px; padding:10px 12px; margin-bottom:12px; }
     .rc-confirm-icon { width:42px; height:42px; border-radius:10px; background:rgba(0,200,150,.12); display:flex; align-items:center; justify-content:center; font-size:20px; color:var(--accent); flex-shrink:0; }
-    .rc-confirm-row { display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-bottom:1px dashed var(--border, rgba(255,255,255,.08)); }
+    .rc-confirm-row { display:grid; grid-template-columns:92px minmax(0,1fr); align-items:center; gap:10px; font-size:12.5px; padding:8px 0; border-bottom:1px dashed var(--border, rgba(255,255,255,.08)); }
     .rc-confirm-row:last-child { border-bottom:none; }
     .rc-confirm-row span { color:var(--muted); }
-    .rc-confirm-row strong { color:var(--text); font-weight:700; }
+    .rc-confirm-row strong { color:var(--text); font-weight:700; text-align:right; overflow-wrap:anywhere; }
+    .rc-value-pill { justify-self:end; display:inline-flex; align-items:center; justify-content:center; min-height:26px; padding:3px 9px; border-radius:999px; background:rgba(0,208,132,.12); border:1px solid rgba(0,208,132,.22); color:var(--accent) !important; font-size:12.5px; }
+    .rc-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .rc-field-group { display:flex; flex-direction:column; gap:6px; min-width:0; }
+    .rc-field-group.full { grid-column:1/-1; }
+    .rc-field-label { color:var(--sub); font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.45px; }
+    .rc-field-label span { color:var(--muted); font-weight:600; text-transform:none; letter-spacing:0; }
+    .rc-field { width:100%; min-height:40px; padding:9px 11px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,.035); color:var(--text); font-family:var(--font-b); font-size:13px; outline:none; transition:border-color .18s, box-shadow .18s, background .18s; color-scheme:dark; }
+    .rc-field:hover { border-color:var(--border-h); background:rgba(255,255,255,.05); }
+    .rc-field:focus { border-color:var(--accent); box-shadow:var(--focus-ring); }
+    .rc-field::placeholder { color:var(--muted); }
+    select.rc-field { appearance:none; padding-right:36px; cursor:pointer; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24' stroke='%238a94a6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; background-size:14px; }
+    select.rc-field option { background:#0b1220; color:var(--text); }
+    input[type="date"].rc-field::-webkit-calendar-picker-indicator { filter:invert(1); opacity:.68; cursor:pointer; }
+    .rc-textarea { min-height:72px; resize:vertical; line-height:1.45; }
+    .receber-footer { justify-content:flex-end; gap:10px; padding:12px 18px; }
+    .receber-footer-actions { display:flex; align-items:center; justify-content:flex-end; gap:10px; min-width:0; }
+    @media (max-width:700px) {
+      .fin-form-modal { max-width:100%; }
+      .fin-form-modal .modal-header,
+      .fin-form-modal .modal-body { padding-left:18px; padding-right:18px; }
+      .fin-form-modal .form-grid,
+      .cf-tipo-row,
+      .cf-rec-opts { grid-template-columns:1fr; }
+      .fin-modal-footer { flex-direction:column; align-items:stretch; }
+      .fin-modal-actions { width:100%; }
+      .fin-modal-actions > * { flex:1 1 auto; }
+
+      .receber-modal { max-width:100%; }
+      .receber-modal .modal-header,
+      .receber-modal .modal-body { padding-left:18px; padding-right:18px; }
+      .rc-form-grid { grid-template-columns:1fr; }
+      .rc-confirm-row { grid-template-columns:1fr; gap:4px; }
+      .rc-confirm-row strong,
+      .rc-value-pill { justify-self:start; text-align:left; }
+      .receber-footer { flex-direction:column; align-items:stretch; }
+      .receber-footer-actions { width:100%; }
+      .receber-footer-actions > * { flex:1 1 auto; }
+    }
+    @media (max-width:520px) {
+      .fin-modal-actions { flex-direction:column; align-items:stretch; }
+      .fin-modal-actions > * { width:100%; }
+      .tipo-toggle { flex-direction:column; }
+      .cc-cat-form { flex-direction:column; }
+      .cc-cat-add { width:100%; }
+      .receber-footer-actions { flex-direction:column; align-items:stretch; }
+      .receber-footer-actions > * { width:100%; }
+    }
 
     /* ── Autocomplete cliente (Recebimentos) ── */
     .receb-cli-wrap { position:relative; }
@@ -1044,7 +1175,7 @@ transition: border-color .15s;
     .receb-cli-empty { padding:8px 11px; font-size:12px; color:var(--muted); font-family:var(--font-b); }
 
     /* ── Tipo tabs (Todos/Custos/Despesas) ── */
-    .custos-tipo-tabs { display:flex; gap:6px; margin-bottom:16px; }
+    .custos-tipo-tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px; }
     .custos-tipo-tab { padding:7px 16px; border-radius:8px; border:1px solid var(--border); background:none; color:var(--muted); font-size:12px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px; transition:all .15s; }
     .custos-tipo-tab:hover { color:var(--text); border-color:var(--border-h); }
     .custos-tipo-tab.active.t-todos   { background:rgba(255,255,255,.05); border-color:var(--border-h); color:var(--text); }
@@ -1064,14 +1195,168 @@ transition: border-color .15s;
     .cf-tipo-opt input:checked + .cf-tipo-card.custo-card   { border-color:#ff6b35; background:rgba(255,107,53,.08); color:#ff6b35; }
     .cf-tipo-opt input:checked + .cf-tipo-card.despesa-card { border-color:#a855f7; background:rgba(168,85,247,.08); color:#a855f7; }
     /* ── Recorrência ── */
-    .cf-rec-toggle { display:flex; align-items:center; gap:8px; padding:10px 14px; background:var(--surface); border:1px solid var(--border); border-radius:10px; cursor:pointer; transition:border-color .15s; }
-    .cf-rec-toggle:hover { border-color:var(--border-h); }
+    .cf-rec-section { margin-top:14px; }
+    .cf-rec-toggle { display:flex; align-items:center; gap:10px; padding:12px 14px; background:rgba(255,255,255,.025); border:1px solid var(--border); border-radius:12px; cursor:pointer; transition:border-color .15s, background .15s; }
+    .cf-rec-toggle:hover { border-color:var(--border-h); background:rgba(255,255,255,.04); }
     .cf-rec-toggle input[type=checkbox] { accent-color:var(--accent); width:15px; height:15px; cursor:pointer; flex-shrink:0; }
-    .cf-rec-opts { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+    .cf-rec-title { font-size:13px; font-weight:700; color:var(--text); }
+    .cf-rec-sub { font-size:11px; color:var(--muted); margin-top:2px; line-height:1.35; }
+    .cf-rec-opts { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; padding:12px; border:1px solid var(--border); border-radius:12px; background:rgba(255,255,255,.018); }
     /* ── Categorias tipo tabs ── */
     .cc-cat-tipo-tabs { display:flex; gap:0; margin-bottom:14px; background:var(--surface); border-radius:9px; padding:3px; border:1px solid var(--border); }
     .cc-cat-tipo-tab { flex:1; padding:6px 12px; border-radius:7px; border:none; background:none; color:var(--muted); font-size:12px; font-weight:600; cursor:pointer; transition:all .15s; }
     .cc-cat-tipo-tab.active { background:var(--card); color:var(--text); box-shadow:0 1px 4px rgba(0,0,0,.2); }
+
+    .table-wrap {
+      max-width: 100%;
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+
+    .search-input,
+    .select-filter,
+    .receb-cli-wrap,
+    .receb-cli-field {
+      min-width: 0;
+    }
+
+    #chartWrap,
+    #chartWrap2 {
+      min-width: 0;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    #chartWrap > div,
+    #chartWrap2 > div {
+      min-width: 520px;
+    }
+
+    .custos-grid table {
+      min-width: 640px;
+    }
+
+    .modal {
+      max-width: calc(100vw - 32px);
+    }
+
+    @media (max-width: 900px) {
+      .tab-bar {
+        align-items: center;
+      }
+
+      .fin-tab {
+        padding: 9px 12px;
+        font-size: 12px;
+      }
+
+      .tab-sep {
+        display: none;
+      }
+
+      .kpi-strip,
+      .dre-kpis,
+      #panel-dre .dre-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+
+      .fin-grid,
+      .fin-tables,
+      .dre-grid,
+      #panel-dre .dre-grid,
+      .custos-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      #panel-dre {
+        padding: 0 18px;
+      }
+
+      .card-header,
+      .table-header,
+      .custos-toolbar {
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .table-header > div:last-child,
+      .card-header > div:last-child {
+        max-width: 100%;
+      }
+
+      .receb-cli-field,
+      .receb-cli-field input,
+      .search-input,
+      .select-filter {
+        width: 100%;
+      }
+
+      .custos-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .cc-cat-form,
+      .cf-rec-opts {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .kpi-strip,
+      .dre-kpis,
+      #panel-dre .dre-kpis,
+      .custos-kpis {
+        grid-template-columns: 1fr !important;
+      }
+
+      .card-header,
+      .table-header {
+        padding: 14px 16px;
+      }
+
+      .card-body {
+        padding: 16px;
+      }
+
+      .fin-tab {
+        max-width: 100%;
+      }
+
+      .period-btns,
+      .custos-toolbar > div {
+        width: 100%;
+        flex-wrap: wrap;
+      }
+
+      .period-btn,
+      .custos-toolbar .btn-sm {
+        justify-content: center;
+        flex: 1 1 120px;
+      }
+
+      .donut-wrap,
+      .dre-donut-wrap {
+        justify-content: flex-start;
+      }
+
+      .donut-svg {
+        width: 148px;
+        height: 148px;
+      }
+
+      #panel-dre {
+        padding: 0 14px;
+      }
+
+      table.dre-tbl {
+        min-width: 680px;
+      }
+
+      .fin-table {
+        min-width: 600px;
+      }
+    }
 </style>
 </head>
 
@@ -1107,13 +1392,42 @@ transition: border-color .15s;
 
       <!-- PAGE HEADER -->
       <div style="margin-bottom: 0;">
-        <div class="page-header" style="margin-bottom: 12px;">
+        <div class="page-header" style="margin-bottom: 8px;">
           <div>
             <h1 id="finTitle">Visão Geral</h1>
             <p id="finDesc">Resumo financeiro do mês — receitas, despesas e fluxo de caixa.</p>
           </div>
           <div class="header-actions">
             <button class="btn-sm btn-ghost-sm" onclick="exportar()"><i class="bi bi-download"></i> Exportar CSV</button>
+            <div class="u-relative">
+              <div id="finDpBtn"
+                style="display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;transition:border-color .2s;user-select:none"
+                onclick="toggleFinDp()" onmouseenter="this.style.borderColor='var(--accent)'"
+                onmouseleave="this.style.borderColor='var(--border)'">
+                <i class="bi bi-calendar3 u-muted-13" ></i>
+                <span id="finDpLabel" style="font-size:12px;color:var(--text);white-space:nowrap">Este mês</span>
+                <i class="bi bi-chevron-down" style="color:var(--muted);font-size:11px"></i>
+              </div>
+              <div id="finDpDrop"
+                style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:#0f1929;border:1px solid var(--border-h, rgba(255,255,255,.09));border-radius:14px;padding:6px;min-width:210px;z-index:300;box-shadow:0 20px 50px rgba(0,0,0,.55)">
+                <div class="fin-dp-opt active" onclick="finSelPeriod(this,'today')">Hoje</div>
+                <div class="fin-dp-opt" onclick="finSelPeriod(this,'week')">Esta semana</div>
+                <div class="fin-dp-opt" onclick="finSelPeriod(this,'month')">Este mês</div>
+                <div class="fin-dp-opt" onclick="finSelPeriod(this,'quarter')">Último trimestre</div>
+                <div class="fin-dp-opt" onclick="finSelPeriod(this,'year')">Este ano</div>
+                <div style="height:1px;background:var(--border);margin:5px 0"></div>
+                <div style="padding:8px 12px 4px">
+                  <div
+                    style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px">
+                    Período personalizado</div>
+                  <input type="date" id="finDpStart" class="fin-dp-input" oninput="finUpdateCustomLabel()">
+                  <input type="date" id="finDpEnd" class="fin-dp-input" style="margin-top:5px"
+                    oninput="finUpdateCustomLabel()">
+                  <button onclick="finApplyCustom()"
+                    style="display:block;width:100%;margin-top:7px;padding:6px;border-radius:8px;border:none;background:rgba(0,208,132,.12);color:var(--accent);font-size:11.5px;font-weight:700;cursor:pointer">Aplicar</button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1135,7 +1449,7 @@ transition: border-color .15s;
             onclick="switchTab(this,'recebimentos','Recebimentos','Histórico de todas as contas recebidas.')">
             <i class="bi bi-check-circle"></i> Recebimentos
           </div>
-          <div class="fin-tab"
+          <div class="fin-tab fin-tab-more-only"
             onclick="switchTab(this,'cobrancas','Cobranças','Gerencie cobranças e régua de cobrança.')">
             <i class="bi bi-bell"></i> Cobranças
           </div>
@@ -1148,10 +1462,18 @@ transition: border-color .15s;
             <i class="bi bi-bar-chart-line"></i> Fluxo de Caixa
           </div>
           <div class="fin-tab"
+            onclick="switchTab(this,'dre','DRE','Demonstração do Resultado do Exercício.')">
+            <i class="bi bi-file-earmark-bar-graph"></i> DRE
+          </div>
+          <div class="fin-tab"
+            onclick="switchTab(this,'centro-custo','Centro de Custo','Análise de gastos por departamento e projeto.')">
+            <i class="bi bi-diagram-3"></i> Centro de Custo
+          </div>
+          <div class="fin-tab fin-tab-more-only"
             onclick="switchTab(this,'extrato','Extrato Bancário','Visualize o extrato completo da conta bancária.')">
             <i class="bi bi-bank"></i> Extrato
           </div>
-          <div class="fin-tab"
+          <div class="fin-tab fin-tab-more-only"
             onclick="switchTab(this,'conciliacao','Conciliação','Concilie lançamentos com o extrato bancário.')">
             <i class="bi bi-check2-all"></i> Conciliação
           </div>
@@ -1166,7 +1488,7 @@ transition: border-color .15s;
             </div>
             <div class="tab-mais-drop" id="dropMais">
               <div class="tab-mais-label">Módulos Gerenciais</div>
-              <div class="mais-item"
+              <div class="mais-item mais-main-tab-only"
                 onclick="switchTabFromMais('centro-custo','Centro de Custo','Análise de gastos por departamento e projeto.')">
                 <i class="bi bi-diagram-3"></i> Centro de Custo
               </div>
@@ -1174,7 +1496,19 @@ transition: border-color .15s;
                 onclick="switchTabFromMais('categorias','Categorias Financeiras','Gerencie categorias de receitas e despesas.')">
                 <i class="bi bi-tags"></i> Categorias Financeiras
               </div>
-              <div class="mais-item" onclick="switchTabFromMais('dre','DRE','Demonstração do Resultado do Exercício.')">
+              <div class="mais-item"
+                onclick="switchTabFromMais('cobrancas','Cobranças','Gerencie cobranças e régua de cobrança.')">
+                <i class="bi bi-bell"></i> Cobranças
+              </div>
+              <div class="mais-item"
+                onclick="switchTabFromMais('extrato','Extrato Bancário','Visualize o extrato completo da conta bancária.')">
+                <i class="bi bi-bank"></i> Extrato
+              </div>
+              <div class="mais-item"
+                onclick="switchTabFromMais('conciliacao','Conciliação','Concilie lançamentos com o extrato bancário.')">
+                <i class="bi bi-check2-all"></i> Conciliação
+              </div>
+              <div class="mais-item mais-main-tab-only" onclick="switchTabFromMais('dre','DRE','Demonstração do Resultado do Exercício.')">
                 <i class="bi bi-file-earmark-bar-graph"></i> DRE
               </div>
               <div class="tab-divider"></div>
@@ -1191,17 +1525,17 @@ transition: border-color .15s;
       </div>
 
       <!-- DATA RANGE — funcional -->
-      <div style="display:flex;justify-content:flex-end;margin:8px 0 4px">
+      <div style="display:none">
         <div class="u-relative">
-          <div id="finDpBtn"
+          <div id="finDpBtnOld"
             style="display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;transition:border-color .2s;user-select:none"
             onclick="toggleFinDp()" onmouseenter="this.style.borderColor='var(--accent)'"
             onmouseleave="this.style.borderColor='var(--border)'">
             <i class="bi bi-calendar3 u-muted-13" ></i>
-            <span id="finDpLabel" style="font-size:12px;color:var(--text);white-space:nowrap">Este mês</span>
+            <span id="finDpLabelOld" style="font-size:12px;color:var(--text);white-space:nowrap">Este mês</span>
             <i class="bi bi-chevron-down" style="color:var(--muted);font-size:11px"></i>
           </div>
-          <div id="finDpDrop"
+          <div id="finDpDropOld"
             style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:#0f1929;border:1px solid var(--border-h, rgba(255,255,255,.09));border-radius:14px;padding:6px;min-width:210px;z-index:300;box-shadow:0 20px 50px rgba(0,0,0,.55)">
             <div class="fin-dp-opt active" onclick="finSelPeriod(this,'today')">Hoje</div>
             <div class="fin-dp-opt" onclick="finSelPeriod(this,'week')">Esta semana</div>
@@ -1213,8 +1547,8 @@ transition: border-color .15s;
               <div
                 style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px">
                 Período personalizado</div>
-              <input type="date" id="finDpStart" class="fin-dp-input" oninput="finUpdateCustomLabel()">
-              <input type="date" id="finDpEnd" class="fin-dp-input" style="margin-top:5px"
+              <input type="date" id="finDpStartOld" class="fin-dp-input" oninput="finUpdateCustomLabel()">
+              <input type="date" id="finDpEndOld" class="fin-dp-input" style="margin-top:5px"
                 oninput="finUpdateCustomLabel()">
               <button onclick="finApplyCustom()"
                 style="display:block;width:100%;margin-top:7px;padding:6px;border-radius:8px;border:none;background:rgba(0,208,132,.12);color:var(--accent);font-size:11.5px;font-weight:700;cursor:pointer">Aplicar</button>
@@ -1832,17 +2166,20 @@ transition: border-color .15s;
 
   <!-- MODAL CUSTO: LANÇAMENTO -->
   <div class="modal-overlay" id="custosModalOverlay" onclick="if(event.target===this)closeCustosModal()">
-    <div class="modal" style="max-width:520px">
+    <div class="modal fin-form-modal">
       <div class="modal-header">
         <div>
-          <h2 id="custosModalTitle">Novo Lançamento</h2>
-          <div style="color:var(--muted);font-size:12px;margin-top:2px">Registre um custo ou despesa</div>
+          <h2 class="fin-form-title">
+            <span class="fin-form-title-ico cost"><i class="bi bi-receipt-cutoff"></i></span>
+            <span id="custosModalTitle">Novo Lançamento</span>
+          </h2>
+          <div class="modal-sub">Registre um custo ou despesa</div>
         </div>
         <div class="modal-close" onclick="closeCustosModal()"><i class="bi bi-x-lg"></i></div>
       </div>
       <div class="modal-body">
         <!-- Tipo -->
-        <div class="form-group full" style="margin-bottom:14px">
+        <div class="form-group full modal-field-section">
           <label class="lbl">Tipo *</label>
           <div class="cf-tipo-row">
             <label class="cf-tipo-opt">
@@ -1855,7 +2192,7 @@ transition: border-color .15s;
             </label>
           </div>
         </div>
-        <div class="form-grid">
+        <div class="form-grid fin-form-card">
           <div class="form-group full">
             <label class="lbl">Descrição *</label>
             <div class="inp-wrap"><i class="bi bi-pencil pre"></i>
@@ -1888,21 +2225,21 @@ transition: border-color .15s;
           </div>
           <div class="form-group full">
             <label class="lbl">Observação</label>
-            <textarea class="field" id="cf-obs" placeholder="Detalhes adicionais..." style="height:60px;resize:vertical"></textarea>
+            <textarea class="field" id="cf-obs" placeholder="Detalhes adicionais..."></textarea>
           </div>
         </div>
 
         <!-- Recorrência (oculto ao editar) -->
-        <div id="cf-rec-section" style="margin-top:12px">
+        <div id="cf-rec-section" class="cf-rec-section">
           <label class="cf-rec-toggle" onclick="toggleCfRec()">
             <input type="checkbox" id="cf-recorrente" onclick="event.stopPropagation();toggleCfRec()">
             <div>
-              <div style="font-size:13px;font-weight:600;color:var(--text)">Lançamento recorrente</div>
-              <div style="font-size:11px;color:var(--muted);margin-top:1px">Repete automaticamente todo mês, semana ou ano</div>
+              <div class="cf-rec-title">Lançamento recorrente</div>
+              <div class="cf-rec-sub">Repete automaticamente todo mês, semana ou ano</div>
             </div>
           </label>
           <div class="cf-rec-opts" id="cf-rec-opts" style="display:none">
-            <div class="form-group" style="margin-bottom:0">
+            <div class="form-group">
               <label class="lbl">Frequência</label>
               <div class="inp-wrap"><i class="bi bi-arrow-repeat pre"></i>
                 <select class="field" id="cf-freq">
@@ -1912,7 +2249,7 @@ transition: border-color .15s;
                 </select>
               </div>
             </div>
-            <div class="form-group" style="margin-bottom:0">
+            <div class="form-group">
               <label class="lbl">Repetir por</label>
               <div class="inp-wrap"><i class="bi bi-hash pre"></i>
                 <select class="field" id="cf-rep">
@@ -1927,11 +2264,11 @@ transition: border-color .15s;
         </div>
 
       </div>
-      <div class="modal-footer">
-        <div style="color:var(--muted);font-size:12px">* Campos obrigatórios</div>
-        <div style="display:flex;gap:10px">
-          <button class="btn-cancel" onclick="closeCustosModal()">Cancelar</button>
-          <button class="btn-save" onclick="saveCusto()"><i class="bi bi-check2"></i> Salvar</button>
+      <div class="modal-footer fin-modal-footer">
+        <div class="fin-modal-note"><i class="bi bi-info-circle"></i> * Campos obrigatórios</div>
+        <div class="fin-modal-actions">
+          <button class="btn-cancel-m" onclick="closeCustosModal()">Cancelar</button>
+          <button class="btn-save-m" onclick="saveCusto()"><i class="bi bi-check2"></i> Salvar</button>
         </div>
       </div>
     </div>
@@ -1939,11 +2276,14 @@ transition: border-color .15s;
 
   <!-- MODAL CUSTO: CATEGORIAS -->
   <div class="modal-overlay" id="custosCatOverlay" onclick="if(event.target===this)closeCustosCatModal()">
-    <div class="modal" style="max-width:480px">
+    <div class="modal fin-form-modal sm">
       <div class="modal-header">
         <div>
-          <h2>Categorias</h2>
-          <div style="color:var(--muted);font-size:12px;margin-top:2px">Gerencie categorias de custos e despesas</div>
+          <h2 class="fin-form-title">
+            <span class="fin-form-title-ico category"><i class="bi bi-tags"></i></span>
+            <span>Categorias</span>
+          </h2>
+          <div class="modal-sub">Gerencie categorias de custos e despesas</div>
         </div>
         <div class="modal-close" onclick="closeCustosCatModal()"><i class="bi bi-x-lg"></i></div>
       </div>
@@ -1954,12 +2294,12 @@ transition: border-color .15s;
         </div>
         <div class="cc-cat-form">
           <input class="field" type="text" id="cc-cat-input" placeholder="Nome da nova categoria..." onkeydown="if(event.key==='Enter') addCustosCat()">
-          <button class="btn-sm btn-primary-sm" style="white-space:nowrap" onclick="addCustosCat()"><i class="bi bi-plus-lg"></i> Adicionar</button>
+          <button class="btn-sm btn-primary-sm cc-cat-add" onclick="addCustosCat()"><i class="bi bi-plus-lg"></i> Adicionar</button>
         </div>
         <div class="cc-cat-items" id="custosCatList"></div>
       </div>
-      <div class="modal-footer">
-        <div style="color:var(--muted);font-size:12px" id="custosCatCount">—</div>
+      <div class="modal-footer fin-modal-footer">
+        <div class="fin-modal-note" id="custosCatCount">—</div>
         <button class="btn-sm btn-ghost-sm" onclick="closeCustosCatModal()"><i class="bi bi-check2"></i> Concluído</button>
       </div>
     </div>
@@ -1967,7 +2307,7 @@ transition: border-color .15s;
 
   <!-- MODAL CUSTO: CONFIRMAR EXCLUSÃO -->
   <div class="modal-overlay" id="ccConfirmOverlay">
-    <div class="modal" style="max-width:420px">
+    <div class="modal fin-form-modal confirm">
       <div class="cc-confirm-body">
         <div class="cc-confirm-icon"><i class="bi bi-trash3"></i></div>
         <div class="cc-confirm-text">
@@ -1975,10 +2315,10 @@ transition: border-color .15s;
           <p id="ccConfirmMsg">—</p>
         </div>
       </div>
-      <div class="modal-footer" style="justify-content:space-between">
-        <div style="color:var(--muted);font-size:12px">Esta ação não pode ser desfeita.</div>
-        <div style="display:flex;gap:10px">
-          <button class="btn-cancel" onclick="closeCcConfirm()">Cancelar</button>
+      <div class="modal-footer fin-modal-footer">
+        <div class="fin-modal-note danger"><i class="bi bi-exclamation-triangle"></i> Esta ação não pode ser desfeita.</div>
+        <div class="fin-modal-actions">
+          <button class="btn-cancel-m" onclick="closeCcConfirm()">Cancelar</button>
           <button class="btn-del" id="btnDelSerie" onclick="doDelSerie()" style="display:none"><i class="bi bi-arrow-repeat"></i> Excluir série</button>
           <button class="btn-del" onclick="doCcConfirm()"><i class="bi bi-trash3"></i> Excluir este</button>
         </div>
@@ -1988,26 +2328,31 @@ transition: border-color .15s;
 
   <!-- MODAL CONFIRMAR RECEBIMENTO -->
   <div class="modal-overlay" id="receberOverlay" onclick="if(event.target===this)closeReceberModal()">
-    <div class="modal" style="max-width:440px">
-      <div class="modal-header" style="padding:18px 22px 14px">
+    <div class="modal receber-modal">
+      <div class="modal-header">
         <div>
-          <h2 style="font-size:16px"><i class="bi bi-cash-coin" style="color:var(--accent);margin-right:8px"></i>Baixar Recebimento</h2>
+          <h2 class="receber-title">
+            <span class="receber-title-ico"><i class="bi bi-cash-coin"></i></span>
+            <span>Baixar recebimento</span>
+          </h2>
           <div class="modal-sub">Informe os dados do recebimento</div>
         </div>
         <div class="modal-close" onclick="closeReceberModal()"><i class="bi bi-x-lg"></i></div>
       </div>
-      <div class="modal-body" style="padding:0 22px 6px">
-        <div class="rc-confirm-row"><span>Cliente</span><strong id="rcCliente">—</strong></div>
-        <div class="rc-confirm-row"><span>Descrição</span><strong id="rcDesc">—</strong></div>
-        <div class="rc-confirm-row"><span>Valor</span><strong id="rcValor" style="color:var(--accent)">—</strong></div>
-        <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <div class="form-group">
-            <label class="form-label">Data do recebimento</label>
-            <input type="date" id="rcDataInput" class="form-input" style="width:100%">
+      <div class="modal-body">
+        <div class="rc-summary-card">
+          <div class="rc-confirm-row"><span>Cliente</span><strong id="rcCliente">—</strong></div>
+          <div class="rc-confirm-row"><span>Descrição</span><strong id="rcDesc">—</strong></div>
+          <div class="rc-confirm-row"><span>Valor</span><strong id="rcValor" class="rc-value-pill">—</strong></div>
+        </div>
+        <div class="rc-form-grid">
+          <div class="rc-field-group">
+            <label class="rc-field-label" for="rcDataInput">Data do recebimento</label>
+            <input type="date" id="rcDataInput" class="rc-field">
           </div>
-          <div class="form-group">
-            <label class="form-label">Forma de pagamento</label>
-            <select id="rcMetodoInput" class="form-input" style="width:100%">
+          <div class="rc-field-group">
+            <label class="rc-field-label" for="rcMetodoInput">Forma de pagamento</label>
+            <select id="rcMetodoInput" class="rc-field">
               <option value="">Não informado</option>
               <option value="dinheiro">Dinheiro</option>
               <option value="pix">PIX</option>
@@ -2018,27 +2363,31 @@ transition: border-color .15s;
               <option value="outro">Outro</option>
             </select>
           </div>
-        </div>
-        <div class="form-group" style="margin-top:12px">
-          <label class="form-label">Observação <span style="color:var(--muted)">(opcional)</span></label>
-          <textarea id="rcObsInput" class="form-input" rows="2"
-            placeholder="Ex.: pago via PIX chave CPF, recibo nº 001..."
-            style="width:100%;resize:none;font-family:var(--font-b)"></textarea>
+          <div class="rc-field-group full">
+            <label class="rc-field-label" for="rcObsInput">Observação <span>(opcional)</span></label>
+            <textarea id="rcObsInput" class="rc-field rc-textarea" rows="3"
+              placeholder="Ex.: pago via PIX chave CPF, recibo nº 001..."></textarea>
+          </div>
         </div>
       </div>
-      <div class="modal-footer" style="justify-content:flex-end;gap:10px;padding-top:14px">
-        <button class="btn-cancel" onclick="closeReceberModal()">Cancelar</button>
-        <button class="btn-receber" id="btnConfirmReceber" onclick="confirmarReceber()"><i class="bi bi-check2"></i> Confirmar recebimento</button>
+      <div class="modal-footer receber-footer">
+        <div class="receber-footer-actions">
+          <button class="btn-cancel-m" onclick="closeReceberModal()">Cancelar</button>
+          <button class="btn-receber" id="btnConfirmReceber" onclick="confirmarReceber()"><i class="bi bi-check2"></i> Confirmar recebimento</button>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- MODAL LANÇAMENTO -->
   <div class="modal-overlay" id="modalOverlay" onclick="handleOverlay(event)">
-    <div class="modal" style="max-width:520px">
+    <div class="modal fin-form-modal">
       <div class="modal-header">
         <div>
-          <h2>Novo Lançamento</h2>
+          <h2 class="fin-form-title">
+            <span class="fin-form-title-ico"><i class="bi bi-journal-plus"></i></span>
+            <span>Novo Lançamento</span>
+          </h2>
           <div class="modal-sub">Registre uma receita ou despesa</div>
         </div>
         <div class="modal-close" onclick="closeModal()"><i class="bi bi-x-lg"></i></div>
@@ -2052,7 +2401,7 @@ transition: border-color .15s;
             <i class="bi bi-arrow-up-circle-fill"></i> Despesa
           </button>
         </div>
-        <div class="form-grid">
+        <div class="form-grid fin-form-card">
           <div class="form-group">
             <label class="lbl">Descrição</label>
             <div class="inp-wrap">
@@ -2117,15 +2466,17 @@ transition: border-color .15s;
           <div class="form-group">
             <label class="lbl">Observação</label>
             <div class="inp-wrap">
-              <textarea class="field ni" id="fObs" placeholder="Observações adicionais..."
-                style="padding-left:12px"></textarea>
+              <textarea class="field ni" id="fObs" placeholder="Observações adicionais..."></textarea>
             </div>
           </div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn-cancel-m" onclick="closeModal()">Cancelar</button>
-        <button class="btn-save-m" onclick="salvarLancamento()"><i class="bi bi-check2"></i> Salvar</button>
+      <div class="modal-footer fin-modal-footer">
+        <div class="fin-modal-note"><i class="bi bi-info-circle"></i> Informe os dados do lançamento.</div>
+        <div class="fin-modal-actions">
+          <button class="btn-cancel-m" onclick="closeModal()">Cancelar</button>
+          <button class="btn-save-m" onclick="salvarLancamento()"><i class="bi bi-check2"></i> Salvar</button>
+        </div>
       </div>
     </div>
   </div>
@@ -2763,6 +3114,8 @@ transition: border-color .15s;
       if (panelId === 'recebimentos') { recebPage = 1; loadRecebimentos(1, true); loadRecebKPIs(); }
       if (panelId === 'movimentacoes') { movimPage = 1; loadMovimPage(1, false); }
       if (panelId === 'fluxo-caixa') renderChartFluxo();
+      if (panelId === 'centro-custo') renderCustosPanel();
+      if (panelId === 'dre') renderDRE();
     }
 
     function switchTabFromMais(panelId, title, desc) {
@@ -3040,21 +3393,49 @@ transition: border-color .15s;
 
     function toggleMais() {
       maisOpen = !maisOpen;
-      document.getElementById('dropMais').classList.toggle('open', maisOpen);
+      const drop = document.getElementById('dropMais');
+      drop.classList.toggle('open', maisOpen);
+      if (maisOpen) positionMaisDropdown();
       document.getElementById('maisChevron').style.transform = maisOpen ? 'rotate(180deg)' : 'none';
+    }
+
+    function positionMaisDropdown() {
+      const btn = document.getElementById('btnMais');
+      const drop = document.getElementById('dropMais');
+      if (!btn || !drop) return;
+
+      const rect = btn.getBoundingClientRect();
+      const dropW = Math.max(drop.offsetWidth || 230, 230);
+      const dropH = Math.min(drop.offsetHeight || 0, window.innerHeight - 96);
+      const gap = 8;
+      const margin = 12;
+      const left = Math.min(Math.max(rect.left, margin), window.innerWidth - dropW - margin);
+      const belowTop = rect.bottom + gap;
+      const aboveTop = Math.max(margin, rect.top - dropH - gap);
+      const top = belowTop + dropH > window.innerHeight - margin ? aboveTop : belowTop;
+
+      drop.style.left = `${left}px`;
+      drop.style.top = `${top}px`;
     }
 
     function closeMais() {
       if (!maisOpen) return;
       maisOpen = false;
-      document.getElementById('dropMais').classList.remove('open');
+      const drop = document.getElementById('dropMais');
+      drop.classList.remove('open');
+      drop.style.left = '';
+      drop.style.top = '';
       document.getElementById('maisChevron').style.transform = 'none';
     }
 
     document.addEventListener('click', function (e) {
       const btn = document.getElementById('btnMais');
-      if (btn && !btn.contains(e.target) && maisOpen) closeMais();
+      const drop = document.getElementById('dropMais');
+      if (btn && drop && !btn.contains(e.target) && !drop.contains(e.target) && maisOpen) closeMais();
     });
+
+    window.addEventListener('resize', function () { if (maisOpen) positionMaisDropdown(); });
+    window.addEventListener('scroll', function () { if (maisOpen) positionMaisDropdown(); }, true);
 
     function renderChartFluxo() {
       const data = buildChartData(chartPeriod);

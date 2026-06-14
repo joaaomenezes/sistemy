@@ -139,10 +139,24 @@
       top: 50%; transform: translateY(-50%);
       color: var(--muted); pointer-events: auto;
       cursor: pointer; font-size: 16px;
+      z-index: 2;
       transition: color .2s;
     }
     .input-wrap .eye-btn:hover { color: var(--text); }
-    #senha { padding-right: 42px; }
+    #senha { padding-right: 52px; }
+    #senha::-ms-reveal,
+    #senha::-ms-clear {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+    #senha::-webkit-credentials-auto-fill-button,
+    #senha::-webkit-caps-lock-indicator {
+      visibility: hidden;
+      pointer-events: none;
+      position: absolute;
+      right: 0;
+    }
 
     .form-footer {
       display: flex; justify-content: space-between; align-items: center;

@@ -194,6 +194,7 @@
     .topbar-actions {
       display: flex;
       gap: 8px;
+      min-width: 0;
     }
 
     .tb-btn {
@@ -308,6 +309,19 @@
       justify-content: center;
       font-size: 42px;
       position: relative;
+      overflow: hidden;
+    }
+
+    .prod-img.has-photo {
+      font-size: 0;
+      background: var(--surface) !important;
+    }
+
+    .pdv-product-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     .prod-low-badge {
@@ -755,6 +769,19 @@
       justify-content: center;
       font-size: 20px;
       flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .ci-emoji.has-photo {
+      padding: 0;
+      font-size: 0;
+    }
+
+    .pdv-cart-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     .ci-info {
@@ -4255,6 +4282,27 @@
     }
 
     @media(max-width:768px) {
+      .pdv-topbar {
+        align-items: stretch;
+        flex-wrap: wrap;
+      }
+
+      .search-wrap {
+        order: 3;
+        flex: 1 0 100%;
+      }
+
+      .topbar-actions {
+        max-width: 100%;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        scrollbar-width: thin;
+      }
+
+      .topbar-actions .tb-btn {
+        flex: 0 0 auto;
+      }
+
       .pdv-main {
         flex-direction: column;
       }
@@ -5049,6 +5097,19 @@
       justify-content: center;
       font-size: 28px;
       flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .em-prod-emoji.has-photo {
+      padding: 0;
+      font-size: 0;
+    }
+
+    .pdv-stock-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     .em-prod-name {
@@ -5473,6 +5534,19 @@
       justify-content: center;
       background: rgba(255, 255, 255, .05);
       font-size: 24px;
+      overflow: hidden;
+    }
+
+    .pay-summary-emoji.has-photo {
+      padding: 0;
+      font-size: 0;
+    }
+
+    .pdv-pay-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     .pay-summary-name {
@@ -7929,6 +8003,7 @@
         preco: p.preco || 0,
         estoque: p.estoque ?? 0,
         emoji: p.emoji || '📦',
+        imagem: productImageOf(p),
         promo: !!p.destaque,
         vendas: p.vendas || 0,
         custo: p.custo,
@@ -8329,6 +8404,35 @@
       }[ch]));
     }
 
+    const PRODUCT_IMAGE_CACHE_KEY = 'nexoerp.produtos.imagens';
+
+    function readProductImageCache() {
+      try { return JSON.parse(localStorage.getItem(PRODUCT_IMAGE_CACHE_KEY) || '{}') || {}; }
+      catch (_) { return {}; }
+    }
+
+    let productImageCache = readProductImageCache();
+
+    function productImageOf(p) {
+      return p?.imagem || p?.image || p?.foto || productImageCache[p?.id] || '';
+    }
+
+    function hasProductImage(p) {
+      return !!productImageOf(p);
+    }
+
+    function productVisualMarkup(p, size = 'grid') {
+      const image = productImageOf(p);
+      if (!image) return escapeHtml(p?.emoji || '📦');
+      const cls = {
+        grid: 'pdv-product-img',
+        cart: 'pdv-cart-img',
+        pay: 'pdv-pay-img',
+        stock: 'pdv-stock-img',
+      }[size] || 'pdv-product-img';
+      return `<img class="${cls}" src="${escapeHtml(image)}" alt="${escapeHtml(p?.nome || 'Produto')}" loading="lazy">`;
+    }
+
 
     // ═══════════════════════════════════════════════
     // PRODUCTS
@@ -8424,8 +8528,8 @@
         const nomeSafe = escapeHtml(p.nome);
         const skuSafe = escapeHtml(p.sku);
         return `<div class="prod-card ${outStock ? 'out' : ''}" id="pc-${p.id}" onclick="addToCart('${p.id}')" title="${nomeSafe} — ${skuSafe}">
-      <div class="prod-img" style="background:${outStock ? 'rgba(255,71,87,.04)' : 'rgba(0,200,150,.04)'}">
-        ${p.emoji}
+      <div class="prod-img ${hasProductImage(p) ? 'has-photo' : ''}" style="background:${hasProductImage(p) ? 'var(--surface)' : outStock ? 'rgba(255,71,87,.04)' : 'rgba(0,200,150,.04)'}">
+        ${productVisualMarkup(p)}
         ${lowStock ? `<span class="prod-low-badge">Baixo</span>` : ''}
         ${p.promo ? `<span class="prod-promo-badge">Promo</span>` : ''}
         ${inCart ? `<div style="position:absolute;top:6px;left:6px;background:var(--accent);color:#021c14;font-size:9px;font-weight:800;padding:2px 6px;border-radius:100px">${inCart.qty}x</div>` : ''}
@@ -8785,7 +8889,7 @@
           ? `<span class="ci-disc-badge">-R$ ${fmt(item._descR)}</span>` : '';
         return `
     <div class="cart-item" id="ci-${item.id}">
-      <div class="ci-emoji" onclick="openItemEdit('${item.id}')" style="cursor:pointer">${item.emoji}</div>
+      <div class="ci-emoji ${hasProductImage(item) ? 'has-photo' : ''}" onclick="openItemEdit('${item.id}')" style="cursor:pointer">${productVisualMarkup(item, 'cart')}</div>
       <div class="ci-info" onclick="openItemEdit('${item.id}')" style="cursor:pointer">
         <div class="ci-name">${escapeHtml(item.nome)}</div>
         <div class="ci-price${isModified ? ' ci-price-negociado' : ''}">
@@ -8920,7 +9024,7 @@
       if (summaryItems) {
         summaryItems.innerHTML = cart.map(item => `
           <div class="pay-summary-item">
-            <div class="pay-summary-emoji">${item.emoji || '📦'}</div>
+            <div class="pay-summary-emoji ${hasProductImage(item) ? 'has-photo' : ''}">${productVisualMarkup(item, 'pay')}</div>
             <div>
               <div class="pay-summary-name">${escapeHtml(item.nome || 'Produto')}</div>
               <div class="pay-summary-code">Código: ${escapeHtml(String(item.codigo || item.cod || item.id || '—'))}</div>
@@ -11204,7 +11308,7 @@
 
       document.getElementById('emProduct').innerHTML = `
         <div class="em-prod-card">
-          <div class="em-prod-emoji">${p.emoji}</div>
+          <div class="em-prod-emoji ${hasProductImage(p) ? 'has-photo' : ''}">${productVisualMarkup(p, 'stock')}</div>
           <div style="flex:1;min-width:0">
             <div class="em-prod-name">
               ${p.nome}
