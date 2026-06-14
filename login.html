@@ -118,7 +118,8 @@
       position: relative; display: flex; align-items: center;
     }
     .input-wrap i {
-      position: absolute; left: 14px; color: var(--muted); font-size: 16px;
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); font-size: 16px;
       pointer-events: none;
     }
     input[type=text], input[type=password], input[type=email] {
@@ -134,7 +135,9 @@
     }
     input::placeholder { color: var(--muted); }
     .eye-btn {
-      position: absolute; right: 14px; color: var(--muted);
+      position: absolute; left: auto; right: 14px;
+      top: 50%; transform: translateY(-50%);
+      color: var(--muted); pointer-events: auto;
       cursor: pointer; font-size: 16px;
       transition: color .2s;
     }

@@ -788,15 +788,15 @@
   <div class="stats-strip">
     <div class="stats-inner">
       <div class="reveal">
-        <div class="stat-num">2<span>.4k</span></div>
+        <div class="stat-num" data-to="2.4" data-suffix="k" data-decimals="1">2<span>.4k</span></div>
         <div class="stat-label">Empresas ativas</div>
       </div>
       <div class="reveal">
-        <div class="stat-num">R$<span>1,2B</span></div>
+        <div class="stat-num" data-prefix="R$" data-to="1.2" data-suffix="B" data-decimals="1">R$<span>1,2B</span></div>
         <div class="stat-label">Em transações processadas</div>
       </div>
       <div class="reveal">
-        <div class="stat-num">99<span>.9%</span></div>
+        <div class="stat-num" data-to="99.9" data-suffix="%" data-decimals="1">99<span>.9%</span></div>
         <div class="stat-label">Uptime garantido</div>
       </div>
       <div class="reveal">
@@ -1004,6 +1004,39 @@
       });
     }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Stats counter animation
+    (function() {
+      const strip = document.querySelector('.stats-strip');
+      if (!strip) return;
+      function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+      function runCounter(el) {
+        const to       = parseFloat(el.dataset.to);
+        const prefix   = el.dataset.prefix || '';
+        const suffix   = el.dataset.suffix || '';
+        const decimals = parseInt(el.dataset.decimals || '0');
+        const original = el.innerHTML;
+        const duration = 1800;
+        const t0 = performance.now();
+        (function tick(now) {
+          const progress = Math.min((now - t0) / duration, 1);
+          const value    = to * easeOutCubic(progress);
+          if (progress < 1) {
+            el.textContent = prefix + value.toFixed(decimals) + suffix;
+            requestAnimationFrame(tick);
+          } else {
+            el.innerHTML = original;
+          }
+        })(t0);
+      }
+      let fired = false;
+      new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting && !fired) {
+          fired = true;
+          strip.querySelectorAll('.stat-num[data-to]').forEach(runCounter);
+        }
+      }, { threshold: 0.3 }).observe(strip);
+    })();
 
     // Pricing toggle
     const prices = {

@@ -1029,6 +1029,20 @@ transition: border-color .15s;
     .rc-confirm-row span { color:var(--muted); }
     .rc-confirm-row strong { color:var(--text); font-weight:700; }
 
+    /* ── Autocomplete cliente (Recebimentos) ── */
+    .receb-cli-wrap { position:relative; }
+    .receb-cli-field { display:inline-flex; align-items:center; gap:7px; padding:0 10px; height:34px; background:var(--surface2); border:1px solid var(--border); border-radius:10px; transition:border-color .15s; }
+    .receb-cli-field:focus-within { border-color:rgba(0,208,132,.4); }
+    .receb-cli-field input { border:none; background:transparent; color:var(--text); font-size:12.5px; font-family:var(--font-b); outline:none; width:160px; }
+    .receb-cli-field input::placeholder { color:var(--muted); }
+    .receb-cli-clear { background:transparent; border:none; color:var(--muted); cursor:pointer; padding:0; display:flex; align-items:center; font-size:14px; line-height:1; transition:color .15s; }
+    .receb-cli-clear:hover { color:var(--text); }
+    .receb-cli-drop { position:absolute; top:calc(100% + 4px); left:0; min-width:220px; background:#0f1929; border:1px solid rgba(255,255,255,.09); border-radius:12px; padding:4px; z-index:400; box-shadow:0 12px 30px rgba(0,0,0,.45); display:none; }
+    .receb-cli-drop.open { display:block; }
+    .receb-cli-opt { padding:8px 11px; font-size:12.5px; font-family:var(--font-b); color:var(--sub); cursor:pointer; border-radius:8px; transition:background .1s,color .1s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .receb-cli-opt:hover { background:rgba(255,255,255,.05); color:var(--text); }
+    .receb-cli-empty { padding:8px 11px; font-size:12px; color:var(--muted); font-family:var(--font-b); }
+
     /* ── Tipo tabs (Todos/Custos/Despesas) ── */
     .custos-tipo-tabs { display:flex; gap:6px; margin-bottom:16px; }
     .custos-tipo-tab { padding:7px 16px; border-radius:8px; border:1px solid var(--border); background:none; color:var(--muted); font-size:12px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px; transition:all .15s; }
@@ -1116,6 +1130,10 @@ transition: border-color .15s;
           <div class="fin-tab"
             onclick="switchTab(this,'contas-receber','Contas a Receber','Gerencie duplicatas e recebimentos pendentes.')">
             <i class="bi bi-arrow-down-circle"></i> Contas a Receber
+          </div>
+          <div class="fin-tab"
+            onclick="switchTab(this,'recebimentos','Recebimentos','Histórico de todas as contas recebidas.')">
+            <i class="bi bi-check-circle"></i> Recebimentos
           </div>
           <div class="fin-tab"
             onclick="switchTab(this,'cobrancas','Cobranças','Gerencie cobranças e régua de cobrança.')">
@@ -1431,6 +1449,102 @@ transition: border-color .15s;
           <div class="table-footer fin-detail-footer">
             <span id="receberDetalheInfo">—</span>
             <div class="pagination" id="receberDetalhePagination"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recebimentos -->
+      <div class="fin-panel" id="panel-recebimentos">
+        <!-- KPIs -->
+        <div class="kpi-strip u-mt-20" id="recebKpiStrip">
+          <div class="kpi-mini">
+            <div class="kpi-mini-icon g"><i class="bi bi-calendar-check"></i></div>
+            <div>
+              <div class="kpi-mini-val" id="recebKpiHoje">R$ 0</div>
+              <div class="kpi-mini-lbl">Recebido hoje</div>
+            </div>
+          </div>
+          <div class="kpi-mini">
+            <div class="kpi-mini-icon g"><i class="bi bi-calendar-month"></i></div>
+            <div>
+              <div class="kpi-mini-val" id="recebKpiMes">R$ 0</div>
+              <div class="kpi-mini-lbl">Recebido no mês</div>
+            </div>
+          </div>
+          <div class="kpi-mini">
+            <div class="kpi-mini-icon b"><i class="bi bi-cash-coin"></i></div>
+            <div>
+              <div class="kpi-mini-val" id="recebKpiPeriodo">R$ 0</div>
+              <div class="kpi-mini-lbl">Total no período</div>
+            </div>
+          </div>
+          <div class="kpi-mini">
+            <div class="kpi-mini-icon p"><i class="bi bi-graph-up"></i></div>
+            <div>
+              <div class="kpi-mini-val" id="recebKpiTicket">R$ 0</div>
+              <div class="kpi-mini-lbl">Ticket médio</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card principal -->
+        <div class="card" style="margin-top:16px">
+          <div class="table-header" style="flex-wrap:wrap;gap:10px">
+            <div class="table-header-title">
+              <i class="bi bi-check-circle-fill" style="color:var(--accent);margin-right:6px"></i>Recebimentos
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+              <!-- busca -->
+              <div class="search-input" style="min-width:190px">
+                <i class="bi bi-search" style="color:var(--muted)"></i>
+                <input type="text" id="recebSearch" placeholder="Buscar descrição, venda..." oninput="applyRecebFilter()">
+              </div>
+              <!-- autocomplete cliente -->
+              <div class="receb-cli-wrap" id="recebCliWrap">
+                <div class="receb-cli-field">
+                  <i class="bi bi-person" style="color:var(--muted);font-size:13px"></i>
+                  <input type="text" id="recebCliInput" placeholder="Filtrar cliente..."
+                    oninput="onRecebCliInput()" autocomplete="off">
+                  <button class="receb-cli-clear" id="recebCliClear" onclick="clearRecebCli()" style="display:none">
+                    <i class="bi bi-x"></i>
+                  </button>
+                </div>
+                <div class="receb-cli-drop" id="recebCliDrop"></div>
+              </div>
+              <!-- datas -->
+              <input type="date" id="recebDtIni" class="fin-dp-input" style="padding:6px 10px;border-radius:8px;width:auto" onchange="applyRecebFilter()">
+              <input type="date" id="recebDtFim" class="fin-dp-input" style="padding:6px 10px;border-radius:8px;width:auto" onchange="applyRecebFilter()">
+              <!-- método -->
+              <select id="recebMetodo" class="select-filter" onchange="applyRecebFilter()">
+                <option value="">Todos os métodos</option>
+                <option value="dinheiro">Dinheiro</option>
+                <option value="pix">PIX</option>
+                <option value="credito">Cartão de Crédito</option>
+                <option value="debito">Cartão de Débito</option>
+                <option value="transferencia">Transferência</option>
+                <option value="cheque">Cheque</option>
+                <option value="outro">Outro</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="fin-table">
+              <thead>
+                <tr>
+                  <th>Data Recebimento</th>
+                  <th>Cliente</th>
+                  <th>Descrição</th>
+                  <th style="text-align:right">Valor</th>
+                  <th>Forma de Pagamento</th>
+                  <th>Venda</th>
+                </tr>
+              </thead>
+              <tbody id="tblRecebimentos"></tbody>
+            </table>
+          </div>
+          <div class="table-footer fin-detail-footer">
+            <span id="recebInfo">—</span>
+            <div class="pagination" id="recebPagination"></div>
           </div>
         </div>
       </div>
@@ -1874,21 +1988,45 @@ transition: border-color .15s;
 
   <!-- MODAL CONFIRMAR RECEBIMENTO -->
   <div class="modal-overlay" id="receberOverlay" onclick="if(event.target===this)closeReceberModal()">
-    <div class="modal" style="max-width:420px">
-      <div class="cc-confirm-body">
-        <div class="rc-confirm-icon"><i class="bi bi-cash-coin"></i></div>
-        <div class="cc-confirm-text" style="flex:1">
-          <h3>Confirmar recebimento</h3>
-          <p>O valor será registrado como receita recebida e entra no saldo.</p>
-          <div style="margin-top:14px">
-            <div class="rc-confirm-row"><span>Cliente</span><strong id="rcCliente">—</strong></div>
-            <div class="rc-confirm-row"><span>Descrição</span><strong id="rcDesc">—</strong></div>
-            <div class="rc-confirm-row"><span>Valor</span><strong id="rcValor" style="color:var(--accent)">—</strong></div>
-            <div class="rc-confirm-row"><span>Recebido em</span><strong id="rcData">—</strong></div>
+    <div class="modal" style="max-width:440px">
+      <div class="modal-header" style="padding:18px 22px 14px">
+        <div>
+          <h2 style="font-size:16px"><i class="bi bi-cash-coin" style="color:var(--accent);margin-right:8px"></i>Baixar Recebimento</h2>
+          <div class="modal-sub">Informe os dados do recebimento</div>
+        </div>
+        <div class="modal-close" onclick="closeReceberModal()"><i class="bi bi-x-lg"></i></div>
+      </div>
+      <div class="modal-body" style="padding:0 22px 6px">
+        <div class="rc-confirm-row"><span>Cliente</span><strong id="rcCliente">—</strong></div>
+        <div class="rc-confirm-row"><span>Descrição</span><strong id="rcDesc">—</strong></div>
+        <div class="rc-confirm-row"><span>Valor</span><strong id="rcValor" style="color:var(--accent)">—</strong></div>
+        <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="form-group">
+            <label class="form-label">Data do recebimento</label>
+            <input type="date" id="rcDataInput" class="form-input" style="width:100%">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Forma de pagamento</label>
+            <select id="rcMetodoInput" class="form-input" style="width:100%">
+              <option value="">Não informado</option>
+              <option value="dinheiro">Dinheiro</option>
+              <option value="pix">PIX</option>
+              <option value="credito">Cartão de Crédito</option>
+              <option value="debito">Cartão de Débito</option>
+              <option value="transferencia">Transferência</option>
+              <option value="cheque">Cheque</option>
+              <option value="outro">Outro</option>
+            </select>
           </div>
         </div>
+        <div class="form-group" style="margin-top:12px">
+          <label class="form-label">Observação <span style="color:var(--muted)">(opcional)</span></label>
+          <textarea id="rcObsInput" class="form-input" rows="2"
+            placeholder="Ex.: pago via PIX chave CPF, recibo nº 001..."
+            style="width:100%;resize:none;font-family:var(--font-b)"></textarea>
+        </div>
       </div>
-      <div class="modal-footer" style="justify-content:flex-end;gap:10px">
+      <div class="modal-footer" style="justify-content:flex-end;gap:10px;padding-top:14px">
         <button class="btn-cancel" onclick="closeReceberModal()">Cancelar</button>
         <button class="btn-receber" id="btnConfirmReceber" onclick="confirmarReceber()"><i class="bi bi-check2"></i> Confirmar recebimento</button>
       </div>
@@ -2622,6 +2760,7 @@ transition: border-color .15s;
       closeMais();
       if (panelId === 'contas-pagar') { pagarDetalhePage = 1; renderTabelas(); }
       if (panelId === 'contas-receber') { receberDetalhePage = 1; renderTabelas(); }
+      if (panelId === 'recebimentos') { recebPage = 1; loadRecebimentos(1, true); loadRecebKPIs(); }
       if (panelId === 'movimentacoes') { movimPage = 1; loadMovimPage(1, false); }
       if (panelId === 'fluxo-caixa') renderChartFluxo();
     }
@@ -3060,6 +3199,10 @@ transition: border-color .15s;
       if (btn && dd && !btn.contains(e.target) && !dd.contains(e.target)) {
         dd.style.display = 'none';
       }
+      const recebWrap = document.getElementById('recebCliWrap');
+      if (recebWrap && !recebWrap.contains(e.target)) {
+        document.getElementById('recebCliDrop')?.classList.remove('open');
+      }
     });
 
     function finSelPeriod(el, tipo) {
@@ -3485,11 +3628,13 @@ transition: border-color .15s;
       const l = lancamentos.find(x => x.id === id);
       if (!l) return;
       _receberId = id;
-      const hojeBR = new Date().toLocaleDateString('pt-BR');
-      document.getElementById('rcCliente').textContent = l.parte || l.descricao || '—';
-      document.getElementById('rcDesc').textContent    = l.descricao || '—';
-      document.getElementById('rcValor').textContent   = `R$ ${fmt(l.valor || 0)}`;
-      document.getElementById('rcData').textContent    = hojeBR;
+      const hoje = new Date().toISOString().slice(0, 10);
+      document.getElementById('rcCliente').textContent  = l.parte || l.descricao || '—';
+      document.getElementById('rcDesc').textContent     = l.descricao || '—';
+      document.getElementById('rcValor').textContent    = `R$ ${fmt(l.valor || 0)}`;
+      document.getElementById('rcDataInput').value      = hoje;
+      document.getElementById('rcMetodoInput').value    = '';
+      document.getElementById('rcObsInput').value       = '';
       document.getElementById('receberOverlay').classList.add('open');
     }
 
@@ -3505,24 +3650,196 @@ transition: border-color .15s;
 
       const btn = document.getElementById('btnConfirmReceber');
       btn.disabled = true;
-      const hoje = new Date().toISOString().slice(0, 10);
+
+      const pagoEm = document.getElementById('rcDataInput').value || new Date().toISOString().slice(0, 10);
+      const metodo = document.getElementById('rcMetodoInput').value;
+      const obs    = document.getElementById('rcObsInput').value.trim();
+
       const res = await NexoAuth.apiFetch(`/financeiro/${_receberId}`, {
         method: 'PUT',
-        body: JSON.stringify({ status: 'pago', pagoEm: hoje }),
+        body: JSON.stringify({
+          status: 'pago',
+          pagoEm,
+          ...(metodo && { formaPagamento: metodo }),
+          ...(obs    && { obs }),
+        }),
       });
       btn.disabled = false;
 
       if (!res.ok) { showToast(res.message || 'Erro ao registrar recebimento.', 'error'); return; }
 
-      // Atualiza estado local + saldo histórico (endpoint /resumo soma só pago)
-      Object.assign(l, { status: 'pago', pagoEm: hoje });
+      Object.assign(l, { status: 'pago', pagoEm, ...(metodo && { formaPagamento: metodo }), ...(obs && { obs }) });
       const rResumo = await NexoAuth.apiFetch('/financeiro/resumo');
       if (rResumo.ok) finResumo = rResumo.data;
 
       const valorTxt = fmt(l.valor || 0);
       closeReceberModal();
       renderKPIs(); renderDonut(); renderTabelas();
+
+      // Recarrega aba Recebimentos se estiver ativa
+      if (document.getElementById('panel-recebimentos')?.classList.contains('active')) {
+        loadRecebimentos(1, false);
+        loadRecebKPIs();
+      }
+
       showToast(`Recebimento de R$ ${valorTxt} confirmado.`, 'success');
+    }
+
+    // ═══════════════════════════════════════════════
+    // ABA RECEBIMENTOS
+    // ═══════════════════════════════════════════════
+    let recebPage = 1;
+    let recebPageMeta = { total: 0, totalPages: 1 };
+    let recebClienteId   = null;
+    let recebClienteTimer = null;
+
+    function applyRecebFilter() {
+      recebPage = 1;
+      loadRecebimentos(1, true);
+      loadRecebKPIs();
+    }
+
+    function buildRecebParams(page, paginate) {
+      const params = new URLSearchParams({ tipo: 'receita', status: 'pago', sortBy: 'pagoEm' });
+      if (paginate) { params.set('page', String(page)); params.set('limit', '20'); }
+      const q      = document.getElementById('recebSearch')?.value.trim()  || '';
+      const dIni   = document.getElementById('recebDtIni')?.value           || '';
+      const dFim   = document.getElementById('recebDtFim')?.value           || '';
+      const metodo = document.getElementById('recebMetodo')?.value          || '';
+      if (q)              params.set('q', q);
+      if (dIni)           params.set('pagoInicio', dIni);
+      if (dFim)           params.set('pagoFim', dFim);
+      if (metodo)         params.set('formaPagamento', metodo);
+      if (recebClienteId) params.set('clienteId', recebClienteId);
+      return params.toString();
+    }
+
+    async function loadRecebimentos(page = 1, showLoad = true) {
+      recebPage = page;
+      const tbody = document.getElementById('tblRecebimentos');
+      if (showLoad && tbody) tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted)"><i class="bi bi-hourglass-split"></i> Carregando...</td></tr>`;
+
+      const r = await NexoAuth.apiFetch('/financeiro?' + buildRecebParams(page, true));
+      if (!r.ok) { showToast('Erro ao carregar recebimentos.', 'error'); return; }
+
+      recebPageMeta = r.pagination || { total: (r.data||[]).length, totalPages: 1 };
+      renderRecebimentos(r.data || []);
+    }
+
+    function fmtMetodo(m) {
+      const MAP = { dinheiro:'Dinheiro', pix:'PIX', credito:'Crédito', debito:'Débito',
+        transferencia:'Transferência', cheque:'Cheque', multiplo:'Múltiplo', fiado:'—', outro:'Outro' };
+      return m ? (MAP[m.toLowerCase()] || m) : '—';
+    }
+
+    function renderRecebimentos(lista) {
+      const tbody = document.getElementById('tblRecebimentos');
+      const info  = document.getElementById('recebInfo');
+      const total = recebPageMeta.total || lista.length;
+      if (!tbody) return;
+
+      if (!lista.length) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Nenhum recebimento encontrado.</td></tr>`;
+        if (info) info.textContent = '0 recebimentos';
+        document.getElementById('recebPagination').innerHTML = '';
+        return;
+      }
+
+      tbody.innerHTML = lista.map(l => {
+        const dataExib = l.pagoEm
+          ? new Date(l.pagoEm + 'T00:00:00').toLocaleDateString('pt-BR')
+          : (l.criadoEm ? new Date(l.criadoEm).toLocaleDateString('pt-BR') : '—');
+        const cliente  = escapeHTML(l.parte || '—');
+        const descr    = escapeHTML(l.descricao || '—');
+        const metodoTx = fmtMetodo(l.formaPagamento);
+        const vendaLink = l.vendaId
+          ? `<span style="font-size:11px;font-family:var(--font-b);color:var(--accent)">${escapeHTML(l.vendaId)}</span>`
+          : '<span style="color:var(--muted)">—</span>';
+        return `<tr>
+          <td style="white-space:nowrap">${dataExib}</td>
+          <td class="u-fw-500">${cliente}</td>
+          <td class="u-muted">${descr}</td>
+          <td style="text-align:right" class="val-positivo">R$ ${fmt(l.valor || 0)}</td>
+          <td>${metodoTx}</td>
+          <td>${vendaLink}</td>
+        </tr>`;
+      }).join('');
+
+      if (info) info.textContent = `${total} recebimento${total !== 1 ? 's' : ''}`;
+      renderRecebPagination();
+    }
+
+    function renderRecebPagination() {
+      const pg = document.getElementById('recebPagination');
+      if (!pg) return;
+      const pages = recebPageMeta.totalPages || 1;
+      if (pages <= 1) { pg.innerHTML = ''; return; }
+      let html = '';
+      if (recebPage > 1)     html += `<button class="pg-btn" onclick="loadRecebimentos(${recebPage-1},true)">‹</button>`;
+      const start = Math.max(1, recebPage - 2), end = Math.min(pages, recebPage + 2);
+      for (let i = start; i <= end; i++)
+        html += `<button class="pg-btn${i===recebPage?' active':''}" onclick="loadRecebimentos(${i},true)">${i}</button>`;
+      if (recebPage < pages) html += `<button class="pg-btn" onclick="loadRecebimentos(${recebPage+1},true)">›</button>`;
+      pg.innerHTML = html;
+    }
+
+    async function loadRecebKPIs() {
+      const dIni = document.getElementById('recebDtIni')?.value || '';
+      const dFim = document.getElementById('recebDtFim')?.value || '';
+      const cid  = recebClienteId || '';
+      const params = new URLSearchParams();
+      if (dIni) params.set('pagoInicio', dIni);
+      if (dFim) params.set('pagoFim', dFim);
+      if (cid)  params.set('clienteId', cid);
+
+      const r = await NexoAuth.apiFetch('/financeiro/resumo-recebimentos?' + params.toString());
+      if (!r.ok) return;
+      const d = r.data;
+      document.getElementById('recebKpiHoje').textContent    = `R$ ${fmt(d.recebidoHoje  || 0)}`;
+      document.getElementById('recebKpiMes').textContent     = `R$ ${fmt(d.recebidoMes   || 0)}`;
+      document.getElementById('recebKpiPeriodo').textContent = `R$ ${fmt(d.totalPeriodo  || 0)}`;
+      document.getElementById('recebKpiTicket').textContent  = `R$ ${fmt(d.ticketMedio   || 0)}`;
+    }
+
+    // Autocomplete de cliente no filtro de Recebimentos
+    function onRecebCliInput() {
+      clearTimeout(recebClienteTimer);
+      const inp = document.getElementById('recebCliInput');
+      const q   = inp.value.trim();
+      document.getElementById('recebCliClear').style.display = q ? '' : 'none';
+
+      if (recebClienteId) { recebClienteId = null; applyRecebFilter(); }
+
+      if (q.length < 2) { document.getElementById('recebCliDrop').classList.remove('open'); return; }
+
+      recebClienteTimer = setTimeout(async () => {
+        const r    = await NexoAuth.apiFetch(`/clientes?q=${encodeURIComponent(q)}&limit=20`);
+        const drop = document.getElementById('recebCliDrop');
+        if (!r.ok || !(r.data||[]).length) {
+          drop.innerHTML = '<div class="receb-cli-empty">Nenhum cliente encontrado</div>';
+        } else {
+          drop.innerHTML = (r.data||[]).map(c =>
+            `<div class="receb-cli-opt" onclick="selectRecebCli('${c.id}','${c.nome.replace(/'/g,"\\'")}')">${c.nome}</div>`
+          ).join('');
+        }
+        drop.classList.add('open');
+      }, 280);
+    }
+
+    function selectRecebCli(id, nome) {
+      recebClienteId = id;
+      document.getElementById('recebCliInput').value = nome;
+      document.getElementById('recebCliClear').style.display = '';
+      document.getElementById('recebCliDrop').classList.remove('open');
+      applyRecebFilter();
+    }
+
+    function clearRecebCli() {
+      recebClienteId = null;
+      document.getElementById('recebCliInput').value = '';
+      document.getElementById('recebCliClear').style.display = 'none';
+      document.getElementById('recebCliDrop').classList.remove('open');
+      applyRecebFilter();
     }
 
     function deleteCusto(id) {

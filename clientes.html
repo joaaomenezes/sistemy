@@ -1047,6 +1047,10 @@
         <div class="dp-section-title">Financeiro</div>
         <div id="dp-fin"></div>
       </div>
+      <div class="dp-section" id="dp-historico-section" style="display:none">
+        <div class="dp-section-title">Histórico Financeiro</div>
+        <div id="dp-historico-fin"></div>
+      </div>
     </div>
     <div class="dp-actions">
       <button class="dp-btn primary" onclick="editClient()"><i class="bi bi-pencil"></i> Editar</button>
@@ -1689,7 +1693,12 @@
 
       document.getElementById('detailPanel').classList.add('open');
 
-      if (isCli) loadDetalheCredito(c.id);
+      if (isCli) {
+        loadDetalheCredito(c.id);
+        loadHistoricoFin(c.id);
+      } else {
+        document.getElementById('dp-historico-section').style.display = 'none';
+      }
     }
 
     async function loadDetalheCredito(clienteId) {
@@ -1713,6 +1722,54 @@
           `</div>` +
         `</div>`;
     }
+    async function loadHistoricoFin(clienteId) {
+      const section   = document.getElementById('dp-historico-section');
+      const container = document.getElementById('dp-historico-fin');
+      if (!section || !container) return;
+      section.style.display = '';
+      container.innerHTML = '<div class="dp-credito-loading">Carregando histórico...</div>';
+
+      const [rAberto, rPago] = await Promise.all([
+        NexoAuth.apiFetch(`/financeiro?tipo=receita&clienteId=${clienteId}&limit=5&sortBy=pagoEm`),
+        NexoAuth.apiFetch(`/financeiro?tipo=receita&status=pago&clienteId=${clienteId}&limit=5&sortBy=pagoEm`),
+      ]);
+
+      const aberto = (rAberto.ok ? rAberto.data : []).filter(l => l.status !== 'pago' && l.status !== 'cancelado' && l.status !== 'estornado');
+      const pagos  = rPago.ok ? (rPago.data || []) : [];
+
+      let html = '';
+
+      if (aberto.length) {
+        html += `<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#f59e0b;margin:8px 0 4px">Em aberto</div>`;
+        html += aberto.map(l => {
+          const venc = l.vencimento ? new Date(l.vencimento + 'T00:00:00').toLocaleDateString('pt-BR') : '—';
+          return `<div class="dp-row" style="font-size:12px">
+            <span class="dp-label" style="font-size:11px">${venc} · ${escapeHTML(l.descricao||'')}</span>
+            <span class="dp-val" style="color:#f59e0b">R$ ${fmt(parseFloat(l.valor)||0)}</span>
+          </div>`;
+        }).join('');
+      }
+
+      if (pagos.length) {
+        html += `<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--accent);margin:${aberto.length?'12px':' 8px'} 0 4px">Recebidos</div>`;
+        html += pagos.map(l => {
+          const data  = l.pagoEm ? new Date(l.pagoEm + 'T00:00:00').toLocaleDateString('pt-BR') : '—';
+          const mFmt  = { dinheiro:'Dinheiro', pix:'PIX', credito:'Crédito', debito:'Débito', transferencia:'Transf.', cheque:'Cheque', outro:'Outro' };
+          const metodo = l.formaPagamento ? (mFmt[l.formaPagamento.toLowerCase()] || l.formaPagamento) : '';
+          return `<div class="dp-row" style="font-size:12px">
+            <span class="dp-label" style="font-size:11px">${data}${metodo ? ' · ' + metodo : ''}</span>
+            <span class="dp-val" style="color:var(--accent)">R$ ${fmt(parseFloat(l.valor)||0)}</span>
+          </div>`;
+        }).join('');
+      }
+
+      if (!aberto.length && !pagos.length) {
+        html = '<div style="font-size:12px;color:var(--muted);padding:6px 0">Nenhum lançamento encontrado.</div>';
+      }
+
+      container.innerHTML = html;
+    }
+
     function closeDetail() { document.getElementById('detailPanel').classList.remove('open'); currentDetailId = null; }
     function editClient() { if (currentDetailId) { closeDetail(); openEdit(currentDetailId); } }
 
