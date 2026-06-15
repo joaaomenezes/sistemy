@@ -2,6 +2,11 @@
   publish = "."
   command = "sh build.sh"
 
+[[redirects]]
+  from = "/"
+  to = "/landing.html"
+  status = 302
+
 [[headers]]
   for = "/*"
   [headers.values]
