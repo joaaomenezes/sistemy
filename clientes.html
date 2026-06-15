@@ -14,6 +14,7 @@
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
+      align-items: center;
     }
 
     .view-btn {
@@ -40,6 +41,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
+      min-width: 880px;
     }
 
     thead th {
@@ -48,9 +50,9 @@
       font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .5px;
+      letter-spacing: .45px;
       color: var(--muted);
-      background: var(--surface);
+      background: rgba(255, 255, 255, .018);
       border-bottom: 1px solid var(--border);
       white-space: nowrap;
       cursor: pointer;
@@ -72,7 +74,7 @@
     }
 
     tbody td {
-      padding: 13px 16px;
+      padding: 14px 16px;
       border-bottom: 1px solid rgba(30, 42, 58, .7);
       vertical-align: middle;
     }
@@ -106,17 +108,47 @@
       justify-content: center;
       font-weight: 800;
       font-size: 13px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .1);
     }
 
     .client-name {
       font-weight: 600;
       font-size: 13px;
+      color: var(--text);
     }
 
     .client-doc {
       color: var(--muted);
       font-size: 11px;
       margin-top: 2px;
+    }
+
+    .muted-cell {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .text-cell {
+      font-size: 13px;
+    }
+
+    .date-cell {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .metric-cell {
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .hidden-col {
+      display: none;
+    }
+
+    .pg-ellipsis {
+      pointer-events: none;
     }
 
     .client-type {
@@ -127,23 +159,28 @@
       border-radius: 100px;
       font-size: 11px;
       font-weight: 600;
+      border: 1px solid transparent;
     }
 
     .client-type.pf {
       background: rgba(0, 119, 255, .1);
       color: var(--accent2);
+      border-color: rgba(0, 119, 255, .22);
     }
 
     .client-type.pj {
       background: rgba(0, 200, 150, .1);
       color: var(--accent);
+      border-color: rgba(0, 200, 150, .22);
     }
 
     .client-type.mei {
       background: rgba(255, 107, 53, .1);
       color: var(--warn);
+      border-color: rgba(255, 107, 53, .22);
     }
 
+    .act-btn.del:hover,
     tbody tr:hover .act-btn.del:hover {
       color: var(--danger);
       border-color: var(--danger);
@@ -158,27 +195,31 @@
 
     /* wizard tabs */
     .wizard-tabs {
-      display: flex;
-      gap: 0;
-      padding: 0 28px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      padding: 14px 22px;
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
       overflow-x: auto;
+      background: rgba(255, 255, 255, .012);
     }
 
     .wizard-tab {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 14px 20px;
-      font-size: 13px;
+      min-height: 42px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, .025);
+      font-size: 12px;
       font-weight: 600;
       color: var(--muted);
       cursor: pointer;
       white-space: nowrap;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
-      transition: color .18s, border-color .18s;
+      transition: var(--ease);
     }
 
     .wizard-tab i {
@@ -187,11 +228,13 @@
 
     .wizard-tab.active {
       color: var(--accent);
-      border-bottom-color: var(--accent);
+      border-color: rgba(0, 200, 150, .45);
+      background: rgba(0, 200, 150, .07);
     }
 
     .wizard-tab.done {
       color: var(--text);
+      border-color: rgba(255, 255, 255, .11);
     }
 
     .wizard-tab.done .tab-num {
@@ -265,9 +308,10 @@
 
     .radio-opt {
       flex: 1;
+      min-height: 42px;
       padding: 10px 12px;
-      border-radius: 9px;
-      background: var(--surface);
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, .025);
       border: 1px solid var(--border);
       color: var(--muted);
       font-size: 13px;
@@ -288,6 +332,7 @@
       border-color: var(--accent);
       background: rgba(0, 200, 150, .07);
       color: var(--accent);
+      box-shadow: var(--focus-ring);
     }
 
     /* CEP loader */
@@ -309,21 +354,119 @@
 
     /* modal clientes — 4 passos */
     .modal {
-      max-width: 720px;
-      max-height: 90vh;
+      max-width: 760px;
+      max-height: min(88vh, 840px);
+    }
+
+    .vendedor-modal {
+      max-width: 500px;
+      border-radius: var(--radius-modal);
+      overflow: hidden;
+    }
+
+    .confirm-modal {
+      max-width: 430px;
+    }
+
+    .modal-head-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .modal-heading-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      background: rgba(0, 200, 150, .1);
+      color: var(--accent);
+      border: 1px solid rgba(0, 200, 150, .2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 17px;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .modal-sub {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .modal-body {
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, .014), transparent 130px),
+        var(--card);
+    }
+
+    .form-section {
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, .07);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, .018);
+    }
+
+    .form-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .vendedor-modal-body {
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .vendedor-modal-footer {
+      padding: 14px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .vendedor-radio-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .vendedor-radio-row .radio-opt {
+      justify-content: center;
+    }
+
+    .confirm-footer-note {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .confirm-footer-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
     .modal-footer {
       justify-content: space-between;
       align-items: center;
-      padding: 18px 28px;
+      padding: 16px 22px;
     }
 
     .btn-modal-back {
-      padding: 10px 20px;
-      border-radius: 9px;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
       border: 1px solid var(--border);
-      background: none;
+      background: rgba(255, 255, 255, .04);
       color: var(--text);
       font-size: 14px;
       font-weight: 600;
@@ -340,7 +483,7 @@
 
     .btn-modal-next {
       padding: 10px 24px;
-      border-radius: 9px;
+      border-radius: var(--radius-sm);
       border: none;
       background: var(--accent);
       color: #021c14;
@@ -386,7 +529,7 @@
       gap: 4px;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: var(--radius-md);
       padding: 4px;
       width: fit-content;
       max-width: 100%;
@@ -394,8 +537,9 @@
     }
 
     .sec-tab {
-      padding: 8px 20px;
-      border-radius: 9px;
+      min-height: 36px;
+      padding: 8px 18px;
+      border-radius: var(--radius-sm);
       border: none;
       background: none;
       color: var(--muted);
@@ -439,6 +583,29 @@
       display: flex;
       gap: 16px;
       align-items: flex-start;
+    }
+
+    .dp-header {
+      background: linear-gradient(180deg, rgba(255, 255, 255, .035), transparent);
+    }
+
+    .dp-section {
+      padding: 14px;
+      border: 1px solid rgba(255, 255, 255, .07);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, .018);
+    }
+
+    .dp-identity {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .dp-address-val {
+      max-width: 200px;
+      text-align: right;
     }
 
     .confirm-icon {
@@ -500,6 +667,10 @@
       .sec-tab {
         justify-content: center;
       }
+
+      .wizard-tabs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
 
     @media(max-width:640px) {
@@ -514,6 +685,31 @@
 
       .filter-group {
         grid-template-columns: 1fr;
+      }
+
+      .wizard-tabs {
+        grid-template-columns: 1fr;
+      }
+
+      .radio-group,
+      .vendedor-radio-row {
+        flex-direction: column;
+      }
+
+      .modal-footer,
+      .mf-right {
+        width: 100%;
+      }
+
+      .mf-right {
+        justify-content: flex-end;
+        flex-wrap: wrap;
+      }
+    }
+
+    @media(hover:none) {
+      .action-cell {
+        opacity: 1;
       }
     }
   </style>
@@ -651,25 +847,24 @@
 
   <!-- MODAL VENDEDOR -->
   <div class="modal-overlay" id="vendedorModalOverlay" onclick="handleVendedorOverlayClick(event)">
-    <div class="modal" style="max-width:480px;border-radius:16px;overflow:hidden">
-      <div class="modal-header"
-        style="padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
-        <div>
-          <div class="modal-title" id="vendedorModalTitle" style="font-size:16px;font-weight:700;color:var(--text)">Novo
-            Vendedor</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:2px">Preencha os dados do vendedor</div>
+    <div class="modal vendedor-modal">
+      <div class="modal-header">
+        <div class="modal-head-main">
+          <div class="modal-heading-icon"><i class="bi bi-person-badge"></i></div>
+          <div>
+            <div class="modal-title" id="vendedorModalTitle">Novo Vendedor</div>
+            <div class="modal-sub">Preencha os dados do vendedor</div>
+          </div>
         </div>
-        <button class="modal-close" onclick="closeVendedorModal()"
-          style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px"><i
-            class="bi bi-x-lg"></i></button>
+        <button class="modal-close" onclick="closeVendedorModal()"><i class="bi bi-x-lg"></i></button>
       </div>
-      <div style="padding:20px 24px;display:flex;flex-direction:column;gap:14px">
+      <div class="vendedor-modal-body">
         <!-- Tipo -->
-        <div class="radio-row" style="display:flex;gap:8px">
-          <div class="radio-opt sel" onclick="selectVendTipo(this,'pf')" id="vend-tipo-pf"
-            style="flex:1;justify-content:center"><i class="bi bi-person"></i> Pessoa Física</div>
-          <div class="radio-opt" onclick="selectVendTipo(this,'pj')" id="vend-tipo-pj"
-            style="flex:1;justify-content:center"><i class="bi bi-building"></i> Pessoa Jurídica</div>
+        <div class="vendedor-radio-row">
+          <div class="radio-opt sel" onclick="selectVendTipo(this,'pf')" id="vend-tipo-pf"><i class="bi bi-person"></i>
+            Pessoa Física</div>
+          <div class="radio-opt" onclick="selectVendTipo(this,'pj')" id="vend-tipo-pj"><i class="bi bi-building"></i>
+            Pessoa Jurídica</div>
         </div>
         <!-- Nome -->
         <div class="form-group">
@@ -709,7 +904,7 @@
           </div>
         </div>
       </div>
-      <div style="padding:14px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end">
+      <div class="vendedor-modal-footer">
         <button class="btn-sm btn-ghost-sm" onclick="closeVendedorModal()">Cancelar</button>
         <button class="btn-sm btn-primary-sm" onclick="saveVendedor()"><i class="bi bi-check2"></i> Salvar</button>
       </div>
@@ -720,9 +915,12 @@
   <div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
     <div class="modal" id="modalBox">
       <div class="modal-header">
-        <div>
-          <h2 id="modalTitle">Novo Cliente</h2>
-          <div style="color:var(--muted);font-size:12px;margin-top:3px" id="modalSub">Preencha os dados do cliente</div>
+        <div class="modal-head-main">
+          <div class="modal-heading-icon"><i class="bi bi-person-plus"></i></div>
+          <div>
+            <h2 id="modalTitle">Novo Cliente</h2>
+            <div class="modal-sub" id="modalSub">Preencha os dados do cliente</div>
+          </div>
         </div>
         <div class="modal-close" onclick="closeModal()"><i class="bi bi-x-lg"></i></div>
       </div>
@@ -1052,7 +1250,7 @@
 
   <!-- MODAL CONFIRMAÇÃO -->
   <div class="modal-overlay" id="confirmOverlay">
-    <div class="modal" style="max-width:420px">
+    <div class="modal confirm-modal">
       <div class="confirm-body">
         <div class="confirm-icon"><i class="bi bi-trash3"></i></div>
         <div class="confirm-text">
@@ -1060,9 +1258,9 @@
           <p id="confirmMsg">—</p>
         </div>
       </div>
-      <div class="modal-footer" style="justify-content:space-between">
-        <div style="color:var(--muted);font-size:12px">Esta ação não pode ser desfeita.</div>
-        <div style="display:flex;gap:10px">
+      <div class="modal-footer">
+        <div class="confirm-footer-note">Esta ação não pode ser desfeita.</div>
+        <div class="confirm-footer-actions">
           <button class="btn-modal-back" onclick="closeConfirm()">Cancelar</button>
           <button class="btn-del" onclick="doConfirm()"><i class="bi bi-trash3"></i> Excluir</button>
         </div>
@@ -1074,7 +1272,7 @@
   <div class="detail-panel" id="detailPanel">
     <div class="dp-header">
       <div class="dp-top">
-        <div style="display:flex;align-items:center;gap:14px">
+        <div class="dp-identity">
           <div class="dp-avatar" id="dp-avatar"></div>
           <div>
             <div class="dp-name" id="dp-name"></div>
@@ -1349,11 +1547,11 @@
               <div><div class="client-name">${escapeHTML(c.nome)}</div><div class="client-doc">${c.doc || ''}</div></div>
             </div></td>
             <td><span class="client-type ${c.tipo}">${typeLabel}</span></td>
-            <td style="color:var(--muted);font-size:13px">${c.tel || '—'}</td>
-            <td style="font-size:13px">${c.email || '—'}</td>
-            <td style="display:none"></td>
+            <td class="muted-cell">${c.tel || '—'}</td>
+            <td class="text-cell">${c.email || '—'}</td>
+            <td class="hidden-col"></td>
             <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
-            <td style="color:var(--muted);font-size:12px">${c.cadastro || '—'}</td>
+            <td class="date-cell">${c.cadastro || '—'}</td>
             <td><div class="action-cell" onclick="event.stopPropagation()">
               <div class="act-btn" title="Editar" onclick="openVendedorEdit('${c.id}')"><i class="bi bi-pencil"></i></div>
               <div class="act-btn del" title="Excluir" onclick="deleteEntity('${c.id}')"><i class="bi bi-trash3"></i></div>
@@ -1367,11 +1565,11 @@
             <div><div class="client-name">${c.nome}</div><div class="client-doc">${c.doc || ''}</div></div>
           </div></td>
           <td><span class="client-type ${c.tipo}">${typeLabel}</span></td>
-          <td style="color:var(--muted);font-size:13px">${c.cidade || '—'}/${c.estado || '—'}</td>
-          <td style="font-size:13px">${c.tel || '—'}</td>
-          <td style="font-weight:700;font-size:13px">${movVal}</td>
+          <td class="muted-cell">${c.cidade || '—'}/${c.estado || '—'}</td>
+          <td class="text-cell">${c.tel || '—'}</td>
+          <td class="metric-cell">${movVal}</td>
           <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
-          <td style="color:var(--muted);font-size:12px">${c.cadastro || '—'}</td>
+          <td class="date-cell">${c.cadastro || '—'}</td>
           <td><div class="action-cell" onclick="event.stopPropagation()">
             <div class="act-btn" title="Editar" onclick="openEdit('${c.id}')"><i class="bi bi-pencil"></i></div>
             <div class="act-btn del" title="Excluir" onclick="deleteEntity('${c.id}')"><i class="bi bi-trash3"></i></div>
@@ -1393,7 +1591,7 @@
       let html = `<button class="pg-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}><i class="bi bi-chevron-left"></i></button>`;
       for (const i of getVisiblePages(pages)) {
         html += i === '...'
-          ? `<span class="pg-btn" style="pointer-events:none">...</span>`
+          ? `<span class="pg-btn pg-ellipsis">...</span>`
           : `<button class="pg-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
       }
       html += `<button class="pg-btn" onclick="goPage(${currentPage + 1})" ${currentPage === pages ? 'disabled' : ''}><i class="bi bi-chevron-right"></i></button>`;
@@ -1733,7 +1931,7 @@
 
       const addr = [c.logradouro, c.numero, c.bairro, c.cidade, c.estado, c.cep].filter(Boolean).join(', ') || '—';
       document.getElementById('dp-addr').innerHTML =
-        `<div class="dp-row"><span class="dp-label">Endereço</span><span class="dp-val" style="max-width:200px;text-align:right">${addr}</span></div>`;
+        `<div class="dp-row"><span class="dp-label">Endereço</span><span class="dp-val dp-address-val">${addr}</span></div>`;
 
       const limFmt = c.limite ? 'R$ ' + fmt(parseFloat(c.limite) || 0) : '—';
       document.getElementById('dp-fin').innerHTML =

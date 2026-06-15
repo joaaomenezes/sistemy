@@ -1310,6 +1310,22 @@
       return Math.max(1, Math.floor(usable / 58));
     }
 
+    async function fetchAllStockPositions() {
+      const all = [];
+      let page = 1;
+      let hasNext = true;
+
+      while (hasNext) {
+        const r = await NexoAuth.apiFetch(`/estoque/posicao?page=${page}&limit=100`);
+        if (!r.ok) return { ok: false, data: all };
+        all.push(...(r.data || []));
+        hasNext = !!r.pagination?.hasNextPage;
+        page += 1;
+      }
+
+      return { ok: true, data: all };
+    }
+
     // ═══════════════════════════════════════════════
     // INIT
     // ═══════════════════════════════════════════════
@@ -1317,7 +1333,7 @@
       document.getElementById('stockTableBody').innerHTML = NexoSkeleton.tableRows(8, 5);
       document.getElementById('movsTableBody').innerHTML = NexoSkeleton.tableRows(8, 7);
       const [rProd, rMovs, rDep] = await Promise.all([
-        NexoAuth.apiFetch('/produtos'),
+        fetchAllStockPositions(),
         NexoAuth.apiFetch('/estoque/movimentacoes'),
         NexoAuth.apiFetch('/estoque/depositos'),
       ]);
@@ -1418,6 +1434,7 @@
       if (dep) params.set('deposito', dep);
       if (currentFilter === 'baixo') params.set('estoqueStatus', 'baixo');
       if (currentFilter === 'zero') params.set('estoqueStatus', 'zerado');
+      if (currentFilter === 'ok') params.set('estoqueStatus', 'ok');
       if (stockSortKey) {
         params.set('sortBy', stockSortKey);
         params.set('sortDir', stockSortDir);
@@ -1426,7 +1443,7 @@
       return params.toString();
     }
 
-    function filterStockLocal() {
+    function getFilteredStockRowsForExport() {
       const q = (document.getElementById('searchInput').value || '').toLowerCase();
       const dep = document.getElementById('depFilter').value;
       const list = products.filter(p => {
@@ -1457,26 +1474,7 @@
       currentPage = page;
       if (showLoading) document.getElementById('stockTableBody').innerHTML = NexoSkeleton.tableRows(8, 5);
 
-      if (currentFilter === 'ok') {
-        const local = filterStockLocal();
-        const pages = Math.max(1, Math.ceil(local.length / perPage));
-        if (currentPage > pages) currentPage = pages;
-        const start = (currentPage - 1) * perPage;
-        stockRows = local.slice(start, start + perPage);
-        filtered = local;
-        stockPageMeta = {
-          page: currentPage,
-          limit: perPage,
-          total: local.length,
-          totalPages: pages,
-          hasNextPage: currentPage < pages,
-          hasPrevPage: currentPage > 1,
-        };
-        renderTable();
-        return;
-      }
-
-      const res = await NexoAuth.apiFetch('/produtos?' + buildStockQuery(page));
+      const res = await NexoAuth.apiFetch('/estoque/posicao?' + buildStockQuery(page));
       if (!res.ok) {
         showToast(res.message || 'Erro ao carregar posição de estoque.');
         stockRows = [];
@@ -2019,7 +2017,7 @@
         const cProd = nfeVal(det, 'cProd');
 
         let matched = null;
-        if (cEAN && cEAN !== 'SEM GTIN') matched = products.find(p => p.codigoBarras === cEAN);
+        if (cEAN && cEAN !== 'SEM GTIN') matched = products.find(p => p.ean === cEAN || p.codigoBarras === cEAN);
         if (!matched) matched = products.find(p => norm(p.nome) === norm(xProd));
         if (!matched) {
           const words = norm(xProd).split(' ').filter(w => w.length > 3);
@@ -2162,7 +2160,7 @@
         filename = 'movimentacoes-estoque.csv';
       } else {
         header = ['SKU', 'Nome', 'Categoria', 'Depósito', 'Estoque Atual', 'Est. Mínimo', 'Est. Máximo', 'Status'];
-        rows = filterStockLocal().map(p => [
+        rows = getFilteredStockRowsForExport().map(p => [
           p.sku, p.nome, p.cat || '—', p.deposito || '—',
           p.estoque, p.estoqueMin || 0, p.estoqueMax || 0,
           p.status === 'ativo' ? 'Ativo' : 'Inativo',

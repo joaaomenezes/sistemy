@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistemy — Central de Ajuda</title>
+  <link rel="stylesheet" href="global.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <style>
+    /* ══ BUSCA (hero) ══ */
+    .ajuda-search {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 12px 18px;
+      margin-bottom: 24px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .ajuda-search:focus-within {
+      border-color: var(--accent);
+      box-shadow: var(--focus-ring);
+    }
+
+    .ajuda-search i {
+      font-size: 18px;
+      color: var(--muted);
+    }
+
+    .ajuda-search input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .ajuda-search input::placeholder {
+      color: var(--muted);
+    }
+
+    .ajuda-search kbd {
+      font-family: var(--font-b);
+      font-size: 11px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px 7px;
+      background: rgba(255, 255, 255, .03);
+    }
+
+    /* ══ SEÇÕES ══ */
+    .ajuda-sec {
+      margin-bottom: 30px;
+    }
+
+    .ajuda-sec-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .ajuda-sec-head h2 {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -.4px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .ajuda-sec-head h2 i {
+      color: var(--accent);
+      font-size: 18px;
+    }
+
+    .ajuda-sec-head p {
+      color: var(--sub);
+      font-size: 12.5px;
+      margin-top: 2px;
+    }
+
+    /* ══ CHECKLIST PRIMEIROS PASSOS ══ */
+    .checklist-card {
+      background: linear-gradient(180deg, rgba(0, 208, 132, .04), rgba(255, 255, 255, .01));
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 22px;
+    }
+
+    .checklist-progress {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .checklist-bar {
+      flex: 1;
+      height: 8px;
+      border-radius: 100px;
+      background: rgba(255, 255, 255, .06);
+      overflow: hidden;
+    }
+
+    .checklist-bar > span {
+      display: block;
+      height: 100%;
+      width: 0;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent), #00b574);
+      transition: width .4s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    .checklist-pct {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    .checklist-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, .015);
+      cursor: pointer;
+      transition: var(--ease);
+      text-align: left;
+    }
+
+    .check-item:hover {
+      border-color: var(--border-h);
+      background: rgba(255, 255, 255, .04);
+    }
+
+    .check-box {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+      border-radius: 7px;
+      border: 1.5px solid var(--border-h);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: transparent;
+      transition: var(--ease);
+    }
+
+    .check-item.done .check-box {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #021c14;
+    }
+
+    .check-label {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .check-item.done .check-label {
+      color: var(--sub);
+      text-decoration: line-through;
+    }
+
+    .check-item .check-go {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* ══ GRID DE MÓDULOS ══ */
+    .modulos-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .mod-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: var(--ease);
+    }
+
+    .mod-card:hover {
+      border-color: var(--border-h);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-card);
+    }
+
+    .mod-card-top {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .mod-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .mod-icon.g { background: rgba(0, 208, 132, .1); color: var(--accent); }
+    .mod-icon.b { background: rgba(47, 128, 255, .1); color: var(--accent2); }
+    .mod-icon.o { background: rgba(255, 140, 66, .1); color: var(--warn); }
+    .mod-icon.p { background: rgba(167, 139, 250, .1); color: var(--purple); }
+    .mod-icon.y { background: rgba(245, 183, 0, .1); color: var(--yellow); }
+
+    .mod-card-top h3 {
+      font-size: 15.5px;
+      font-weight: 700;
+      letter-spacing: -.3px;
+    }
+
+    .mod-count {
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .mod-desc {
+      color: var(--sub);
+      font-size: 13px;
+      line-height: 1.55;
+      flex: 1;
+    }
+
+    .mod-card-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    .mod-status {
+      font-size: 11.5px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .mod-status.completo { color: var(--accent); }
+
+    .ajuda-empty {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 50px 20px;
+      text-align: center;
+      color: var(--sub);
+    }
+
+    .ajuda-empty.show { display: flex; }
+
+    .ajuda-empty i { font-size: 30px; color: var(--muted); }
+
+    /* ══ MODAL DE TUTORIAL ══ */
+    #tutModal .modal { max-width: 720px; }
+
+    .tut-hero {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .tut-hero .mod-icon { width: 48px; height: 48px; font-size: 22px; }
+
+    .tut-block { margin-bottom: 22px; }
+
+    .tut-block-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--sub);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tut-block-title i { color: var(--accent); font-size: 14px; }
+
+    .tut-text {
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: var(--sub);
+    }
+
+    /* botões da página */
+    .btn-list { display: grid; gap: 8px; }
+
+    .btn-list-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, .015);
+    }
+
+    .btn-list-item b {
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .btn-list-item span {
+      font-size: 12.5px;
+      color: var(--sub);
+      line-height: 1.5;
+    }
+
+    /* accordion de tutoriais (ações comuns) */
+    .tut-acc { display: grid; gap: 8px; }
+
+    .tut-acc-item {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: rgba(255, 255, 255, .015);
+    }
+
+    .tut-acc-head {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: background .15s;
+      user-select: none;
+    }
+
+    .tut-acc-head:hover { background: rgba(255, 255, 255, .03); }
+
+    .tut-acc-num {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      border-radius: 7px;
+      background: rgba(0, 208, 132, .12);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tut-acc-head h4 {
+      font-size: 13.5px;
+      font-weight: 600;
+      flex: 1;
+      font-family: var(--font-b);
+    }
+
+    .tut-acc-head .chev {
+      color: var(--muted);
+      font-size: 13px;
+      transition: transform .2s;
+    }
+
+    .tut-acc-item.open .chev { transform: rotate(180deg); }
+
+    .tut-acc-body {
+      display: none;
+      padding: 0 14px 14px 49px;
+    }
+
+    .tut-acc-item.open .tut-acc-body { display: block; }
+
+    .tut-acc-body ol {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .tut-acc-body li {
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--sub);
+    }
+
+    .tut-media-soon {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      padding: 8px 12px;
+      border: 1px dashed var(--border-h);
+      border-radius: var(--radius-sm);
+    }
+
+    /* dicas / erros */
+    .tip-list { display: grid; gap: 9px; }
+
+    .tip-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .tip-row i { flex-shrink: 0; margin-top: 2px; font-size: 15px; }
+    .tip-row.dica i { color: var(--accent); }
+    .tip-row.erro i { color: var(--danger); }
+    .tip-row b { font-weight: 600; }
+
+    @media (max-width: 900px) {
+      .checklist-grid { grid-template-columns: repeat(2, 1fr); }
+      .modulos-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .checklist-grid, .modulos-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-root"></div>
+  <script src="sidebar.js"></script>
+
+  <!-- MAIN -->
+  <div class="main collapsed" id="mainContent">
+    <div class="topbar">
+      <div class="topbar-left">
+        <span class="page-title">Central de Ajuda</span>
+        <span class="breadcrumb-sep">/</span>
+        <span style="color:var(--muted);font-size:13px">Tutoriais</span>
+      </div>
+      <div class="topbar-right">
+        <button class="btn-sm btn-ghost-sm" onclick="window.open('https://wa.me/5500000000000','_blank')">
+          <i class="bi bi-headset"></i> Falar com suporte
+        </button>
+        <div class="user-avatar" id="topAvatar">NX</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- Header -->
+      <div class="page-header">
+        <div>
+          <h1>Central de Ajuda</h1>
+          <p>Aprenda rapidamente como usar cada módulo do sistema.</p>
+        </div>
+      </div>
+
+      <!-- Busca -->
+      <div class="ajuda-search">
+        <i class="bi bi-search"></i>
+        <input type="text" id="ajudaSearch" placeholder="Pesquisar ajuda... (ex: cancelar venda, contas a pagar)"
+          autocomplete="off">
+        <kbd>ESC para limpar</kbd>
+      </div>
+
+      <!-- Primeiros passos -->
+      <section class="ajuda-sec" id="secPrimeiros">
+        <div class="ajuda-sec-head">
+          <div>
+            <h2><i class="bi bi-flag-fill"></i> Primeiros passos</h2>
+            <p>Siga este checklist para configurar e começar a usar o sistema.</p>
+          </div>
+        </div>
+        <div class="checklist-card">
+          <div class="checklist-progress">
+            <div class="checklist-bar"><span id="checkBar"></span></div>
+            <div class="checklist-pct" id="checkPct">0%</div>
+          </div>
+          <div class="checklist-grid" id="checklistGrid"></div>
+        </div>
+      </section>
+
+      <!-- Tutoriais por módulo -->
+      <section class="ajuda-sec">
+        <div class="ajuda-sec-head">
+          <div>
+            <h2><i class="bi bi-mortarboard-fill"></i> Tutoriais por módulo</h2>
+            <p>Clique em <b>Ver tutorial</b> para abrir o guia completo de cada área.</p>
+          </div>
+        </div>
+        <div class="modulos-grid" id="modulosGrid"></div>
+        <div class="ajuda-empty" id="ajudaEmpty">
+          <i class="bi bi-search"></i>
+          <h3>Nada encontrado</h3>
+          <p>Tente outras palavras como "venda", "estoque" ou "relatório".</p>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- ══ MODAL TUTORIAL ══ -->
+  <div class="modal-overlay" id="tutModal">
+    <div class="modal nx-modal-lg">
+      <div class="modal-header">
+        <div class="tut-hero">
+          <div class="mod-icon g" id="tutIcon"><i class="bi bi-grid-1x2-fill"></i></div>
+          <div>
+            <h2 id="tutTitle">Módulo</h2>
+            <div class="modal-sub" id="tutDesc">Descrição</div>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeTut()" aria-label="Fechar"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="modal-body" id="tutBody"><!-- preenchido dinamicamente --></div>
+      <div class="modal-footer">
+        <button class="btn-cancel-m" onclick="closeTut()">Fechar</button>
+        <button class="btn-save-m" onclick="window.open('https://wa.me/5500000000000','_blank')">
+          <i class="bi bi-headset"></i> Falar com suporte
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"><i class="bi bi-check-circle-fill"></i><span id="toastMsg">—</span></div>
+
+  <script src="utils.js"></script>
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+  <script>
+    const session = NexoAuth.requireAuth();
+    requirePermission();
+
+    // Avatar do topo
+    (function () {
+      const u = session?.user;
+      if (u?.name) document.getElementById('topAvatar').textContent = initials(u.name);
+    })();
+
+    // ═══════════════════════════════════════════════════
+    // CHECKLIST — PRIMEIROS PASSOS
+    // (progresso salvo localmente; preparado p/ sincronizar com backend futuramente)
+    // ═══════════════════════════════════════════════════
+    const CHECKLIST = [
+      { id: 'empresa',   label: 'Cadastre sua empresa',     href: 'configuracoes.html' },
+      { id: 'clientes',  label: 'Cadastre seus clientes',   href: 'clientes.html' },
+      { id: 'produtos',  label: 'Cadastre seus produtos',   href: 'produtos.html' },
+      { id: 'pagamento', label: 'Configure formas de pagamento', href: 'configuracoes.html' },
+      { id: 'venda',     label: 'Faça sua primeira venda',  href: 'pdv.html' },
+      { id: 'financeiro',label: 'Confira o financeiro',     href: 'financeiro.html' },
+    ];
+
+    const PROGRESS_KEY = 'nexoerp.ajuda.checklist';
+
+    function loadProgress() {
+      try { return JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}'); }
+      catch (_) { return {}; }
+    }
+    function saveProgress(p) {
+      localStorage.setItem(PROGRESS_KEY, JSON.stringify(p));
+      // TODO: futuramente enviar para a API → POST /usuarios/me/onboarding
+    }
+
+    function renderChecklist() {
+      const prog = loadProgress();
+      const grid = document.getElementById('checklistGrid');
+      grid.innerHTML = CHECKLIST.map(c => {
+        const done = !!prog[c.id];
+        return `
+          <div class="check-item ${done ? 'done' : ''}" onclick="toggleCheck('${c.id}', event)">
+            <div class="check-box"><i class="bi bi-check-lg"></i></div>
+            <div class="check-label">${c.label}</div>
+            <a class="check-go" href="${c.href}" onclick="event.stopPropagation()" title="Ir para a página">
+              <i class="bi bi-arrow-right-short"></i>
+            </a>
+          </div>`;
+      }).join('');
+
+      const total = CHECKLIST.length;
+      const doneCount = CHECKLIST.filter(c => prog[c.id]).length;
+      const pct = Math.round((doneCount / total) * 100);
+      document.getElementById('checkBar').style.width = pct + '%';
+      document.getElementById('checkPct').textContent = pct + '%';
+    }
+
+    function toggleCheck(id) {
+      const prog = loadProgress();
+      prog[id] = !prog[id];
+      saveProgress(prog);
+      renderChecklist();
+      if (prog[id]) showToast('✅ Passo concluído!');
+    }
+
+    // ═══════════════════════════════════════════════════
+    // DADOS DOS TUTORIAIS
+    // Estrutura por módulo (fácil manutenção):
+    //  icon / iconClass / nome / desc / keywords
+    //  paraQueServe  → string
+    //  botoes        → [{ nome, desc }]
+    //  acoes         → [{ titulo, passos: [...] }]  (ações mais comuns)
+    //  dicas         → [string]
+    //  erros         → [string]
+    // Preparado para futuro: cada ação pode receber video/gif/img/artigo.
+    // ═══════════════════════════════════════════════════
+    const MODULOS = [
+      {
+        id: 'dashboard', nome: 'Dashboard', icon: 'bi-grid-1x2-fill', iconClass: 'g',
+        desc: 'Entenda os indicadores do seu negócio em tempo real e tome decisões com base em dados.',
+        keywords: ['kpi', 'indicadores', 'faturamento', 'receita', 'painel', 'período', 'graficos'],
+        paraQueServe: 'O Dashboard é a tela inicial gerencial. Reúne os principais indicadores (KPIs) do negócio — faturamento, vendas, contas a pagar e a receber — para você ter uma visão rápida da saúde da empresa sem abrir cada módulo.',
+        botoes: [
+          { nome: 'Filtro de período', desc: 'Define o intervalo de datas analisado (hoje, 7 dias, mês, personalizado).' },
+          { nome: 'Cartões de KPI', desc: 'Cada cartão resume um número-chave; alguns são clicáveis e levam ao módulo de origem.' },
+        ],
+        acoes: [
+          { titulo: 'Como interpretar os KPIs', passos: ['Cada cartão no topo é um KPI (indicador).', 'O número grande é o valor do período selecionado.', 'A cor verde indica entradas/positivo; vermelho indica saídas/atenção.'] },
+          { titulo: 'Diferença entre faturamento e receita', passos: ['Faturamento = total vendido no período (bruto).', 'Receita = o que efetivamente entrou no caixa (recebido).', 'Vendas fiado contam no faturamento, mas só viram receita quando o cliente paga.'] },
+          { titulo: 'Como analisar contas a pagar e receber', passos: ['Veja o cartão "A Pagar" para compromissos do período.', 'Veja "A Receber" para o que os clientes ainda devem.', 'Clique no cartão para abrir o detalhamento no Financeiro.'] },
+          { titulo: 'Como usar filtros de período', passos: ['Clique no seletor de período no topo.', 'Escolha um atalho (Hoje, 7 dias, Mês) ou defina datas personalizadas.', 'Todos os KPIs recalculam automaticamente.'] },
+          { titulo: 'Como configurar o painel', passos: ['Abra Configurações para ajustar moeda e formato de data.', 'O Dashboard usa essas preferências ao exibir os valores.'] },
+        ],
+        dicas: ['Compare períodos iguais (mês a mês) para enxergar tendências.', 'Use o Dashboard no início do dia para uma leitura rápida do negócio.'],
+        erros: ['Confundir faturamento com lucro — faturamento não desconta custos.', 'Esquecer de ajustar o período e analisar dados antigos.'],
+      },
+      {
+        id: 'vendas', nome: 'Vendas / Pedidos', icon: 'bi-cart4', iconClass: 'o',
+        desc: 'Crie pedidos de venda, vincule clientes, acompanhe o status e finalize o faturamento.',
+        keywords: ['pedido', 'orçamento', 'cliente', 'desconto', 'faturar', 'status', 'kanban'],
+        paraQueServe: 'O módulo de Vendas/Pedidos gerencia vendas que envolvem cliente e acompanhamento de status (orçamento → aprovado → faturado → concluído). Diferente do PDV, aqui a venda fica registrada em nome de um cliente.',
+        botoes: [
+          { nome: 'Novo pedido', desc: 'Abre o formulário para criar um pedido de venda do zero.' },
+          { nome: 'Selecionar cliente', desc: 'Vincula o pedido a um cliente cadastrado.' },
+          { nome: 'Adicionar produto', desc: 'Inclui itens no pedido com quantidade e preço.' },
+          { nome: 'Faturar', desc: 'Confirma a venda — é nesse momento que o estoque é baixado.' },
+        ],
+        acoes: [
+          { titulo: 'Como criar um pedido de venda', passos: ['Clique em "Novo pedido".', 'Preencha os dados iniciais e selecione o cliente.', 'Adicione os produtos e salve como orçamento ou pedido.'] },
+          { titulo: 'Como escolher o cliente', passos: ['No formulário do pedido, use o campo de cliente.', 'Busque pelo nome e selecione.', 'Se ainda não existir, cadastre antes em Parceiros/Clientes.'] },
+          { titulo: 'Como adicionar produtos', passos: ['Clique em "Adicionar item".', 'Busque o produto pelo nome ou código.', 'Informe a quantidade — o subtotal é calculado automaticamente.'] },
+          { titulo: 'Como aplicar desconto', passos: ['No resumo do pedido, localize o campo de desconto.', 'Informe valor ou percentual.', 'O total é atualizado na hora.'] },
+          { titulo: 'Como finalizar o pedido', passos: ['Revise itens, cliente e total.', 'Avance o status para Aprovado e depois Faturar.', 'Ao faturar, o estoque é baixado e o lançamento financeiro é criado.'] },
+          { titulo: 'Como acompanhar o status da venda', passos: ['Use a visão Kanban ou a lista de pedidos.', 'Cada coluna/etiqueta mostra o estágio: orçamento, aprovado, faturado, concluído.', 'Arraste ou edite o pedido para mudar de status.'] },
+        ],
+        dicas: ['O estoque só é baixado ao FATURAR o pedido, não ao concluir.', 'Cancelar um pedido faturado reverte o estoque e estorna o lançamento.'],
+        erros: ['Criar pedido sem selecionar cliente quando o cliente é necessário.', 'Esperar o estoque baixar ao concluir — ele baixa ao faturar.'],
+      },
+      {
+        id: 'pdv', nome: 'PDV', icon: 'bi-display', iconClass: 'b',
+        desc: 'Aprenda a abrir venda, adicionar produtos, aplicar desconto e finalizar o pagamento no balcão.',
+        keywords: ['caixa', 'venda rápida', 'pagamento', 'desconto', 'cancelar', 'balcão', 'estorno', 'fiado'],
+        paraQueServe: 'O PDV (Ponto de Venda) é a tela de venda rápida no balcão. Funciona em tela cheia, com caixa por turno, e é ideal para vendas à vista sem necessidade de vincular cliente.',
+        botoes: [
+          { nome: 'Abrir caixa', desc: 'Inicia o turno informando o valor inicial em dinheiro.' },
+          { nome: 'Buscar produto', desc: 'Localiza o item por nome ou código para adicionar ao carrinho.' },
+          { nome: 'Finalizar venda', desc: 'Abre o pagamento (dinheiro, cartão, pix) e conclui a venda.' },
+          { nome: 'Suspender venda', desc: 'Guarda o carrinho atual para retomar depois.' },
+        ],
+        acoes: [
+          { titulo: 'Como abrir uma venda', passos: ['Abra o PDV e verifique se o caixa está aberto.', 'Se não estiver, clique em "Abrir caixa" e informe o valor inicial.', 'O carrinho vazio fica pronto para receber produtos.'] },
+          { titulo: 'Como adicionar produto', passos: ['Digite o nome ou código no campo de busca.', 'Clique no produto ou pressione Enter.', 'Ajuste a quantidade diretamente no item do carrinho.'] },
+          { titulo: 'Como escolher cliente', passos: ['O PDV é voltado a venda rápida e normalmente não vincula cliente.', 'Para vender em nome de um cliente, use o módulo Pedidos de Vendas.'] },
+          { titulo: 'Como aplicar desconto', passos: ['No resumo do carrinho, abra o campo de desconto.', 'Informe valor em R$ ou percentual.', 'O total é recalculado automaticamente.'] },
+          { titulo: 'Como finalizar o pagamento', passos: ['Clique em "Finalizar venda".', 'Escolha a(s) forma(s) de pagamento e informe os valores.', 'Confirme — o sistema gera o recibo e baixa o estoque.'] },
+          { titulo: 'Como cancelar / estornar uma venda', passos: ['Localize a venda no histórico (módulo Vendas).', 'Use a opção de estorno e informe o motivo.', 'O estoque e o lançamento financeiro são revertidos.'] },
+          { titulo: 'Como consultar estoque pelo PDV', passos: ['Ao buscar o produto, o saldo disponível aparece junto ao item.', 'Produtos sem saldo ficam sinalizados.'] },
+          { titulo: 'Como vender fiado (em breve)', passos: ['Funcionalidade planejada: venda fiada vinculada ao cliente.', 'Ficará integrada ao Contas a Receber no Financeiro.'] },
+        ],
+        dicas: ['Vendas no PDV criam um lançamento de receita já paga — não aparecem em Contas a Receber.', 'Carrinhos suspensos ficam salvos na sessão para você retomar.'],
+        erros: ['Tentar vender com o caixa fechado.', 'Esquecer de conferir o troco ao receber em dinheiro.'],
+      },
+      {
+        id: 'estoque', nome: 'Estoque', icon: 'bi-stack', iconClass: 'p',
+        desc: 'Cadastre entradas, ajuste saldos, acompanhe movimentações e identifique produtos em falta.',
+        keywords: ['entrada', 'saída', 'ajuste', 'movimentação', 'saldo', 'xml', 'baixo', 'crítico', 'depósito'],
+        paraQueServe: 'O Estoque controla as quantidades de cada produto. Registra entradas, saídas, ajustes e transferências entre depósitos, além de alertar quando um item está com saldo baixo ou crítico.',
+        botoes: [
+          { nome: 'Entrada', desc: 'Registra a chegada de mercadoria, aumentando o saldo.' },
+          { nome: 'Ajuste', desc: 'Corrige o saldo após uma contagem física (inventário).' },
+          { nome: 'Transferir', desc: 'Move quantidade de um depósito para outro.' },
+          { nome: 'Exportar CSV', desc: 'Baixa a posição atual de estoque em planilha.' },
+        ],
+        acoes: [
+          { titulo: 'Como cadastrar uma entrada', passos: ['Clique em "Entrada".', 'Selecione o produto e o depósito.', 'Informe a quantidade e confirme — o saldo aumenta.'] },
+          { titulo: 'Como importar XML (em breve)', passos: ['Funcionalidade planejada: importar a NF-e de compra em XML.', 'As entradas serão lançadas automaticamente a partir do arquivo.'] },
+          { titulo: 'Como consultar o saldo', passos: ['Na visão geral, veja a coluna de quantidade por produto.', 'Use a busca para localizar um item específico.'] },
+          { titulo: 'Como ajustar o estoque', passos: ['Clique em "Ajuste".', 'Selecione o produto e informe a quantidade correta.', 'Registre o motivo (perda, contagem, etc.).'] },
+          { titulo: 'Como visualizar movimentações', passos: ['Abra a aba de movimentações.', 'Veja o histórico de entradas, saídas, ajustes e transferências.', 'Filtre por tipo ou produto.'] },
+          { titulo: 'Como identificar produtos com estoque baixo', passos: ['Os alertas no topo mostram itens críticos e baixos.', 'Defina o estoque mínimo no cadastro do produto.', 'Itens abaixo do mínimo são destacados automaticamente.'] },
+        ],
+        dicas: ['Configure o estoque mínimo de cada produto para receber alertas úteis.', 'Use o Ajuste após inventário físico para manter o saldo confiável.'],
+        erros: ['Lançar saída manual de algo que já saiu por venda (duplicidade).', 'Não definir estoque mínimo e perder os alertas de reposição.'],
+      },
+      {
+        id: 'financeiro', nome: 'Financeiro', icon: 'bi-credit-card-2-back-fill', iconClass: 'g',
+        desc: 'Controle contas a pagar e a receber, fluxo de caixa, DRE e relatórios financeiros.',
+        keywords: ['contas a pagar', 'contas a receber', 'caixa', 'dre', 'lucro', 'despesa', 'receita', 'baixar', 'fluxo'],
+        paraQueServe: 'O Financeiro centraliza o dinheiro da empresa: o que você tem a pagar, a receber, o fluxo de caixa e a DRE. É onde você acompanha entradas e saídas e entende a lucratividade do negócio.',
+        botoes: [
+          { nome: 'Nova conta a pagar', desc: 'Registra uma despesa/compromisso com vencimento.' },
+          { nome: 'Nova conta a receber', desc: 'Registra um valor que a empresa tem a receber.' },
+          { nome: 'Baixar conta', desc: 'Marca a conta como paga/recebida na data efetiva.' },
+          { nome: 'Filtro de período', desc: 'Limita a visão a um intervalo de datas.' },
+        ],
+        acoes: [
+          { titulo: 'Como lançar contas a pagar', passos: ['Clique em "Nova conta a pagar".', 'Informe descrição, valor, categoria e vencimento.', 'Salve — a conta entra na lista de pendências.'] },
+          { titulo: 'Como lançar contas a receber', passos: ['Clique em "Nova conta a receber".', 'Informe o cliente, valor e data prevista.', 'Salve — o valor aparece em A Receber.'] },
+          { titulo: 'Faturamento, receita, despesa, lucro e fluxo de caixa', passos: ['Faturamento: total vendido (bruto).', 'Receita: o que entrou no caixa.', 'Despesa: saídas (custos e gastos).', 'Lucro: receita menos despesas.', 'Fluxo de caixa: entradas e saídas ao longo do tempo.'] },
+          { titulo: 'Como filtrar por período', passos: ['Use o seletor de período no topo.', 'Escolha o intervalo desejado.', 'A DRE e os totais recalculam automaticamente.'] },
+          { titulo: 'Como baixar uma conta', passos: ['Localize a conta na lista.', 'Clique em "Baixar" e confirme a data de pagamento/recebimento.', 'Ela passa a contar no caixa do período.'] },
+          { titulo: 'Como gerar relatório financeiro', passos: ['Use o módulo Relatórios ou a exportação do Financeiro.', 'Selecione período e tipo.', 'Exporte em CSV para análise externa.'] },
+        ],
+        dicas: ['Vendas no PDV já entram como receita paga; não lance de novo em Contas a Receber.', 'Lance o vencimento correto para o fluxo de caixa refletir a realidade.'],
+        erros: ['Misturar regime de caixa e competência sem critério.', 'Não baixar contas pagas, distorcendo o fluxo de caixa.'],
+      },
+      {
+        id: 'clientes', nome: 'Clientes', icon: 'bi-briefcase-fill', iconClass: 'b',
+        desc: 'Cadastre clientes e fornecedores, consulte histórico de compras e contas a receber.',
+        keywords: ['cliente', 'fornecedor', 'parceiro', 'cadastro', 'histórico', 'inativar', 'bloquear'],
+        paraQueServe: 'O módulo de Clientes (Parceiros) mantém o cadastro de clientes e fornecedores. Permite consultar o histórico de compras e o que cada cliente ainda deve (contas a receber).',
+        botoes: [
+          { nome: 'Novo cliente', desc: 'Abre o formulário de cadastro de cliente ou fornecedor.' },
+          { nome: 'Editar', desc: 'Altera os dados de um parceiro existente.' },
+          { nome: 'Ver detalhes', desc: 'Abre o painel com histórico e crédito do cliente.' },
+        ],
+        acoes: [
+          { titulo: 'Como cadastrar um cliente', passos: ['Clique em "Novo cliente".', 'Preencha nome, documento (CPF/CNPJ) e contato.', 'Salve — o cliente fica disponível para vendas e pedidos.'] },
+          { titulo: 'Como editar um cliente', passos: ['Localize o cliente na lista.', 'Clique no ícone de editar.', 'Altere os campos e salve.'] },
+          { titulo: 'Como consultar o histórico de compras', passos: ['Abra os detalhes do cliente.', 'Veja a seção de compras/pedidos vinculados.', 'O total comprado é exibido no painel.'] },
+          { titulo: 'Como visualizar contas a receber do cliente', passos: ['Nos detalhes do cliente, veja o crédito/valores em aberto.', 'Os valores vêm do Financeiro (contas a receber).'] },
+          { titulo: 'Como bloquear / inativar um cliente', passos: ['Edite o cliente.', 'Altere o status para inativo/bloqueado.', 'Clientes inativos deixam de aparecer nas seleções de venda.'] },
+        ],
+        dicas: ['O contador de pedidos do cliente só aumenta quando o pedido vai para "concluído".', 'Preencha o documento para validar CPF/CNPJ e evitar duplicidade.'],
+        erros: ['Cadastrar o mesmo cliente duas vezes por falta de busca antes.', 'Esquecer de informar o contato, dificultando a cobrança.'],
+      },
+      {
+        id: 'produtos', nome: 'Produtos', icon: 'bi-box-seam-fill', iconClass: 'o',
+        desc: 'Cadastre produtos, defina preço de custo e venda, estoque mínimo e categorias.',
+        keywords: ['produto', 'preço', 'custo', 'venda', 'estoque mínimo', 'categoria', 'sku', 'cadastro'],
+        paraQueServe: 'O módulo de Produtos mantém o catálogo de itens vendidos. Define preço de custo e de venda, estoque mínimo e a categoria de cada produto — informações usadas pelo PDV, Vendas e Estoque.',
+        botoes: [
+          { nome: 'Novo produto', desc: 'Abre o cadastro com abas de dados, preços, estoque e fiscal.' },
+          { nome: 'Categorias', desc: 'Cria e organiza as categorias dos produtos.' },
+          { nome: 'Editar', desc: 'Altera os dados de um produto existente.' },
+        ],
+        acoes: [
+          { titulo: 'Como cadastrar um produto', passos: ['Clique em "Novo produto".', 'Preencha nome, código e categoria na primeira aba.', 'Salve — o produto fica disponível para venda.'] },
+          { titulo: 'Como definir o preço de custo', passos: ['Na aba de preços, informe o custo de compra.', 'O custo é usado para calcular margem e lucro.'] },
+          { titulo: 'Como definir o preço de venda', passos: ['Na aba de preços, informe o valor de venda.', 'A margem é calculada automaticamente em relação ao custo.'] },
+          { titulo: 'Como configurar o estoque mínimo', passos: ['Na aba de estoque, defina a quantidade mínima.', 'Abaixo desse valor, o Estoque emite alerta de reposição.'] },
+          { titulo: 'Como vincular uma categoria', passos: ['No cadastro, selecione a categoria do produto.', 'Crie novas categorias pelo botão "Categorias" se necessário.'] },
+        ],
+        dicas: ['Defina sempre o custo para que o lucro nos relatórios fique correto.', 'Use categorias para organizar e filtrar produtos com facilidade.'],
+        erros: ['Cadastrar venda sem custo, distorcendo a margem.', 'Não definir estoque mínimo e perder os alertas de reposição.'],
+      },
+      {
+        id: 'relatorios', nome: 'Relatórios', icon: 'bi-graph-up-arrow', iconClass: 'p',
+        desc: 'Gere relatórios de vendas, financeiro e estoque, com filtros e exportação em CSV.',
+        keywords: ['relatório', 'vendas', 'financeiro', 'estoque', 'exportar', 'csv', 'filtro', 'período'],
+        paraQueServe: 'O módulo de Relatórios consolida os dados do sistema em visões analíticas: vendas, financeiro e estoque. Permite filtrar por período, cliente e status e exportar para planilha.',
+        botoes: [
+          { nome: 'Selecionar relatório', desc: 'Escolhe qual visão analisar (vendas, financeiro, estoque...).' },
+          { nome: 'Filtros', desc: 'Refina por período, cliente, produto ou status.' },
+          { nome: 'Exportar CSV', desc: 'Baixa o relatório atual em planilha.' },
+        ],
+        acoes: [
+          { titulo: 'Como gerar relatório de vendas', passos: ['Selecione o relatório de vendas.', 'Defina o período desejado.', 'Os totais e a lista são exibidos na tela.'] },
+          { titulo: 'Como gerar relatório financeiro', passos: ['Escolha a visão financeira.', 'Filtre por período e tipo (receita/despesa).', 'Analise os totais consolidados.'] },
+          { titulo: 'Como gerar relatório de estoque', passos: ['Selecione o relatório de estoque.', 'Veja a posição atual e o valor em estoque.', 'Identifique itens críticos.'] },
+          { titulo: 'Como filtrar por cliente, período e status', passos: ['Use os campos de filtro no topo do relatório.', 'Combine cliente + período + status conforme a análise.', 'Os dados atualizam automaticamente.'] },
+          { titulo: 'Como exportar o relatório', passos: ['Clique em "Exportar CSV".', 'O arquivo é baixado com os dados filtrados.', 'Abra no Excel ou Google Sheets para análise.'] },
+        ],
+        dicas: ['Exporte em CSV para cruzar dados em planilhas externas.', 'Combine filtros para análises específicas (ex.: cliente X no último mês).'],
+        erros: ['Analisar sem aplicar o filtro de período correto.', 'Comparar relatórios de períodos diferentes sem perceber.'],
+      },
+      {
+        id: 'configuracoes', nome: 'Configurações', icon: 'bi-gear-fill', iconClass: 'g',
+        desc: 'Configure empresa, usuários, permissões, formas de pagamento, caixa e banco.',
+        keywords: ['empresa', 'usuário', 'permissão', 'pagamento', 'caixa', 'banco', 'tema', 'sub-usuário'],
+        paraQueServe: 'As Configurações definem o comportamento do sistema: dados da empresa, usuários e suas permissões, formas de pagamento e contas de caixa/banco. É o ponto de partida para deixar tudo pronto para operar.',
+        botoes: [
+          { nome: 'Dados da empresa', desc: 'Edita nome, documento e informações fiscais da empresa.' },
+          { nome: 'Adicionar usuário', desc: 'Cria um sub-usuário e define seu acesso.' },
+          { nome: 'Permissões', desc: 'Habilita ou bloqueia módulos por usuário.' },
+          { nome: 'Formas de pagamento', desc: 'Cadastra os meios aceitos no PDV e nas vendas.' },
+        ],
+        acoes: [
+          { titulo: 'Como configurar a empresa', passos: ['Abra Configurações.', 'Edite nome, CNPJ e dados de contato da empresa.', 'Salve — os dados aparecem em recibos e relatórios.'] },
+          { titulo: 'Como configurar usuários', passos: ['Clique em "Adicionar usuário".', 'Informe nome, e-mail e senha do sub-usuário.', 'Salve para liberar o acesso.'] },
+          { titulo: 'Como configurar permissões', passos: ['Ao criar/editar o usuário, marque os módulos liberados.', 'O dono tem acesso total e irrestrito.', 'Sub-usuários só veem os módulos habilitados.'] },
+          { titulo: 'Como configurar formas de pagamento', passos: ['Acesse a seção de pagamentos.', 'Cadastre os meios aceitos (dinheiro, cartão, pix...).', 'Eles ficam disponíveis no PDV e nos pedidos.'] },
+          { titulo: 'Como configurar caixa e banco', passos: ['Cadastre as contas de caixa e banco.', 'Vincule as movimentações financeiras a essas contas.', 'Isso organiza o fluxo de caixa por origem.'] },
+        ],
+        dicas: ['Dê a cada colaborador apenas as permissões necessárias.', 'Mantenha os dados da empresa atualizados para recibos corretos.'],
+        erros: ['Dar acesso total a todos os sub-usuários sem necessidade.', 'Esquecer de cadastrar formas de pagamento antes da primeira venda.'],
+      },
+    ];
+
+    // ═══════════════════════════════════════════════════
+    // RENDER DOS CARDS
+    // ═══════════════════════════════════════════════════
+    function renderModulos(filtro = '') {
+      const q = filtro.trim().toLowerCase();
+      const grid = document.getElementById('modulosGrid');
+      const lidos = loadModulosLidos();
+
+      const lista = MODULOS.filter(m => {
+        if (!q) return true;
+        const haystack = [
+          m.nome, m.desc, ...(m.keywords || []),
+          ...m.acoes.map(a => a.titulo),
+        ].join(' ').toLowerCase();
+        return haystack.includes(q);
+      });
+
+      document.getElementById('ajudaEmpty').classList.toggle('show', lista.length === 0);
+
+      grid.innerHTML = lista.map(m => {
+        const lido = !!lidos[m.id];
+        return `
+          <div class="mod-card">
+            <div class="mod-card-top">
+              <div class="mod-icon ${m.iconClass}"><i class="bi ${m.icon}"></i></div>
+              <div>
+                <h3>${m.nome}</h3>
+                <div class="mod-count">${m.acoes.length} tutoriais</div>
+              </div>
+            </div>
+            <p class="mod-desc">${m.desc}</p>
+            <div class="mod-card-foot">
+              <div class="mod-status ${lido ? 'completo' : ''}">
+                <i class="bi ${lido ? 'bi-check-circle-fill' : 'bi-circle'}"></i>
+                ${lido ? 'Visto' : 'Não visto'}
+              </div>
+              <button class="btn-sm btn-primary-sm" onclick="openTut('${m.id}')">
+                <i class="bi bi-play-circle"></i> Ver tutorial
+              </button>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    // marca quais módulos já foram abertos (preparado p/ progresso no backend)
+    const LIDOS_KEY = 'nexoerp.ajuda.modulos';
+    function loadModulosLidos() {
+      try { return JSON.parse(localStorage.getItem(LIDOS_KEY) || '{}'); }
+      catch (_) { return {}; }
+    }
+    function marcarLido(id) {
+      const l = loadModulosLidos();
+      if (!l[id]) {
+        l[id] = true;
+        localStorage.setItem(LIDOS_KEY, JSON.stringify(l));
+        // TODO: futuramente sincronizar com a API → PATCH /usuarios/me/ajuda
+      }
+    }
+
+    // ═══════════════════════════════════════════════════
+    // MODAL DE TUTORIAL
+    // ═══════════════════════════════════════════════════
+    let _tutOpenTimer = null;
+
+    function openTut(id) {
+      const m = MODULOS.find(x => x.id === id);
+      if (!m) return;
+
+      document.getElementById('tutIcon').className = `mod-icon ${m.iconClass}`;
+      document.getElementById('tutIcon').innerHTML = `<i class="bi ${m.icon}"></i>`;
+      document.getElementById('tutTitle').textContent = m.nome;
+      document.getElementById('tutDesc').textContent = m.desc;
+
+      const botoesHTML = m.botoes.map(b => `
+        <div class="btn-list-item">
+          <div><b>${escapeHTML(b.nome)}</b> — <span>${escapeHTML(b.desc)}</span></div>
+        </div>`).join('');
+
+      const acoesHTML = m.acoes.map((a, i) => `
+        <div class="tut-acc-item" onclick="toggleAcc(this, event)">
+          <div class="tut-acc-head">
+            <div class="tut-acc-num">${i + 1}</div>
+            <h4>${escapeHTML(a.titulo)}</h4>
+            <i class="bi bi-chevron-down chev"></i>
+          </div>
+          <div class="tut-acc-body">
+            <ol>${a.passos.map(p => `<li>${escapeHTML(p)}</li>`).join('')}</ol>
+            <div class="tut-media-soon">
+              <i class="bi bi-camera-video"></i> Vídeo e imagens deste passo em breve
+            </div>
+          </div>
+        </div>`).join('');
+
+      const dicasHTML = m.dicas.map(d => `
+        <div class="tip-row dica"><i class="bi bi-lightbulb-fill"></i><span>${escapeHTML(d)}</span></div>`).join('');
+
+      const errosHTML = m.erros.map(e => `
+        <div class="tip-row erro"><i class="bi bi-exclamation-triangle-fill"></i><span>${escapeHTML(e)}</span></div>`).join('');
+
+      document.getElementById('tutBody').innerHTML = `
+        <div class="tut-block">
+          <div class="tut-block-title"><i class="bi bi-info-circle"></i> Para que serve</div>
+          <div class="tut-text">${escapeHTML(m.paraQueServe)}</div>
+        </div>
+
+        <div class="tut-block">
+          <div class="tut-block-title"><i class="bi bi-ui-radios"></i> Principais botões</div>
+          <div class="btn-list">${botoesHTML}</div>
+        </div>
+
+        <div class="tut-block">
+          <div class="tut-block-title"><i class="bi bi-list-ol"></i> Como realizar as ações mais comuns</div>
+          <div class="tut-acc">${acoesHTML}</div>
+        </div>
+
+        <div class="tut-block">
+          <div class="tut-block-title"><i class="bi bi-lightbulb"></i> Dicas importantes</div>
+          <div class="tip-list">${dicasHTML}</div>
+        </div>
+
+        <div class="tut-block" style="margin-bottom:4px">
+          <div class="tut-block-title"><i class="bi bi-bug"></i> Erros comuns</div>
+          <div class="tip-list">${errosHTML}</div>
+        </div>`;
+
+      // abre a primeira ação por padrão
+      const first = document.querySelector('#tutBody .tut-acc-item');
+      if (first) first.classList.add('open');
+
+      document.getElementById('tutBody').scrollTop = 0;
+      document.getElementById('tutModal').classList.add('open');
+      marcarLido(id);
+      renderModulos(document.getElementById('ajudaSearch').value);
+    }
+
+    function toggleAcc(el) {
+      el.classList.toggle('open');
+    }
+
+    function closeTut() {
+      document.getElementById('tutModal').classList.remove('open');
+    }
+
+    // fecha modal ao clicar fora
+    document.getElementById('tutModal').addEventListener('click', e => {
+      if (e.target.id === 'tutModal') closeTut();
+    });
+
+    // ═══════════════════════════════════════════════════
+    // BUSCA
+    // ═══════════════════════════════════════════════════
+    const searchEl = document.getElementById('ajudaSearch');
+    searchEl.addEventListener('input', () => {
+      const q = searchEl.value;
+      renderModulos(q);
+      // esconde "Primeiros passos" durante a busca para focar nos resultados
+      document.getElementById('secPrimeiros').style.display = q.trim() ? 'none' : '';
+    });
+    searchEl.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        searchEl.value = '';
+        searchEl.dispatchEvent(new Event('input'));
+      }
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && document.getElementById('tutModal').classList.contains('open')) {
+        closeTut();
+      }
+    });
+
+    // ═══════════════════════════════════════════════════
+    // INIT
+    // ═══════════════════════════════════════════════════
+    renderChecklist();
+    renderModulos();
+  </script>
+</body>
+
+</html>

@@ -612,6 +612,7 @@
     let historico  = [];
     let dataLoaded = false;
     let histPage   = 1;
+    let histMeta   = { page: 1, limit: 1, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
 
     function getHistPerPage() {
       const usable = window.innerHeight - 440;
@@ -644,16 +645,15 @@
     // Carrega dados de apoio (filtros de modal). Dados de transações são buscados sob demanda.
     async function loadAllData() {
       setStatus('load', 'Carregando…');
-      const [cat, cli, hist] = await Promise.all([
+      const [cat, cli] = await Promise.all([
         _fetchList('/categorias'),
         _fetchList('/clientes'),
-        _fetchList('/relatorios/historico'),
       ]);
 
       DATA.categorias = cat.data.map(c => c.nome).filter(Boolean);
       DATA.clientes   = cli.data;
-      historico       = hist.data;
       dataLoaded      = true;
+      const hist = { ok: true };
 
       const falhas = [!cat.ok && 'categorias', !hist.ok && 'histórico'].filter(Boolean);
       if (falhas.length) {
@@ -1511,6 +1511,36 @@
       return dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
     }
 
+    async function loadHistoricoPage(page = histPage, showLoad = false) {
+      histPage = page;
+      const perPage = getHistPerPage();
+      const body = document.getElementById('histBody');
+      if (showLoad && body) {
+        body.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted)">Carregando...</td></tr>`;
+      }
+
+      try {
+        const r = await NexoAuth.apiFetch(`/relatorios/historico?page=${page}&limit=${perPage}`);
+        if (!r.ok) throw new Error(r.message || 'Falha ao carregar historico.');
+        historico = r.data || [];
+        histMeta = r.pagination || {
+          page,
+          limit: perPage,
+          total: historico.length,
+          totalPages: Math.max(1, Math.ceil(historico.length / perPage)),
+          hasNextPage: false,
+          hasPrevPage: page > 1,
+        };
+        histPage = histMeta.page || page;
+      } catch (_) {
+        historico = [];
+        histMeta = { page: 1, limit: perPage, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
+        showToast('Falha ao carregar historico.', 'warning');
+      }
+
+      renderHistorico();
+    }
+
     async function addToHistory(report, periodo) {
       try {
         const r = await NexoAuth.apiFetch('/relatorios/historico', {
@@ -1523,14 +1553,10 @@
             formato:     'CSV',
           }),
         });
-        if (r && r.ok) {
-          historico.unshift(r.data);
-          histPage = 1;
-        }
+        if (r && r.ok) await loadHistoricoPage(1);
       } catch (_) {
         showToast('Relatório gerado, mas falhou ao salvar no histórico.', 'warning');
       }
-      renderHistorico();
     }
 
     function renderHistorico() {
@@ -1551,14 +1577,17 @@
 
       empty.classList.remove('show');
       btnL.style.display = 'flex';
-      const perPage = getHistPerPage();
-      const pages = Math.max(1, Math.ceil(historico.length / perPage));
+      const perPage = histMeta.limit || getHistPerPage();
+      const total = histMeta.total || historico.length;
+      const pages = histMeta.totalPages || Math.max(1, Math.ceil(total / perPage));
       if (histPage > pages) histPage = pages;
       const start = (histPage - 1) * perPage;
-      const slice = historico.slice(start, start + perPage);
+      const end = Math.min(start + historico.length, total);
+      info.textContent = `Mostrando ${start + 1}-${end} de ${total} relatorio${total !== 1 ? 's' : ''}`;
       info.textContent = `Mostrando ${start + 1}–${Math.min(start + perPage, historico.length)} de ${historico.length} relatório${historico.length!==1?'s':''}`;
 
-      body.innerHTML = slice.map(r => `
+      info.textContent = `Mostrando ${start + 1}-${end} de ${total} relatorio${total !== 1 ? 's' : ''}`;
+      body.innerHTML = historico.map(r => `
         <tr>
           <td style="font-weight:600;font-size:13px">${escapeHTML(r.titulo)}</td>
           <td><span class="status-pill ativo" style="background:${CAT_COLORS[r.cat]}18;color:${CAT_COLORS[r.cat]}">${CAT_LABELS[r.cat]||r.cat}</span></td>
@@ -1569,13 +1598,13 @@
             <div class="act-btn danger" onclick="removerHistorico('${r.id}')" title="Remover"><i class="bi bi-trash3"></i></div>
           </div></td>
         </tr>`).join('');
-      renderHistPagination(historico.length, perPage);
+      renderHistPagination(total, perPage);
     }
 
     function renderHistPagination(total, perPage) {
       const pg = document.getElementById('histPagination');
       if (!pg) return;
-      const pages = Math.max(1, Math.ceil(total / perPage));
+      const pages = histMeta.totalPages || Math.max(1, Math.ceil(total / perPage));
       if (pages <= 1) { pg.innerHTML = ''; return; }
       let h = `<button class="pg-btn" onclick="histGoPage(${histPage - 1})" ${histPage === 1 ? 'disabled' : ''}><i class="bi bi-chevron-left"></i></button>`;
       for (let i = 1; i <= pages; i++) {
@@ -1586,10 +1615,9 @@
     }
 
     function histGoPage(p) {
-      const pages = Math.max(1, Math.ceil(historico.length / getHistPerPage()));
+      const pages = histMeta.totalPages || Math.max(1, Math.ceil((histMeta.total || 0) / getHistPerPage()));
       if (p < 1 || p > pages) return;
-      histPage = p;
-      renderHistorico();
+      loadHistoricoPage(p, true);
     }
 
     async function removerHistorico(id) {
@@ -1599,6 +1627,7 @@
       renderHistorico();
       try {
         await NexoAuth.apiFetch(`/relatorios/historico/${id}`, { method: 'DELETE' });
+        await loadHistoricoPage(historico.length ? histPage : Math.max(1, histPage - 1));
       } catch (_) { showToast('Falha ao remover do servidor.', 'warning'); }
     }
 
@@ -1608,6 +1637,7 @@
       renderHistorico();
       try {
         await NexoAuth.apiFetch('/relatorios/historico', { method: 'DELETE' });
+        await loadHistoricoPage(1);
         showToast('Histórico limpo.');
       } catch (_) { showToast('Falha ao limpar no servidor.', 'warning'); }
     }
@@ -1619,12 +1649,13 @@
       renderCards();
       renderHistorico();
       await loadAllData();
+      await loadHistoricoPage(1, true);
       renderHistorico(); // re-render com o histórico vindo da API
     }
     init();
 
     window.addEventListener('resize', () => {
-      renderHistorico();
+      loadHistoricoPage(histPage, false);
     });
   </script>
 </body>

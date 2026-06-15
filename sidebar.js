@@ -12,6 +12,7 @@
     { label: 'Financeiro', href: 'financeiro.html', icon: 'bi-credit-card-2-back-fill', section: 'Financeiro', perm: 'financeiro' },
     { label: 'Fiscal / NF-e', href: '#', icon: 'bi-receipt-cutoff', section: 'Financeiro', perm: null, comingSoon: true },
     { label: 'Configurações', href: 'configuracoes.html', icon: 'bi-gear-fill', section: 'Sistema', perm: 'configuracoes' },
+    { label: 'Central de Ajuda', href: 'ajuda.html', icon: 'bi-question-circle', section: 'Sistema', perm: null },
     { label: 'WhatsApp', href: '#', icon: 'bi-whatsapp', section: 'Integrações', perm: null, comingSoon: true },
   ];
 

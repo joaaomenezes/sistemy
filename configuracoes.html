@@ -483,6 +483,48 @@ font-size: 13px;
       background: rgba(0, 200, 150, .15);
     }
 
+    .fin-detail-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .pagination {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pg-btn {
+      min-width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pg-btn:hover:not(:disabled),
+    .pg-btn.active {
+      border-color: rgba(0, 200, 150, .35);
+      background: rgba(0, 200, 150, .1);
+      color: var(--accent);
+    }
+
+    .pg-btn:disabled {
+      opacity: .35;
+      cursor: not-allowed;
+    }
+
     /* notificações */
     .notif-section {
       margin-bottom: 20px;
@@ -1133,6 +1175,10 @@ font-size: 12px;
                 <div class="cfg-section-sub">Gerencie quem tem acesso ao Sistemy ERP.</div>
               </div>
               <div class="user-list" id="userList"></div>
+              <div class="fin-detail-footer" style="margin-top:14px">
+                <span id="usuariosInfo">—</span>
+                <div class="pagination" id="usuariosPagination"></div>
+              </div>
               <button class="btn-add-user" onclick="openUserModal()"><i class="bi bi-person-plus"></i> Adicionar novo
                 usuário</button>
             </div>
@@ -1475,6 +1521,9 @@ font-size: 12px;
     ];
 
     let usuarios = [];
+    let usuariosPage = 1;
+    const usuariosPerPage = 6;
+    let usuariosMeta = { page: 1, limit: usuariosPerPage, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
     let editingUserId = null;
 
     // ═══════════════════════════════════════════════
@@ -1483,7 +1532,6 @@ font-size: 12px;
     async function init() {
       buildColorSwatches();
       await loadUsers();
-      renderUsers();
       NexoAuth.renderCurrentUser();
       loadSettings();
       // PIN de supervisor só visível para o Dono
@@ -1637,9 +1685,14 @@ font-size: 12px;
     }
     // ── Usuários ──────────────────────────────────────────
 
-    async function loadUsers() {
+    async function loadUsers(page = usuariosPage, showLoading = false) {
+      usuariosPage = page;
+      const list = document.getElementById('userList');
+      if (showLoading && list) {
+        list.innerHTML = `<div style="color:var(--muted);text-align:center;padding:24px">Carregando...</div>`;
+      }
       try {
-        const result = await NexoAuth.apiFetch('/usuarios');
+        const result = await NexoAuth.apiFetch(`/usuarios?page=${page}&limit=${usuariosPerPage}`);
         if (result.ok) {
           usuarios = result.data.map(u => ({
             id:          u.id,
@@ -1649,10 +1702,24 @@ font-size: 12px;
             isDono:      !!u.isDono,
             permissions: u.permissions ?? null,
           }));
+          usuariosMeta = result.pagination || {
+            page,
+            limit: usuariosPerPage,
+            total: usuarios.length,
+            totalPages: Math.max(1, Math.ceil(usuarios.length / usuariosPerPage)),
+            hasNextPage: false,
+            hasPrevPage: page > 1,
+          };
+          usuariosPage = usuariosMeta.page || page;
         } else {
           usuarios = [];
+          usuariosMeta = { page, limit: usuariosPerPage, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
         }
-      } catch (_) { usuarios = []; }
+      } catch (_) {
+        usuarios = [];
+        usuariosMeta = { page, limit: usuariosPerPage, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
+      }
+      renderUsers();
     }
 
     function renderUsers() {
@@ -1663,6 +1730,7 @@ font-size: 12px;
       const list = document.getElementById('userList');
       if (!usuarios.length) {
         list.innerHTML = `<div style="color:var(--muted);text-align:center;padding:24px">Nenhum usuário cadastrado.</div>`;
+        renderUsersPagination();
         return;
       }
 
@@ -1702,6 +1770,32 @@ font-size: 12px;
           <div class="uc-actions">${editBtn}${deleteBtn}</div>
         </div>`;
       }).join('');
+      renderUsersPagination();
+    }
+
+    function renderUsersPagination() {
+      const info = document.getElementById('usuariosInfo');
+      const pg = document.getElementById('usuariosPagination');
+      if (!info || !pg) return;
+      const total = usuariosMeta.total || usuarios.length;
+      const limit = usuariosMeta.limit || usuariosPerPage;
+      const pages = usuariosMeta.totalPages || Math.max(1, Math.ceil(total / limit));
+      const start = total ? (usuariosPage - 1) * limit + 1 : 0;
+      const end = Math.min(usuariosPage * limit, total);
+      info.textContent = total ? `Mostrando ${start}-${end} de ${total} usuarios` : '0 usuarios';
+      if (pages <= 1) { pg.innerHTML = ''; return; }
+      let h = `<button class="pg-btn" onclick="usuariosGoPage(${usuariosPage - 1})" ${usuariosPage === 1 ? 'disabled' : ''}><i class="bi bi-chevron-left"></i></button>`;
+      for (let i = 1; i <= pages; i++) {
+        h += `<button class="pg-btn ${i === usuariosPage ? 'active' : ''}" onclick="usuariosGoPage(${i})">${i}</button>`;
+      }
+      h += `<button class="pg-btn" onclick="usuariosGoPage(${usuariosPage + 1})" ${usuariosPage === pages ? 'disabled' : ''}><i class="bi bi-chevron-right"></i></button>`;
+      pg.innerHTML = h;
+    }
+
+    function usuariosGoPage(page) {
+      const pages = usuariosMeta.totalPages || 1;
+      if (page < 1 || page > pages) return;
+      loadUsers(page, true);
     }
 
     function _buildPermChecklist(existingPerms) {
@@ -1810,9 +1904,8 @@ font-size: 12px;
 
       if (!result.ok) { NexoToast.error(result.message); return; }
 
-      await loadUsers();
+      await loadUsers(editingUserId ? usuariosPage : 1);
       closeUserModal();
-      renderUsers();
       if (isEditingSelf) {
         NexoAuth.renderCurrentUser();
         NexoToast.success('Perfil atualizado!');
@@ -1887,8 +1980,8 @@ font-size: 12px;
       if (!confirm(`Remover o usuário "${u.nome}"? Esta ação não pode ser desfeita.`)) return;
       const result = await NexoAuth.removeSubUser(id);
       if (!result.ok) { NexoToast.error(result.message); return; }
-      await loadUsers();
-      renderUsers();
+      const nextPage = usuarios.length > 1 ? usuariosPage : Math.max(1, usuariosPage - 1);
+      await loadUsers(nextPage);
       NexoToast.success('Usuário removido.');
     }
 

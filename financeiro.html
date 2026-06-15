@@ -2011,7 +2011,7 @@ transition: border-color .15s;
               <div class="card-title"><i class="bi bi-list-ul" style="color:var(--accent)"></i> Lançamentos</div>
               <div class="search-input" style="max-width:200px">
                 <i class="bi bi-search" style="color:var(--muted)"></i>
-                <input type="text" id="custosSearch" placeholder="Buscar..." oninput="renderCustosList()">
+                <input type="text" id="custosSearch" placeholder="Buscar..." oninput="custosPage=1;loadCustosPage(1)">
               </div>
             </div>
             <div class="table-wrap">
@@ -2498,6 +2498,10 @@ transition: border-color .15s;
     let receberDetalhePage = 1;
     let movimRows     = [];
     let movimMeta     = { page: 1, limit: 8, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
+    let pagarDetalheRows = [];
+    let receberDetalheRows = [];
+    let pagarDetalheMeta = { page: 1, limit: 1, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
+    let receberDetalheMeta = { page: 1, limit: 1, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
 
     function getMovimPerPage() {
       const card = document.querySelector('#panel-movimentacoes .movim-card');
@@ -2527,6 +2531,55 @@ transition: border-color .15s;
       params.set('page', String(page));
       params.set('limit', String(getMovimPerPage()));
       return params.toString();
+    }
+
+    function buildFinDetailQuery(kind, page) {
+      const isPagar = kind === 'pagar';
+      const params = new URLSearchParams();
+      params.set('tipo', isPagar ? 'despesa' : 'receita');
+      params.set('page', String(page));
+      params.set('limit', String(getFinDetailPerPage(isPagar ? 'contas-pagar' : 'contas-receber')));
+      params.set('excludeStatus', isPagar ? 'cancelado' : 'pago,cancelado,estornado');
+      return params.toString();
+    }
+
+    async function loadFinDetailPage(kind, page, showLoading = true, shouldRender = true) {
+      const isPagar = kind === 'pagar';
+      if (isPagar) pagarDetalhePage = page;
+      else receberDetalhePage = page;
+
+      const body = document.getElementById(isPagar ? 'tblPagarDetalhe' : 'tblReceberDetalhe');
+      if (showLoading && body) body.innerHTML = NexoSkeleton.tableRows(8, 6);
+
+      const res = await NexoAuth.apiFetch('/financeiro?' + buildFinDetailQuery(kind, page));
+      const fallbackMeta = {
+        page,
+        limit: getFinDetailPerPage(isPagar ? 'contas-pagar' : 'contas-receber'),
+        total: 0,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPrevPage: false,
+      };
+
+      if (!res.ok) {
+        showToast(res.message || 'Erro ao carregar contas.', 'error');
+        if (isPagar) { pagarDetalheRows = []; pagarDetalheMeta = fallbackMeta; }
+        else { receberDetalheRows = []; receberDetalheMeta = fallbackMeta; }
+        if (shouldRender) renderTabelas();
+        return;
+      }
+
+      if (isPagar) {
+        pagarDetalheRows = res.data || [];
+        pagarDetalheMeta = res.pagination || { ...fallbackMeta, total: pagarDetalheRows.length };
+        pagarDetalhePage = pagarDetalheMeta.page || page;
+      } else {
+        receberDetalheRows = res.data || [];
+        receberDetalheMeta = res.pagination || { ...fallbackMeta, total: receberDetalheRows.length };
+        receberDetalhePage = receberDetalheMeta.page || page;
+      }
+
+      if (shouldRender) renderTabelas();
     }
 
     async function loadMovimPage(page = movimPage, showLoading = true, shouldRender = true) {
@@ -2954,14 +3007,14 @@ transition: border-color .15s;
 
       const tblPD = document.getElementById('tblPagarDetalhe');
       if (tblPD) {
-        const rows = lancamentos.filter(l => l.tipo === 'despesa' && l.status !== 'cancelado');
-        const perPage = getFinDetailPerPage('contas-pagar');
-        const pages = Math.max(1, Math.ceil(rows.length / perPage));
+        const rows = pagarDetalheRows;
+        const perPage = pagarDetalheMeta.limit || getFinDetailPerPage('contas-pagar');
+        const total = pagarDetalheMeta.total || rows.length;
+        const pages = pagarDetalheMeta.totalPages || Math.max(1, Math.ceil(total / perPage));
         if (pagarDetalhePage > pages) pagarDetalhePage = pages;
         const start = (pagarDetalhePage - 1) * perPage;
-        const slice = rows.slice(start, start + perPage);
         tblPD.innerHTML = rows.length
-          ? slice.map(l => { const st = _stLanc(l); return `<tr>
+          ? rows.map(l => { const st = _stLanc(l); return `<tr>
               <td>${escapeHTML(_fmtD(l.vencimento || l.data || ''))}</td>
               <td class="u-fw-500">${escapeHTML(l.parte || '—')}</td>
               <td class="u-muted">${escapeHTML(l.descricao || '')}</td>
@@ -2969,19 +3022,19 @@ transition: border-color .15s;
               <td>${pillHtml(st)}</td><td></td>
             </tr>`; }).join('')
           : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Nenhuma conta a pagar</td></tr>';
-        _renderFinDetailPagination('pagar', rows.length, perPage);
+        _renderFinDetailPagination('pagar', total, perPage);
       }
 
       const tblRD = document.getElementById('tblReceberDetalhe');
       if (tblRD) {
-        const rows = lancamentos.filter(l => l.tipo === 'receita' && l.status !== 'pago' && l.status !== 'cancelado' && l.status !== 'estornado');
-        const perPage = getFinDetailPerPage('contas-receber');
-        const pages = Math.max(1, Math.ceil(rows.length / perPage));
+        const rows = receberDetalheRows;
+        const perPage = receberDetalheMeta.limit || getFinDetailPerPage('contas-receber');
+        const total = receberDetalheMeta.total || rows.length;
+        const pages = receberDetalheMeta.totalPages || Math.max(1, Math.ceil(total / perPage));
         if (receberDetalhePage > pages) receberDetalhePage = pages;
         const start = (receberDetalhePage - 1) * perPage;
-        const slice = rows.slice(start, start + perPage);
         tblRD.innerHTML = rows.length
-          ? slice.map(l => { const st = _stLanc(l); return `<tr>
+          ? rows.map(l => { const st = _stLanc(l); return `<tr>
               <td>${escapeHTML(_fmtD(l.vencimento || l.data || ''))}</td>
               <td class="u-fw-500">${escapeHTML(l.parte || l.descricao || '—')}</td>
               <td class="u-muted">${escapeHTML(l.descricao || '')}</td>
@@ -2992,7 +3045,7 @@ transition: border-color .15s;
                 : ''}</td>
             </tr>`; }).join('')
           : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Nenhuma conta a receber</td></tr>';
-        _renderFinDetailPagination('receber', rows.length, perPage);
+        _renderFinDetailPagination('receber', total, perPage);
       }
 
       const tblMov = document.getElementById('tblMovim');
@@ -3023,19 +3076,17 @@ transition: border-color .15s;
     }
 
     function pagarDetalheGoPage(p) {
-      const total = lancamentos.filter(l => l.tipo === 'despesa' && l.status !== 'cancelado').length;
-      const pages = Math.max(1, Math.ceil(total / getFinDetailPerPage('contas-pagar')));
+      const total = pagarDetalheMeta.total || 0;
+      const pages = pagarDetalheMeta.totalPages || Math.max(1, Math.ceil(total / getFinDetailPerPage('contas-pagar')));
       if (p < 1 || p > pages) return;
-      pagarDetalhePage = p;
-      renderTabelas();
+      loadFinDetailPage('pagar', p);
     }
 
     function receberDetalheGoPage(p) {
-      const total = lancamentos.filter(l => l.tipo === 'receita' && l.status !== 'pago' && l.status !== 'cancelado' && l.status !== 'estornado').length;
-      const pages = Math.max(1, Math.ceil(total / getFinDetailPerPage('contas-receber')));
+      const total = receberDetalheMeta.total || 0;
+      const pages = receberDetalheMeta.totalPages || Math.max(1, Math.ceil(total / getFinDetailPerPage('contas-receber')));
       if (p < 1 || p > pages) return;
-      receberDetalhePage = p;
-      renderTabelas();
+      loadFinDetailPage('receber', p);
     }
 
     // ═══════════════════════════════════════════════
@@ -3090,6 +3141,8 @@ transition: border-color .15s;
       showToast(`Lançamento salvo com sucesso!`);
       closeModal();
       await loadMovimPage(1, false, false);
+      await loadFinDetailPage('pagar', 1, false, false);
+      await loadFinDetailPage('receber', 1, false, false);
       renderKPIs();
       renderDonut();
       renderTabelas();
@@ -3109,12 +3162,12 @@ transition: border-color .15s;
       document.getElementById('finDesc').textContent = desc;
       document.getElementById('topbarSub').textContent = title;
       closeMais();
-      if (panelId === 'contas-pagar') { pagarDetalhePage = 1; renderTabelas(); }
-      if (panelId === 'contas-receber') { receberDetalhePage = 1; renderTabelas(); }
+      if (panelId === 'contas-pagar') { pagarDetalhePage = 1; loadFinDetailPage('pagar', 1, true); }
+      if (panelId === 'contas-receber') { receberDetalhePage = 1; loadFinDetailPage('receber', 1, true); }
       if (panelId === 'recebimentos') { recebPage = 1; loadRecebimentos(1, true); loadRecebKPIs(); }
       if (panelId === 'movimentacoes') { movimPage = 1; loadMovimPage(1, false); }
       if (panelId === 'fluxo-caixa') renderChartFluxo();
-      if (panelId === 'centro-custo') renderCustosPanel();
+      if (panelId === 'centro-custo') { renderCustosKPIs(); renderCustosDonut(); loadCustosPage(1, true); }
       if (panelId === 'dre') renderDRE();
     }
 
@@ -3127,7 +3180,7 @@ transition: border-color .15s;
       document.getElementById('finDesc').textContent = desc;
       document.getElementById('topbarSub').textContent = title;
       closeMais();
-      if (panelId === 'centro-custo') renderCustosPanel();
+      if (panelId === 'centro-custo') { renderCustosKPIs(); renderCustosDonut(); loadCustosPage(1, true); }
       if (panelId === 'dre') renderDRE();
     }
 
@@ -3533,6 +3586,9 @@ transition: border-color .15s;
       if (rProd.ok)   PRODUTOS_DATA = rProd.data;
       if (rMovs.ok)   MOVS_DATA     = rMovs.data;
       await loadMovimPage(1, false, false);
+      await loadFinDetailPage('pagar', 1, false, false);
+      await loadFinDetailPage('receber', 1, false, false);
+      await loadCustosPage(1, false, false);
 
       NexoAuth.renderCurrentUser();
       renderKPIs();
@@ -3552,7 +3608,8 @@ transition: border-color .15s;
         document.getElementById('panel-contas-pagar')?.classList.contains('active') ||
         document.getElementById('panel-contas-receber')?.classList.contains('active');
       if (shouldRender) {
-        renderTabelas();
+        if (document.getElementById('panel-contas-pagar')?.classList.contains('active')) loadFinDetailPage('pagar', pagarDetalhePage, false);
+        if (document.getElementById('panel-contas-receber')?.classList.contains('active')) loadFinDetailPage('receber', receberDetalhePage, false);
       }
     });
 
@@ -3660,6 +3717,8 @@ transition: border-color .15s;
     let custosCatFilter  = null;
     let custosPage       = 1;
     const custosPerPage  = 8;
+    let custosRows       = [];
+    let custosMeta       = { page: 1, limit: custosPerPage, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
     let editingCustoId   = null;
     let ccConfirmCb      = null;
     let ccSerieCb        = null;
@@ -3689,10 +3748,72 @@ transition: border-color .15s;
       });
     }
 
+    function custosDateRange(period = custosPeriod) {
+      const now = new Date();
+      let start = null, end = null;
+      if (period === 'mes') {
+        start = new Date(now.getFullYear(), now.getMonth(), 1);
+        end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      } else if (period === 'mes-ant') {
+        start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        end = new Date(now.getFullYear(), now.getMonth(), 0);
+      } else if (period === 'trim') {
+        const q = Math.floor(now.getMonth() / 3) * 3;
+        start = new Date(now.getFullYear(), q, 1);
+        end = new Date(now.getFullYear(), q + 3, 0);
+      } else if (period === 'ano') {
+        start = new Date(now.getFullYear(), 0, 1);
+        end = new Date(now.getFullYear(), 11, 31);
+      }
+      const iso = d => d ? d.toISOString().slice(0, 10) : '';
+      return { start: iso(start), end: iso(end) };
+    }
+
+    function buildCustosQuery(page = custosPage) {
+      const params = new URLSearchParams();
+      const range = custosDateRange();
+      const q = (document.getElementById('custosSearch')?.value || '').trim();
+      params.set('page', String(page));
+      params.set('limit', String(custosPerPage));
+      if (range.start) params.set('dataInicio', range.start);
+      if (range.end) params.set('dataFim', range.end);
+      if (custosTipoFilter !== 'todos') params.set('tipo', custosTipoFilter);
+      if (custosCatFilter) params.set('categoria', custosCatFilter);
+      if (q) params.set('q', q);
+      return params.toString();
+    }
+
+    async function loadCustosPage(page = custosPage, showLoading = true, shouldRender = true) {
+      custosPage = page;
+      const body = document.getElementById('custosTbody');
+      if (showLoading && body) body.innerHTML = NexoSkeleton.tableRows(8, 6);
+
+      const res = await NexoAuth.apiFetch('/custos?' + buildCustosQuery(page));
+      if (!res.ok) {
+        showToast(res.message || 'Erro ao carregar custos.', 'error');
+        custosRows = [];
+        custosMeta = { page, limit: custosPerPage, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
+        if (shouldRender) renderCustosList();
+        return;
+      }
+
+      custosRows = res.data || [];
+      custosMeta = res.pagination || {
+        page,
+        limit: custosPerPage,
+        total: custosRows.length,
+        totalPages: Math.max(1, Math.ceil(custosRows.length / custosPerPage)),
+        hasNextPage: false,
+        hasPrevPage: page > 1,
+      };
+      custosPage = custosMeta.page || page;
+      if (shouldRender) renderCustosList();
+    }
+
     function renderCustosPanel() {
       renderCustosKPIs();
       renderCustosDonut();
-      renderCustosList();
+      loadCustosPage(custosPage, false);
     }
 
     function renderCustosKPIs() {
@@ -3813,19 +3934,18 @@ transition: border-color .15s;
 
     function filterCustosByCat(cat) {
       custosCatFilter = custosCatFilter===cat ? null : cat;
-      custosPage=1; renderCustosList();
+      custosPage=1; loadCustosPage(1);
     }
 
     function renderCustosList() {
       const current = filterCustosByPeriod();
       const q = (document.getElementById('custosSearch')?.value||'').toLowerCase();
-      const filtered = current.filter(c=>
+      const filtered = custosRows.filter(c=>
         (!custosCatFilter || c.categoria===custosCatFilter) &&
         (!q || (c.descricao||'').toLowerCase().includes(q)||(c.categoria||'').toLowerCase().includes(q)||(c.fornecedor||'').toLowerCase().includes(q))
       );
       const body=document.getElementById('custosTbody'), empty=document.getElementById('custosEmpty');
-      const total=filtered.length, start=(custosPage-1)*custosPerPage;
-      const slice=filtered.slice(start,start+custosPerPage);
+      const total=custosMeta.total || filtered.length, start=(custosPage-1)*custosPerPage;
       if (!total) {
         body.innerHTML=''; empty.classList.add('show');
         document.getElementById('custosEmptyH3').textContent=custosData.length===0?'Nenhum lançamento cadastrado':'Nenhum resultado encontrado';
@@ -3835,7 +3955,7 @@ transition: border-color .15s;
       const allCats=[...custoCats,...despesaCats];
       const catColor=cat=>{ const i=allCats.indexOf(cat); return CC_COLORS[i>=0?i%CC_COLORS.length:CC_COLORS.length-1]; };
 
-      body.innerHTML=slice.map(c=>{
+      body.innerHTML=filtered.map(c=>{
         const color=catColor(c.categoria);
         const d=new Date(c.data); const dataFmt=isNaN(d)?c.data:d.toLocaleDateString('pt-BR');
         const tipo=c.tipo||'custo';
@@ -3867,7 +3987,7 @@ transition: border-color .15s;
     }
 
     function renderCustosPagination(total) {
-      const pages=Math.ceil(total/custosPerPage), pg=document.getElementById('custosPagination');
+      const pages=custosMeta.totalPages || Math.ceil(total/custosPerPage), pg=document.getElementById('custosPagination');
       if (pages<=1) { pg.innerHTML=''; return; }
       let h=`<button class="pg-btn" onclick="custosGoPage(${custosPage-1})" ${custosPage===1?'disabled':''}><i class="bi bi-chevron-left"></i></button>`;
       for(let i=1;i<=pages;i++) h+=`<button class="pg-btn ${i===custosPage?'active':''}" onclick="custosGoPage(${i})">${i}</button>`;
@@ -3875,20 +3995,20 @@ transition: border-color .15s;
       pg.innerHTML=h;
     }
     function custosGoPage(p) {
-      const pages=Math.ceil(filterCustosByPeriod().length/custosPerPage);
-      if(p<1||p>pages) return; custosPage=p; renderCustosList();
+      const pages=custosMeta.totalPages || Math.ceil((custosMeta.total || 0)/custosPerPage);
+      if(p<1||p>pages) return; loadCustosPage(p);
     }
 
     function setCustosPeriod(el,period) {
       custosPeriod=period; custosCatFilter=null; custosPage=1;
       document.querySelectorAll('#custos-period-btns .period-btn').forEach(b=>b.classList.remove('active'));
-      el.classList.add('active'); renderCustosPanel();
+      el.classList.add('active'); renderCustosKPIs(); renderCustosDonut(); loadCustosPage(1);
     }
 
     function setCustosTipo(el,tipo) {
       custosTipoFilter=tipo; custosCatFilter=null; custosPage=1;
       document.querySelectorAll('#custos-tipo-tabs .custos-tipo-tab').forEach(b=>b.classList.remove('active'));
-      el.classList.add('active'); renderCustosPanel();
+      el.classList.add('active'); renderCustosKPIs(); renderCustosDonut(); loadCustosPage(1);
     }
 
     // ── Modal lançamento ──
@@ -4055,6 +4175,8 @@ transition: border-color .15s;
 
       const valorTxt = fmt(l.valor || 0);
       closeReceberModal();
+      await loadFinDetailPage('receber', receberDetalhePage, false, false);
+      await loadMovimPage(movimPage, false, false);
       renderKPIs(); renderDonut(); renderTabelas();
 
       // Recarrega aba Recebimentos se estiver ativa
