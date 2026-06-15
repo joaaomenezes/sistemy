@@ -3,7 +3,7 @@
 // Em desenvolvimento: deixe apiUrl como null (auto-detect localhost:3333).
 // Em produção: coloque a URL do Railway/servidor.
 
-const NEXO_CONFIG = {
+window.NEXO_CONFIG = {
   apiUrl: null,
   // apiUrl: 'https://nexoerp-api.up.railway.app/api',
 };
