@@ -1105,46 +1105,53 @@ NexoAuth.requireAuth();
 
       if (!ok) return;
 
-      // Deduplicação por CPF (busca com valor formatado — dígitos puros não são substring do CPF mascarado)
-      const busca = await NexoAuth.apiFetch(`/clientes?q=${encodeURIComponent(cpfRaw)}&secao=clientes&limit=10`);
-      if (busca.ok) {
-        const existente = (busca.data || []).find(c => c.doc && c.doc.replace(/\D/g, '') === cpfDigits);
-        if (existente) {
-          selectedFiadoCliente = existente;
-          if (!fiadoClientes.find(c => c.id === existente.id)) fiadoClientes.unshift(existente);
-          closeNovoClienteModal();
-          renderFiadoClientes();
-          updateFiadoSummary();
-          NexoToast.warning(`CPF já cadastrado — cliente ${existente.nome} selecionado.`);
-          return;
+      const restoreLoading = setCaixaButtonLoading(document.getElementById('btnCriarClienteFiado'), 'Cadastrando...');
+
+      try {
+        const busca = await NexoAuth.apiFetch(`/clientes?q=${encodeURIComponent(cpfRaw)}&secao=clientes&limit=10`);
+        if (busca.ok) {
+          const existente = (busca.data || []).find(c => c.doc && c.doc.replace(/\D/g, '') === cpfDigits);
+          if (existente) {
+            selectedFiadoCliente = existente;
+            if (!fiadoClientes.find(c => c.id === existente.id)) fiadoClientes.unshift(existente);
+            closeNovoClienteModal();
+            renderFiadoClientes();
+            updateFiadoSummary();
+            NexoToast.warning(`CPF ja cadastrado - cliente ${existente.nome} selecionado.`);
+            return;
+          }
         }
+
+        const limite = parseFloat(document.getElementById('ncLimite').value) || 0;
+
+        const r = await NexoAuth.apiFetch('/clientes', {
+          method: 'POST',
+          body: JSON.stringify({
+            nome,
+            tel,
+            doc: cpfRaw,
+            tipo: 'pf',
+            secao: 'clientes',
+            limite,
+            status: 'ativo',
+            cadastro: new Date().toLocaleDateString('pt-BR'),
+          }),
+        });
+        if (!r.ok) { NexoToast.error(r.message || 'Erro ao cadastrar cliente.'); return; }
+
+        fiadoClientes.unshift(r.data);
+        selectedFiadoCliente = r.data;
+        fiadoCreditoData = null;
+        closeNovoClienteModal();
+        renderFiadoClientes();
+        updateFiadoSummary();
+        loadFiadoCredito(r.data.id);
+        NexoToast.success(`Cliente ${r.data.nome} cadastrado.`);
+      } catch (_) {
+        NexoToast.error('Erro ao cadastrar cliente.');
+      } finally {
+        restoreLoading();
       }
-
-      const limite = parseFloat(document.getElementById('ncLimite').value) || 0;
-
-      const r = await NexoAuth.apiFetch('/clientes', {
-        method: 'POST',
-        body: JSON.stringify({
-          nome,
-          tel,
-          doc: cpfRaw,
-          tipo: 'pf',
-          secao: 'clientes',
-          limite,
-          status: 'ativo',
-          cadastro: new Date().toLocaleDateString('pt-BR'),
-        }),
-      });
-      if (!r.ok) { NexoToast.error(r.message || 'Erro ao cadastrar cliente.'); return; }
-
-      fiadoClientes.unshift(r.data);
-      selectedFiadoCliente = r.data;
-      fiadoCreditoData = null;
-      closeNovoClienteModal();
-      renderFiadoClientes();
-      updateFiadoSummary();
-      loadFiadoCredito(r.data.id);
-      NexoToast.success(`Cliente ${r.data.nome} cadastrado.`);
     }
 
     function getFiadoData() {
@@ -2221,7 +2228,7 @@ NexoAuth.requireAuth();
 
     async function finalizarVenda() {
       const btn = document.getElementById('btnConfirmPay');
-      if (btn) btn.disabled = true;
+      const restoreLoading = setCaixaButtonLoading(btn, 'Finalizando...');
       try {
         const total = getTotal();
         const sale = _buildSale(total);
@@ -2232,7 +2239,7 @@ NexoAuth.requireAuth();
       } catch (err) {
         NexoToast.error(err.message || 'Erro ao registrar venda. Tente novamente.');
       } finally {
-        if (btn) btn.disabled = false;
+        restoreLoading();
       }
     }
 
