@@ -40,6 +40,11 @@
       max-width: 440px;
     }
 
+    .modal.product-stock-cta-modal {
+      width: min(520px, calc(100vw - 48px));
+      max-width: 520px;
+    }
+
     .modal-footer {
       justify-content: space-between;
       align-items: center;
@@ -1100,6 +1105,60 @@
       line-height: 1.45;
     }
 
+    .stock-cta-body {
+      padding: 28px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .stock-cta-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      background: rgba(0, 200, 150, .12);
+      border: 1px solid rgba(0, 200, 150, .18);
+      color: var(--accent);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+      flex-shrink: 0;
+    }
+
+    .stock-cta-text h3 {
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .stock-cta-text p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .stock-cta-product {
+      margin-top: 14px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255,255,255,.03);
+      color: var(--sub);
+      font-size: 13px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .stock-cta-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 0 28px 24px;
+      flex-wrap: wrap;
+    }
+
     .grid-footer {
       display: flex;
       justify-content: space-between;
@@ -1822,6 +1881,23 @@
     </div>
   </div>
 
+  <div class="modal-overlay" id="stockCtaOverlay" onclick="if(event.target===this)closeStockCta()">
+    <div class="modal product-stock-cta-modal">
+      <div class="stock-cta-body">
+        <div class="stock-cta-icon"><i class="bi bi-box-seam"></i></div>
+        <div class="stock-cta-text">
+          <h3>Primeiro produto cadastrado</h3>
+          <p>Para vender este produto, registre uma entrada de estoque. O estoque inicial continua sendo controlado pelo módulo Estoque.</p>
+          <div class="stock-cta-product" id="stockCtaProduct">—</div>
+        </div>
+      </div>
+      <div class="stock-cta-actions">
+        <button class="btn-cancel" onclick="closeStockCta()">Fazer depois</button>
+        <button class="btn-save" onclick="goStockEntryFromCta()"><i class="bi bi-arrow-down-circle"></i> Registrar entrada agora</button>
+      </div>
+    </div>
+  </div>
+
   <!-- DETAIL PANEL -->
   <div class="detail-panel" id="detailPanel">
     <div class="dp-header">
@@ -1928,6 +2004,46 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
     let selectedColor = '#00c896';
     let selectedImage = null;
     let imageWasRemoved = false;
+    const FIRST_PRODUCT_STOCK_CTA_KEY = 'nexoerp.firstProductStockCtaSeen';
+    let stockCtaProduct = null;
+
+    function firstProductCtaKey() {
+      const empresaId = NexoAuth.getSession()?.user?.empresaId || 'local';
+      return `${FIRST_PRODUCT_STOCK_CTA_KEY}.${empresaId}`;
+    }
+
+    function hasSeenFirstProductStockCta() {
+      try { return localStorage.getItem(firstProductCtaKey()) === '1'; }
+      catch (_) { return false; }
+    }
+
+    function markFirstProductStockCtaSeen() {
+      try { localStorage.setItem(firstProductCtaKey(), '1'); } catch (_) {}
+    }
+
+    function shouldShowFirstProductStockCta(savedProduct, wasEditing, hadProductsBefore) {
+      if (wasEditing || hadProductsBefore || hasSeenFirstProductStockCta()) return false;
+      if (!savedProduct || savedProduct.controlEstoque === false) return false;
+      return Number(savedProduct.estoque || 0) <= 0;
+    }
+
+    function openStockCta(product) {
+      if (!product?.id) return;
+      stockCtaProduct = product;
+      markFirstProductStockCtaSeen();
+      document.getElementById('stockCtaProduct').textContent = product.nome || 'Produto cadastrado';
+      document.getElementById('stockCtaOverlay').classList.add('open');
+    }
+
+    function closeStockCta() {
+      document.getElementById('stockCtaOverlay').classList.remove('open');
+      stockCtaProduct = null;
+    }
+
+    function goStockEntryFromCta() {
+      if (!stockCtaProduct?.id) return closeStockCta();
+      location.href = `estoque.html?entradaProduto=${encodeURIComponent(stockCtaProduct.id)}`;
+    }
 
     function handleImageUpload(event) {
       const file = event.target.files[0];
@@ -2369,6 +2485,8 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
 
       const btn = document.querySelector('.btn-save');
       if (btn) { btn.disabled = true; btn.textContent = 'Salvando…'; }
+      const wasEditing = !!editingId;
+      const hadProductsBefore = (produtoResumo.total || pageMeta.total || products.length || 0) > 0;
 
       const res = editingId
         ? await NexoAuth.apiFetch(`/produtos/${editingId}`, { method: 'PUT',  body: JSON.stringify(payload) })
@@ -2383,16 +2501,19 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
         return;
       }
 
-      const wasEditing = !!editingId;
       let savedImageId = editingId || res.data?.id || res.produto?.id || res.item?.id || null;
       if (savedImageId) setCachedProductImage(savedImageId, imageForCache);
       closeModal();
       await loadProdutoResumo();
       await loadProductsPage(wasEditing ? currentPage : 1);
+      let savedProduct = savedImageId
+        ? products.find(p => p.id === savedImageId) || res.data || res.produto || res.item || null
+        : null;
       if (!savedImageId && imageForCache) {
         const created = products.find(p => p.sku === payload.sku && p.nome === payload.nome);
         if (created?.id) {
           savedImageId = created.id;
+          savedProduct = created;
           setCachedProductImage(savedImageId, imageForCache);
           products = products.map(p => p.id === savedImageId ? { ...p, imagem: imageForCache } : p);
           filtered = [...products];
@@ -2400,6 +2521,9 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
         }
       }
       showToast(editingId ? 'Produto atualizado com sucesso!' : 'Produto cadastrado com sucesso!');
+      if (shouldShowFirstProductStockCta(savedProduct, wasEditing, hadProductsBefore)) {
+        setTimeout(() => openStockCta(savedProduct), 250);
+      }
     }
 
     // ─── EDIT / DELETE ────────────────────────────────────────

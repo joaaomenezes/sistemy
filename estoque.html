@@ -1352,6 +1352,24 @@
       updateKPIs();
       populateProdSelect();
       initXmlDrop();
+      handleEntryProductParam();
+    }
+
+    function handleEntryProductParam() {
+      const params = new URLSearchParams(location.search);
+      const prodId = params.get('entradaProduto');
+      if (!prodId) return;
+
+      const exists = products.some(p => p.id === prodId && p.status === 'ativo');
+      if (exists) {
+        openMov(prodId, 'entrada');
+      } else {
+        showToast('Produto não encontrado para entrada de estoque.', 'warning');
+      }
+
+      params.delete('entradaProduto');
+      const qs = params.toString();
+      history.replaceState(null, '', location.pathname + (qs ? `?${qs}` : ''));
     }
 
     // ═══════════════════════════════════════════════
