@@ -136,207 +136,6 @@ NexoAuth.requireAuth();
       calcTroco();
     }
 
-    // ═══════════════════════════════════════════════
-    // VENDAS SUSPENSAS
-    // ═══════════════════════════════════════════════
-    let suspendedCarts = [];
-    const _SUSP_KEY = 'nexoerp.pdv.suspendedCarts';
-
-    function _saveSuspended() {
-      try { localStorage.setItem(_SUSP_KEY, JSON.stringify(suspendedCarts)); } catch (e) { }
-    }
-    function _loadSuspended() {
-      try {
-        const raw = localStorage.getItem(_SUSP_KEY);
-        if (raw) suspendedCarts = JSON.parse(raw);
-      } catch (e) { }
-    }
-
-    function suspendBtnClick() {
-      if (cart.length) openSuspendLabelModal();
-      else if (suspendedCarts.length) openSuspendedPanel();
-      else NexoToast.warning('Carrinho vazio — nada para suspender.');
-    }
-
-    function openSuspendLabelModal() {
-      document.getElementById('suspendLabelInput').value = '';
-      document.getElementById('suspendLabelOverlay').classList.add('open');
-      setTimeout(() => document.getElementById('suspendLabelInput').focus(), 80);
-    }
-
-    function closeSuspendLabelModal() {
-      document.getElementById('suspendLabelOverlay').classList.remove('open');
-    }
-
-    function confirmarSuspensao() {
-      const label = document.getElementById('suspendLabelInput').value.trim() || 'Sem identificação';
-      const { total } = calcCart();
-      suspendedCarts.unshift({
-        id: Date.now(),
-        label,
-        items: cart.map(c => ({ ...c })),
-        discType,
-        discInput: document.getElementById('discInput').value,
-        cpf: cpfNota,
-        cpfInput: document.getElementById('cpfNotaInput').value,
-        cupom: cupomAtivo ? { ...cupomAtivo } : null,
-        total,
-        time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-        timestamp: Date.now(),
-      });
-      clearCart();
-      clearCpf();
-      document.getElementById('discInput').value = '';
-      cupomAtivo = null;
-      updateCupomBadge();
-      setDiscType('%');
-      closeSuspendLabelModal();
-      _saveSuspended();
-      _updateSuspendUI();
-      NexoToast.info(`Venda suspensa — "${label}"`);
-    }
-
-    function openSuspendedPanel() {
-      _renderSuspendedList();
-      document.getElementById('suspendedOverlay').classList.add('open');
-    }
-
-    function closeSuspendedPanel() {
-      document.getElementById('suspendedOverlay').classList.remove('open');
-    }
-
-    function retomarVenda(idx) {
-      const saved = suspendedCarts[idx];
-      if (!saved) return;
-      if (cart.length) {
-        showConfirm(
-          'Carrinho atual tem itens',
-          `Suspender a venda atual e retomar "${saved.label}"?`,
-          () => {
-            // Suspende o atual silenciosamente
-            const { total } = calcCart();
-            suspendedCarts.push({
-              id: Date.now(),
-              label: 'Venda em andamento',
-              items: cart.map(c => ({ ...c })),
-              discType,
-              discInput: document.getElementById('discInput').value,
-              cpf: cpfNota,
-              cpfInput: document.getElementById('cpfNotaInput').value,
-              cupom: cupomAtivo ? { ...cupomAtivo } : null,
-              total,
-              time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-              timestamp: Date.now(),
-            });
-            clearCart(); clearCpf();
-            document.getElementById('discInput').value = '';
-            cupomAtivo = null; updateCupomBadge(); setDiscType('%');
-            // Agora retoma — re-busca o índice pois array mudou
-            const newIdx = suspendedCarts.findIndex(s => s.id === saved.id);
-            _carregarSuspensa(newIdx);
-          },
-          { confirmText: 'Suspender e Retomar', icon: '⏸️' }
-        );
-        return;
-      }
-      _carregarSuspensa(idx);
-    }
-
-    function _carregarSuspensa(idx) {
-      const saved = suspendedCarts.splice(idx, 1)[0];
-      cart = saved.items;
-      discType = saved.discType;
-      document.getElementById('discInput').value = saved.discInput;
-      setDiscType(saved.discType);
-      if (saved.cpf) {
-        document.getElementById('cpfNotaInput').value = saved.cpfInput;
-        cpfNota = saved.cpf;
-        setCpfStatus('ok', '✓ CPF válido');
-        document.getElementById('cpfClearBtn').classList.add('visible');
-      }
-      cupomAtivo = saved.cupom || null;
-      updateCupomBadge();
-      renderCart();
-      renderProducts();
-      _saveSuspended();
-      _updateSuspendUI();
-      closeSuspendedPanel();
-      NexoToast.success(`Venda retomada — "${saved.label}"`);
-    }
-
-    function descartarSuspensa(idx) {
-      const saved = suspendedCarts[idx];
-      if (!saved) return;
-      showConfirm(
-        'Descartar venda suspensa?',
-        `"${escapeHtml(saved.label)}" · ${saved.items.reduce((s, i) => s + i.qty, 0)} item(s) · R$ ${fmt(saved.total)}`,
-        () => {
-          suspendedCarts.splice(idx, 1);
-          _saveSuspended();
-          _renderSuspendedList();
-          _updateSuspendUI();
-          if (!suspendedCarts.length) closeSuspendedPanel();
-          NexoToast.info('Venda suspensa descartada');
-        },
-        { confirmText: 'Descartar', icon: '🗑️' }
-      );
-    }
-
-    function _renderSuspendedList() {
-      const list = document.getElementById('suspendedList');
-      const count = document.getElementById('suspendedCount');
-      if (count) count.textContent = suspendedCarts.length;
-      if (!suspendedCarts.length) {
-        list.innerHTML = `
-          <div style="text-align:center;padding:40px 20px;color:var(--muted)">
-            <i class="bi bi-pause-circle" style="font-size:40px;color:var(--border);display:block;margin-bottom:12px"></i>
-            Nenhuma venda suspensa no momento.
-          </div>`;
-        return;
-      }
-      list.innerHTML = suspendedCarts.map((s, i) => {
-        const qtyTotal = s.items.reduce((acc, it) => acc + it.qty, 0);
-        const elapsed = Math.floor((Date.now() - s.timestamp) / 60000);
-        const elapsedStr = elapsed < 1 ? 'agora mesmo' : elapsed === 1 ? 'há 1 min' : `há ${elapsed} min`;
-        return `
-          <div class="suspended-item">
-            <div class="suspended-item-top">
-              <div class="suspended-item-label">
-                <i class="bi bi-pause-circle-fill" style="color:var(--accent2);font-size:15px"></i>
-                ${escapeHtml(s.label)}
-              </div>
-              <span class="suspended-item-time">${escapeHtml(s.time)} · ${elapsedStr}</span>
-            </div>
-            <div class="suspended-item-info">
-              <span><i class="bi bi-box-seam"></i> ${qtyTotal} item${qtyTotal !== 1 ? 's' : ''}</span>
-              ${s.cpf ? `<span><i class="bi bi-person-vcard"></i> CPF: ${escapeHtml(s.cpf)}</span>` : ''}
-              ${s.cupom ? `<span><i class="bi bi-ticket-perforated-fill"></i> ${escapeHtml(s.cupom.codigo)}</span>` : ''}
-            </div>
-            <div class="suspended-item-total">R$ ${fmt(s.total)}</div>
-            <div class="suspended-item-btns" style="margin-top:10px">
-              <button class="btn-retomar" onclick="retomarVenda(${i})">
-                <i class="bi bi-play-circle-fill"></i> Retomar
-              </button>
-              <button class="btn-descartar-susp" onclick="descartarSuspensa(${i})">
-                <i class="bi bi-trash3"></i> Descartar
-              </button>
-            </div>
-          </div>`;
-      }).join('');
-    }
-
-    function _updateSuspendUI() {
-      const n = suspendedCarts.length;
-      const btn = document.getElementById('cartSuspendBtn');
-      const badge = document.getElementById('suspendBadge');
-      const bar = document.getElementById('suspendedBar');
-      const barText = document.getElementById('suspendedBarText');
-      if (btn) btn.classList.toggle('has-suspended', n > 0);
-      if (badge) { badge.textContent = n; badge.style.display = n > 0 ? 'flex' : 'none'; }
-      if (bar) bar.classList.toggle('show', n > 0);
-      if (barText) barText.textContent = `${n} venda${n !== 1 ? 's' : ''} suspensa${n !== 1 ? 's' : ''}`;
-    }
-
     // Restaura vendas e stats do turno atual (operador logado) via API
     async function _loadTodayData() {
       try {
@@ -387,8 +186,6 @@ NexoAuth.requireAuth();
       NexoAuth.renderCurrentUser();
       _loadSuspended();
       await loadProdutos();
-      await _loadTodayData();
-      await loadCaixa();
       buildCategoriasBar();
       calcPageSize();
       renderProducts();
@@ -397,8 +194,16 @@ NexoAuth.requireAuth();
       document.addEventListener('keydown', handleKeys);
       updateStats();
       initCaixaUI();
+
+      _loadTodayData().then(() => {
+        updateStats();
+      });
+      loadCaixa().then(() => {
+        initCaixaUI();
+        checkCaixaOvertime();
+      });
+
       // Verificar turno prolongado ao carregar e a cada hora
-      setTimeout(checkCaixaOvertime, 1000);
       setInterval(checkCaixaOvertime, 60 * 60 * 1000);
       let _resizeRaf = null;
       const gridResizeObserver = new ResizeObserver(() => {
@@ -637,6 +442,11 @@ NexoAuth.requireAuth();
     }
 
     function addToCart(id) {
+      if (!caixaStatusLoaded) {
+        NexoToast.info('Carregando status do caixa...');
+        return;
+      }
+
       // Bloquear se caixa fechado
       if (!isCaixaAberto()) {
         showCaixaFechadoAlert();
@@ -2679,6 +2489,7 @@ NexoAuth.requireAuth();
     // CAIXA — Abertura, Fechamento, Sangria, Suprimento
     // ═══════════════════════════════════════════════
     let caixaState = null;
+    let caixaStatusLoaded = false;
     let caixaTab = 'sangria';
 
     async function loadCaixa() {
@@ -2686,13 +2497,31 @@ NexoAuth.requireAuth();
         const r = await NexoAuth.apiFetch('/caixas/aberto');
         if (r.ok) caixaState = r.data;
       } catch (_) { }
+      finally { caixaStatusLoaded = true; }
     }
 
     function isCaixaAberto() { return caixaState && caixaState.aberto; }
 
+    function setCaixaButtonLoading(btn, label) {
+      if (!btn) return () => {};
+      const previousHtml = btn.innerHTML;
+      const previousDisabled = btn.disabled;
+      btn.disabled = true;
+      btn.innerHTML = `<i class="bi bi-arrow-repeat"></i> ${label}`;
+      return () => {
+        btn.disabled = previousDisabled;
+        btn.innerHTML = previousHtml;
+      };
+    }
+
     function initCaixaUI() {
       const btn = document.getElementById('caixaBtn');
       const label = document.getElementById('caixaBtnLabel');
+      if (!caixaStatusLoaded) {
+        btn && btn.classList.add('fechado');
+        if (label) label.textContent = 'Carregando caixa...';
+        return;
+      }
       if (isCaixaAberto()) {
         const nome = caixaState.operador || 'Operador';
         btn && btn.classList.remove('fechado');
@@ -2704,6 +2533,10 @@ NexoAuth.requireAuth();
     }
 
     function openCaixa() {
+      if (!caixaStatusLoaded) {
+        NexoToast.info('Carregando status do caixa...');
+        return;
+      }
       document.getElementById('caixaOverlay').classList.add('open');
       if (!isCaixaAberto()) renderAberturaCaixa();
       else { caixaTab = 'sangria'; renderCaixaAberto(); }
@@ -2742,17 +2575,25 @@ NexoAuth.requireAuth();
       const obs = document.getElementById('caixaObs').value;
       const session = NexoAuth.getSession();
       const aberturaStr = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      const restoreLoading = setCaixaButtonLoading(document.querySelector('#caixaModalFooter .cm-btn.confirm'), 'Abrindo...');
 
-      const r = await NexoAuth.apiFetch('/caixas', {
-        method: 'POST',
-        body: JSON.stringify({ operador, operadorId: session?.user?.id || null, fundo, obs, aberturaStr }),
-      });
+      try {
+        const r = await NexoAuth.apiFetch('/caixas', {
+          method: 'POST',
+          body: JSON.stringify({ operador, operadorId: session?.user?.id || null, fundo, obs, aberturaStr }),
+        });
 
-      if (!r.ok) { NexoToast.error('Erro ao abrir caixa'); return; }
+        if (!r.ok) { NexoToast.error('Erro ao abrir caixa'); return; }
 
-      caixaState = r.data;
-      initCaixaUI(); closeCaixa();
-      NexoToast.success('Caixa aberto — fundo R$ ' + fmt(fundo));
+        caixaStatusLoaded = true;
+        caixaState = r.data;
+        initCaixaUI(); closeCaixa();
+        NexoToast.success('Caixa aberto - fundo R$ ' + fmt(fundo));
+      } catch (_) {
+        NexoToast.error('Erro ao abrir caixa');
+      } finally {
+        restoreLoading();
+      }
     }
 
     function renderCaixaAberto() {
@@ -2800,22 +2641,29 @@ NexoAuth.requireAuth();
 
     async function confirmarMovimento() {
       const valor = parseFloat(document.getElementById('movValor').value);
-      if (!valor || valor <= 0) { NexoToast.warning('Informe um valor válido'); return; }
+      if (!valor || valor <= 0) { NexoToast.warning('Informe um valor valido'); return; }
       const obs = document.getElementById('movObs').value;
       const hora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
       const movimento = { tipo: caixaTab === 'sangria' ? 'Sangria' : 'Suprimento', valor, obs, hora };
-
-      const r = await NexoAuth.apiFetch(`/caixas/${caixaState.id}`, {
-        method: 'PUT',
-        body: JSON.stringify({ movimento }),
-      });
-
-      if (!r.ok) { NexoToast.error('Erro ao registrar movimento'); return; }
-
-      caixaState = r.data;
       const tipoAtual = caixaTab;
-      caixaTab = 'historico'; renderCaixaAberto();
-      NexoToast.success((tipoAtual === 'sangria' ? 'Sangria' : 'Suprimento') + ' de R$ ' + fmt(valor) + ' registrado');
+      const restoreLoading = setCaixaButtonLoading(document.querySelector('#caixaModalFooter .cm-btn.confirm'), 'Registrando...');
+
+      try {
+        const r = await NexoAuth.apiFetch(`/caixas/${caixaState.id}`, {
+          method: 'PUT',
+          body: JSON.stringify({ movimento }),
+        });
+
+        if (!r.ok) { NexoToast.error('Erro ao registrar movimento'); return; }
+
+        caixaState = r.data;
+        caixaTab = 'historico'; renderCaixaAberto();
+        NexoToast.success((tipoAtual === 'sangria' ? 'Sangria' : 'Suprimento') + ' de R$ ' + fmt(valor) + ' registrado');
+      } catch (_) {
+        NexoToast.error('Erro ao registrar movimento');
+      } finally {
+        restoreLoading();
+      }
     }
 
     function fecharCaixa() {
@@ -2878,22 +2726,31 @@ NexoAuth.requireAuth();
     }
 
     async function confirmarFechamentoCaixa() {
-      const r = await NexoAuth.apiFetch(`/caixas/${caixaState.id}`, {
-        method: 'PUT',
-        body: JSON.stringify({
-          aberto: false,
-          fechamento: new Date().toISOString(),
-          totalVendas: todayStats.total,
-        }),
-      });
+      const restoreLoading = setCaixaButtonLoading(document.querySelector('#caixaModalFooter .cm-btn.danger'), 'Fechando...');
 
-      if (!r.ok) { NexoToast.error('Erro ao fechar caixa'); return; }
+      try {
+        const r = await NexoAuth.apiFetch(`/caixas/${caixaState.id}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            aberto: false,
+            fechamento: new Date().toISOString(),
+            totalVendas: todayStats.total,
+          }),
+        });
 
-      caixaState = null;
-      _overtimeShown = false;
-      _overtimeLastShown = 0;
-      initCaixaUI(); closeCaixa();
-      NexoToast.success(`Caixa fechado · ${todayStats.count} venda${todayStats.count !== 1 ? 's' : ''} · R$ ${fmt(todayStats.total)}`);
+        if (!r.ok) { NexoToast.error('Erro ao fechar caixa'); return; }
+
+        caixaState = null;
+        caixaStatusLoaded = true;
+        _overtimeShown = false;
+        _overtimeLastShown = 0;
+        initCaixaUI(); closeCaixa();
+        NexoToast.success(`Caixa fechado - ${todayStats.count} venda${todayStats.count !== 1 ? 's' : ''} - R$ ${fmt(todayStats.total)}`);
+      } catch (_) {
+        NexoToast.error('Erro ao fechar caixa');
+      } finally {
+        restoreLoading();
+      }
     }
 
     // ═══════════════════════════════════════════════
