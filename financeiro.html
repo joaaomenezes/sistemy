@@ -1101,6 +1101,9 @@ transition: border-color .15s;
     .btn-receber:disabled { opacity:.65; cursor:wait; transform:none; box-shadow:none; }
     .btn-receber-sm { padding:5px 12px; border-radius:7px; border:1px solid var(--accent); background:transparent; color:var(--accent); font-size:12px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all .15s; white-space:nowrap; }
     .btn-receber-sm:hover { background:var(--accent); color:#04130d; }
+    .receber-footer-left { display:flex; align-items:center; gap:10px; flex-wrap:wrap; min-width:0; }
+    .receber-total-hint { font-size:12px; color:var(--muted); }
+    .receber-total-hint strong { color:var(--accent); font-weight:800; }
     .modal.receber-modal { width:min(560px, calc(100vw - 64px)); max-width:560px; }
     .receber-modal .modal-header { align-items:flex-start; padding:16px 18px 13px; }
     .receber-modal .modal-body { padding:14px 18px 16px; }
@@ -1762,8 +1765,21 @@ transition: border-color .15s;
           <div class="table-header">
             <div class="table-header-title"><i class="bi bi-arrow-down-circle-fill u-accent-mr"
                 ></i>Contas a Receber</div>
-            <button class="btn-sm btn-primary-sm" onclick="openModal()"><i class="bi bi-plus-lg"></i> Nova
-              Cobrança</button>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:flex-end">
+              <div class="receb-cli-wrap" id="crCliWrap">
+                <div class="receb-cli-field">
+                  <i class="bi bi-person" style="color:var(--muted);font-size:13px"></i>
+                  <input type="text" id="crCliInput" placeholder="Filtrar cliente..."
+                    oninput="onCrCliInput()" autocomplete="off">
+                  <button class="receb-cli-clear" id="crCliClear" onclick="clearCrCli()" style="display:none">
+                    <i class="bi bi-x"></i>
+                  </button>
+                </div>
+                <div class="receb-cli-drop" id="crCliDrop"></div>
+              </div>
+              <button class="btn-sm btn-primary-sm" onclick="openModal()"><i class="bi bi-plus-lg"></i> Nova
+                Cobrança</button>
+            </div>
           </div>
           <div class="table-wrap">
             <table class="fin-table">
@@ -1781,7 +1797,13 @@ transition: border-color .15s;
             </table>
           </div>
           <div class="table-footer fin-detail-footer">
-            <span id="receberDetalheInfo">—</span>
+            <div class="receber-footer-left">
+              <span id="receberDetalheInfo">—</span>
+              <button class="btn-sm btn-receber-sm" id="btnReceberTudo" onclick="openReceberTudoModal()" style="display:none">
+                <i class="bi bi-check2-all"></i> Receber tudo
+              </button>
+              <span class="receber-total-hint" id="receberTudoHint" style="display:none"></span>
+            </div>
             <div class="pagination" id="receberDetalhePagination"></div>
           </div>
         </div>
@@ -1865,7 +1887,7 @@ transition: border-color .15s;
             <table class="fin-table">
               <thead>
                 <tr>
-                  <th>Data Recebimento</th>
+                  <th>Data/Hora Recebimento</th>
                   <th>Cliente</th>
                   <th>Descrição</th>
                   <th style="text-align:right">Valor</th>
@@ -2502,6 +2524,10 @@ transition: border-color .15s;
     let receberDetalheRows = [];
     let pagarDetalheMeta = { page: 1, limit: 1, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
     let receberDetalheMeta = { page: 1, limit: 1, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
+    let receberClienteId = null;
+    let receberClienteNome = '';
+    let receberClienteTimer = null;
+    let receberTudoCache = [];
 
     function getMovimPerPage() {
       const card = document.querySelector('#panel-movimentacoes .movim-card');
@@ -2540,6 +2566,7 @@ transition: border-color .15s;
       params.set('page', String(page));
       params.set('limit', String(getFinDetailPerPage(isPagar ? 'contas-pagar' : 'contas-receber')));
       params.set('excludeStatus', isPagar ? 'cancelado' : 'pago,cancelado,estornado');
+      if (!isPagar && receberClienteId) params.set('clienteId', receberClienteId);
       return params.toString();
     }
 
@@ -2580,6 +2607,7 @@ transition: border-color .15s;
       }
 
       if (shouldRender) renderTabelas();
+      if (!isPagar) updateReceberTudoAction();
     }
 
     async function loadMovimPage(page = movimPage, showLoading = true, shouldRender = true) {
@@ -4124,10 +4152,21 @@ transition: border-color .15s;
 
     // ── Receber conta (baixa de lançamento avencer/vencida → pago) ──
     let _receberId = null;
+    let _receberModo = 'unitario';
+    let _receberTudoItems = [];
+
+    function getLancamentoById(id) {
+      return lancamentos.find(x => x.id === id)
+        || receberDetalheRows.find(x => x.id === id)
+        || pagarDetalheRows.find(x => x.id === id)
+        || null;
+    }
 
     function openReceberModal(id) {
-      const l = lancamentos.find(x => x.id === id);
+      const l = getLancamentoById(id);
       if (!l) return;
+      _receberModo = 'unitario';
+      _receberTudoItems = [];
       _receberId = id;
       const hoje = new Date().toISOString().slice(0, 10);
       document.getElementById('rcCliente').textContent  = l.parte || l.descricao || '—';
@@ -4142,11 +4181,103 @@ transition: border-color .15s;
     function closeReceberModal() {
       document.getElementById('receberOverlay').classList.remove('open');
       _receberId = null;
+      _receberModo = 'unitario';
+      _receberTudoItems = [];
+    }
+
+    function buildReceberTudoMarker(batchId, total = 0, qtd = 0) {
+      return `[RECEBER_TUDO:${batchId}:${Number(total || 0).toFixed(2)}:${qtd || 0}]`;
+    }
+
+    function getReceberTudoGroup(l) {
+      const obs = l.obs || '';
+      const match = obs.match(/\[RECEBER_TUDO:([^:\]]+)(?::([\d.]+))?(?::(\d+))?\]/);
+      return match ? {
+        id: match[1],
+        total: match[2] ? Number(match[2]) : null,
+        qtd: match[3] ? Number(match[3]) : null,
+      } : null;
+    }
+
+    function cleanReceberObs(obs) {
+      return (obs || '').replace(/\s*\[RECEBER_TUDO:[^\]]+\]\s*/g, ' ').trim();
+    }
+
+    async function fetchReceberTudoPendentes() {
+      if (!receberClienteId) return [];
+      const all = [];
+      let page = 1;
+      let totalPages = 1;
+      do {
+        const params = new URLSearchParams({
+          tipo: 'receita',
+          clienteId: receberClienteId,
+          excludeStatus: 'pago,cancelado,estornado',
+          page: String(page),
+          limit: '100',
+        });
+        const r = await NexoAuth.apiFetch('/financeiro?' + params.toString());
+        if (!r.ok) {
+          showToast(r.message || 'Erro ao carregar dividas do cliente.', 'error');
+          return [];
+        }
+        all.push(...(r.data || []));
+        totalPages = r.pagination?.totalPages || page;
+        page += 1;
+      } while (page <= totalPages);
+      receberTudoCache = all;
+      return all;
+    }
+
+    async function updateReceberTudoAction() {
+      const btn = document.getElementById('btnReceberTudo');
+      const hint = document.getElementById('receberTudoHint');
+      if (!btn || !hint) return;
+
+      if (!receberClienteId) {
+        receberTudoCache = [];
+        btn.style.display = 'none';
+        hint.style.display = 'none';
+        return;
+      }
+
+      const items = await fetchReceberTudoPendentes();
+      const total = items.reduce((sum, item) => sum + (Number(item.valor) || 0), 0);
+      btn.style.display = items.length ? '' : 'none';
+      hint.style.display = items.length ? '' : 'none';
+      hint.innerHTML = items.length
+        ? `<strong>R$ ${fmt(total)}</strong> em ${items.length} divida${items.length !== 1 ? 's' : ''}`
+        : '';
+    }
+
+    async function openReceberTudoModal() {
+      if (!receberClienteId) return;
+      const items = await fetchReceberTudoPendentes();
+      if (!items.length) {
+        showToast('Este cliente nao possui contas em aberto.', 'info');
+        updateReceberTudoAction();
+        return;
+      }
+
+      const total = items.reduce((sum, item) => sum + (Number(item.valor) || 0), 0);
+      _receberModo = 'tudo';
+      _receberId = null;
+      _receberTudoItems = items;
+
+      const hoje = new Date().toISOString().slice(0, 10);
+      document.getElementById('rcCliente').textContent  = receberClienteNome || items[0].parte || '—';
+      document.getElementById('rcDesc').textContent     = `Receber tudo (${items.length} venda${items.length !== 1 ? 's' : ''})`;
+      document.getElementById('rcValor').textContent    = `R$ ${fmt(total)}`;
+      document.getElementById('rcDataInput').value      = hoje;
+      document.getElementById('rcMetodoInput').value    = '';
+      document.getElementById('rcObsInput').value       = '';
+      document.getElementById('receberOverlay').classList.add('open');
     }
 
     async function confirmarReceber() {
+      if (_receberModo === 'tudo') return confirmarReceberTudo();
       if (!_receberId) return;
-      const l = lancamentos.find(x => x.id === _receberId);
+      const l = getLancamentoById(_receberId);
       if (!l) { closeReceberModal(); return; }
 
       const btn = document.getElementById('btnConfirmReceber');
@@ -4186,6 +4317,58 @@ transition: border-color .15s;
       }
 
       showToast(`Recebimento de R$ ${valorTxt} confirmado.`, 'success');
+    }
+
+    async function confirmarReceberTudo() {
+      if (!_receberTudoItems.length) return;
+
+      const btn = document.getElementById('btnConfirmReceber');
+      btn.disabled = true;
+
+      const pagoEm = document.getElementById('rcDataInput').value || new Date().toISOString().slice(0, 10);
+      const metodo = document.getElementById('rcMetodoInput').value;
+      const obs    = document.getElementById('rcObsInput').value.trim();
+      const batchId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      const total = _receberTudoItems.reduce((sum, item) => sum + (Number(item.valor) || 0), 0);
+      const marker = buildReceberTudoMarker(batchId, total, _receberTudoItems.length);
+
+      for (const item of _receberTudoItems) {
+        const payload = {
+          status: 'pago',
+          pagoEm,
+          obs: `${marker} ${obs}`.trim(),
+          ...(metodo && { formaPagamento: metodo }),
+        };
+        const res = await NexoAuth.apiFetch(`/financeiro/${item.id}`, {
+          method: 'PUT',
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          btn.disabled = false;
+          showToast(res.message || `Erro ao receber ${item.descricao || item.id}.`, 'error');
+          return;
+        }
+
+        const local = getLancamentoById(item.id);
+        if (local) Object.assign(local, payload);
+      }
+
+      btn.disabled = false;
+      const rResumo = await NexoAuth.apiFetch('/financeiro/resumo');
+      if (rResumo.ok) finResumo = rResumo.data;
+
+      closeReceberModal();
+      await loadFinDetailPage('receber', 1, false, false);
+      await loadMovimPage(movimPage, false, false);
+      renderKPIs(); renderDonut(); renderTabelas();
+      updateReceberTudoAction();
+
+      if (document.getElementById('panel-recebimentos')?.classList.contains('active')) {
+        loadRecebimentos(1, false);
+        loadRecebKPIs();
+      }
+
+      showToast(`Recebimento total de R$ ${fmt(total)} confirmado.`, 'success');
     }
 
     // ═══════════════════════════════════════════════
@@ -4235,27 +4418,54 @@ transition: border-color .15s;
       return m ? (MAP[m.toLowerCase()] || m) : '—';
     }
 
+    function hasTimePart(raw) {
+      return typeof raw === 'string' && /(?:T|\s)\d{2}:\d{2}/.test(raw);
+    }
+
+    function fmtTimeFrom(raw) {
+      if (!raw || !hasTimePart(raw)) return '';
+      const d = new Date(raw);
+      return isNaN(d.getTime())
+        ? ''
+        : d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function fmtRecebDateTime(l) {
+      const dateRaw = l.pagoEm || l.recebidoEm || l.atualizadoEm || l.updatedAt || l.criadoEm || '';
+      if (!dateRaw) return '—';
+
+      const dateBase = typeof dateRaw === 'string' && dateRaw.length === 10
+        ? new Date(dateRaw + 'T00:00:00')
+        : new Date(dateRaw);
+      const data = isNaN(dateBase.getTime()) ? '—' : dateBase.toLocaleDateString('pt-BR');
+
+      const timeRaw = [l.pagoEm, l.recebidoEm, l.atualizadoEm, l.updatedAt, l.criadoEm].find(hasTimePart);
+      const hora = fmtTimeFrom(timeRaw);
+      return hora ? `${data} ${hora}` : data;
+    }
+
     function renderRecebimentos(lista) {
       const tbody = document.getElementById('tblRecebimentos');
       const info  = document.getElementById('recebInfo');
-      const total = recebPageMeta.total || lista.length;
+      const displayLista = agruparRecebimentosTudo(lista);
+      const total = recebPageMeta.total || displayLista.length;
       if (!tbody) return;
 
-      if (!lista.length) {
+      if (!displayLista.length) {
         tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Nenhum recebimento encontrado.</td></tr>`;
         if (info) info.textContent = '0 recebimentos';
         document.getElementById('recebPagination').innerHTML = '';
         return;
       }
 
-      tbody.innerHTML = lista.map(l => {
-        const dataExib = l.pagoEm
-          ? new Date(l.pagoEm + 'T00:00:00').toLocaleDateString('pt-BR')
-          : (l.criadoEm ? new Date(l.criadoEm).toLocaleDateString('pt-BR') : '—');
+      tbody.innerHTML = displayLista.map(l => {
+        const dataExib = fmtRecebDateTime(l);
         const cliente  = escapeHTML(l.parte || '—');
         const descr    = escapeHTML(l.descricao || '—');
         const metodoTx = fmtMetodo(l.formaPagamento);
-        const vendaLink = l.vendaId
+        const vendaLink = l.receberTudo
+          ? `<span style="font-size:11px;color:var(--muted)">${l.qtd} vendas</span>`
+          : l.vendaId
           ? `<span style="font-size:11px;font-family:var(--font-b);color:var(--accent)">${escapeHTML(l.vendaId)}</span>`
           : '<span style="color:var(--muted)">—</span>';
         return `<tr>
@@ -4270,6 +4480,47 @@ transition: border-color .15s;
 
       if (info) info.textContent = `${total} recebimento${total !== 1 ? 's' : ''}`;
       renderRecebPagination();
+    }
+
+    function agruparRecebimentosTudo(lista) {
+      const grupos = new Map();
+      const soltos = [];
+
+      (lista || []).forEach(l => {
+        const grupo = getReceberTudoGroup(l);
+        if (!grupo) {
+          soltos.push({ ...l, obs: cleanReceberObs(l.obs) });
+          return;
+        }
+
+        const gid = grupo.id;
+        if (!grupos.has(gid)) {
+          grupos.set(gid, {
+            ...l,
+            id: `receber-tudo-${gid}`,
+            descricao: 'Receber tudo',
+            valor: grupo.total || 0,
+            qtd: grupo.qtd || 0,
+            vendaId: null,
+            obs: cleanReceberObs(l.obs),
+            receberTudo: true,
+            _somaParcial: 0,
+          });
+        }
+        const g = grupos.get(gid);
+        g._somaParcial += Number(l.valor) || 0;
+        if (!grupo.total) g.valor = g._somaParcial;
+        if (!grupo.qtd) g.qtd += 1;
+        if (!g.parte && l.parte) g.parte = l.parte;
+        if (!g.formaPagamento && l.formaPagamento) g.formaPagamento = l.formaPagamento;
+        if (!g.pagoEm && l.pagoEm) g.pagoEm = l.pagoEm;
+      });
+
+      return [...soltos, ...grupos.values()].sort((a, b) => {
+        const da = new Date((a.pagoEm || a.criadoEm || '1970-01-01') + (String(a.pagoEm || '').length === 10 ? 'T00:00:00' : '')).getTime();
+        const db = new Date((b.pagoEm || b.criadoEm || '1970-01-01') + (String(b.pagoEm || '').length === 10 ? 'T00:00:00' : '')).getTime();
+        return db - da;
+      });
     }
 
     function renderRecebPagination() {
@@ -4305,6 +4556,60 @@ transition: border-color .15s;
     }
 
     // Autocomplete de cliente no filtro de Recebimentos
+    function onCrCliInput() {
+      clearTimeout(receberClienteTimer);
+      const inp = document.getElementById('crCliInput');
+      const q   = inp.value.trim();
+      document.getElementById('crCliClear').style.display = q ? '' : 'none';
+
+      if (receberClienteId) {
+        receberClienteId = null;
+        receberClienteNome = '';
+        receberTudoCache = [];
+        loadFinDetailPage('receber', 1, true);
+      }
+
+      if (q.length < 2) {
+        document.getElementById('crCliDrop').classList.remove('open');
+        updateReceberTudoAction();
+        return;
+      }
+
+      receberClienteTimer = setTimeout(async () => {
+        const r    = await NexoAuth.apiFetch(`/clientes?q=${encodeURIComponent(q)}&limit=20`);
+        const drop = document.getElementById('crCliDrop');
+        if (!r.ok || !(r.data||[]).length) {
+          drop.innerHTML = '<div class="receb-cli-empty">Nenhum cliente encontrado</div>';
+        } else {
+          drop.innerHTML = (r.data||[]).map(c =>
+            `<div class="receb-cli-opt" onclick="selectCrCli('${c.id}','${c.nome.replace(/'/g,"\\'")}')">${escapeHTML(c.nome)}</div>`
+          ).join('');
+        }
+        drop.classList.add('open');
+      }, 280);
+    }
+
+    function selectCrCli(id, nome) {
+      receberClienteId = id;
+      receberClienteNome = nome;
+      receberTudoCache = [];
+      document.getElementById('crCliInput').value = nome;
+      document.getElementById('crCliClear').style.display = '';
+      document.getElementById('crCliDrop').classList.remove('open');
+      loadFinDetailPage('receber', 1, true);
+    }
+
+    function clearCrCli() {
+      receberClienteId = null;
+      receberClienteNome = '';
+      receberTudoCache = [];
+      document.getElementById('crCliInput').value = '';
+      document.getElementById('crCliClear').style.display = 'none';
+      document.getElementById('crCliDrop').classList.remove('open');
+      loadFinDetailPage('receber', 1, true);
+      updateReceberTudoAction();
+    }
+
     function onRecebCliInput() {
       clearTimeout(recebClienteTimer);
       const inp = document.getElementById('recebCliInput');
