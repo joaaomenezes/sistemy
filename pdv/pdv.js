@@ -2209,14 +2209,29 @@ NexoAuth.requireAuth();
     // ═══════════════════════════════════════════════
     let caixaState = null;
     let caixaStatusLoaded = false;
+    let caixaLoadPromise = null;
+    let caixaLoadFailed = false;
     let caixaTab = 'sangria';
 
     async function loadCaixa() {
-      try {
-        const r = await NexoAuth.apiFetch('/caixas/aberto');
-        if (r.ok) caixaState = r.data;
-      } catch (_) { }
-      finally { caixaStatusLoaded = true; }
+      if (caixaLoadPromise) return caixaLoadPromise;
+
+      caixaLoadPromise = (async () => {
+        try {
+          const r = await NexoAuth.apiFetch('/caixas/aberto');
+          caixaLoadFailed = !r.ok;
+          if (r.ok) caixaState = r.data;
+          return r;
+        } catch (err) {
+          caixaLoadFailed = true;
+          return { ok: false, error: err };
+        } finally {
+          caixaStatusLoaded = true;
+          caixaLoadPromise = null;
+        }
+      })();
+
+      return caixaLoadPromise;
     }
 
     function isCaixaAberto() { return caixaState && caixaState.aberto; }
@@ -2241,6 +2256,11 @@ NexoAuth.requireAuth();
         if (label) label.textContent = 'Carregando caixa...';
         return;
       }
+      if (caixaLoadFailed) {
+        btn && btn.classList.add('fechado');
+        if (label) label.textContent = 'Erro no caixa';
+        return;
+      }
       if (isCaixaAberto()) {
         const nome = caixaState.operador || 'Operador';
         btn && btn.classList.remove('fechado');
@@ -2251,12 +2271,56 @@ NexoAuth.requireAuth();
       }
     }
 
-    function openCaixa() {
-      if (!caixaStatusLoaded) {
-        NexoToast.info('Carregando status do caixa...');
-        return;
+    function renderCaixaLoading() {
+      document.getElementById('caixaModalTitle').textContent = 'Carregando Caixa';
+      document.getElementById('caixaModalBody').innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-height:220px;color:var(--muted);text-align:center">
+          <i class="bi bi-arrow-repeat" style="font-size:34px;color:var(--accent)"></i>
+          <div>
+            <strong style="display:block;color:var(--text);font-size:15px;margin-bottom:4px">Verificando status do caixa...</strong>
+            <span style="font-size:13px">Aguarde um instante.</span>
+          </div>
+        </div>`;
+      document.getElementById('caixaModalFooter').innerHTML = `
+        <button class="cm-btn ghost" onclick="closeCaixa()">Fechar</button>`;
+    }
+
+    function renderCaixaLoadError() {
+      document.getElementById('caixaModalTitle').textContent = 'Erro no Caixa';
+      document.getElementById('caixaModalBody').innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-height:220px;color:var(--muted);text-align:center">
+          <i class="bi bi-exclamation-triangle" style="font-size:34px;color:var(--warn)"></i>
+          <div>
+            <strong style="display:block;color:var(--text);font-size:15px;margin-bottom:4px">Nao foi possivel carregar o caixa.</strong>
+            <span style="font-size:13px">Verifique a conexao e tente novamente.</span>
+          </div>
+        </div>`;
+      document.getElementById('caixaModalFooter').innerHTML = `
+        <button class="cm-btn ghost" onclick="closeCaixa()">Fechar</button>
+        <button class="cm-btn confirm" onclick="openCaixa(true)"><i class="bi bi-arrow-clockwise"></i> Tentar novamente</button>`;
+    }
+
+    async function openCaixa(forceReload = false) {
+      if (forceReload) {
+        caixaStatusLoaded = false;
+        caixaState = null;
+        caixaLoadFailed = false;
       }
       document.getElementById('caixaOverlay').classList.add('open');
+      if (!caixaStatusLoaded) {
+        renderCaixaLoading();
+        const r = await loadCaixa();
+        initCaixaUI();
+        if (!document.getElementById('caixaOverlay').classList.contains('open')) return;
+        if (!r?.ok && !caixaState) {
+          renderCaixaLoadError();
+          return;
+        }
+      }
+      if (caixaLoadFailed) {
+        renderCaixaLoadError();
+        return;
+      }
       if (!isCaixaAberto()) renderAberturaCaixa();
       else { caixaTab = 'sangria'; renderCaixaAberto(); }
     }
@@ -2305,6 +2369,7 @@ NexoAuth.requireAuth();
         if (!r.ok) { NexoToast.error('Erro ao abrir caixa'); return; }
 
         caixaStatusLoaded = true;
+        caixaLoadFailed = false;
         caixaState = r.data;
         initCaixaUI(); closeCaixa();
         NexoToast.success('Caixa aberto - fundo R$ ' + fmt(fundo));
@@ -2461,6 +2526,7 @@ NexoAuth.requireAuth();
 
         caixaState = null;
         caixaStatusLoaded = true;
+        caixaLoadFailed = false;
         _overtimeShown = false;
         _overtimeLastShown = 0;
         initCaixaUI(); closeCaixa();
