@@ -114,15 +114,24 @@
       const movs = caixaState.movimentos || [];
       const totalSang = movs.filter(m => m.tipo === 'Sangria').reduce((s, m) => s + m.valor, 0);
       const totalSup = movs.filter(m => m.tipo === 'Suprimento').reduce((s, m) => s + m.valor, 0);
-      const saldo = caixaState.fundo + totalSup - totalSang + todayStats.total;
+      const formas = todayStats.formas || {};
+      const vendasDinheiro = formas.dinheiro || 0;
+      const vendasCartao = (formas.credito || 0) + (formas.debito || 0);
+      const vendasBeneficios = (formas.voucher || 0) + (formas.vale || 0);
+      const saldo = caixaState.fundo + totalSup - totalSang + vendasDinheiro;
       document.getElementById('caixaModalTitle').textContent = 'Gerenciar Caixa';
       document.getElementById('caixaModalBody').innerHTML = `
         <div class="caixa-resumo">
           <div class="caixa-resumo-row"><span>Fundo inicial</span><span>R$ ${fmt(caixaState.fundo)}</span></div>
           <div class="caixa-resumo-row"><span>Suprimentos</span><span style="color:var(--accent)">+ R$ ${fmt(totalSup)}</span></div>
           <div class="caixa-resumo-row"><span>Sangrias</span><span style="color:var(--danger)">− R$ ${fmt(totalSang)}</span></div>
-          <div class="caixa-resumo-row"><span>Vendas</span><span style="color:var(--accent)">+ R$ ${fmt(todayStats.total)}</span></div>
-          <div class="caixa-resumo-row total"><span>Saldo atual</span><span>R$ ${fmt(saldo)}</span></div>
+          <div class="caixa-resumo-row"><span>Total vendido</span><span>R$ ${fmt(todayStats.total)}</span></div>
+          <div class="caixa-resumo-row"><span>Vendas em dinheiro</span><span style="color:var(--accent)">+ R$ ${fmt(vendasDinheiro)}</span></div>
+          <div class="caixa-resumo-row"><span>Pix</span><span>R$ ${fmt(formas.pix || 0)}</span></div>
+          <div class="caixa-resumo-row"><span>Crédito e débito</span><span>R$ ${fmt(vendasCartao)}</span></div>
+          <div class="caixa-resumo-row"><span>Voucher e vale</span><span>R$ ${fmt(vendasBeneficios)}</span></div>
+          <div class="caixa-resumo-row"><span>Fiado</span><span>R$ ${fmt(formas.fiado || 0)}</span></div>
+          <div class="caixa-resumo-row total"><span>Dinheiro esperado no caixa</span><span>R$ ${fmt(saldo)}</span></div>
         </div>
         <div class="caixa-tabs">
           <button class="caixa-tab ${tab === 'sangria' ? 'active' : ''}" onclick="setCaixaTab('sangria')"><i class="bi bi-arrow-up-circle"></i> Sangria</button>
@@ -189,28 +198,35 @@
       const movs = caixaState.movimentos || [];
       const totalSang = movs.filter(m => m.tipo === 'Sangria').reduce((s, m) => s + m.valor, 0);
       const totalSup = movs.filter(m => m.tipo === 'Suprimento').reduce((s, m) => s + m.valor, 0);
-      const saldoEsperado = caixaState.fundo + totalSup - totalSang + todayStats.total;
+      const vendasDinheiro = todayStats.formas?.dinheiro || 0;
+      const saldoEsperado = caixaState.fundo + totalSup - totalSang + vendasDinheiro;
       const ticketMedio = todayStats.count > 0 ? todayStats.total / todayStats.count : 0;
 
-      const KNOWN = ['Dinheiro', 'Pix', 'Voucher', 'Split'];
       const breakdown = {};
       const estornos = salesHistory.filter(s => s.estornada);
       const totalEstornos = estornos.reduce((s, v) => s + (parseFloat(String(v.total).replace(/\./g, '').replace(',', '.')) || 0), 0);
       salesHistory.filter(s => !s.estornada).forEach(sale => {
-        const val = parseFloat(String(sale.total).replace(/\./g, '').replace(',', '.')) || 0;
-        const key = KNOWN.includes(sale.method) ? sale.method : 'Cartão';
-        if (!breakdown[key]) breakdown[key] = { count: 0, total: 0 };
-        breakdown[key].count++;
-        breakdown[key].total += val;
+        _getSalePayments(sale).forEach(payment => {
+          const key = payment.metodo || 'multiplo';
+          const val = payment.valor || 0;
+          if (!breakdown[key]) breakdown[key] = { count: 0, total: 0 };
+          breakdown[key].count++;
+          breakdown[key].total += val;
+        });
       });
 
-      const icons = { Dinheiro: 'bi-cash-coin', Pix: 'bi-qr-code-scan', Cartão: 'bi-credit-card', Voucher: 'bi-ticket-perforated-fill', Split: 'bi-layout-split' };
-      const payRows = Object.entries(breakdown).map(([k, v]) => `
+      const labels = { dinheiro: 'Dinheiro', pix: 'Pix', credito: 'Crédito', debito: 'Débito', voucher: 'Voucher', vale: 'Vale-refeição', fiado: 'Fiado', multiplo: 'Múltiplo (sem detalhes)' };
+      const icons = { dinheiro: 'bi-cash-coin', pix: 'bi-qr-code-scan', credito: 'bi-credit-card-fill', debito: 'bi-credit-card', voucher: 'bi-ticket-perforated-fill', vale: 'bi-ticket-detailed', fiado: 'bi-journal-text', multiplo: 'bi-layout-split' };
+      const order = ['dinheiro', 'pix', 'debito', 'credito', 'voucher', 'vale', 'fiado', 'multiplo'];
+      const payRows = order.filter(key => breakdown[key]).map(k => {
+        const v = breakdown[k];
+        return `
         <div class="fcx-pay-row">
-          <span class="fcx-pay-label"><i class="bi ${icons[k] || 'bi-cash'}" style="margin-right:6px"></i>${k}</span>
-          <span class="fcx-pay-count">${v.count} venda${v.count !== 1 ? 's' : ''}</span>
+          <span class="fcx-pay-label"><i class="bi ${icons[k] || 'bi-wallet2'}" style="margin-right:6px"></i>${labels[k] || k}</span>
+          <span class="fcx-pay-count">${v.count} pagamento${v.count !== 1 ? 's' : ''}</span>
           <span class="fcx-pay-val">R$ ${fmt(v.total)}</span>
-        </div>`).join('') || `<p style="color:var(--muted);font-size:12px;text-align:center;padding:6px 0">Nenhuma venda neste turno</p>`;
+        </div>`;
+      }).join('') || `<p style="color:var(--muted);font-size:12px;text-align:center;padding:6px 0">Nenhuma venda neste turno</p>`;
 
       document.getElementById('caixaModalTitle').textContent = 'Fechamento de Caixa';
       document.getElementById('caixaModalBody').innerHTML = `
@@ -227,9 +243,10 @@
           <div class="fcx-row"><span>Fundo inicial</span><span>R$ ${fmt(caixaState.fundo)}</span></div>
           <div class="fcx-row g"><span>Suprimentos</span><span>+ R$ ${fmt(totalSup)}</span></div>
           <div class="fcx-row d"><span>Sangrias</span><span>− R$ ${fmt(totalSang)}</span></div>
-          <div class="fcx-row g"><span>Total em vendas (${todayStats.count})</span><span>+ R$ ${fmt(todayStats.total)}</span></div>
-          ${estornos.length ? `<div class="fcx-row d"><span>Estornos (${estornos.length})</span><span>− R$ ${fmt(totalEstornos)}</span></div>` : ''}
-          <div class="fcx-row total"><span>Saldo esperado</span><span>R$ ${fmt(saldoEsperado)}</span></div>
+          <div class="fcx-row"><span>Total vendido (${todayStats.count})</span><span>R$ ${fmt(todayStats.total)}</span></div>
+          <div class="fcx-row g"><span>Vendas em dinheiro</span><span>+ R$ ${fmt(vendasDinheiro)}</span></div>
+          ${estornos.length ? `<div class="fcx-row d"><span>Estornos registrados (${estornos.length})</span><span>R$ ${fmt(totalEstornos)}</span></div>` : ''}
+          <div class="fcx-row total"><span>Dinheiro esperado no caixa</span><span>R$ ${fmt(saldoEsperado)}</span></div>
         </div>
         <div class="fcx-ticket">Ticket médio: <strong>R$ ${fmt(ticketMedio)}</strong></div>`;
 

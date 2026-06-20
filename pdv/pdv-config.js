@@ -4,8 +4,13 @@
     const PDV_CONFIG_KEY = 'nexoerp.pdv.config';
 
     const PDV_CONFIG_DEFAULTS = {
+      pixModo: 'manual',
+      pixProvedor: null,
+      pixAmbiente: 'sandbox',
+      pixStatus: 'desconectado',
+      pixWebhookPath: null,
       pixTipoChave: 'aleatoria',
-      pixChave: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+      pixChave: '',
       pixBeneficiario: 'Nexo ERP',
       pixCidade: 'SAO PAULO',
       terminalOperadora: 'demo',
@@ -31,3 +36,19 @@
     }
 
     let PDV_CONFIG = loadPdvConfig();
+
+    async function loadPdvConfigFromApi() {
+      try {
+        const response = await NexoAuth.apiFetch('/configuracoes-pdv');
+        if (!response.ok || !response.data) {
+          PDV_CONFIG.pixChave = '';
+          return false;
+        }
+        Object.assign(PDV_CONFIG, response.data);
+        localStorage.setItem(PDV_CONFIG_KEY, JSON.stringify(PDV_CONFIG));
+        return true;
+      } catch (_) {
+        PDV_CONFIG.pixChave = '';
+        return false;
+      }
+    }

@@ -703,6 +703,62 @@
         <!-- PIX -->
         <div class="pdv-config-panel show" data-panel="pix">
           <div class="config-group">
+            <label>Modo de recebimento</label>
+            <select class="caixa-input" id="cfgPixModo" onchange="onCfgPixModeChange()">
+              <option value="manual">PIX manual</option>
+              <option value="automatico">PIX automático</option>
+            </select>
+          </div>
+          <div id="cfgPixProviderFields" style="display:none">
+            <div class="config-group">
+              <label>Provedor</label>
+              <select class="caixa-input" id="cfgPixProvedor" onchange="onCfgPixProviderChange()">
+                <option value="">Selecione</option>
+                <option value="mercadopago">Mercado Pago</option>
+                <option value="efi">Efí</option>
+                <option value="asaas">Asaas</option>
+                <option value="pagbank">PagBank</option>
+              </select>
+            </div>
+            <div class="config-group">
+              <label>Ambiente</label>
+              <select class="caixa-input" id="cfgPixAmbiente">
+                <option value="sandbox">Testes</option>
+                <option value="producao">Produção</option>
+              </select>
+            </div>
+            <div class="config-group">
+              <label>Status</label>
+              <input class="caixa-input" id="cfgPixStatus" type="text" value="Desconectado" disabled>
+            </div>
+            <div id="cfgMercadoPagoFields" style="display:none">
+              <div class="config-group">
+                <label>Access Token</label>
+                <input class="caixa-input" id="cfgMpAccessToken" type="password" autocomplete="new-password" placeholder="APP_USR-...">
+              </div>
+              <div class="config-group">
+                <label>Assinatura secreta do webhook</label>
+                <input class="caixa-input" id="cfgMpWebhookSecret" type="password" autocomplete="new-password" placeholder="Assinatura secreta">
+              </div>
+              <div class="config-group" id="cfgMpWebhookUrlGroup" style="display:none">
+                <label>URL do webhook</label>
+                <input class="caixa-input" id="cfgMpWebhookUrl" type="text" readonly>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+                <button class="cm-btn confirm" id="cfgMpConnectBtn" type="button" onclick="conectarMercadoPago()">
+                  <i class="bi bi-link-45deg"></i> Conectar conta
+                </button>
+                <button class="cm-btn ghost" id="cfgMpTestBtn" type="button" onclick="testarMercadoPago()">
+                  <i class="bi bi-arrow-repeat"></i> Testar
+                </button>
+                <button class="cm-btn ghost" id="cfgMpDisconnectBtn" type="button" onclick="desconectarPix()">
+                  <i class="bi bi-x-circle"></i> Desconectar
+                </button>
+              </div>
+            </div>
+          </div>
+          <div id="cfgPixManualFields">
+          <div class="config-group">
             <label>Tipo da chave</label>
             <select class="caixa-input" id="cfgPixTipo" onchange="onCfgPixTipoChange()">
               <option value="cpf">CPF</option>
@@ -723,6 +779,7 @@
           <div class="config-group">
             <label>Cidade</label>
             <input class="caixa-input" id="cfgPixCidade" type="text" placeholder="Ex: SAO PAULO">
+          </div>
           </div>
         </div>
 

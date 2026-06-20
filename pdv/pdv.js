@@ -51,7 +51,17 @@ NexoAuth.requireAuth();
     let selectedMethod = 'dinheiro';
     let vendaObs = '';
     let salesHistory = [];
-    let todayStats = { count: 0, total: 0 };
+    const PAYMENT_METHOD_KEYS = ['dinheiro', 'pix', 'credito', 'debito', 'voucher', 'vale', 'fiado', 'multiplo'];
+
+    function _createTodayStats() {
+      return {
+        count: 0,
+        total: 0,
+        formas: Object.fromEntries(PAYMENT_METHOD_KEYS.map(key => [key, 0])),
+      };
+    }
+
+    let todayStats = _createTodayStats();
     let aiVisible = false;
     let activeCat = null;
     let currentPage = 0;
@@ -145,16 +155,10 @@ NexoAuth.requireAuth();
         const r = await NexoAuth.apiFetch(`/vendas?tipo=pdv&operadorId=${opId}`);
         if (!r.ok || !Array.isArray(r.data)) return;
         const hojeVendas = r.data.filter(v => v.dataStr === today);
-        if (!hojeVendas.length) return;
-
-        let count = 0, total = 0;
+        todayStats = _createTodayStats();
         hojeVendas.forEach(v => {
-          if (v.status !== 'estornada') {
-            count++;
-            if ((v.metodo || '').toLowerCase() !== 'fiado') total += v.total || 0;
-          }
+          if (v.status !== 'estornada') _applySaleToStats(v, 1);
         });
-        todayStats = { count, total };
 
         // Reconstrói salesHistory para o drawer funcionar após reload
         salesHistory = hojeVendas.map(v => ({
@@ -163,7 +167,9 @@ NexoAuth.requireAuth();
           subtotal: v.subtotal || v.total || 0,
           desconto: v.desconto || 0,
           troco: 0,
+          metodo: (v.metodo || 'dinheiro').toLowerCase(),
           method: v.metodo ? (v.metodo.charAt(0).toUpperCase() + v.metodo.slice(1)) : 'Dinheiro',
+          pagamentos: Array.isArray(v.pagamentos) ? v.pagamentos : [],
           brand: null,
           parcelas: null,
           client: v.cliente || 'Venda Balcão',
@@ -185,7 +191,7 @@ NexoAuth.requireAuth();
     async function init() {
       NexoAuth.renderCurrentUser();
       _loadSuspended();
-      await loadProdutos();
+      await Promise.all([loadProdutos(), loadPdvConfigFromApi()]);
       buildCategoriasBar();
       calcPageSize();
       renderProducts();
@@ -1021,6 +1027,9 @@ NexoAuth.requireAuth();
     let pixPago = false;
     let pixPayloadAtual = '';
     let pixFlowAtivo = false;
+    let pixCobrancaId = null;
+    let pixProviderPaymentId = null;
+    let pixStatusPollInterval = null;
 
     // ── helpers para geração de payload EMV-PIX ──────────────────────
     function _pixField(id, value) {
@@ -1052,8 +1061,16 @@ NexoAuth.requireAuth();
       return body + _pixCRC16(body);
     }
 
-    function gerarPixQR() {
+    async function gerarPixQR() {
       const total = getTotal();
+      if (PDV_CONFIG.pixModo === 'automatico') {
+        if (PDV_CONFIG.pixStatus !== 'conectado') {
+          NexoToast.warning('Conecte o provedor PIX antes de gerar uma cobrança automática.');
+          return;
+        }
+        await gerarPixAutomatico(total);
+        return;
+      }
       const chave = PDV_CONFIG.pixChave;
       if (!chave || !chave.trim()) {
         NexoToast.warning('Configure a chave PIX nas configurações antes de gerar o QR.');
@@ -1097,6 +1114,82 @@ NexoAuth.requireAuth();
           expirarPix();
         }
       }, 1000);
+    }
+
+    async function gerarPixAutomatico(total) {
+      const button = document.getElementById('pixGenBtn');
+      const restoreLoading = setButtonLoading(button, 'Gerando cobrança...');
+      try {
+        const payerEmail = NexoAuth.getSession()?.user?.email;
+        if (!payerEmail) throw new Error('O usuário logado precisa ter um e-mail válido.');
+        const response = await NexoAuth.apiFetch('/pix/cobrancas', {
+          method: 'POST',
+          body: JSON.stringify({
+            valor: total,
+            descricao: `Venda PDV - ${PDV_CONFIG.lojaNome || 'NexoERP'}`,
+            payerEmail,
+          }),
+        });
+        if (!response.ok) throw new Error(response.message || 'Erro ao gerar cobrança PIX.');
+
+        pixCobrancaId = response.data.id;
+        pixProviderPaymentId = response.data.providerPaymentId;
+        pixPayloadAtual = response.data.qrCode;
+        showPixFlowScreen();
+        document.getElementById('pixFlowPayload').textContent = pixPayloadAtual;
+        document.getElementById('pixKeyValue').textContent = pixPayloadAtual;
+        document.getElementById('pixSimBtn').style.display = 'none';
+        document.getElementById('pixFlowSimBtn').style.display = 'none';
+
+        const container = document.getElementById('pixFlowQrCanvas');
+        container.innerHTML = '';
+        if (window._pixQrInstance) { try { window._pixQrInstance.clear(); } catch (_) { } }
+        setTimeout(() => {
+          window._pixQrInstance = new QRCode(container, {
+            text: pixPayloadAtual,
+            width: 230, height: 230,
+            colorDark: '#000000', colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M,
+          });
+        }, 50);
+
+        pixSecondsLeft = PIX_TIMEOUT;
+        pixPago = false;
+        atualizarTimerPix();
+        clearInterval(pixTimerInterval);
+        pixTimerInterval = setInterval(() => {
+          pixSecondsLeft--;
+          atualizarTimerPix();
+          if (pixSecondsLeft <= 0) {
+            clearInterval(pixTimerInterval);
+            expirarPix();
+          }
+        }, 1000);
+        iniciarConsultaPixAutomatico();
+      } catch (err) {
+        NexoToast.error(err.message || 'Erro ao gerar cobrança PIX.');
+      } finally {
+        restoreLoading();
+      }
+    }
+
+    function iniciarConsultaPixAutomatico() {
+      clearInterval(pixStatusPollInterval);
+      pixStatusPollInterval = setInterval(async () => {
+        if (!pixCobrancaId || pixPago) return;
+        try {
+          const response = await NexoAuth.apiFetch(`/pix/cobrancas/${pixCobrancaId}`);
+          if (!response.ok) return;
+          if (response.data.status === 'pago') {
+            clearInterval(pixStatusPollInterval);
+            confirmarPixRecebido();
+          } else if (['recusado', 'cancelado', 'estornado', 'divergente', 'erro'].includes(response.data.status)) {
+            clearInterval(pixStatusPollInterval);
+            NexoToast.error(`Cobrança PIX: ${response.data.status}.`);
+            expirarPix();
+          }
+        } catch (_) { }
+      }, 2500);
     }
 
     function showPixFlowScreen() {
@@ -1159,6 +1252,7 @@ NexoAuth.requireAuth();
     }
 
     function expirarPix() {
+      clearInterval(pixStatusPollInterval);
       const badge = document.getElementById('pixQrBadge');
       if (badge) { badge.className = 'pix-qr-status-badge expirado'; badge.textContent = 'Expirado'; }
       const dot = document.getElementById('pixStatusDot');
@@ -1185,9 +1279,15 @@ NexoAuth.requireAuth();
     }
 
     function simularPagamentoPix() {
+      if (PDV_CONFIG.pixModo === 'automatico') return;
+      confirmarPixRecebido();
+    }
+
+    function confirmarPixRecebido() {
       if (pixPago || pixSecondsLeft <= 0) return;
       pixPago = true;
       clearInterval(pixTimerInterval);
+      clearInterval(pixStatusPollInterval);
 
       // Atualiza badge do QR
       const badge = document.getElementById('pixQrBadge');
@@ -1258,9 +1358,12 @@ NexoAuth.requireAuth();
 
     function resetPixPanel() {
       clearInterval(pixTimerInterval);
+      clearInterval(pixStatusPollInterval);
       pixPago = false;
       pixSecondsLeft = PIX_TIMEOUT;
       pixPayloadAtual = '';
+      pixCobrancaId = null;
+      pixProviderPaymentId = null;
       hidePixFlowScreen();
 
       const genBtn = document.getElementById('pixGenBtn');
@@ -1394,10 +1497,14 @@ NexoAuth.requireAuth();
         const container = document.getElementById(`split-qr-${i}`);
         if (!container || container.children.length > 0) return;
         const val = parseFloat((item.value || '0').replace(',', '.')) || 0;
-        const chave = PDV_CONFIG.pixChave;
-        const benef = PDV_CONFIG.pixBeneficiario.substring(0, 25).toUpperCase();
-        const cidade = PDV_CONFIG.pixCidade.substring(0, 15).toUpperCase();
-        const payload = `00020126580014br.gov.bcb.pix0136${chave}5204000053039865404${val.toFixed(2)}5913${benef}6009${cidade}62070503***6304ABCD`;
+        const chave = (PDV_CONFIG.pixChave || '').trim();
+        if (!chave) return;
+        const payload = _buildPixPayload(
+          chave,
+          val,
+          PDV_CONFIG.pixBeneficiario || PDV_CONFIG.lojaNome || 'LOJA',
+          PDV_CONFIG.pixCidade || 'BRASIL'
+        );
         new QRCode(container, { text: payload, width: 110, height: 110, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
       });
     }
@@ -1457,6 +1564,18 @@ NexoAuth.requireAuth();
     }
 
     function processarSplitItem(i) {
+      if (splitItems[i]?.method === 'PIX') {
+        if (PDV_CONFIG.pixModo === 'automatico') {
+          NexoToast.warning(PDV_CONFIG.pixStatus === 'conectado'
+            ? 'O PIX dividido automático será habilitado com o adaptador do provedor.'
+            : 'Conecte o provedor PIX antes de processar este pagamento.');
+          return;
+        }
+        if (!(PDV_CONFIG.pixChave || '').trim()) {
+          NexoToast.warning('Configure a chave PIX antes de processar este pagamento.');
+          return;
+        }
+      }
       splitItems[i].status = 'aguardando';
       renderSplitItems();
     }
@@ -1504,6 +1623,11 @@ NexoAuth.requireAuth();
     const ALL_NOTES = [10, 20, 50, 100, 200];
 
     function openPdvConfig() {
+      const user = NexoAuth.getSession()?.user;
+      if (!user?.isDono && user?.permissions !== null) {
+        NexoToast.warning('Apenas o dono pode alterar as configurações do PDV.');
+        return;
+      }
       _pdvConfigTab = 'pix';
       _renderPdvConfig();
       document.getElementById('pdvConfigOverlay').classList.add('open');
@@ -1525,11 +1649,19 @@ NexoAuth.requireAuth();
       const cfg = PDV_CONFIG;
 
       // PIX
+      document.getElementById('cfgPixModo').value = cfg.pixModo || 'manual';
+      document.getElementById('cfgPixProvedor').value = cfg.pixProvedor || '';
+      document.getElementById('cfgPixAmbiente').value = cfg.pixAmbiente || 'sandbox';
+      const statusLabels = { conectado: 'Conectado', aguardando_webhook: 'Aguardando webhook', desconectado: 'Desconectado' };
+      document.getElementById('cfgPixStatus').value = statusLabels[cfg.pixStatus] || 'Desconectado';
+      atualizarWebhookMercadoPago(cfg.pixWebhookPath);
       document.getElementById('cfgPixTipo').value = cfg.pixTipoChave;
-      document.getElementById('cfgPixChave').value = cfg.pixChave;
-      document.getElementById('cfgPixBenef').value = cfg.pixBeneficiario;
-      document.getElementById('cfgPixCidade').value = cfg.pixCidade;
+      document.getElementById('cfgPixChave').value = cfg.pixChave || '';
+      document.getElementById('cfgPixBenef').value = cfg.pixBeneficiario || '';
+      document.getElementById('cfgPixCidade').value = cfg.pixCidade || '';
       onCfgPixTipoChange();
+      onCfgPixModeChange();
+      onCfgPixProviderChange();
 
       // Cartão
       document.getElementById('cfgTermOp').value = cfg.terminalOperadora;
@@ -1570,6 +1702,109 @@ NexoAuth.requireAuth();
       document.getElementById('cfgPixChave').placeholder = placeholders[tipo] || '';
     }
 
+    function onCfgPixModeChange() {
+      const automatic = document.getElementById('cfgPixModo').value === 'automatico';
+      document.getElementById('cfgPixProviderFields').style.display = automatic ? '' : 'none';
+      document.getElementById('cfgPixManualFields').style.display = automatic ? 'none' : '';
+      if (automatic) onCfgPixProviderChange();
+    }
+
+    function onCfgPixProviderChange() {
+      const provider = document.getElementById('cfgPixProvedor').value;
+      document.getElementById('cfgMercadoPagoFields').style.display = provider === 'mercadopago' ? '' : 'none';
+      const configured = PDV_CONFIG.pixStatus !== 'desconectado' && PDV_CONFIG.pixProvedor === provider;
+      document.getElementById('cfgMpTestBtn').style.display = configured ? '' : 'none';
+      document.getElementById('cfgMpDisconnectBtn').style.display = configured ? '' : 'none';
+    }
+
+    function atualizarWebhookMercadoPago(path) {
+      const group = document.getElementById('cfgMpWebhookUrlGroup');
+      const input = document.getElementById('cfgMpWebhookUrl');
+      if (!group || !input) return;
+      group.style.display = path ? '' : 'none';
+      if (!path) { input.value = ''; return; }
+      const apiUrl = String(window.NEXO_CONFIG?.apiUrl || '').replace(/\/api\/?$/, '');
+      input.value = `${apiUrl}${path}`;
+    }
+
+    async function conectarMercadoPago() {
+      const accessToken = document.getElementById('cfgMpAccessToken').value.trim();
+      const webhookSecret = document.getElementById('cfgMpWebhookSecret').value.trim();
+      if (!accessToken && PDV_CONFIG.pixStatus === 'desconectado') {
+        NexoToast.warning('Informe o Access Token do Mercado Pago.');
+        return;
+      }
+
+      const button = document.getElementById('cfgMpConnectBtn');
+      const restoreLoading = setButtonLoading(button, 'Conectando...');
+      try {
+        const response = await NexoAuth.apiFetch('/integracoes/pix/mercadopago', {
+          method: 'PUT',
+          body: JSON.stringify({
+            ...(accessToken ? { accessToken } : {}),
+            webhookSecret,
+            ambiente: document.getElementById('cfgPixAmbiente').value,
+          }),
+        });
+        if (!response.ok) throw new Error(response.message || 'Erro ao conectar Mercado Pago.');
+
+        PDV_CONFIG.pixModo = 'automatico';
+        PDV_CONFIG.pixProvedor = 'mercadopago';
+        PDV_CONFIG.pixAmbiente = response.data.ambiente;
+        PDV_CONFIG.pixStatus = response.data.status;
+        PDV_CONFIG.pixWebhookPath = response.data.webhookPath || null;
+        document.getElementById('cfgPixStatus').value = response.data.status === 'conectado' ? 'Conectado' : 'Aguardando webhook';
+        atualizarWebhookMercadoPago(PDV_CONFIG.pixWebhookPath);
+        document.getElementById('cfgMpAccessToken').value = '';
+        document.getElementById('cfgMpWebhookSecret').value = '';
+        localStorage.setItem(PDV_CONFIG_KEY, JSON.stringify(PDV_CONFIG));
+        onCfgPixProviderChange();
+        NexoToast.success(response.data.status === 'conectado'
+          ? 'Conta Mercado Pago conectada'
+          : 'Access Token validado. Configure o webhook para concluir.');
+      } catch (err) {
+        NexoToast.error(err.message || 'Erro ao conectar Mercado Pago.');
+      } finally {
+        restoreLoading();
+      }
+    }
+
+    async function testarMercadoPago() {
+      const button = document.getElementById('cfgMpTestBtn');
+      const restoreLoading = setButtonLoading(button, 'Testando...');
+      try {
+        const response = await NexoAuth.apiFetch('/integracoes/pix/mercadopago/testar', { method: 'POST' });
+        if (!response.ok) throw new Error(response.message || 'Falha ao testar conexão.');
+        NexoToast.success('Conexão com Mercado Pago confirmada');
+      } catch (err) {
+        NexoToast.error(err.message || 'Falha ao testar conexão.');
+      } finally {
+        restoreLoading();
+      }
+    }
+
+    async function desconectarPix() {
+      const button = document.getElementById('cfgMpDisconnectBtn');
+      const restoreLoading = setButtonLoading(button, 'Desconectando...');
+      try {
+        const response = await NexoAuth.apiFetch('/integracoes/pix', { method: 'DELETE' });
+        if (!response.ok) throw new Error(response.message || 'Erro ao desconectar.');
+        PDV_CONFIG.pixModo = 'manual';
+        PDV_CONFIG.pixStatus = 'desconectado';
+        PDV_CONFIG.pixWebhookPath = null;
+        document.getElementById('cfgPixModo').value = 'manual';
+        document.getElementById('cfgPixStatus').value = 'Desconectado';
+        atualizarWebhookMercadoPago(null);
+        localStorage.setItem(PDV_CONFIG_KEY, JSON.stringify(PDV_CONFIG));
+        onCfgPixModeChange();
+        NexoToast.success('Provedor PIX desconectado');
+      } catch (err) {
+        NexoToast.error(err.message || 'Erro ao desconectar.');
+      } finally {
+        restoreLoading();
+      }
+    }
+
     function onCfgTermOpChange() {
       const isDemo = document.getElementById('cfgTermOp').value === 'demo';
       const termId = document.getElementById('cfgTermId');
@@ -1582,12 +1817,15 @@ NexoAuth.requireAuth();
       document.getElementById('cfgOvertimeHoursGroup').style.display = enabled ? '' : 'none';
     }
 
-    function savePdvConfig() {
+    async function savePdvConfig() {
       const taxa = parseFloat(document.getElementById('cfgTaxaJuros').value) || 0;
       const notas = [...document.querySelectorAll('.config-note-chip.active')]
         .map(c => parseInt(c.dataset.note)).sort((a, b) => a - b);
 
       const newConfig = {
+        pixModo: document.getElementById('cfgPixModo').value,
+        pixProvedor: document.getElementById('cfgPixProvedor').value || null,
+        pixAmbiente: document.getElementById('cfgPixAmbiente').value,
         pixTipoChave: document.getElementById('cfgPixTipo').value,
         pixChave: document.getElementById('cfgPixChave').value.trim(),
         pixBeneficiario: document.getElementById('cfgPixBenef').value.trim(),
@@ -1607,11 +1845,25 @@ NexoAuth.requireAuth();
         lojaRodape: document.getElementById('cfgLojaRodape').value.trim(),
       };
 
-      localStorage.setItem(PDV_CONFIG_KEY, JSON.stringify(newConfig));
-      Object.assign(PDV_CONFIG, newConfig);
-      buildQuickCash();
-      closePdvConfig();
-      NexoToast.success('Configurações salvas');
+      const button = document.querySelector('.pdv-config-footer .cm-btn.confirm');
+      const restoreLoading = setButtonLoading(button, 'Salvando...');
+      try {
+        const response = await NexoAuth.apiFetch('/configuracoes-pdv', {
+          method: 'PUT',
+          body: JSON.stringify(newConfig),
+        });
+        if (!response.ok) throw new Error(response.message || 'Erro ao salvar configurações.');
+
+        Object.assign(PDV_CONFIG, response.data);
+        localStorage.setItem(PDV_CONFIG_KEY, JSON.stringify(PDV_CONFIG));
+        buildQuickCash();
+        closePdvConfig();
+        NexoToast.success('Configurações salvas para toda a empresa');
+      } catch (err) {
+        NexoToast.error(err.message || 'Erro ao salvar configurações.');
+      } finally {
+        restoreLoading();
+      }
     }
 
     function confirmPayment() {
@@ -1778,6 +2030,119 @@ NexoAuth.requireAuth();
       document.querySelectorAll('.pay-method').forEach(m => m.style.pointerEvents = '');
     }
 
+    function _normalizePaymentMethod(method) {
+      const normalized = String(method || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim()
+        .toLowerCase();
+
+      const aliases = {
+        dinheiro: 'dinheiro',
+        pix: 'pix',
+        credito: 'credito',
+        debito: 'debito',
+        voucher: 'voucher',
+        vale: 'vale',
+        'vale refeicao': 'vale',
+        fiado: 'fiado',
+      };
+
+      return aliases[normalized] || normalized;
+    }
+
+    function _parsePaymentValue(value) {
+      const parsed = parseFloat(String(value ?? '0').replace(',', '.')) || 0;
+      return Math.round(parsed * 100) / 100;
+    }
+
+    function _parseSaleValue(value) {
+      if (typeof value === 'number') return Math.round(value * 100) / 100;
+      const text = String(value ?? '0').trim();
+      const normalized = text.includes(',')
+        ? text.replace(/\./g, '').replace(',', '.')
+        : text;
+      return Math.round((parseFloat(normalized) || 0) * 100) / 100;
+    }
+
+    function _getSalePayments(sale) {
+      if (Array.isArray(sale?.pagamentos) && sale.pagamentos.length) {
+        return sale.pagamentos.map(payment => ({
+          ...payment,
+          metodo: _normalizePaymentMethod(payment.metodo),
+          valor: _parsePaymentValue(payment.valor),
+        }));
+      }
+
+      const rawMethod = sale?.metodo || sale?.method || 'dinheiro';
+      let metodo = _normalizePaymentMethod(rawMethod);
+      if (metodo === 'split') metodo = 'multiplo';
+      if (!PAYMENT_METHOD_KEYS.includes(metodo)) {
+        const label = String(rawMethod).toLowerCase();
+        if (label.includes('visa') || label.includes('master') || label.includes('elo')) metodo = 'credito';
+      }
+
+      return [{ metodo, valor: _parseSaleValue(sale?.total) }];
+    }
+
+    function _applySaleToStats(sale, direction) {
+      const factor = direction < 0 ? -1 : 1;
+      todayStats.count = Math.max(0, todayStats.count + factor);
+      todayStats.total = Math.max(0, Math.round((todayStats.total + (_parseSaleValue(sale?.total) * factor)) * 100) / 100);
+
+      _getSalePayments(sale).forEach(payment => {
+        const key = PAYMENT_METHOD_KEYS.includes(payment.metodo) ? payment.metodo : 'multiplo';
+        const current = todayStats.formas[key] || 0;
+        todayStats.formas[key] = Math.max(0, Math.round((current + (payment.valor * factor)) * 100) / 100);
+      });
+    }
+
+    function _buildPaymentBreakdown(total, context = {}) {
+      if (selectedMethod === 'split') {
+        return splitItems
+          .map(item => ({
+            metodo: _normalizePaymentMethod(item.method),
+            valor: _parsePaymentValue(item.value),
+            status: item.status,
+          }))
+          .filter(payment => payment.valor > 0);
+      }
+
+      const payment = {
+        metodo: _normalizePaymentMethod(selectedMethod || 'dinheiro'),
+        valor: Math.round(total * 100) / 100,
+        status: selectedMethod === 'fiado' ? 'pendente' : 'confirmado',
+      };
+
+      if (selectedMethod === 'dinheiro') {
+        const recebido = _parsePaymentValue(
+          document.getElementById('payValueInput')?.value.replace(/[^\d,.]/g, '')
+        );
+        payment.valorRecebido = recebido;
+        payment.troco = context.troco || 0;
+      }
+
+      if (selectedMethod === 'pix' && pixCobrancaId) {
+        payment.cobrancaId = pixCobrancaId;
+        payment.providerPaymentId = pixProviderPaymentId;
+        payment.provedor = PDV_CONFIG.pixProvedor;
+      }
+
+      if (selectedMethod === 'credito' || selectedMethod === 'debito') {
+        payment.bandeira = selectedBrand;
+        payment.parcelas = selectedMethod === 'debito' ? 1 : selectedParcela;
+        payment.valorOriginal = Math.round(total * 100) / 100;
+        payment.valor = Math.round((context.totalCartao || total) * 100) / 100;
+        payment.acrescimo = Math.round((payment.valor - payment.valorOriginal) * 100) / 100;
+      }
+
+      if (selectedMethod === 'fiado' && context.fiadoData) {
+        payment.vencimento = context.fiadoData.vencimento;
+      }
+
+      return [payment];
+    }
+
     function _buildSale(total) {
       const subtotal = cart.reduce((s, c) => s + (c.preco * c.qty), 0);
       const isCard = selectedMethod === 'credito' || selectedMethod === 'debito';
@@ -1803,6 +2168,8 @@ NexoAuth.requireAuth();
         methodLabel = 'Fiado';
       }
 
+      const pagamentos = _buildPaymentBreakdown(total, { totalCartao, troco, fiadoData });
+
       return {
         id: `#V${4900 + salesHistory.length + 1}`,
         total: fmt(isCard ? totalCartao : total),
@@ -1820,13 +2187,14 @@ NexoAuth.requireAuth();
           ? [vendaObs, fiadoData.obs, `Vencimento: ${formatDateBR(fiadoData.vencimento)}`].filter(Boolean).join(' · ')
           : (vendaObs || null),
         fiado: fiadoData,
+        pagamentos,
         time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
         items: cart.reduce((s, c) => s + c.qty, 0),
         cartSnapshot: cart.map(c => ({ ...c })),
       };
     }
 
-    async function _registrarVenda(sale, total) {
+    async function _registrarVenda(sale) {
       const session = NexoAuth.getSession();
       const operador = session?.user?.name || 'PDV';
       const operadorId = session?.user?.id || null;
@@ -1839,6 +2207,7 @@ NexoAuth.requireAuth();
         operador,
         operadorId,
         metodo: selectedMethod || 'dinheiro',
+        pagamentos: sale.pagamentos || [],
         itens: (sale.cartSnapshot || []).map(c => ({
           id: c.id,
           nome: c.nome || '',
@@ -1849,7 +2218,7 @@ NexoAuth.requireAuth();
         })),
         subtotal: sale.subtotal,
         desconto: sale.desconto || 0,
-        total,
+        total: _parseSaleValue(sale.total),
         obs: sale.obs || null,
         tipo: 'pdv',
         dataStr: now.toLocaleDateString('pt-BR'),
@@ -1870,8 +2239,7 @@ NexoAuth.requireAuth();
       sale.id = r.data.id;
 
       salesHistory.unshift(sale);
-      todayStats.count++;
-      if (selectedMethod !== 'fiado') todayStats.total += total;
+      _applySaleToStats(sale, 1);
       updateStats();
       cupomAtivo = null;
       updateCupomBadge();
@@ -1888,8 +2256,8 @@ NexoAuth.requireAuth();
 
     let _successTimer = null;
 
-    function _mostrarSucesso(sale, total) {
-      document.getElementById('successTotal').textContent = `R$ ${fmt(total)}`;
+    function _mostrarSucesso(sale) {
+      document.getElementById('successTotal').textContent = `R$ ${sale.total}`;
       document.getElementById('successSubtitle').textContent = `${sale.method} · ${sale.client}`;
       const sid = sale.id;
       document.getElementById('successActions').innerHTML = `
@@ -1944,9 +2312,9 @@ NexoAuth.requireAuth();
       try {
         const total = getTotal();
         const sale = _buildSale(total);
-        await _registrarVenda(sale, total);
+        await _registrarVenda(sale);
         closePayModal();
-        _mostrarSucesso(sale, total);
+        _mostrarSucesso(sale);
         clearCart();
       } catch (err) {
         NexoToast.error(err.message || 'Erro ao registrar venda. Tente novamente.');
@@ -1978,7 +2346,7 @@ NexoAuth.requireAuth();
       else if (m.includes('créd') || m.includes('cred')) { icon = 'bi-credit-card-fill'; color = '#a78bfa'; }
       else if (m.includes('déb') || m.includes('deb')) { icon = 'bi-credit-card'; color = '#818cf8'; }
       else if (m.includes('voucher')) { icon = 'bi-ticket-perforated'; color = '#fb923c'; }
-      else if (m.includes('split')) { icon = 'bi-intersect'; color = '#94a3b8'; }
+      else if (m.includes('split') || m.includes('multiplo') || m.includes('múltiplo')) { icon = 'bi-intersect'; color = '#94a3b8'; }
       return `<i class="bi ${icon}" style="color:${color}"></i> <span style="color:${color};font-weight:600">${escapeHtml(method)}</span>`;
     }
 
@@ -2062,10 +2430,7 @@ NexoAuth.requireAuth();
             if (!r.ok) { NexoToast.error(r.message || 'Erro ao estornar venda'); return; }
 
             sale.estornada = true;
-            const val = parseFloat(String(sale.total).replace(/\./g, '').replace(',', '.')) || 0;
-            todayStats.count = Math.max(0, todayStats.count - 1);
-            if ((sale.method || '').toLowerCase() !== 'fiado')
-              todayStats.total = Math.max(0, todayStats.total - val);
+            _applySaleToStats(sale, -1);
 
             // Reverte estoque local
             (sale.cartSnapshot || []).forEach(item => {
