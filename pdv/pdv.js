@@ -202,9 +202,8 @@ NexoAuth.requireAuth();
       updateStats();
       initCaixaUI();
 
-      recuperarVendaPixPendente();
-
-      _loadTodayData().then(() => {
+      _loadTodayData().then(async () => {
+        await recuperarVendaPixPendente();
         updateStats();
       });
       loadCaixa().then(() => {
@@ -1363,6 +1362,10 @@ NexoAuth.requireAuth();
 
       NexoToast.success('PIX recebido! Confirme o pagamento.');
 
+      if (PDV_CONFIG.pixModo === 'automatico') {
+        salvarVendaPixPendente(_buildSale(getTotal()));
+      }
+
       // Habilita botão confirmar após 1s
       setTimeout(() => {
         const btn = document.getElementById('btnConfirmPay');
@@ -1678,6 +1681,7 @@ NexoAuth.requireAuth();
             splitPixPolls.delete(item.cobrancaId);
             item.status = 'confirmado';
             renderSplitItems();
+            salvarEstadoSplitPix();
             NexoToast.success('Parcela PIX confirmada.');
           } else if (['recusado', 'cancelado', 'expirado', 'estornado', 'divergente', 'erro'].includes(response.data.status)) {
             clearInterval(splitPixPolls.get(item.cobrancaId));
@@ -1689,6 +1693,14 @@ NexoAuth.requireAuth();
         } catch (_) { }
       }, 2500);
       splitPixPolls.set(item.cobrancaId, interval);
+    }
+
+    function salvarEstadoSplitPix() {
+      if (selectedMethod !== 'split') return;
+      const recebido = splitItems.reduce((sum, item) => sum + _parsePaymentValue(item.value), 0);
+      const incomplete = splitItems.some(item => item.status !== 'confirmado')
+        || Math.abs(recebido - getTotal()) >= 0.01;
+      salvarVendaPixPendente(_buildSale(getTotal()), { incomplete });
     }
 
     async function cancelarCobrancasPixSplit() {
@@ -2408,13 +2420,15 @@ NexoAuth.requireAuth();
         .map(payment => payment.cobrancaId);
     }
 
-    function salvarVendaPixPendente(sale) {
+    function salvarVendaPixPendente(sale, { incomplete = false } = {}) {
       const chargeIds = _pixChargeIdsFromSale(sale);
       if (!chargeIds.length) return;
       const userId = NexoAuth.getSession()?.user?.id || null;
       localStorage.setItem(PENDING_PIX_SALE_KEY, JSON.stringify({
         sale,
         selectedMethod,
+        incomplete,
+        splitItems: selectedMethod === 'split' ? splitItems.map(item => ({ ...item })) : null,
         userId,
         chargeIds,
         createdAt: Date.now(),
@@ -2444,6 +2458,26 @@ NexoAuth.requireAuth();
         const charges = responses.map(response => response.data);
         if (charges.some(charge => charge.vinculada)) {
           limparVendaPixPendente();
+          return;
+        }
+        if (pending.incomplete && pending.selectedMethod === 'split' && Array.isArray(pending.splitItems)) {
+          const statusById = new Map(charges.map(charge => [charge.id, charge.status]));
+          cart = (pending.sale.cartSnapshot || []).map(item => ({ ...item }));
+          splitItems = pending.splitItems.map(item => {
+            const chargeStatus = item.cobrancaId ? statusById.get(item.cobrancaId) : null;
+            if (chargeStatus === 'pago') return { ...item, status: 'confirmado' };
+            if (chargeStatus && ['cancelado', 'expirado', 'recusado', 'estornado', 'erro'].includes(chargeStatus)) {
+              return { ...item, status: 'recusado' };
+            }
+            return { ...item };
+          });
+          renderCart();
+          openPayModal();
+          selectMethod(document.getElementById('payMethodSplit'), 'split');
+          splitItems
+            .filter(item => item.cobrancaId && item.status === 'aguardando')
+            .forEach(iniciarConsultaPixSplit);
+          NexoToast.warning('Pagamento PIX pendente recuperado. Conclua ou cancele a venda.');
           return;
         }
         if (charges.every(charge => ['cancelado', 'expirado', 'recusado', 'estornado', 'erro'].includes(charge.status))) {
