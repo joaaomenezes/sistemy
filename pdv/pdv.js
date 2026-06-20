@@ -52,6 +52,7 @@ NexoAuth.requireAuth();
     let vendaObs = '';
     let salesHistory = [];
     const PAYMENT_METHOD_KEYS = ['dinheiro', 'pix', 'credito', 'debito', 'voucher', 'vale', 'fiado', 'multiplo'];
+    const PENDING_PIX_SALE_KEY = 'nexoerp.pdv.pendingPixSale';
 
     function _createTodayStats() {
       return {
@@ -200,6 +201,8 @@ NexoAuth.requireAuth();
       document.addEventListener('keydown', handleKeys);
       updateStats();
       initCaixaUI();
+
+      recuperarVendaPixPendente();
 
       _loadTodayData().then(() => {
         updateStats();
@@ -564,7 +567,15 @@ NexoAuth.requireAuth();
       renderSplitItems();
     }
 
-    function closePayModal() {
+    async function closePayModal(force = false) {
+      if (!force && PDV_CONFIG.pixModo === 'automatico' && pixCobrancaId) {
+        const canClose = await cancelarCobrancaPixAtual();
+        if (!canClose) return;
+      }
+      if (!force && PDV_CONFIG.pixModo === 'automatico') {
+        const canCloseSplit = await cancelarCobrancasPixSplit();
+        if (!canCloseSplit) return;
+      }
       document.getElementById('payOverlay').classList.remove('open');
       resetPixPanel();
       resetTerminalPanel();
@@ -1030,6 +1041,31 @@ NexoAuth.requireAuth();
     let pixCobrancaId = null;
     let pixProviderPaymentId = null;
     let pixStatusPollInterval = null;
+    let pixAutoFinalizando = false;
+
+    async function cancelarCobrancaPixAtual() {
+      const chargeId = pixCobrancaId;
+      if (!chargeId) return true;
+      if (pixPago) {
+        NexoToast.warning('O PIX já foi pago. Conclua a venda antes de sair.');
+        return false;
+      }
+      try {
+        const response = await NexoAuth.apiFetch(`/pix/cobrancas/${chargeId}`, { method: 'DELETE' });
+        if (response.ok) return true;
+
+        const status = await NexoAuth.apiFetch(`/pix/cobrancas/${chargeId}`);
+        if (status.ok && status.data.status === 'pago') {
+          confirmarPixRecebido();
+          return false;
+        }
+        NexoToast.warning(response.message || 'Não foi possível cancelar a cobrança PIX.');
+        return false;
+      } catch (_) {
+        NexoToast.warning('Não foi possível confirmar o cancelamento da cobrança PIX.');
+        return false;
+      }
+    }
 
     // ── helpers para geração de payload EMV-PIX ──────────────────────
     function _pixField(id, value) {
@@ -1253,6 +1289,9 @@ NexoAuth.requireAuth();
 
     function expirarPix() {
       clearInterval(pixStatusPollInterval);
+      if (PDV_CONFIG.pixModo === 'automatico' && pixCobrancaId && !pixPago) {
+        NexoAuth.apiFetch(`/pix/cobrancas/${pixCobrancaId}`, { method: 'DELETE' }).catch(() => {});
+      }
       const badge = document.getElementById('pixQrBadge');
       if (badge) { badge.className = 'pix-qr-status-badge expirado'; badge.textContent = 'Expirado'; }
       const dot = document.getElementById('pixStatusDot');
@@ -1331,6 +1370,10 @@ NexoAuth.requireAuth();
           btn.disabled = false;
           btn.innerHTML = '<i class="bi bi-check2"></i> Confirmar pagamento <span>F12</span>';
         }
+        if (PDV_CONFIG.pixModo === 'automatico' && !pixAutoFinalizando) {
+          pixAutoFinalizando = true;
+          finalizarVenda().finally(() => { pixAutoFinalizando = false; });
+        }
       }, 800);
     }
 
@@ -1364,6 +1407,7 @@ NexoAuth.requireAuth();
       pixPayloadAtual = '';
       pixCobrancaId = null;
       pixProviderPaymentId = null;
+      pixAutoFinalizando = false;
       hidePixFlowScreen();
 
       const genBtn = document.getElementById('pixGenBtn');
@@ -1401,6 +1445,7 @@ NexoAuth.requireAuth();
 
     // ── split ──────────────────────────────────────────────────────
     let splitItems = [];
+    const splitPixPolls = new Map();
     const SPLIT_FLOW_METHODS = ['PIX', 'Crédito', 'Débito'];
     const SPLIT_STATUS_LABEL = { pendente: 'Pendente', aguardando: 'Aguardando', confirmado: 'Confirmado ✓', recusado: 'Recusado' };
 
@@ -1448,7 +1493,7 @@ NexoAuth.requireAuth();
                   <div class="pix-status-row">
                     <div class="pix-status-dot ${ok ? 'pago' : ''}"></div>
                     <span>${ok ? 'Pagamento confirmado!' : 'Aguardando pagamento PIX...'}</span>
-                    ${!ok ? `<button class="pix-sim-btn" onclick="simularSplitPix(${i})">Simular pagamento</button>` : ''}
+                    ${!ok && PDV_CONFIG.pixModo !== 'automatico' ? `<button class="pix-sim-btn" onclick="simularSplitPix(${i})">Simular pagamento</button>` : ''}
                   </div>
                 </div>
               </div>`;
@@ -1497,14 +1542,17 @@ NexoAuth.requireAuth();
         const container = document.getElementById(`split-qr-${i}`);
         if (!container || container.children.length > 0) return;
         const val = parseFloat((item.value || '0').replace(',', '.')) || 0;
-        const chave = (PDV_CONFIG.pixChave || '').trim();
-        if (!chave) return;
-        const payload = _buildPixPayload(
-          chave,
-          val,
-          PDV_CONFIG.pixBeneficiario || PDV_CONFIG.lojaNome || 'LOJA',
-          PDV_CONFIG.pixCidade || 'BRASIL'
-        );
+        let payload = item.pixPayload || '';
+        if (!payload) {
+          const chave = (PDV_CONFIG.pixChave || '').trim();
+          if (!chave) return;
+          payload = _buildPixPayload(
+            chave,
+            val,
+            PDV_CONFIG.pixBeneficiario || PDV_CONFIG.lojaNome || 'LOJA',
+            PDV_CONFIG.pixCidade || 'BRASIL'
+          );
+        }
         new QRCode(container, { text: payload, width: 110, height: 110, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
       });
     }
@@ -1563,12 +1611,14 @@ NexoAuth.requireAuth();
       item.status = parseFloat((item.value || '0').replace(',', '.')) > 0 ? 'confirmado' : 'pendente';
     }
 
-    function processarSplitItem(i) {
+    async function processarSplitItem(i) {
       if (splitItems[i]?.method === 'PIX') {
         if (PDV_CONFIG.pixModo === 'automatico') {
-          NexoToast.warning(PDV_CONFIG.pixStatus === 'conectado'
-            ? 'O PIX dividido automático será habilitado com o adaptador do provedor.'
-            : 'Conecte o provedor PIX antes de processar este pagamento.');
+          if (PDV_CONFIG.pixStatus !== 'conectado') {
+            NexoToast.warning('Conecte o provedor PIX antes de processar este pagamento.');
+            return;
+          }
+          await gerarPixAutomaticoSplit(i);
           return;
         }
         if (!(PDV_CONFIG.pixChave || '').trim()) {
@@ -1578,6 +1628,99 @@ NexoAuth.requireAuth();
       }
       splitItems[i].status = 'aguardando';
       renderSplitItems();
+    }
+
+    async function gerarPixAutomaticoSplit(i) {
+      const item = splitItems[i];
+      const valor = _parsePaymentValue(item?.value);
+      if (!item || valor <= 0) return;
+
+      const button = document.getElementById(`split-btn-${i}`);
+      const restoreLoading = setButtonLoading(button, 'Gerando...');
+      try {
+        const payerEmail = NexoAuth.getSession()?.user?.email;
+        if (!payerEmail) throw new Error('O usuário logado precisa ter um e-mail válido.');
+        const response = await NexoAuth.apiFetch('/pix/cobrancas', {
+          method: 'POST',
+          body: JSON.stringify({
+            valor,
+            descricao: `Venda PDV dividida - ${PDV_CONFIG.lojaNome || 'NexoERP'}`,
+            payerEmail,
+          }),
+        });
+        if (!response.ok) throw new Error(response.message || 'Erro ao gerar cobrança PIX.');
+
+        item.cobrancaId = response.data.id;
+        item.providerPaymentId = response.data.providerPaymentId;
+        item.provedor = PDV_CONFIG.pixProvedor;
+        item.pixPayload = response.data.qrCode;
+        item.status = 'aguardando';
+        renderSplitItems();
+        iniciarConsultaPixSplit(item);
+      } catch (err) {
+        item.status = 'recusado';
+        renderSplitItems();
+        NexoToast.error(err.message || 'Erro ao gerar cobrança PIX.');
+      } finally {
+        restoreLoading();
+      }
+    }
+
+    function iniciarConsultaPixSplit(item) {
+      if (!item?.cobrancaId) return;
+      clearInterval(splitPixPolls.get(item.cobrancaId));
+      const interval = setInterval(async () => {
+        try {
+          const response = await NexoAuth.apiFetch(`/pix/cobrancas/${item.cobrancaId}`);
+          if (!response.ok) return;
+          if (response.data.status === 'pago') {
+            clearInterval(splitPixPolls.get(item.cobrancaId));
+            splitPixPolls.delete(item.cobrancaId);
+            item.status = 'confirmado';
+            renderSplitItems();
+            NexoToast.success('Parcela PIX confirmada.');
+          } else if (['recusado', 'cancelado', 'expirado', 'estornado', 'divergente', 'erro'].includes(response.data.status)) {
+            clearInterval(splitPixPolls.get(item.cobrancaId));
+            splitPixPolls.delete(item.cobrancaId);
+            item.status = 'recusado';
+            renderSplitItems();
+            NexoToast.error(`Cobrança PIX: ${response.data.status}.`);
+          }
+        } catch (_) { }
+      }, 2500);
+      splitPixPolls.set(item.cobrancaId, interval);
+    }
+
+    async function cancelarCobrancasPixSplit() {
+      const charges = splitItems.filter(item => item.method === 'PIX' && item.cobrancaId);
+      if (!charges.length) return true;
+      if (charges.some(item => item.status === 'confirmado')) {
+        NexoToast.warning('Existe uma parcela PIX paga. Conclua a venda antes de sair.');
+        return false;
+      }
+
+      for (const item of charges) {
+        try {
+          const response = await NexoAuth.apiFetch(`/pix/cobrancas/${item.cobrancaId}`, { method: 'DELETE' });
+          if (!response.ok) {
+            const status = await NexoAuth.apiFetch(`/pix/cobrancas/${item.cobrancaId}`);
+            if (status.ok && status.data.status === 'pago') {
+              item.status = 'confirmado';
+              renderSplitItems();
+              NexoToast.warning('Uma parcela PIX foi paga. Conclua a venda antes de sair.');
+            } else {
+              NexoToast.warning(response.message || 'Não foi possível cancelar uma cobrança PIX.');
+            }
+            return false;
+          }
+          clearInterval(splitPixPolls.get(item.cobrancaId));
+          splitPixPolls.delete(item.cobrancaId);
+        } catch (_) {
+          NexoToast.warning('Não foi possível confirmar o cancelamento das cobranças PIX.');
+          return false;
+        }
+      }
+      return true;
     }
 
     function simularSplitPix(i) {
@@ -2104,6 +2247,11 @@ NexoAuth.requireAuth();
             metodo: _normalizePaymentMethod(item.method),
             valor: _parsePaymentValue(item.value),
             status: item.status,
+            ...(item.cobrancaId ? {
+              cobrancaId: item.cobrancaId,
+              providerPaymentId: item.providerPaymentId,
+              provedor: item.provedor || PDV_CONFIG.pixProvedor,
+            } : {}),
           }))
           .filter(payment => payment.valor > 0);
       }
@@ -2254,6 +2402,70 @@ NexoAuth.requireAuth();
       });
     }
 
+    function _pixChargeIdsFromSale(sale) {
+      return (sale?.pagamentos || [])
+        .filter(payment => payment.metodo === 'pix' && payment.cobrancaId)
+        .map(payment => payment.cobrancaId);
+    }
+
+    function salvarVendaPixPendente(sale) {
+      const chargeIds = _pixChargeIdsFromSale(sale);
+      if (!chargeIds.length) return;
+      const userId = NexoAuth.getSession()?.user?.id || null;
+      localStorage.setItem(PENDING_PIX_SALE_KEY, JSON.stringify({
+        sale,
+        selectedMethod,
+        userId,
+        chargeIds,
+        createdAt: Date.now(),
+      }));
+    }
+
+    function limparVendaPixPendente() {
+      localStorage.removeItem(PENDING_PIX_SALE_KEY);
+    }
+
+    async function recuperarVendaPixPendente() {
+      let pending;
+      try {
+        pending = JSON.parse(localStorage.getItem(PENDING_PIX_SALE_KEY) || 'null');
+      } catch (_) {
+        limparVendaPixPendente();
+        return;
+      }
+      if (!pending?.sale || !Array.isArray(pending.chargeIds) || !pending.chargeIds.length) return;
+      if (pending.userId && pending.userId !== NexoAuth.getSession()?.user?.id) return;
+
+      try {
+        const responses = await Promise.all(
+          pending.chargeIds.map(id => NexoAuth.apiFetch(`/pix/cobrancas/${id}`))
+        );
+        if (responses.some(response => !response.ok)) return;
+        const charges = responses.map(response => response.data);
+        if (charges.some(charge => charge.vinculada)) {
+          limparVendaPixPendente();
+          return;
+        }
+        if (charges.every(charge => ['cancelado', 'expirado', 'recusado', 'estornado', 'erro'].includes(charge.status))) {
+          limparVendaPixPendente();
+          return;
+        }
+        if (!charges.every(charge => charge.status === 'pago')) return;
+
+        selectedMethod = pending.selectedMethod || 'pix';
+        cart = (pending.sale.cartSnapshot || []).map(item => ({ ...item }));
+        await _registrarVenda(pending.sale);
+        limparVendaPixPendente();
+        _mostrarSucesso(pending.sale);
+        clearCart();
+        NexoToast.success('Venda PIX pendente recuperada e registrada.');
+      } catch (err) {
+        if (/j[aá]\s+(foi\s+)?utilizada|vinculada/i.test(err.message || '')) {
+          limparVendaPixPendente();
+        }
+      }
+    }
+
     let _successTimer = null;
 
     function _mostrarSucesso(sale) {
@@ -2312,8 +2524,10 @@ NexoAuth.requireAuth();
       try {
         const total = getTotal();
         const sale = _buildSale(total);
+        salvarVendaPixPendente(sale);
         await _registrarVenda(sale);
-        closePayModal();
+        limparVendaPixPendente();
+        await closePayModal(true);
         _mostrarSucesso(sale);
         clearCart();
       } catch (err) {
