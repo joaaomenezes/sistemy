@@ -6738,7 +6738,8 @@
       .pix-inline-grid,
       .pay-proof-grid,
       .pay-footer-actions,
-      .pay-share-row {
+      .pay-share-row,
+      .config-row-inline {
         grid-template-columns: 1fr;
       }
 

@@ -755,6 +755,64 @@
                   <i class="bi bi-x-circle"></i> Desconectar
                 </button>
               </div>
+              <div id="cfgMpQrSetup" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-top:4px">
+                <div style="font-size:13px;font-weight:700;margin-bottom:4px">Loja física e caixa</div>
+                <div id="cfgMpQrReady" class="config-hint" style="display:none;color:var(--accent)">
+                  <i class="bi bi-check-circle"></i> Loja e caixa configurados no Mercado Pago.
+                </div>
+                <div id="cfgMpQrForm">
+                  <div class="config-row-inline">
+                    <div class="config-group">
+                      <label>Nome da loja</label>
+                      <input class="caixa-input" id="cfgMpStoreName" type="text" placeholder="Minha loja">
+                    </div>
+                    <div class="config-group">
+                      <label>Nome do caixa</label>
+                      <input class="caixa-input" id="cfgMpPosName" type="text" placeholder="Caixa principal">
+                    </div>
+                    <div class="config-group">
+                      <label>Estado</label>
+                      <input class="caixa-input" id="cfgMpState" type="text" placeholder="São Paulo">
+                    </div>
+                  </div>
+                  <div class="config-row-inline">
+                    <div class="config-group">
+                      <label>Rua</label>
+                      <input class="caixa-input" id="cfgMpStreet" type="text" placeholder="Nome da rua">
+                    </div>
+                    <div class="config-group">
+                      <label>Número</label>
+                      <input class="caixa-input" id="cfgMpNumber" type="text" placeholder="123">
+                    </div>
+                    <div class="config-group">
+                      <label>Cidade</label>
+                      <input class="caixa-input" id="cfgMpCity" type="text" placeholder="São Paulo">
+                    </div>
+                  </div>
+                  <div class="config-row-inline">
+                    <div class="config-group">
+                      <label>Latitude</label>
+                      <input class="caixa-input" id="cfgMpLatitude" type="number" step="any" placeholder="-23.5505">
+                    </div>
+                    <div class="config-group">
+                      <label>Longitude</label>
+                      <input class="caixa-input" id="cfgMpLongitude" type="number" step="any" placeholder="-46.6333">
+                    </div>
+                    <div class="config-group">
+                      <label>Referência</label>
+                      <input class="caixa-input" id="cfgMpReference" type="text" placeholder="Opcional">
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+                    <button class="cm-btn ghost" type="button" onclick="usarLocalizacaoAtual()">
+                      <i class="bi bi-geo-alt"></i> Usar localização atual
+                    </button>
+                    <button class="cm-btn confirm" id="cfgMpQrBtn" type="button" onclick="configurarMercadoPagoQr()">
+                      <i class="bi bi-shop"></i> Configurar loja e caixa
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div id="cfgPixManualFields">

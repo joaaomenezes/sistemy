@@ -9,6 +9,7 @@
       pixAmbiente: 'sandbox',
       pixStatus: 'desconectado',
       pixWebhookPath: null,
+      pixQrConfigured: false,
       pixTipoChave: 'aleatoria',
       pixChave: '',
       pixBeneficiario: 'Nexo ERP',
@@ -39,12 +40,30 @@
 
     async function loadPdvConfigFromApi() {
       try {
-        const response = await NexoAuth.apiFetch('/configuracoes-pdv');
+        const [response, integration] = await Promise.all([
+          NexoAuth.apiFetch('/configuracoes-pdv'),
+          NexoAuth.apiFetch('/integracoes/pix'),
+        ]);
         if (!response.ok || !response.data) {
           PDV_CONFIG.pixChave = '';
           return false;
         }
         Object.assign(PDV_CONFIG, response.data);
+        if (integration.ok) {
+          Object.assign(PDV_CONFIG, integration.data ? {
+              pixModo: 'automatico',
+              pixProvedor: integration.data.provedor,
+              pixAmbiente: integration.data.ambiente,
+              pixStatus: integration.data.status,
+              pixWebhookPath: integration.data.webhookPath || null,
+              pixQrConfigured: Boolean(integration.data.qrConfigured),
+            } : {
+              pixProvedor: null,
+              pixStatus: 'desconectado',
+              pixWebhookPath: null,
+              pixQrConfigured: false,
+            });
+        }
         localStorage.setItem(PDV_CONFIG_KEY, JSON.stringify(PDV_CONFIG));
         return true;
       } catch (_) {

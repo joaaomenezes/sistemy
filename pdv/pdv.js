@@ -1155,14 +1155,11 @@ NexoAuth.requireAuth();
       const button = document.getElementById('pixGenBtn');
       const restoreLoading = setButtonLoading(button, 'Gerando cobrança...');
       try {
-        const payerEmail = NexoAuth.getSession()?.user?.email;
-        if (!payerEmail) throw new Error('O usuário logado precisa ter um e-mail válido.');
         const response = await NexoAuth.apiFetch('/pix/cobrancas', {
           method: 'POST',
           body: JSON.stringify({
             valor: total,
             descricao: `Venda PDV - ${PDV_CONFIG.lojaNome || 'NexoERP'}`,
-            payerEmail,
           }),
         });
         if (!response.ok) throw new Error(response.message || 'Erro ao gerar cobrança PIX.');
@@ -1641,14 +1638,11 @@ NexoAuth.requireAuth();
       const button = document.getElementById(`split-btn-${i}`);
       const restoreLoading = setButtonLoading(button, 'Gerando...');
       try {
-        const payerEmail = NexoAuth.getSession()?.user?.email;
-        if (!payerEmail) throw new Error('O usuário logado precisa ter um e-mail válido.');
         const response = await NexoAuth.apiFetch('/pix/cobrancas', {
           method: 'POST',
           body: JSON.stringify({
             valor,
             descricao: `Venda PDV dividida - ${PDV_CONFIG.lojaNome || 'NexoERP'}`,
-            payerEmail,
           }),
         });
         if (!response.ok) throw new Error(response.message || 'Erro ao gerar cobrança PIX.');
@@ -1807,7 +1801,12 @@ NexoAuth.requireAuth();
       document.getElementById('cfgPixModo').value = cfg.pixModo || 'manual';
       document.getElementById('cfgPixProvedor').value = cfg.pixProvedor || '';
       document.getElementById('cfgPixAmbiente').value = cfg.pixAmbiente || 'sandbox';
-      const statusLabels = { conectado: 'Conectado', aguardando_webhook: 'Aguardando webhook', desconectado: 'Desconectado' };
+      const statusLabels = {
+        conectado: 'Conectado',
+        configuracao_pendente: 'Configurar loja e caixa',
+        aguardando_webhook: 'Aguardando webhook',
+        desconectado: 'Desconectado',
+      };
       document.getElementById('cfgPixStatus').value = statusLabels[cfg.pixStatus] || 'Desconectado';
       atualizarWebhookMercadoPago(cfg.pixWebhookPath);
       document.getElementById('cfgPixTipo').value = cfg.pixTipoChave;
@@ -1817,6 +1816,10 @@ NexoAuth.requireAuth();
       onCfgPixTipoChange();
       onCfgPixModeChange();
       onCfgPixProviderChange();
+      const storeName = document.getElementById('cfgMpStoreName');
+      const posName = document.getElementById('cfgMpPosName');
+      if (storeName && !storeName.value) storeName.value = cfg.lojaNome || '';
+      if (posName && !posName.value) posName.value = 'Caixa principal';
 
       // Cartão
       document.getElementById('cfgTermOp').value = cfg.terminalOperadora;
@@ -1870,6 +1873,12 @@ NexoAuth.requireAuth();
       const configured = PDV_CONFIG.pixStatus !== 'desconectado' && PDV_CONFIG.pixProvedor === provider;
       document.getElementById('cfgMpTestBtn').style.display = configured ? '' : 'none';
       document.getElementById('cfgMpDisconnectBtn').style.display = configured ? '' : 'none';
+      const setup = document.getElementById('cfgMpQrSetup');
+      if (setup) setup.style.display = provider === 'mercadopago' && configured ? '' : 'none';
+      const ready = document.getElementById('cfgMpQrReady');
+      const form = document.getElementById('cfgMpQrForm');
+      if (ready) ready.style.display = PDV_CONFIG.pixQrConfigured ? '' : 'none';
+      if (form) form.style.display = PDV_CONFIG.pixQrConfigured ? 'none' : '';
     }
 
     function atualizarWebhookMercadoPago(path) {
@@ -1908,17 +1917,80 @@ NexoAuth.requireAuth();
         PDV_CONFIG.pixAmbiente = response.data.ambiente;
         PDV_CONFIG.pixStatus = response.data.status;
         PDV_CONFIG.pixWebhookPath = response.data.webhookPath || null;
-        document.getElementById('cfgPixStatus').value = response.data.status === 'conectado' ? 'Conectado' : 'Aguardando webhook';
+        PDV_CONFIG.pixQrConfigured = Boolean(response.data.qrConfigured);
+        document.getElementById('cfgPixStatus').value = response.data.status === 'conectado'
+          ? 'Conectado'
+          : (response.data.status === 'configuracao_pendente' ? 'Configurar loja e caixa' : 'Aguardando webhook');
         atualizarWebhookMercadoPago(PDV_CONFIG.pixWebhookPath);
         document.getElementById('cfgMpAccessToken').value = '';
         document.getElementById('cfgMpWebhookSecret').value = '';
         localStorage.setItem(PDV_CONFIG_KEY, JSON.stringify(PDV_CONFIG));
         onCfgPixProviderChange();
-        NexoToast.success(response.data.status === 'conectado'
-          ? 'Conta Mercado Pago conectada'
-          : 'Access Token validado. Configure o webhook para concluir.');
+        NexoToast.success(!response.data.qrConfigured
+          ? 'Conta conectada. Configure agora a loja e o caixa.'
+          : (response.data.status === 'conectado'
+            ? 'Conta Mercado Pago conectada'
+            : 'Access Token validado. Configure o webhook para concluir.'));
       } catch (err) {
         NexoToast.error(err.message || 'Erro ao conectar Mercado Pago.');
+      } finally {
+        restoreLoading();
+      }
+    }
+
+    function usarLocalizacaoAtual() {
+      if (!navigator.geolocation) {
+        NexoToast.warning('Localização não disponível neste navegador.');
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          document.getElementById('cfgMpLatitude').value = position.coords.latitude.toFixed(7);
+          document.getElementById('cfgMpLongitude').value = position.coords.longitude.toFixed(7);
+          NexoToast.success('Localização preenchida.');
+        },
+        () => NexoToast.warning('Não foi possível obter a localização.'),
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+
+    async function configurarMercadoPagoQr() {
+      const fields = {
+        storeName: document.getElementById('cfgMpStoreName').value.trim(),
+        posName: document.getElementById('cfgMpPosName').value.trim(),
+        streetName: document.getElementById('cfgMpStreet').value.trim(),
+        streetNumber: document.getElementById('cfgMpNumber').value.trim(),
+        cityName: document.getElementById('cfgMpCity').value.trim(),
+        stateName: document.getElementById('cfgMpState').value.trim(),
+        latitude: Number(document.getElementById('cfgMpLatitude').value),
+        longitude: Number(document.getElementById('cfgMpLongitude').value),
+        reference: document.getElementById('cfgMpReference').value.trim(),
+      };
+      if (!fields.storeName || !fields.posName || !fields.streetName || !fields.streetNumber
+        || !fields.cityName || !fields.stateName || !Number.isFinite(fields.latitude)
+        || !Number.isFinite(fields.longitude)) {
+        NexoToast.warning('Preencha os dados da loja e a localização completa.');
+        return;
+      }
+
+      const button = document.getElementById('cfgMpQrBtn');
+      const restoreLoading = setButtonLoading(button, 'Configurando...');
+      try {
+        const response = await NexoAuth.apiFetch('/integracoes/pix/mercadopago/qr', {
+          method: 'PUT',
+          body: JSON.stringify(fields),
+        });
+        if (!response.ok) throw new Error(response.message || 'Erro ao configurar loja e caixa.');
+        PDV_CONFIG.pixQrConfigured = Boolean(response.data.qrConfigured);
+        PDV_CONFIG.pixStatus = response.data.status;
+        document.getElementById('cfgPixStatus').value = response.data.status === 'conectado'
+          ? 'Conectado'
+          : 'Aguardando webhook';
+        localStorage.setItem(PDV_CONFIG_KEY, JSON.stringify(PDV_CONFIG));
+        onCfgPixProviderChange();
+        NexoToast.success('Loja e caixa configurados no Mercado Pago.');
+      } catch (err) {
+        NexoToast.error(err.message || 'Erro ao configurar loja e caixa.');
       } finally {
         restoreLoading();
       }
@@ -1947,6 +2019,7 @@ NexoAuth.requireAuth();
         PDV_CONFIG.pixModo = 'manual';
         PDV_CONFIG.pixStatus = 'desconectado';
         PDV_CONFIG.pixWebhookPath = null;
+        PDV_CONFIG.pixQrConfigured = false;
         document.getElementById('cfgPixModo').value = 'manual';
         document.getElementById('cfgPixStatus').value = 'Desconectado';
         atualizarWebhookMercadoPago(null);
