@@ -676,9 +676,12 @@
     <div class="pdv-config-modal">
 
       <div class="pdv-config-header">
-        <div>
-          <h2>Configurações do PDV</h2>
-          <div class="pdv-config-header-sub">Ajuste o comportamento do caixa</div>
+        <div class="pdv-config-title-wrap">
+          <div class="pdv-config-title-icon"><i class="bi bi-sliders"></i></div>
+          <div>
+            <h2>Configurações do PDV</h2>
+            <div class="pdv-config-header-sub">Ajuste o comportamento do caixa</div>
+          </div>
         </div>
         <div class="modal-close" onclick="closePdvConfig()"><i class="bi bi-x-lg"></i></div>
       </div>
@@ -702,6 +705,10 @@
 
         <!-- PIX -->
         <div class="pdv-config-panel show" data-panel="pix">
+          <div class="config-section-title">
+            <i class="bi bi-qr-code"></i>
+            <span>Recebimento via PIX</span>
+          </div>
           <div class="config-group">
             <label>Modo de recebimento</label>
             <select class="caixa-input" id="cfgPixModo" onchange="onCfgPixModeChange()">
@@ -845,6 +852,10 @@
             </div>
           </div>
           <div id="cfgPixManualFields">
+          <div class="config-section-title config-section-title-spaced">
+            <i class="bi bi-key"></i>
+            <span>Chave manual</span>
+          </div>
           <div class="config-group">
             <label>Tipo da chave</label>
             <select class="caixa-input" id="cfgPixTipo" onchange="onCfgPixTipoChange()">
@@ -872,6 +883,10 @@
 
         <!-- Cartão -->
         <div class="pdv-config-panel" data-panel="cartao">
+          <div class="config-section-title">
+            <i class="bi bi-credit-card-2-front"></i>
+            <span>Operação de cartão</span>
+          </div>
           <div class="config-group">
             <label>Operadora da maquininha</label>
             <select class="caixa-input" id="cfgTermOp" onchange="onCfgTermOpChange()">
@@ -906,6 +921,10 @@
 
         <!-- Caixa -->
         <div class="pdv-config-panel" data-panel="caixa">
+          <div class="config-section-title">
+            <i class="bi bi-cash-coin"></i>
+            <span>Operação do caixa</span>
+          </div>
           <div class="config-group">
             <label>Notas rápidas de troco</label>
             <p class="config-hint">Selecione quais valores aparecem como atalho no pagamento em dinheiro</p>
@@ -950,6 +969,10 @@
 
         <!-- Cupom -->
         <div class="pdv-config-panel" data-panel="cupom">
+          <div class="config-section-title">
+            <i class="bi bi-receipt"></i>
+            <span>Impressão e comprovante</span>
+          </div>
           <div class="config-group">
             <label>Nome da loja</label>
             <input class="caixa-input" id="cfgLojaNome" type="text" placeholder="NOME DA LOJA">
