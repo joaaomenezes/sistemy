@@ -424,6 +424,10 @@
 
             <!-- crédito / débito: bandeira + parcelas -->
             <div class="card-section" id="cardSection" style="display:none">
+              <div class="card-machine-picker" id="cardMachinePicker">
+                <label for="cardMachineSelect">Maquininha</label>
+                <select class="card-machine-select" id="cardMachineSelect" onchange="onCardMachineChange()"></select>
+              </div>
               <div>
                 <div class="pay-section-label">Bandeira</div>
                 <div class="brand-grid" id="brandGrid">
@@ -883,26 +887,157 @@
 
         <!-- Cartão -->
         <div class="pdv-config-panel" data-panel="cartao">
-          <div class="config-section-title">
-            <i class="bi bi-credit-card-2-front"></i>
-            <span>Operação de cartão</span>
+          <div class="card-config-hero">
+            <div class="pdv-config-title-icon"><i class="bi bi-credit-card-2-front"></i></div>
+            <div>
+              <h3>Cadastrar Cartão / Maquininha</h3>
+              <p>Configure taxas, prazos e conta de recebimento para vendas no cartão.</p>
+            </div>
           </div>
-          <div class="config-group">
-            <label>Operadora da maquininha</label>
-            <select class="caixa-input" id="cfgTermOp" onchange="onCfgTermOpChange()">
-              <option value="demo">Modo demonstração</option>
-              <option value="stone">Stone</option>
-              <option value="cielo">Cielo</option>
-              <option value="pagseguro">PagSeguro</option>
-              <option value="rede">Rede</option>
-              <option value="getnet">GetNet</option>
-            </select>
+
+          <div class="card-config-card">
+            <div class="config-section-title">
+              <i class="bi bi-hdd-network"></i>
+              <span>Dados da maquininha</span>
+            </div>
+            <div class="config-grid two">
+              <div class="config-group">
+                <label>Nome da configuração</label>
+                <input class="caixa-input" id="cfgCardName" type="text" placeholder="Stone Principal">
+              </div>
+              <div class="config-group">
+                <label>Operadora/adquirente</label>
+                <select class="caixa-input" id="cfgTermOp" onchange="onCfgTermOpChange()">
+                  <option value="">Selecione</option>
+                  <option value="stone">Stone</option>
+                  <option value="cielo">Cielo</option>
+                  <option value="rede">Rede</option>
+                  <option value="pagseguro">PagSeguro</option>
+                  <option value="mercadopago">Mercado Pago</option>
+                  <option value="getnet">Getnet</option>
+                  <option value="safrapay">SafraPay</option>
+                  <option value="infinitepay">InfinitePay</option>
+                  <option value="outra">Outra</option>
+                  <option value="demo">Modo demonstração</option>
+                </select>
+              </div>
+              <div class="config-group">
+                <label>Conta bancária de recebimento</label>
+                <select class="caixa-input" id="cfgCardAccount"></select>
+              </div>
+              <div class="config-group">
+                <label>Status</label>
+                <select class="caixa-input" id="cfgCardStatus">
+                  <option value="ativo">Ativo</option>
+                  <option value="inativo">Inativo</option>
+                </select>
+              </div>
+              <div class="config-group" id="cfgTermIdGroup">
+                <label>ID do terminal</label>
+                <input class="caixa-input" id="cfgTermId" type="text" placeholder="Informe o ID do terminal">
+              </div>
+            </div>
           </div>
-          <div class="config-group" id="cfgTermIdGroup">
-            <label>ID do terminal</label>
-            <input class="caixa-input" id="cfgTermId" type="text" placeholder="Informe o ID do terminal">
+
+          <div class="card-config-card">
+            <div class="config-section-title">
+              <i class="bi bi-ui-checks-grid"></i>
+              <span>Tipos aceitos</span>
+            </div>
+            <div class="config-check-grid">
+              <label class="config-check"><input type="checkbox" id="cfgCardTypeDebit"> <span>Débito</span></label>
+              <label class="config-check"><input type="checkbox" id="cfgCardTypeCreditCash"> <span>Crédito à vista</span></label>
+              <label class="config-check"><input type="checkbox" id="cfgCardTypeCreditInstallments"> <span>Crédito parcelado</span></label>
+              <label class="config-check"><input type="checkbox" id="cfgCardTypeVoucher"> <span>Voucher</span></label>
+            </div>
           </div>
-          <div class="config-row-inline">
+
+          <div class="card-config-card">
+            <div class="config-section-title">
+              <i class="bi bi-credit-card"></i>
+              <span>Bandeiras aceitas</span>
+            </div>
+            <div class="config-check-grid brands">
+              <label class="config-check"><input type="checkbox" name="cfgCardBrand" value="Visa"> <span>Visa</span></label>
+              <label class="config-check"><input type="checkbox" name="cfgCardBrand" value="Mastercard"> <span>Mastercard</span></label>
+              <label class="config-check"><input type="checkbox" name="cfgCardBrand" value="Elo"> <span>Elo</span></label>
+              <label class="config-check"><input type="checkbox" name="cfgCardBrand" value="Hipercard"> <span>Hipercard</span></label>
+              <label class="config-check"><input type="checkbox" name="cfgCardBrand" value="American Express"> <span>American Express</span></label>
+              <label class="config-check"><input type="checkbox" name="cfgCardBrand" value="Outros"> <span>Outros</span></label>
+            </div>
+          </div>
+
+          <div class="card-config-card">
+            <div class="config-section-title">
+              <i class="bi bi-percent"></i>
+              <span>Taxas e prazos</span>
+            </div>
+            <div class="config-grid two">
+              <div class="config-group">
+                <label>Taxa débito (%)</label>
+                <input class="caixa-input" id="cfgCardDebitFee" type="text" inputmode="decimal" placeholder="1,50">
+              </div>
+              <div class="config-group">
+                <label>Prazo recebimento débito</label>
+                <input class="caixa-input" id="cfgCardDebitDays" type="text" placeholder="D+1">
+              </div>
+              <div class="config-group">
+                <label>Taxa crédito à vista (%)</label>
+                <input class="caixa-input" id="cfgCardCreditCashFee" type="text" inputmode="decimal" placeholder="3,00">
+              </div>
+              <div class="config-group">
+                <label>Prazo crédito à vista</label>
+                <input class="caixa-input" id="cfgCardCreditCashDays" type="text" placeholder="D+30">
+              </div>
+              <div class="config-group">
+                <label>Taxa crédito parcelado (%)</label>
+                <input class="caixa-input" id="cfgCardCreditInstallmentFee" type="text" inputmode="decimal" placeholder="3,50">
+              </div>
+              <div class="config-group">
+                <label>Prazo primeira parcela</label>
+                <input class="caixa-input" id="cfgCardFirstInstallmentDays" type="text" placeholder="D+30">
+              </div>
+              <div class="config-group">
+                <label>Intervalo entre parcelas</label>
+                <input class="caixa-input" id="cfgCardInstallmentInterval" type="text" placeholder="30">
+              </div>
+            </div>
+          </div>
+
+          <div class="card-config-card">
+            <div class="config-section-title">
+              <i class="bi bi-display"></i>
+              <span>PDV</span>
+            </div>
+            <div class="config-grid two">
+              <div class="config-group">
+                <label>Nome exibido no PDV</label>
+                <input class="caixa-input" id="cfgCardPdvName" type="text" placeholder="Stone balcão">
+              </div>
+              <div class="config-toggle-row compact">
+                <div>
+                  <div class="config-toggle-label">Exibir esta maquininha no PDV</div>
+                  <div class="config-hint">Permite selecionar esta configuração ao vender no cartão</div>
+                </div>
+                <label class="config-toggle">
+                  <input type="checkbox" id="cfgCardShowPdv">
+                  <span class="config-toggle-track"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-config-card">
+            <div class="config-section-title">
+              <i class="bi bi-chat-left-text"></i>
+              <span>Observações</span>
+            </div>
+            <div class="config-group">
+              <textarea class="caixa-input card-config-textarea" id="cfgCardNotes" placeholder="Observações internas sobre taxas, contrato ou recebimento"></textarea>
+            </div>
+          </div>
+
+          <div class="config-row-inline legacy-card-options">
             <div class="config-group">
               <label>Máx. parcelas</label>
               <input class="caixa-input" id="cfgMaxParcelas" type="number" min="1" max="24">

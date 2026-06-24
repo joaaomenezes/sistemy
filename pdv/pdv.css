@@ -1631,6 +1631,42 @@
       gap: 14px;
     }
 
+    .card-machine-picker {
+      display: grid;
+      gap: 7px;
+      padding: 12px;
+      border: 1px solid rgba(0, 200, 150, .18);
+      border-radius: 12px;
+      background: rgba(0, 200, 150, .06);
+    }
+
+    .card-machine-picker label {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--muted);
+    }
+
+    .card-machine-select {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      color: var(--text);
+      padding: 0 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      outline: none;
+    }
+
+    .card-machine-select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 200, 150, .12);
+    }
+
     .brand-grid {
       display: flex;
       gap: 8px;
@@ -4689,6 +4725,114 @@
       margin-top: 4px;
     }
 
+    .card-config-hero {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      margin-bottom: 14px;
+      border: 1px solid rgba(0, 200, 150, .18);
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(0, 200, 150, .10), rgba(16, 24, 32, .03));
+    }
+
+    .card-config-hero h3 {
+      margin: 0;
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 850;
+      letter-spacing: 0;
+    }
+
+    .card-config-hero p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .card-config-card {
+      padding: 16px;
+      margin-bottom: 14px;
+      border: 1px solid rgba(132, 150, 170, .22);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, .02);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .08);
+    }
+
+    .config-grid {
+      display: grid;
+      gap: 13px;
+    }
+
+    .config-grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .config-check-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .config-check-grid.brands {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .config-check {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 750;
+      cursor: pointer;
+      transition: border-color .15s, background .15s, color .15s;
+    }
+
+    .config-check:hover {
+      border-color: rgba(0, 200, 150, .45);
+    }
+
+    .config-check input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+      flex: 0 0 auto;
+    }
+
+    .config-check:has(input:checked) {
+      border-color: rgba(0, 200, 150, .50);
+      background: rgba(0, 200, 150, .08);
+      color: var(--accent);
+    }
+
+    .config-toggle-row.compact {
+      margin: 0;
+      min-height: 58px;
+      border-radius: 12px;
+    }
+
+    .card-config-textarea {
+      min-height: 92px;
+      padding-top: 12px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .legacy-card-options {
+      padding: 14px;
+      margin-top: 2px;
+      border: 1px dashed rgba(132, 150, 170, .30);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .015);
+    }
+
     .config-group {
       margin-bottom: 16px;
     }
@@ -6925,6 +7069,12 @@
       .pdv-config-footer .cm-btn {
         width: 100%;
         justify-content: center;
+      }
+
+      .config-grid.two,
+      .config-check-grid,
+      .config-check-grid.brands {
+        grid-template-columns: 1fr;
       }
 
       .quick-cash,

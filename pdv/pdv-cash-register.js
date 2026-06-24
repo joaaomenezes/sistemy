@@ -116,7 +116,6 @@
       const totalSup = movs.filter(m => m.tipo === 'Suprimento').reduce((s, m) => s + m.valor, 0);
       const formas = todayStats.formas || {};
       const vendasDinheiro = formas.dinheiro || 0;
-      const vendasCartao = (formas.credito || 0) + (formas.debito || 0);
       const vendasBeneficios = (formas.voucher || 0) + (formas.vale || 0);
       const saldo = caixaState.fundo + totalSup - totalSang + vendasDinheiro;
       document.getElementById('caixaModalTitle').textContent = 'Gerenciar Caixa';
@@ -127,8 +126,9 @@
           <div class="caixa-resumo-row"><span>Sangrias</span><span style="color:var(--danger)">− R$ ${fmt(totalSang)}</span></div>
           <div class="caixa-resumo-row"><span>Total vendido</span><span>R$ ${fmt(todayStats.total)}</span></div>
           <div class="caixa-resumo-row"><span>Vendas em dinheiro</span><span style="color:var(--accent)">+ R$ ${fmt(vendasDinheiro)}</span></div>
-          <div class="caixa-resumo-row"><span>Pix</span><span>R$ ${fmt(formas.pix || 0)}</span></div>
-          <div class="caixa-resumo-row"><span>Crédito e débito</span><span>R$ ${fmt(vendasCartao)}</span></div>
+          <div class="caixa-resumo-row"><span>Pix recebido</span><span>R$ ${fmt(formas.pix || 0)}</span></div>
+          <div class="caixa-resumo-row"><span>Cartão débito</span><span>R$ ${fmt(formas.debito || 0)}</span></div>
+          <div class="caixa-resumo-row"><span>Cartão crédito</span><span>R$ ${fmt(formas.credito || 0)}</span></div>
           <div class="caixa-resumo-row"><span>Voucher e vale</span><span>R$ ${fmt(vendasBeneficios)}</span></div>
           <div class="caixa-resumo-row"><span>Fiado</span><span>R$ ${fmt(formas.fiado || 0)}</span></div>
           <div class="caixa-resumo-row total"><span>Dinheiro esperado no caixa</span><span>R$ ${fmt(saldo)}</span></div>

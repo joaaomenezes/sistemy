@@ -2565,7 +2565,7 @@ transition: border-color .15s;
       params.set('tipo', isPagar ? 'despesa' : 'receita');
       params.set('page', String(page));
       params.set('limit', String(getFinDetailPerPage(isPagar ? 'contas-pagar' : 'contas-receber')));
-      params.set('excludeStatus', isPagar ? 'cancelado' : 'pago,cancelado,estornado');
+      params.set('excludeStatus', isPagar ? 'cancelado' : 'pago,recebido,conciliado,cancelado,estornado');
       if (!isPagar && receberClienteId) params.set('clienteId', receberClienteId);
       return params.toString();
     }
@@ -2672,6 +2672,14 @@ transition: border-color .15s;
       return isNaN(d.getTime()) ? null : d;
     }
 
+    function isStatusRecebido(status) {
+      return ['pago', 'recebido', 'conciliado'].includes(String(status || '').toLowerCase());
+    }
+
+    function isStatusFinalizado(status) {
+      return isStatusRecebido(status) || ['cancelado', 'estornado'].includes(String(status || '').toLowerCase());
+    }
+
     function buildKPIs() {
       const now = new Date();
       const mesAtual = now.getFullYear() * 100 + now.getMonth();
@@ -2679,23 +2687,24 @@ transition: border-color .15s;
       lancamentos.forEach(l => {
         if (l.status === 'cancelado' || l.status === 'estornado') return;
         const v = l.valor || 0;
+        const recebido = isStatusRecebido(l.status);
         // Pago conta no mês do recebimento (pagoEm); pendente, no vencimento.
-        const d = (l.status === 'pago' && l.pagoEm)
+        const d = (recebido && l.pagoEm)
           ? _parseLancDate({ data: l.pagoEm })
           : _parseLancDate(l);
         const isMes = d && (d.getFullYear() * 100 + d.getMonth()) === mesAtual;
         if (l.tipo === 'receita') {
-          if (l.status === 'pago' && isMes) receitas += v;
-          else if (l.status !== 'pago') pendRec += v;
+          if (recebido && isMes) receitas += v;
+          else if (!recebido) pendRec += v;
         } else {
-          if (l.status === 'pago' && isMes) despesas += v;
-          else if (l.status !== 'pago') pendDes += v;
+          if (recebido && isMes) despesas += v;
+          else if (!recebido) pendDes += v;
         }
       });
       // Saldo histórico vem do endpoint /resumo (todos os lançamentos pagos)
       const saldo = finResumo
         ? finResumo.receitas - finResumo.despesas
-        : lancamentos.filter(l => l.status === 'pago').reduce((a, l) => a + (l.tipo === 'receita' ? l.valor : -l.valor), 0);
+        : lancamentos.filter(l => isStatusRecebido(l.status)).reduce((a, l) => a + (l.tipo === 'receita' ? l.valor : -l.valor), 0);
       return { receitas, despesas, resultado: receitas - despesas, saldo, fluxo: pendRec - pendDes };
     }
 
@@ -2746,7 +2755,7 @@ transition: border-color .15s;
       const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
       let receber = 0, receberVenc = 0, receberFut = 0, pagar = 0, pagarVenc = 0, pagarFut = 0, vencidosCount = 0;
       lancamentos.forEach(l => {
-        if (l.status === 'pago' || l.status === 'cancelado' || l.status === 'estornado') return;
+        if (isStatusFinalizado(l.status)) return;
         const v = l.valor || 0;
         const d = _parseLancDate(l);
         const vencida = d && d < hoje;
@@ -2768,21 +2777,21 @@ transition: border-color .15s;
     function buildReceberPagar() {
       const hoje = new Date(); hoje.setHours(0,0,0,0);
       const RECEBER = lancamentos
-        .filter(l => l.tipo === 'receita' && l.status !== 'pago' && l.status !== 'cancelado' && l.status !== 'estornado')
+        .filter(l => l.tipo === 'receita' && !isStatusFinalizado(l.status))
         .slice(0, 10)
         .map(l => {
           const venc = l.vencimento || l.data || '';
           const vencDate = venc ? new Date(venc.includes('/') ? venc.split('/').reverse().join('-') : venc) : null;
-          const status = l.status === 'pago' ? 'pago' : (vencDate && vencDate < hoje) ? 'vencida' : 'avencer';
+          const status = isStatusRecebido(l.status) ? 'pago' : (vencDate && vencDate < hoje) ? 'vencida' : 'avencer';
           return { venc: vencDate ? vencDate.toLocaleDateString('pt-BR') : venc, cliente: l.parte || l.descricao || '—', desc: l.descricao || '', valor: l.valor || 0, status };
         });
       const PAGAR = lancamentos
-        .filter(l => l.tipo === 'despesa' && l.status !== 'pago' && l.status !== 'cancelado')
+        .filter(l => l.tipo === 'despesa' && !isStatusFinalizado(l.status))
         .slice(0, 10)
         .map(l => {
           const venc = l.vencimento || l.data || '';
           const vencDate = venc ? new Date(venc.includes('/') ? venc.split('/').reverse().join('-') : venc) : null;
-          const status = l.status === 'pago' ? 'pago' : (vencDate && vencDate < hoje) ? 'vencida' : 'avencer';
+          const status = isStatusRecebido(l.status) ? 'pago' : (vencDate && vencDate < hoje) ? 'vencida' : 'avencer';
           return { venc: vencDate ? vencDate.toLocaleDateString('pt-BR') : venc, fornec: l.parte || l.descricao || '—', desc: l.descricao || '', valor: l.valor || 0, status };
         });
       return { RECEBER, PAGAR };
@@ -2922,6 +2931,8 @@ transition: border-color .15s;
         avencer: ['avencer', 'A Vencer'],
         vencida: ['vencida', 'Vencida'],
         pago: ['pago', 'Pago'],
+        recebido: ['pago', 'Recebido'],
+        conciliado: ['pago', 'Conciliado'],
         ok: ['ok', 'A Vencer'],
       };
       const [cls, label] = map[status] || ['ok', status];
@@ -2955,7 +2966,7 @@ transition: border-color .15s;
 
       const _hoje = new Date(); _hoje.setHours(0,0,0,0);
       const _stLanc = l => {
-        if (l.status === 'pago') return 'pago';
+        if (isStatusRecebido(l.status)) return 'pago';
         const raw = l.vencimento || l.data || '';
         if (!raw) return 'avencer';
         const d = new Date(raw.includes('/') ? raw.split('/').reverse().join('-') : raw);
@@ -3225,7 +3236,7 @@ transition: border-color .15s;
 
     function _dreInPeriod(l, start, end) {
       // Pago entra no período pela data de recebimento/pagamento (pagoEm).
-      const d = (l.status === 'pago' && l.pagoEm)
+      const d = (isStatusRecebido(l.status) && l.pagoEm)
         ? _parseLancDate({ data: l.pagoEm })
         : _parseLancDate(l);
       return d && d >= start && d <= end;
@@ -3243,7 +3254,7 @@ transition: border-color .15s;
       };
 
       // ── RECEITA BRUTA
-      const recPagas  = lancamentos.filter(l => l.tipo === 'receita' && l.status === 'pago' && inL(l));
+      const recPagas  = lancamentos.filter(l => l.tipo === 'receita' && isStatusRecebido(l.status) && inL(l));
       const isServico = l => /servi[cç]/i.test(l.categoria || '');
       const recVendas   = recPagas.filter(l => !isServico(l)).reduce((s,l) => s + l.valor, 0);
       const recServicos = recPagas.filter(l =>  isServico(l)).reduce((s,l) => s + l.valor, 0);
@@ -3251,7 +3262,7 @@ transition: border-color .15s;
 
       // ── DEDUÇÕES
       const isDeduc = l => /^(imposto|iss|icms|pis|cofins|dedu[cç]|devolu)/i.test((l.categoria||'') + (l.descricao||''));
-      const deducoes = lancamentos.filter(l => l.tipo === 'despesa' && l.status === 'pago' && inL(l) && isDeduc(l))
+      const deducoes = lancamentos.filter(l => l.tipo === 'despesa' && isStatusRecebido(l.status) && inL(l) && isDeduc(l))
         .reduce((s,l) => s + l.valor, 0);
       const recLiquida = recBruta - deducoes;
 
@@ -3268,7 +3279,7 @@ transition: border-color .15s;
 
       // ── DESPESAS OPERACIONAIS
       const isVendas = l => /venda|marketing|comercial|publicidade|comiss[aã]o/i.test(l.categoria || '');
-      const despLanc = lancamentos.filter(l => l.tipo === 'despesa' && l.status === 'pago' && inL(l) && !isDeduc(l));
+      const despLanc = lancamentos.filter(l => l.tipo === 'despesa' && isStatusRecebido(l.status) && inL(l) && !isDeduc(l));
       const despVendas = despLanc.filter(l =>  isVendas(l)).reduce((s,l) => s + l.valor, 0);
       const despCC     = custosData.filter(c => c.tipo === 'despesa' && inC(c)).reduce((s,c) => s + c.valor, 0);
       const despAdmin  = despCC + despLanc.filter(l => !isVendas(l)).reduce((s,l) => s + l.valor, 0);
@@ -3279,8 +3290,8 @@ transition: border-color .15s;
       // ── RESULTADO FINANCEIRO
       const isRecFin  = l => /juros|aplicac[aã]o|rendimento|financ.*rec/i.test((l.categoria||'')+(l.descricao||''));
       const isDespFin = l => /juros|encargo|multa|empr[eé]stimo|financ.*desp/i.test((l.categoria||'')+(l.descricao||''));
-      const recFin  = lancamentos.filter(l => l.tipo === 'receita' && l.status === 'pago' && inL(l) && isRecFin(l)).reduce((s,l) => s + l.valor, 0);
-      const despFin = lancamentos.filter(l => l.tipo === 'despesa' && l.status === 'pago' && inL(l) && isDespFin(l)).reduce((s,l) => s + l.valor, 0);
+      const recFin  = lancamentos.filter(l => l.tipo === 'receita' && isStatusRecebido(l.status) && inL(l) && isRecFin(l)).reduce((s,l) => s + l.valor, 0);
+      const despFin = lancamentos.filter(l => l.tipo === 'despesa' && isStatusRecebido(l.status) && inL(l) && isDespFin(l)).reduce((s,l) => s + l.valor, 0);
       const resFin  = recFin - despFin;
       const lair    = ebit + resFin;
 
@@ -3559,8 +3570,8 @@ transition: border-color .15s;
       const hoje = new Date(); hoje.setHours(0,0,0,0);
       const parseVenc = v => { if (!v) return null; const d = new Date(v.includes('/') ? v.split('/').reverse().join('-') : v); return isNaN(d) ? null : d; };
       const isVencido = l => { const d = parseVenc(l.vencimento || l.data); return d && d < hoje; };
-      const vPagar   = lancamentos.filter(l => l.tipo === 'despesa' && l.status !== 'pago' && l.status !== 'cancelado' && isVencido(l));
-      const vReceber = lancamentos.filter(l => l.tipo === 'receita' && l.status !== 'pago' && l.status !== 'cancelado' && l.status !== 'estornado' && isVencido(l));
+      const vPagar   = lancamentos.filter(l => l.tipo === 'despesa' && !isStatusFinalizado(l.status) && isVencido(l));
+      const vReceber = lancamentos.filter(l => l.tipo === 'receita' && !isStatusFinalizado(l.status) && isVencido(l));
       const total = vPagar.length + vReceber.length;
       if (total === 0) { showToast('Nenhum título vencido em aberto.'); return; }
       // Navega para a aba com mais vencidos
@@ -3583,7 +3594,7 @@ transition: border-color .15s;
         String(l.valor || 0).replace('.', ','),
         l.vencimento || l.data || '',
         l.pago_em || '',
-        l.status === 'pago' ? 'Pago' : l.status === 'pendente' ? 'Pendente' : l.status || '',
+        isStatusRecebido(l.status) ? 'Recebido' : l.status === 'pendente' ? 'Pendente' : l.status || '',
         l.forma_pgto || ''
       ]);
       const d = new Date();
@@ -4290,8 +4301,9 @@ transition: border-color .15s;
       const res = await NexoAuth.apiFetch(`/financeiro/${_receberId}`, {
         method: 'PUT',
         body: JSON.stringify({
-          status: 'pago',
+          status: 'recebido',
           pagoEm,
+          recebidoEm: pagoEm,
           ...(metodo && { formaPagamento: metodo }),
           ...(obs    && { obs }),
         }),
@@ -4300,7 +4312,7 @@ transition: border-color .15s;
 
       if (!res.ok) { showToast(res.message || 'Erro ao registrar recebimento.', 'error'); return; }
 
-      Object.assign(l, { status: 'pago', pagoEm, ...(metodo && { formaPagamento: metodo }), ...(obs && { obs }) });
+      Object.assign(l, { status: 'recebido', pagoEm, recebidoEm: pagoEm, ...(metodo && { formaPagamento: metodo }), ...(obs && { obs }) });
       const rResumo = await NexoAuth.apiFetch('/financeiro/resumo');
       if (rResumo.ok) finResumo = rResumo.data;
 
@@ -4334,8 +4346,9 @@ transition: border-color .15s;
 
       for (const item of _receberTudoItems) {
         const payload = {
-          status: 'pago',
+          status: 'recebido',
           pagoEm,
+          recebidoEm: pagoEm,
           obs: `${marker} ${obs}`.trim(),
           ...(metodo && { formaPagamento: metodo }),
         };
@@ -4386,7 +4399,7 @@ transition: border-color .15s;
     }
 
     function buildRecebParams(page, paginate) {
-      const params = new URLSearchParams({ tipo: 'receita', status: 'pago', sortBy: 'pagoEm' });
+      const params = new URLSearchParams({ tipo: 'receita', statusIn: 'pago,recebido,conciliado', sortBy: 'pagoEm' });
       if (paginate) { params.set('page', String(page)); params.set('limit', '20'); }
       const q      = document.getElementById('recebSearch')?.value.trim()  || '';
       const dIni   = document.getElementById('recebDtIni')?.value           || '';

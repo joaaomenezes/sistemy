@@ -49,6 +49,7 @@ NexoAuth.requireAuth();
     let cart = [];
     let discType = '%';
     let selectedMethod = 'dinheiro';
+    let selectedCardMachineId = 'principal';
     let vendaObs = '';
     let salesHistory = [];
     const PAYMENT_METHOD_KEYS = ['dinheiro', 'pix', 'credito', 'debito', 'voucher', 'vale', 'fiado', 'multiplo'];
@@ -648,6 +649,13 @@ NexoAuth.requireAuth();
       }
 
       if (isCard) {
+        const machine = getSelectedCardMachine();
+        const acceptsDebit = selectedMethod === 'debito' && machine.tiposAceitos?.debito;
+        const acceptsCredit = selectedMethod === 'credito' && (machine.tiposAceitos?.creditoVista || machine.tiposAceitos?.creditoParcelado);
+        if (!acceptsDebit && !acceptsCredit) {
+          NexoToast.warning('Nenhuma maquininha ativa aceita esta forma de cartão.');
+        }
+        renderCardMachineSelect();
         // débito = só à vista, crédito = parcelas
         document.getElementById('parcelasWrap').style.display = method === 'credito' ? 'block' : 'none';
         selectedBrand = 'Visa';
@@ -685,6 +693,109 @@ NexoAuth.requireAuth();
         .replace(',', '.')
         .replace(/[^\d.]/g, '');
       return parseFloat(normalized) || 0;
+    }
+
+    function parsePercentInput(value) {
+      const normalized = String(value || '').replace(/\s/g, '').replace(',', '.').replace(/[^\d.]/g, '');
+      return parseFloat(normalized) || 0;
+    }
+
+    function parseCardPrazo(value, fallback = 0) {
+      const raw = String(value || '').trim().toUpperCase();
+      if (!raw) return fallback;
+      const match = raw.match(/^D\+(\d{1,3})$/);
+      if (match) return parseInt(match[1], 10);
+      const number = parseInt(raw.replace(/[^\d]/g, ''), 10);
+      return Number.isFinite(number) ? number : fallback;
+    }
+
+    function cardConfigDefault() {
+      return {
+        nome: 'Maquininha padrão',
+        operadora: PDV_CONFIG.terminalOperadora || 'demo',
+        contaRecebimento: 'conta-principal',
+        status: 'ativo',
+        tiposAceitos: {
+          debito: true,
+          creditoVista: true,
+          creditoParcelado: true,
+          voucher: false,
+        },
+        bandeirasAceitas: ['Visa', 'Mastercard', 'Elo', 'Hipercard', 'American Express', 'Outros'],
+        taxaDebito: 1.5,
+        prazoDebitoDias: 1,
+        taxaCreditoVista: 3,
+        prazoCreditoVistaDias: 30,
+        taxaCreditoParcelado: 3,
+        prazoPrimeiraParcelaDias: 30,
+        intervaloParcelasDias: 30,
+        nomePdv: 'Maquininha padrão',
+        exibirNoPdv: true,
+        observacoes: '',
+        contasBancarias: [{ id: 'conta-principal', nome: 'Conta principal' }],
+      };
+    }
+
+    function getCardConfig() {
+      const saved = PDV_CONFIG.cartaoConfig || {};
+      const base = cardConfigDefault();
+      return {
+        ...base,
+        ...saved,
+        tiposAceitos: { ...base.tiposAceitos, ...(saved.tiposAceitos || {}) },
+        bandeirasAceitas: Array.isArray(saved.bandeirasAceitas) && saved.bandeirasAceitas.length ? saved.bandeirasAceitas : base.bandeirasAceitas,
+        contasBancarias: Array.isArray(saved.contasBancarias) && saved.contasBancarias.length ? saved.contasBancarias : base.contasBancarias,
+      };
+    }
+
+    function getActiveCardMachines() {
+      const cfg = getCardConfig();
+      if (cfg.status !== 'ativo' || cfg.exibirNoPdv === false) return [];
+      return [{ id: 'principal', ...cfg }];
+    }
+
+    function getSelectedCardMachine() {
+      return getActiveCardMachines().find(machine => machine.id === selectedCardMachineId) || getActiveCardMachines()[0] || getCardConfig();
+    }
+
+    function getCardFeeForCurrentSelection(machine = getSelectedCardMachine()) {
+      if (selectedMethod === 'debito') return Number(machine.taxaDebito ?? 1.5);
+      return selectedParcela > 1
+        ? Number(machine.taxaCreditoParcelado ?? machine.taxaCreditoVista ?? 3)
+        : Number(machine.taxaCreditoVista ?? 3);
+    }
+
+    function getCardFirstDueDays(machine = getSelectedCardMachine()) {
+      if (selectedMethod === 'debito') return Number(machine.prazoDebitoDias ?? 1);
+      return selectedParcela > 1
+        ? Number(machine.prazoPrimeiraParcelaDias ?? machine.prazoCreditoVistaDias ?? 30)
+        : Number(machine.prazoCreditoVistaDias ?? 30);
+    }
+
+    function getCardInstallmentIntervalDays(machine = getSelectedCardMachine()) {
+      return Number(machine.intervaloParcelasDias ?? 30);
+    }
+
+    function renderCardMachineSelect() {
+      const select = document.getElementById('cardMachineSelect');
+      if (!select) return;
+      const machines = getActiveCardMachines();
+      if (!machines.length) {
+        select.innerHTML = '<option value="">Nenhuma maquininha ativa</option>';
+        selectedCardMachineId = '';
+        return;
+      }
+      if (!machines.some(m => m.id === selectedCardMachineId)) selectedCardMachineId = machines[0].id;
+      select.innerHTML = machines.map(machine =>
+        `<option value="${escapeHtml(machine.id)}">${escapeHtml(machine.nomePdv || machine.nome || 'Maquininha')}</option>`
+      ).join('');
+      select.value = selectedCardMachineId;
+    }
+
+    function onCardMachineChange() {
+      selectedCardMachineId = document.getElementById('cardMachineSelect')?.value || 'principal';
+      renderParcelas();
+      atualizarResumoCartao();
     }
 
     function formatDateBR(iso) {
@@ -938,8 +1049,12 @@ NexoAuth.requireAuth();
       const total = getTotal();
       const grid = document.getElementById('parcelasGrid');
       if (!grid) return;
+      const machine = getSelectedCardMachine();
+      const allowInstallments = machine.tiposAceitos?.creditoParcelado !== false;
+      const maxParcelas = selectedMethod === 'credito' && allowInstallments ? PDV_CONFIG.maxParcelas : 1;
+      if (!allowInstallments && selectedParcela > 1) selectedParcela = 1;
       let html = '';
-      for (let n = 1; n <= PDV_CONFIG.maxParcelas; n++) {
+      for (let n = 1; n <= maxParcelas; n++) {
         const temJuros = n >= PDV_CONFIG.jurosAPartirDe;
         let valorParc, totalFinal;
         if (temJuros) {
@@ -979,6 +1094,9 @@ NexoAuth.requireAuth();
       const isDebito = selectedMethod === 'debito';
       const n = isDebito ? 1 : selectedParcela;
       const temJuros = !isDebito && n >= PDV_CONFIG.jurosAPartirDe;
+      const machine = getSelectedCardMachine();
+      const taxa = getCardFeeForCurrentSelection(machine);
+      const prazo = getCardFirstDueDays(machine);
 
       let totalFinal;
       if (temJuros) {
@@ -998,7 +1116,7 @@ NexoAuth.requireAuth();
         : `${n}× de R$ ${fmt(valorParc)} — ${selectedBrand}`;
 
       tag.className = `parcela-tag ${temJuros ? 'com-juros' : 'sem-juros'}`;
-      tag.textContent = temJuros ? `Total com juros: R$ ${fmt(totalFinal)}` : 'sem juros';
+      tag.textContent = `${taxa.toFixed(2).replace('.', ',')}% taxa - D+${prazo}`;
       tot.textContent = `R$ ${fmt(isDebito ? total : totalFinal)}`;
     }
 
@@ -1822,8 +1940,35 @@ NexoAuth.requireAuth();
       if (posName && !posName.value) posName.value = 'Caixa principal';
 
       // Cartão
-      document.getElementById('cfgTermOp').value = cfg.terminalOperadora;
+      const cardCfg = getCardConfig();
+      const accountSelect = document.getElementById('cfgCardAccount');
+      if (accountSelect) {
+        accountSelect.innerHTML = cardCfg.contasBancarias.map(account =>
+          `<option value="${escapeHtml(account.id)}">${escapeHtml(account.nome)}</option>`
+        ).join('');
+      }
+      document.getElementById('cfgCardName').value = cardCfg.nome || '';
+      document.getElementById('cfgTermOp').value = cardCfg.operadora || cfg.terminalOperadora || '';
+      document.getElementById('cfgCardAccount').value = cardCfg.contaRecebimento || 'conta-principal';
+      document.getElementById('cfgCardStatus').value = cardCfg.status || 'ativo';
       document.getElementById('cfgTermId').value = cfg.terminalId;
+      document.getElementById('cfgCardTypeDebit').checked = !!cardCfg.tiposAceitos?.debito;
+      document.getElementById('cfgCardTypeCreditCash').checked = !!cardCfg.tiposAceitos?.creditoVista;
+      document.getElementById('cfgCardTypeCreditInstallments').checked = !!cardCfg.tiposAceitos?.creditoParcelado;
+      document.getElementById('cfgCardTypeVoucher').checked = !!cardCfg.tiposAceitos?.voucher;
+      document.querySelectorAll('input[name="cfgCardBrand"]').forEach(input => {
+        input.checked = cardCfg.bandeirasAceitas.includes(input.value);
+      });
+      document.getElementById('cfgCardDebitFee').value = String(cardCfg.taxaDebito ?? 1.5).replace('.', ',');
+      document.getElementById('cfgCardDebitDays').value = `D+${cardCfg.prazoDebitoDias ?? 1}`;
+      document.getElementById('cfgCardCreditCashFee').value = String(cardCfg.taxaCreditoVista ?? 3).replace('.', ',');
+      document.getElementById('cfgCardCreditCashDays').value = `D+${cardCfg.prazoCreditoVistaDias ?? 30}`;
+      document.getElementById('cfgCardCreditInstallmentFee').value = String(cardCfg.taxaCreditoParcelado ?? 3).replace('.', ',');
+      document.getElementById('cfgCardFirstInstallmentDays').value = `D+${cardCfg.prazoPrimeiraParcelaDias ?? 30}`;
+      document.getElementById('cfgCardInstallmentInterval').value = String(cardCfg.intervaloParcelasDias ?? 30);
+      document.getElementById('cfgCardPdvName').value = cardCfg.nomePdv || cardCfg.nome || '';
+      document.getElementById('cfgCardShowPdv').checked = cardCfg.exibirNoPdv !== false;
+      document.getElementById('cfgCardNotes').value = cardCfg.observacoes || '';
       document.getElementById('cfgMaxParcelas').value = cfg.maxParcelas;
       document.getElementById('cfgJurosAPartir').value = cfg.jurosAPartirDe;
       document.getElementById('cfgTaxaJuros').value = (cfg.taxaJurosMensal * 100).toFixed(2);
@@ -2046,9 +2191,67 @@ NexoAuth.requireAuth();
     }
 
     async function savePdvConfig() {
-      const taxa = parseFloat(document.getElementById('cfgTaxaJuros').value) || 0;
+      const taxa = parsePercentInput(document.getElementById('cfgTaxaJuros').value) || 0;
       const notas = [...document.querySelectorAll('.config-note-chip.active')]
         .map(c => parseInt(c.dataset.note)).sort((a, b) => a - b);
+      const tiposAceitos = {
+        debito: document.getElementById('cfgCardTypeDebit').checked,
+        creditoVista: document.getElementById('cfgCardTypeCreditCash').checked,
+        creditoParcelado: document.getElementById('cfgCardTypeCreditInstallments').checked,
+        voucher: document.getElementById('cfgCardTypeVoucher').checked,
+      };
+      const cardName = document.getElementById('cfgCardName').value.trim();
+      const cardOperadora = document.getElementById('cfgTermOp').value;
+      const cardAccount = document.getElementById('cfgCardAccount').value;
+      const cardStatus = document.getElementById('cfgCardStatus').value;
+      const cardDebitFeeRaw = document.getElementById('cfgCardDebitFee').value.trim();
+      const cardDebitDaysRaw = document.getElementById('cfgCardDebitDays').value.trim();
+      const cardCreditCashFeeRaw = document.getElementById('cfgCardCreditCashFee').value.trim();
+      const cardCreditCashDaysRaw = document.getElementById('cfgCardCreditCashDays').value.trim();
+      const cardCreditInstallmentFeeRaw = document.getElementById('cfgCardCreditInstallmentFee').value.trim();
+      const cardFirstInstallmentDaysRaw = document.getElementById('cfgCardFirstInstallmentDays').value.trim();
+      const cardInstallmentIntervalRaw = document.getElementById('cfgCardInstallmentInterval').value.trim();
+      const cardDebitFee = parsePercentInput(cardDebitFeeRaw);
+      const cardDebitDays = parseCardPrazo(cardDebitDaysRaw, 1);
+      const cardCreditCashFee = parsePercentInput(cardCreditCashFeeRaw);
+      const cardCreditCashDays = parseCardPrazo(cardCreditCashDaysRaw, 30);
+      const cardCreditInstallmentFee = parsePercentInput(cardCreditInstallmentFeeRaw);
+      const cardFirstInstallmentDays = parseCardPrazo(cardFirstInstallmentDaysRaw, 30);
+      const cardInstallmentInterval = parseCardPrazo(cardInstallmentIntervalRaw, 30);
+      const missing = [];
+      if (!cardName) missing.push('Nome da configuração');
+      if (!cardOperadora) missing.push('Operadora/adquirente');
+      if (!cardAccount) missing.push('Conta bancária de recebimento');
+      if (!cardStatus) missing.push('Status');
+      if (tiposAceitos.debito && (!cardDebitFeeRaw || !cardDebitDaysRaw || cardDebitDays < 0)) missing.push('Taxa e prazo de débito');
+      if (tiposAceitos.creditoVista && (!cardCreditCashFeeRaw || !cardCreditCashDaysRaw || cardCreditCashDays < 0)) missing.push('Taxa e prazo de crédito à vista');
+      if (tiposAceitos.creditoParcelado && (!cardCreditInstallmentFeeRaw || !cardFirstInstallmentDaysRaw || !cardInstallmentIntervalRaw || cardFirstInstallmentDays < 0 || cardInstallmentInterval <= 0)) {
+        missing.push('Taxa e prazos do crédito parcelado');
+      }
+      if (missing.length) {
+        NexoToast.warning(`Revise: ${missing.join(', ')}.`);
+        return;
+      }
+      const selectedBrands = [...document.querySelectorAll('input[name="cfgCardBrand"]:checked')].map(input => input.value);
+      const cardConfig = {
+        ...getCardConfig(),
+        nome: cardName,
+        operadora: cardOperadora,
+        contaRecebimento: cardAccount,
+        status: cardStatus,
+        tiposAceitos,
+        bandeirasAceitas: selectedBrands.length ? selectedBrands : ['Outros'],
+        taxaDebito: cardDebitFee,
+        prazoDebitoDias: cardDebitDays,
+        taxaCreditoVista: cardCreditCashFee,
+        prazoCreditoVistaDias: cardCreditCashDays,
+        taxaCreditoParcelado: cardCreditInstallmentFee,
+        prazoPrimeiraParcelaDias: cardFirstInstallmentDays,
+        intervaloParcelasDias: cardInstallmentInterval,
+        nomePdv: document.getElementById('cfgCardPdvName').value.trim() || cardName,
+        exibirNoPdv: document.getElementById('cfgCardShowPdv').checked,
+        observacoes: document.getElementById('cfgCardNotes').value.trim(),
+      };
 
       const newConfig = {
         pixModo: document.getElementById('cfgPixModo').value,
@@ -2058,8 +2261,9 @@ NexoAuth.requireAuth();
         pixChave: document.getElementById('cfgPixChave').value.trim(),
         pixBeneficiario: document.getElementById('cfgPixBenef').value.trim(),
         pixCidade: document.getElementById('cfgPixCidade').value.trim().toUpperCase(),
-        terminalOperadora: document.getElementById('cfgTermOp').value,
+        terminalOperadora: cardOperadora,
         terminalId: document.getElementById('cfgTermId').value.trim(),
+        cartaoConfig: cardConfig,
         maxParcelas: Math.max(1, parseInt(document.getElementById('cfgMaxParcelas').value) || 12),
         jurosAPartirDe: Math.max(1, parseInt(document.getElementById('cfgJurosAPartir').value) || 4),
         taxaJurosMensal: taxa / 100,
@@ -2085,6 +2289,7 @@ NexoAuth.requireAuth();
         Object.assign(PDV_CONFIG, response.data);
         localStorage.setItem(PDV_CONFIG_KEY, JSON.stringify(PDV_CONFIG));
         buildQuickCash();
+        renderCardMachineSelect();
         closePdvConfig();
         NexoToast.success('Configurações salvas para toda a empresa');
       } catch (err) {
@@ -2134,7 +2339,18 @@ NexoAuth.requireAuth();
         }
       }
       const isCard = selectedMethod === 'credito' || selectedMethod === 'debito';
-      if (isCard) { enviarParaMaquininha(); return; }
+      if (isCard) {
+        const machine = getSelectedCardMachine();
+        const debitOk = selectedMethod === 'debito' && machine.tiposAceitos?.debito;
+        const creditOk = selectedMethod === 'credito'
+          && (selectedParcela > 1 ? machine.tiposAceitos?.creditoParcelado : machine.tiposAceitos?.creditoVista);
+        if (!machine || machine.status !== 'ativo' || (!debitOk && !creditOk)) {
+          NexoToast.warning('Configure uma maquininha ativa para esta forma de cartão.');
+          return;
+        }
+        enviarParaMaquininha();
+        return;
+      }
       finalizarVenda();
     }
 
@@ -2327,17 +2543,33 @@ NexoAuth.requireAuth();
 
     function _buildPaymentBreakdown(total, context = {}) {
       if (selectedMethod === 'split') {
+        const machine = getSelectedCardMachine();
         return splitItems
-          .map(item => ({
-            metodo: _normalizePaymentMethod(item.method),
-            valor: _parsePaymentValue(item.value),
-            status: item.status,
-            ...(item.cobrancaId ? {
-              cobrancaId: item.cobrancaId,
-              providerPaymentId: item.providerPaymentId,
-              provedor: item.provedor || PDV_CONFIG.pixProvedor,
-            } : {}),
-          }))
+          .map(item => {
+            const metodo = _normalizePaymentMethod(item.method);
+            const isCardSplit = metodo === 'credito' || metodo === 'debito';
+            return {
+              metodo,
+              valor: _parsePaymentValue(item.value),
+              status: item.status,
+              ...(item.cobrancaId ? {
+                cobrancaId: item.cobrancaId,
+                providerPaymentId: item.providerPaymentId,
+                provedor: item.provedor || PDV_CONFIG.pixProvedor,
+              } : {}),
+              ...(isCardSplit ? {
+                bandeira: selectedBrand,
+                adquirente: machine.operadora || PDV_CONFIG.terminalOperadora || 'demo',
+                terminalId: PDV_CONFIG.terminalId || null,
+                contaRecebimento: machine.contaRecebimento || null,
+                maquininhaNome: machine.nome || machine.nomePdv || null,
+                taxaPercentual: metodo === 'debito' ? Number(machine.taxaDebito ?? 1.5) : Number(machine.taxaCreditoVista ?? 3),
+                prazoPrimeiraParcelaDias: metodo === 'debito' ? Number(machine.prazoDebitoDias ?? 1) : Number(machine.prazoCreditoVistaDias ?? 30),
+                intervaloParcelasDias: Number(machine.intervaloParcelasDias ?? 30),
+                parcelas: 1,
+              } : {}),
+            };
+          })
           .filter(payment => payment.valor > 0);
       }
 
@@ -2362,7 +2594,15 @@ NexoAuth.requireAuth();
       }
 
       if (selectedMethod === 'credito' || selectedMethod === 'debito') {
+        const machine = getSelectedCardMachine();
         payment.bandeira = selectedBrand;
+        payment.adquirente = machine.operadora || PDV_CONFIG.terminalOperadora || 'demo';
+        payment.terminalId = PDV_CONFIG.terminalId || null;
+        payment.contaRecebimento = machine.contaRecebimento || null;
+        payment.maquininhaNome = machine.nome || machine.nomePdv || null;
+        payment.taxaPercentual = getCardFeeForCurrentSelection(machine);
+        payment.prazoPrimeiraParcelaDias = getCardFirstDueDays(machine);
+        payment.intervaloParcelasDias = getCardInstallmentIntervalDays(machine);
         payment.parcelas = selectedMethod === 'debito' ? 1 : selectedParcela;
         payment.valorOriginal = Math.round(total * 100) / 100;
         payment.valor = Math.round((context.totalCartao || total) * 100) / 100;
@@ -2439,6 +2679,7 @@ NexoAuth.requireAuth();
         ...(_isFiado && sale.fiado?.clienteId ? { clienteId: sale.fiado.clienteId } : {}),
         operador,
         operadorId,
+        ...(caixaState?.id ? { caixaId: caixaState.id } : {}),
         metodo: selectedMethod || 'dinheiro',
         pagamentos: sale.pagamentos || [],
         itens: (sale.cartSnapshot || []).map(c => ({
