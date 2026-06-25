@@ -10,6 +10,7 @@
       pixStatus: 'desconectado',
       pixWebhookPath: null,
       pixQrConfigured: false,
+      pixContaBancariaId: null,
       pixTipoChave: 'aleatoria',
       pixChave: '',
       pixBeneficiario: 'Nexo ERP',
@@ -79,11 +80,13 @@
               pixProvedor: integration.data.provedor,
               pixAmbiente: integration.data.ambiente,
               pixStatus: integration.data.status,
+              pixContaBancariaId: integration.data.contaBancariaId || null,
               pixWebhookPath: integration.data.webhookPath || null,
               pixQrConfigured: Boolean(integration.data.qrConfigured),
             } : {
               pixProvedor: null,
               pixStatus: 'desconectado',
+              pixContaBancariaId: null,
               pixWebhookPath: null,
               pixQrConfigured: false,
             });

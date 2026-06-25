@@ -748,6 +748,23 @@ NexoAuth.requireAuth();
       };
     }
 
+    function getBankAccountOptions() {
+      const accounts = getCardConfig().contasBancarias;
+      return Array.isArray(accounts) && accounts.length
+        ? accounts
+        : [{ id: 'conta-principal', nome: 'Conta principal' }];
+    }
+
+    function fillBankAccountSelect(selectId, selectedId) {
+      const select = document.getElementById(selectId);
+      if (!select) return;
+      const accounts = getBankAccountOptions();
+      select.innerHTML = accounts.map(account =>
+        `<option value="${escapeHtml(account.id)}">${escapeHtml(account.nome)}</option>`
+      ).join('');
+      select.value = selectedId || accounts[0]?.id || '';
+    }
+
     function getActiveCardMachines() {
       const cfg = getCardConfig();
       if (cfg.status !== 'ativo' || cfg.exibirNoPdv === false) return [];
@@ -1943,10 +1960,9 @@ NexoAuth.requireAuth();
       const cardCfg = getCardConfig();
       const accountSelect = document.getElementById('cfgCardAccount');
       if (accountSelect) {
-        accountSelect.innerHTML = cardCfg.contasBancarias.map(account =>
-          `<option value="${escapeHtml(account.id)}">${escapeHtml(account.nome)}</option>`
-        ).join('');
+        fillBankAccountSelect('cfgCardAccount', cardCfg.contaRecebimento || 'conta-principal');
       }
+      fillBankAccountSelect('cfgPixBankAccount', cfg.pixContaBancariaId || '');
       document.getElementById('cfgCardName').value = cardCfg.nome || '';
       document.getElementById('cfgTermOp').value = cardCfg.operadora || cfg.terminalOperadora || '';
       document.getElementById('cfgCardAccount').value = cardCfg.contaRecebimento || 'conta-principal';
@@ -2053,6 +2069,7 @@ NexoAuth.requireAuth();
             ...(accessToken ? { accessToken } : {}),
             webhookSecret,
             ambiente: document.getElementById('cfgPixAmbiente').value,
+            contaBancariaId: document.getElementById('cfgPixBankAccount')?.value || null,
           }),
         });
         if (!response.ok) throw new Error(response.message || 'Erro ao conectar Mercado Pago.');
@@ -2061,6 +2078,7 @@ NexoAuth.requireAuth();
         PDV_CONFIG.pixProvedor = 'mercadopago';
         PDV_CONFIG.pixAmbiente = response.data.ambiente;
         PDV_CONFIG.pixStatus = response.data.status;
+        PDV_CONFIG.pixContaBancariaId = response.data.contaBancariaId || null;
         PDV_CONFIG.pixWebhookPath = response.data.webhookPath || null;
         PDV_CONFIG.pixQrConfigured = Boolean(response.data.qrConfigured);
         document.getElementById('cfgPixStatus').value = response.data.status === 'conectado'
@@ -2163,6 +2181,7 @@ NexoAuth.requireAuth();
         if (!response.ok) throw new Error(response.message || 'Erro ao desconectar.');
         PDV_CONFIG.pixModo = 'manual';
         PDV_CONFIG.pixStatus = 'desconectado';
+        PDV_CONFIG.pixContaBancariaId = null;
         PDV_CONFIG.pixWebhookPath = null;
         PDV_CONFIG.pixQrConfigured = false;
         document.getElementById('cfgPixModo').value = 'manual';
@@ -2257,6 +2276,7 @@ NexoAuth.requireAuth();
         pixModo: document.getElementById('cfgPixModo').value,
         pixProvedor: document.getElementById('cfgPixProvedor').value || null,
         pixAmbiente: document.getElementById('cfgPixAmbiente').value,
+        pixContaBancariaId: document.getElementById('cfgPixBankAccount')?.value || null,
         pixTipoChave: document.getElementById('cfgPixTipo').value,
         pixChave: document.getElementById('cfgPixChave').value.trim(),
         pixBeneficiario: document.getElementById('cfgPixBenef').value.trim(),
@@ -2556,6 +2576,8 @@ NexoAuth.requireAuth();
                 cobrancaId: item.cobrancaId,
                 providerPaymentId: item.providerPaymentId,
                 provedor: item.provedor || PDV_CONFIG.pixProvedor,
+                contaBancariaId: PDV_CONFIG.pixContaBancariaId || null,
+                contaRecebimento: PDV_CONFIG.pixContaBancariaId || null,
               } : {}),
               ...(isCardSplit ? {
                 bandeira: selectedBrand,
@@ -2591,6 +2613,8 @@ NexoAuth.requireAuth();
         payment.cobrancaId = pixCobrancaId;
         payment.providerPaymentId = pixProviderPaymentId;
         payment.provedor = PDV_CONFIG.pixProvedor;
+        payment.contaBancariaId = PDV_CONFIG.pixContaBancariaId || null;
+        payment.contaRecebimento = PDV_CONFIG.pixContaBancariaId || null;
       }
 
       if (selectedMethod === 'credito' || selectedMethod === 'debito') {

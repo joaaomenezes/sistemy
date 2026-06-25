@@ -665,6 +665,22 @@ font-size: 14px;
     .cc-cat-add { white-space:nowrap; min-height:42px; }
     .modal-field-section { margin-bottom:14px !important; }
 
+    .bank-summary-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+    .bank-kpi-card { padding:16px; border:1px solid var(--border); border-radius:14px; background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.015)); }
+    .bank-kpi-card span { display:block; color:var(--muted); font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px; }
+    .bank-kpi-card strong { color:var(--text); font-size:18px; font-weight:850; letter-spacing:0; }
+    .table-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+    .bank-account-main { display:flex; flex-direction:column; gap:3px; min-width:170px; }
+    .bank-account-main strong { color:var(--text); font-size:13px; }
+    .bank-account-main span { color:var(--muted); font-size:11px; }
+    .bank-principal-badge { display:inline-flex; align-items:center; gap:4px; width:max-content; padding:2px 7px; border-radius:999px; background:rgba(0,200,150,.11); color:var(--accent); font-size:10px; font-weight:800; }
+    .bank-actions { display:flex; gap:7px; flex-wrap:wrap; }
+    .bank-status { display:inline-flex; padding:3px 9px; border-radius:999px; font-size:10px; font-weight:800; text-transform:uppercase; }
+    .bank-status.ativa { background:rgba(0,200,150,.11); color:var(--accent); }
+    .bank-status.inativa { background:rgba(107,127,150,.12); color:var(--muted); }
+    .bank-check-row { min-height:42px; display:flex; align-items:center; gap:9px; padding:10px 12px; border:1px solid var(--border); border-radius:12px; background:rgba(255,255,255,.025); color:var(--text); font-size:12px; font-weight:650; cursor:pointer; }
+    .bank-check-row input { width:16px; height:16px; accent-color:var(--accent); }
+
     .tipo-toggle {
       display: flex;
       gap: 8px;
@@ -1141,6 +1157,8 @@ transition: border-color .15s;
       .fin-modal-footer { flex-direction:column; align-items:stretch; }
       .fin-modal-actions { width:100%; }
       .fin-modal-actions > * { flex:1 1 auto; }
+      .bank-summary-grid { grid-template-columns:1fr; }
+      .table-actions { width:100%; justify-content:flex-start; }
 
       .receber-modal { max-width:100%; }
       .receber-modal .modal-header,
@@ -1513,6 +1531,10 @@ transition: border-color .15s;
               </div>
               <div class="mais-item mais-main-tab-only" onclick="switchTabFromMais('dre','DRE','Demonstração do Resultado do Exercício.')">
                 <i class="bi bi-file-earmark-bar-graph"></i> DRE
+              </div>
+              <div class="mais-item"
+                onclick="switchTabFromMais('contas-bancarias','Contas Bancarias','Cadastre contas para recebimentos, Pix, cartao e conciliacao.')">
+                <i class="bi bi-wallet2"></i> Contas Bancarias
               </div>
               <div class="tab-divider"></div>
               <div class="tab-section-label">Em breve</div>
@@ -1980,6 +2002,56 @@ transition: border-color .15s;
       </div>
 
       <!-- Cobranças -->
+      <!-- Contas Bancarias -->
+      <div class="fin-panel" id="panel-contas-bancarias">
+        <div class="bank-summary-grid u-mt-20">
+          <div class="bank-kpi-card">
+            <span>Contas ativas</span>
+            <strong id="bankKpiAtivas">0</strong>
+          </div>
+          <div class="bank-kpi-card">
+            <span>Conta principal</span>
+            <strong id="bankKpiPrincipal">-</strong>
+          </div>
+          <div class="bank-kpi-card">
+            <span>Saldo inicial total</span>
+            <strong id="bankKpiSaldo">R$ 0,00</strong>
+          </div>
+        </div>
+        <div class="card u-mt-20 fin-detail-card">
+          <div class="table-header">
+            <div class="table-header-title"><i class="bi bi-wallet2"
+                style="color:var(--accent);margin-right:6px"></i>Contas Bancarias</div>
+            <div class="table-actions">
+              <button class="btn-sm btn-ghost-sm" onclick="loadBankAccounts(true)">
+                <i class="bi bi-arrow-clockwise"></i> Atualizar
+              </button>
+              <button class="btn-sm btn-receber-sm" onclick="openBankAccountModal()">
+                <i class="bi bi-plus-lg"></i> Nova conta
+              </button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="fin-table">
+              <thead>
+                <tr>
+                  <th>Conta</th>
+                  <th>Banco</th>
+                  <th>Tipo</th>
+                  <th>Saldo inicial</th>
+                  <th>Status</th>
+                  <th>Acoes</th>
+                </tr>
+              </thead>
+              <tbody id="tblBankAccounts"></tbody>
+            </table>
+          </div>
+          <div class="table-footer fin-detail-footer">
+            <span id="bankAccountsInfo">-</span>
+          </div>
+        </div>
+      </div>
+
       <div class="fin-panel" id="panel-cobrancas">
         <div class="empty-state show u-mt-40" >
           <i class="bi bi-bell"></i>
@@ -2498,6 +2570,88 @@ transition: border-color .15s;
         <div class="fin-modal-actions">
           <button class="btn-cancel-m" onclick="closeModal()">Cancelar</button>
           <button class="btn-save-m" onclick="salvarLancamento()"><i class="bi bi-check2"></i> Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CONTA BANCARIA -->
+  <div class="modal-overlay" id="bankAccountOverlay" onclick="if(event.target===this)closeBankAccountModal()">
+    <div class="modal fin-form-modal">
+      <div class="modal-header">
+        <div>
+          <h2 class="fin-form-title">
+            <span class="fin-form-title-ico"><i class="bi bi-wallet2"></i></span>
+            <span id="bankModalTitle">Nova Conta Bancaria</span>
+          </h2>
+          <div class="modal-sub">Cadastre a conta usada para Pix, cartao, extrato e conciliacao.</div>
+        </div>
+        <div class="modal-close" onclick="closeBankAccountModal()"><i class="bi bi-x-lg"></i></div>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid fin-form-card">
+          <div class="form-group">
+            <label class="lbl">Nome da conta *</label>
+            <div class="inp-wrap"><i class="bi bi-pencil pre"></i><input class="field" id="bankNome" placeholder="Ex: Itau principal"></div>
+          </div>
+          <div class="form-group">
+            <label class="lbl">Banco</label>
+            <div class="inp-wrap"><i class="bi bi-bank pre"></i><input class="field" id="bankBanco" placeholder="Ex: Itau, Mercado Pago"></div>
+          </div>
+          <div class="form-group">
+            <label class="lbl">Agencia</label>
+            <div class="inp-wrap"><i class="bi bi-hash pre"></i><input class="field" id="bankAgencia" placeholder="0001"></div>
+          </div>
+          <div class="form-group">
+            <label class="lbl">Conta</label>
+            <div class="inp-wrap"><i class="bi bi-credit-card-2-front pre"></i><input class="field" id="bankConta" placeholder="00000-0"></div>
+          </div>
+          <div class="form-group">
+            <label class="lbl">Tipo</label>
+            <div class="inp-wrap">
+              <i class="bi bi-list-check pre"></i>
+              <select class="field" id="bankTipo">
+                <option value="corrente">Conta corrente</option>
+                <option value="poupanca">Poupanca</option>
+                <option value="pagamento">Conta de pagamento</option>
+                <option value="caixa">Caixa fisico</option>
+                <option value="outro">Outro</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="lbl">Saldo inicial</label>
+            <div class="inp-wrap"><i class="bi bi-currency-dollar pre"></i><input class="field" id="bankSaldoInicial" placeholder="0,00" oninput="maskCurrency(this)"></div>
+          </div>
+          <div class="form-group">
+            <label class="lbl">Chave Pix</label>
+            <div class="inp-wrap"><i class="bi bi-qr-code pre"></i><input class="field" id="bankChavePix" placeholder="Opcional"></div>
+          </div>
+          <div class="form-group">
+            <label class="lbl">Status</label>
+            <div class="inp-wrap">
+              <i class="bi bi-toggle-on pre"></i>
+              <select class="field" id="bankStatus">
+                <option value="ativa">Ativa</option>
+                <option value="inativa">Inativa</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="lbl">Conta principal</label>
+            <label class="bank-check-row"><input type="checkbox" id="bankPrincipal"><span>Usar como conta padrao para novos recebimentos</span></label>
+          </div>
+          <div class="form-group">
+            <label class="lbl">Observacoes</label>
+            <div class="inp-wrap"><textarea class="field ni" id="bankObs" placeholder="Observacoes internas..."></textarea></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer fin-modal-footer">
+        <div class="fin-modal-note"><i class="bi bi-info-circle"></i> * Campos obrigatorios</div>
+        <div class="fin-modal-actions">
+          <button class="btn-cancel-m" onclick="closeBankAccountModal()">Cancelar</button>
+          <button class="btn-save-m" id="btnSaveBankAccount" onclick="saveBankAccount()"><i class="bi bi-check2"></i> Salvar conta</button>
         </div>
       </div>
     </div>
@@ -3190,6 +3344,166 @@ transition: border-color .15s;
     // ═══════════════════════════════════════════════
     // ABAS HÍBRIDAS
     // ═══════════════════════════════════════════════
+    let bankAccounts = [];
+    let editingBankAccountId = null;
+
+    function parseBankMoney(value) {
+      const normalized = String(value || '').replace(/\./g, '').replace(',', '.').replace(/[^\d.-]/g, '');
+      return parseFloat(normalized) || 0;
+    }
+
+    function formatBankType(type) {
+      const map = { corrente: 'Conta corrente', poupanca: 'Poupanca', pagamento: 'Conta de pagamento', caixa: 'Caixa fisico', outro: 'Outro' };
+      return map[type] || type || '-';
+    }
+
+    async function loadBankAccounts(showLoading = false) {
+      const body = document.getElementById('tblBankAccounts');
+      if (showLoading && body) body.innerHTML = NexoSkeleton.tableRows(4, 6);
+      try {
+        const res = await NexoAuth.apiFetch('/contas-bancarias?status=todas&limit=100');
+        if (!res.ok) {
+          showToast(res.message || 'Erro ao carregar contas bancarias.', 'error');
+          return;
+        }
+        bankAccounts = Array.isArray(res.data) ? res.data : [];
+        renderBankAccounts();
+      } catch (_) {
+        showToast('Erro ao carregar contas bancarias.', 'error');
+      }
+    }
+
+    function renderBankAccounts() {
+      const body = document.getElementById('tblBankAccounts');
+      if (!body) return;
+      const active = bankAccounts.filter(c => c.status !== 'inativa');
+      const principal = active.find(c => c.principal) || active[0] || null;
+      const saldo = active.reduce((sum, c) => sum + (Number(c.saldoInicial) || 0), 0);
+      document.getElementById('bankKpiAtivas').textContent = String(active.length);
+      document.getElementById('bankKpiPrincipal').textContent = principal?.nome || '-';
+      document.getElementById('bankKpiSaldo').textContent = `R$ ${fmt(saldo)}`;
+      document.getElementById('bankAccountsInfo').textContent = `${bankAccounts.length} conta${bankAccounts.length !== 1 ? 's' : ''} cadastrada${bankAccounts.length !== 1 ? 's' : ''}`;
+
+      if (!bankAccounts.length) {
+        body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Nenhuma conta bancaria cadastrada.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = bankAccounts.map(account => `
+        <tr>
+          <td>
+            <div class="bank-account-main">
+              <strong>${escapeHTML(account.nome || '-')}</strong>
+              <span>${escapeHTML([account.agencia, account.conta].filter(Boolean).join(' / ') || 'Dados bancarios nao informados')}</span>
+              ${account.principal ? '<span class="bank-principal-badge"><i class="bi bi-star-fill"></i> Principal</span>' : ''}
+            </div>
+          </td>
+          <td>${escapeHTML(account.banco || '-')}</td>
+          <td>${escapeHTML(formatBankType(account.tipo))}</td>
+          <td class="val-positivo">R$ ${fmt(account.saldoInicial || 0)}</td>
+          <td><span class="bank-status ${account.status || 'ativa'}">${escapeHTML(account.status || 'ativa')}</span></td>
+          <td>
+            <div class="bank-actions">
+              <button class="btn-sm btn-ghost-sm" onclick="openBankAccountModal('${account.id}')"><i class="bi bi-pencil"></i> Editar</button>
+              ${account.status !== 'inativa' ? `<button class="btn-sm btn-ghost-sm" onclick="deactivateBankAccount('${account.id}')"><i class="bi bi-x-circle"></i> Inativar</button>` : ''}
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function resetBankAccountForm() {
+      editingBankAccountId = null;
+      document.getElementById('bankModalTitle').textContent = 'Nova Conta Bancaria';
+      ['bankNome', 'bankBanco', 'bankAgencia', 'bankConta', 'bankChavePix', 'bankSaldoInicial', 'bankObs'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      document.getElementById('bankTipo').value = 'corrente';
+      document.getElementById('bankStatus').value = 'ativa';
+      document.getElementById('bankPrincipal').checked = bankAccounts.every(c => c.status === 'inativa');
+    }
+
+    function openBankAccountModal(id = null) {
+      resetBankAccountForm();
+      if (id) {
+        const account = bankAccounts.find(c => c.id === id);
+        if (!account) return;
+        editingBankAccountId = id;
+        document.getElementById('bankModalTitle').textContent = 'Editar Conta Bancaria';
+        document.getElementById('bankNome').value = account.nome || '';
+        document.getElementById('bankBanco').value = account.banco || '';
+        document.getElementById('bankAgencia').value = account.agencia || '';
+        document.getElementById('bankConta').value = account.conta || '';
+        document.getElementById('bankTipo').value = account.tipo || 'corrente';
+        document.getElementById('bankSaldoInicial').value = account.saldoInicial ? fmt(account.saldoInicial) : '';
+        document.getElementById('bankChavePix').value = account.chavePix || '';
+        document.getElementById('bankStatus').value = account.status || 'ativa';
+        document.getElementById('bankPrincipal').checked = !!account.principal;
+        document.getElementById('bankObs').value = account.observacoes || '';
+      }
+      document.getElementById('bankAccountOverlay').classList.add('open');
+      setTimeout(() => document.getElementById('bankNome')?.focus(), 80);
+    }
+
+    function closeBankAccountModal() {
+      document.getElementById('bankAccountOverlay').classList.remove('open');
+    }
+
+    async function saveBankAccount() {
+      const nome = document.getElementById('bankNome').value.trim();
+      if (!nome) {
+        showToast('Informe o nome da conta bancaria.', 'warning');
+        return;
+      }
+      const payload = {
+        nome,
+        banco: document.getElementById('bankBanco').value.trim(),
+        agencia: document.getElementById('bankAgencia').value.trim(),
+        conta: document.getElementById('bankConta').value.trim(),
+        tipo: document.getElementById('bankTipo').value,
+        chavePix: document.getElementById('bankChavePix').value.trim(),
+        saldoInicial: parseBankMoney(document.getElementById('bankSaldoInicial').value),
+        principal: document.getElementById('bankPrincipal').checked,
+        status: document.getElementById('bankStatus').value,
+        observacoes: document.getElementById('bankObs').value.trim(),
+      };
+      const btn = document.getElementById('btnSaveBankAccount');
+      const old = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="bi bi-arrow-repeat"></i> Salvando...';
+      try {
+        const endpoint = editingBankAccountId ? `/contas-bancarias/${editingBankAccountId}` : '/contas-bancarias';
+        const res = await NexoAuth.apiFetch(endpoint, {
+          method: editingBankAccountId ? 'PUT' : 'POST',
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          showToast(res.message || 'Erro ao salvar conta bancaria.', 'error');
+          return;
+        }
+        closeBankAccountModal();
+        await loadBankAccounts(false);
+        showToast('Conta bancaria salva com sucesso.', 'success');
+      } catch (_) {
+        showToast('Erro ao salvar conta bancaria.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = old;
+      }
+    }
+
+    async function deactivateBankAccount(id) {
+      if (!confirm('Inativar esta conta bancaria?')) return;
+      const res = await NexoAuth.apiFetch(`/contas-bancarias/${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        showToast(res.message || 'Erro ao inativar conta bancaria.', 'error');
+        return;
+      }
+      await loadBankAccounts(false);
+      showToast('Conta bancaria inativada.', 'success');
+    }
+
     let maisOpen = false;
 
     function switchTab(el, panelId, title, desc) {
@@ -3207,6 +3521,7 @@ transition: border-color .15s;
       if (panelId === 'movimentacoes') { movimPage = 1; loadMovimPage(1, false); }
       if (panelId === 'fluxo-caixa') renderChartFluxo();
       if (panelId === 'centro-custo') { renderCustosKPIs(); renderCustosDonut(); loadCustosPage(1, true); }
+      if (panelId === 'contas-bancarias') loadBankAccounts(true);
       if (panelId === 'dre') renderDRE();
     }
 
@@ -3220,6 +3535,7 @@ transition: border-color .15s;
       document.getElementById('topbarSub').textContent = title;
       closeMais();
       if (panelId === 'centro-custo') { renderCustosKPIs(); renderCustosDonut(); loadCustosPage(1, true); }
+      if (panelId === 'contas-bancarias') loadBankAccounts(true);
       if (panelId === 'dre') renderDRE();
     }
 
@@ -3628,6 +3944,7 @@ transition: border-color .15s;
       await loadFinDetailPage('pagar', 1, false, false);
       await loadFinDetailPage('receber', 1, false, false);
       await loadCustosPage(1, false, false);
+      await loadBankAccounts(false);
 
       NexoAuth.renderCurrentUser();
       renderKPIs();
