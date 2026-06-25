@@ -680,6 +680,11 @@ font-size: 14px;
     .bank-status.inativa { background:rgba(107,127,150,.12); color:var(--muted); }
     .bank-check-row { min-height:42px; display:flex; align-items:center; gap:9px; padding:10px 12px; border:1px solid var(--border); border-radius:12px; background:rgba(255,255,255,.025); color:var(--text); font-size:12px; font-weight:650; cursor:pointer; }
     .bank-check-row input { width:16px; height:16px; accent-color:var(--accent); }
+    .conc-filter { min-height:34px; width:auto; min-width:132px; padding:6px 10px; border-radius:10px; font-size:12px; }
+    .card-conc-sale { display:flex; flex-direction:column; gap:3px; min-width:160px; }
+    .card-conc-sale strong { color:var(--text); font-size:13px; }
+    .card-conc-sale span { color:var(--muted); font-size:11px; }
+    .card-conc-check { width:16px; height:16px; accent-color:var(--accent); }
 
     .tipo-toggle {
       display: flex;
@@ -1994,7 +1999,53 @@ transition: border-color .15s;
 
       <!-- Conciliação -->
       <div class="fin-panel" id="panel-conciliacao">
-        <div class="empty-state show u-mt-40" >
+        <div class="bank-summary-grid u-mt-20">
+          <div class="bank-kpi-card"><span>A receber cartao</span><strong id="cardConcKpiAberto">R$ 0,00</strong></div>
+          <div class="bank-kpi-card"><span>Liquido previsto</span><strong id="cardConcKpiLiquido">R$ 0,00</strong></div>
+          <div class="bank-kpi-card"><span>Taxas previstas</span><strong id="cardConcKpiTaxas">R$ 0,00</strong></div>
+        </div>
+        <div class="card u-mt-20 fin-detail-card">
+          <div class="table-header">
+            <div class="table-header-title"><i class="bi bi-credit-card-2-front" style="color:var(--accent);margin-right:6px"></i>Conciliação de Cartões</div>
+            <div class="table-actions">
+              <select class="field conc-filter" id="cardConcStatus" onchange="loadCardConciliation(true)">
+                <option value="abertos">Abertos</option>
+                <option value="recebidos">Recebidos</option>
+                <option value="conciliados">Conciliados</option>
+                <option value="todos">Todos</option>
+              </select>
+              <select class="field conc-filter" id="cardConcForma" onchange="loadCardConciliation(true)">
+                <option value="">Todos cartões</option>
+                <option value="cartao_debito">Débito</option>
+                <option value="cartao_credito">Crédito</option>
+              </select>
+              <button class="btn-sm btn-ghost-sm" onclick="loadCardConciliation(true)"><i class="bi bi-arrow-clockwise"></i> Atualizar</button>
+              <button class="btn-sm btn-receber-sm" onclick="receiveSelectedCards()"><i class="bi bi-check2"></i> Receber selecionados</button>
+              <button class="btn-sm btn-ghost-sm" onclick="conciliateSelectedCards()"><i class="bi bi-check2-all"></i> Conciliar</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="fin-table">
+              <thead>
+                <tr>
+                  <th><input type="checkbox" id="cardConcCheckAll" onchange="toggleCardConcAll(this.checked)"></th>
+                  <th>Vencimento</th>
+                  <th>Venda / Adquirente</th>
+                  <th>Bandeira</th>
+                  <th>Parcela</th>
+                  <th>Bruto</th>
+                  <th>Taxa</th>
+                  <th>Liquido</th>
+                  <th>Status</th>
+                  <th>Acoes</th>
+                </tr>
+              </thead>
+              <tbody id="tblCardConciliation"></tbody>
+            </table>
+          </div>
+          <div class="table-footer fin-detail-footer"><span id="cardConcInfo">-</span></div>
+        </div>
+        <div class="empty-state show u-mt-40" style="display:none" >
           <i class="bi bi-check2-all"></i>
           <h3>Conciliação Bancária</h3>
           <p>Módulo de conciliação em desenvolvimento. Em breve disponível.</p>
@@ -3504,6 +3555,264 @@ transition: border-color .15s;
       showToast('Conta bancaria inativada.', 'success');
     }
 
+    let cardConciliationRows = [];
+    let selectedCardConciliationIds = new Set();
+
+    function isCardPaymentRow(item) {
+      return ['cartao_debito', 'cartao_credito'].includes(String(item?.formaPagamento || '').toLowerCase());
+    }
+
+    function getCardMoney(item, fields, fallback = 0) {
+      for (const field of fields) {
+        const value = Number(item?.[field]);
+        if (Number.isFinite(value) && value > 0) return value;
+      }
+      return fallback;
+    }
+
+    function getCardGross(item) {
+      return getCardMoney(item, ['valorBruto', 'valor_bruto', 'valor'], Number(item?.valor) || 0);
+    }
+
+    function getCardFee(item) {
+      return getCardMoney(item, ['valorTaxa', 'valor_taxa'], 0);
+    }
+
+    function getCardNet(item) {
+      const gross = getCardGross(item);
+      const fee = getCardFee(item);
+      return getCardMoney(item, ['valorLiquidoPrevisto', 'valor_liquido_previsto', 'valorLiquido', 'valor_liquido'], Math.max(gross - fee, 0));
+    }
+
+    function formatCardDate(raw) {
+      if (!raw) return '-';
+      const value = String(raw);
+      const d = new Date(value.includes('/') ? value.split('/').reverse().join('-') + 'T00:00:00' : value);
+      return isNaN(d.getTime()) ? value : d.toLocaleDateString('pt-BR');
+    }
+
+    function cardBankName(id) {
+      if (!id) return '-';
+      const account = bankAccounts.find(c => c.id === id);
+      return account?.nome || id;
+    }
+
+    function isCardConciliationSelectable(item) {
+      const status = String(item?.status || '').toLowerCase();
+      return !['conciliado', 'cancelado', 'estornado'].includes(status);
+    }
+
+    function buildCardConciliationQuery() {
+      const params = new URLSearchParams();
+      params.set('tipo', 'receita');
+      params.set('page', '1');
+      params.set('limit', '100');
+
+      const forma = document.getElementById('cardConcForma')?.value || '';
+      params.set('formaPagamento', forma || 'cartao');
+
+      const status = document.getElementById('cardConcStatus')?.value || 'abertos';
+      if (status === 'abertos') params.set('excludeStatus', 'pago,recebido,conciliado,cancelado,estornado');
+      if (status === 'recebidos') params.set('statusIn', 'pago,recebido');
+      if (status === 'conciliados') params.set('status', 'conciliado');
+      if (status === 'todos') params.set('excludeStatus', 'cancelado,estornado');
+
+      return params.toString();
+    }
+
+    async function loadCardConciliation(showLoading = false) {
+      const body = document.getElementById('tblCardConciliation');
+      if (!body) return;
+      if (showLoading) body.innerHTML = NexoSkeleton.tableRows(6, 10);
+
+      if (!bankAccounts.length) await loadBankAccounts(false);
+
+      try {
+        const res = await NexoAuth.apiFetch('/financeiro?' + buildCardConciliationQuery());
+        if (!res.ok) {
+          showToast(res.message || 'Erro ao carregar conciliacao de cartoes.', 'error');
+          cardConciliationRows = [];
+          renderCardConciliation();
+          return;
+        }
+        cardConciliationRows = (res.data || []).filter(isCardPaymentRow);
+        selectedCardConciliationIds = new Set();
+        renderCardConciliation();
+      } catch (_) {
+        showToast('Erro ao carregar conciliacao de cartoes.', 'error');
+        cardConciliationRows = [];
+        renderCardConciliation();
+      }
+    }
+
+    function renderCardConciliation() {
+      const body = document.getElementById('tblCardConciliation');
+      if (!body) return;
+
+      const openRows = cardConciliationRows.filter(item => !isStatusFinalizado(item.status));
+      const totalGross = openRows.reduce((sum, item) => sum + getCardGross(item), 0);
+      const totalNet = openRows.reduce((sum, item) => sum + getCardNet(item), 0);
+      const totalFee = openRows.reduce((sum, item) => sum + getCardFee(item), 0);
+
+      document.getElementById('cardConcKpiAberto').textContent = `R$ ${fmt(totalGross)}`;
+      document.getElementById('cardConcKpiLiquido').textContent = `R$ ${fmt(totalNet)}`;
+      document.getElementById('cardConcKpiTaxas').textContent = `R$ ${fmt(totalFee)}`;
+      document.getElementById('cardConcInfo').textContent = `${cardConciliationRows.length} lancamento${cardConciliationRows.length !== 1 ? 's' : ''} de cartao`;
+
+      const selectableRows = cardConciliationRows.filter(isCardConciliationSelectable);
+      const checkAll = document.getElementById('cardConcCheckAll');
+      if (checkAll) {
+        checkAll.checked = selectableRows.length > 0 && selectedCardConciliationIds.size === selectableRows.length;
+        checkAll.indeterminate = selectedCardConciliationIds.size > 0 && selectedCardConciliationIds.size < selectableRows.length;
+        checkAll.disabled = selectableRows.length === 0;
+      }
+
+      if (!cardConciliationRows.length) {
+        body.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:24px">Nenhum recebivel de cartao encontrado.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = cardConciliationRows.map(item => {
+        const id = item.id;
+        const gross = getCardGross(item);
+        const fee = getCardFee(item);
+        const net = getCardNet(item);
+        const taxPercent = Number(item.taxaPercentual || item.taxa_percentual || 0);
+        const parcelas = Number(item.parcelasCartao || item.parcelas_cartao || 1);
+        const parcela = Number(item.parcelaNumero || item.parcela_numero || 1);
+        const status = String(item.status || 'avencer').toLowerCase();
+        const selectable = isCardConciliationSelectable(item);
+        const canReceive = !isStatusRecebido(status);
+        const canConciliate = status !== 'conciliado' && !['cancelado', 'estornado'].includes(status);
+        const saleLabel = item.vendaId ? `Venda ${String(item.vendaId).slice(-8)}` : (item.descricao || 'Venda no cartao');
+        const acquiring = [item.adquirenteCartao || item.adquirente || item.maquininhaNome, item.terminalId]
+          .filter(Boolean)
+          .join(' / ');
+        return `
+          <tr>
+            <td><input class="card-conc-check" type="checkbox" ${selectedCardConciliationIds.has(id) ? 'checked' : ''} ${selectable ? '' : 'disabled'} onchange="toggleCardConcItem('${id}', this.checked)"></td>
+            <td>${escapeHTML(formatCardDate(item.vencimento || item.data))}</td>
+            <td>
+              <div class="card-conc-sale">
+                <strong>${escapeHTML(saleLabel)}</strong>
+                <span>${escapeHTML(acquiring || 'Adquirente nao informada')}</span>
+                <span>${escapeHTML(cardBankName(item.contaBancariaId))}</span>
+              </div>
+            </td>
+            <td>${escapeHTML(item.bandeiraCartao || item.bandeira || '-')}</td>
+            <td>${parcelas > 1 ? `${parcela}/${parcelas}` : '-'}</td>
+            <td class="val-positivo">R$ ${fmt(gross)}</td>
+            <td>R$ ${fmt(fee)}${taxPercent ? ` <span class="u-muted">(${fmt(taxPercent)}%)</span>` : ''}</td>
+            <td class="val-positivo">R$ ${fmt(net)}</td>
+            <td>${pillHtml(status)}</td>
+            <td>
+              <div class="bank-actions">
+                ${canReceive ? `<button class="btn-sm btn-receber-sm" onclick="receiveCard('${id}')"><i class="bi bi-check2"></i> Receber</button>` : ''}
+                ${canConciliate ? `<button class="btn-sm btn-ghost-sm" onclick="conciliateCard('${id}')"><i class="bi bi-check2-all"></i> Conciliar</button>` : ''}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function toggleCardConcAll(checked) {
+      selectedCardConciliationIds = checked
+        ? new Set(cardConciliationRows.filter(isCardConciliationSelectable).map(item => item.id))
+        : new Set();
+      renderCardConciliation();
+    }
+
+    function toggleCardConcItem(id, checked) {
+      if (checked) selectedCardConciliationIds.add(id);
+      else selectedCardConciliationIds.delete(id);
+      renderCardConciliation();
+    }
+
+    function selectedCardConciliationList() {
+      const ids = Array.from(selectedCardConciliationIds);
+      if (!ids.length) showToast('Selecione ao menos um recebivel de cartao.', 'warning');
+      return ids;
+    }
+
+    async function refreshFinanceAfterCardConciliation() {
+      await loadCardConciliation(false);
+      await loadFinDetailPage('receber', receberDetalhePage, false, false);
+      await loadMovimPage(movimPage, false, false);
+      renderKPIs();
+      renderDonut();
+      renderTabelas();
+    }
+
+    async function updateCardConciliationStatus(ids, status) {
+      const today = new Date().toISOString();
+      for (const id of ids) {
+        const current = cardConciliationRows.find(item => item.id === id) || {};
+        const payload = status === 'conciliado'
+          ? { status, pagoEm: current.pagoEm || today, recebidoEm: current.recebidoEm || current.pagoEm || today, conciliadoEm: today }
+          : { status, pagoEm: today, recebidoEm: today };
+        const res = await NexoAuth.apiFetch(`/financeiro/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error(res.message || 'Erro ao atualizar recebivel de cartao.');
+      }
+      selectedCardConciliationIds = new Set();
+      await refreshFinanceAfterCardConciliation();
+    }
+
+    async function receiveSelectedCards() {
+      const ids = selectedCardConciliationList().filter(id => {
+        const item = cardConciliationRows.find(row => row.id === id);
+        return item && !isStatusRecebido(item.status);
+      });
+      if (!ids.length) {
+        showToast('Os recebiveis selecionados ja estao recebidos.', 'warning');
+        return;
+      }
+      try {
+        await updateCardConciliationStatus(ids, 'recebido');
+        showToast('Recebiveis de cartao marcados como recebidos.', 'success');
+      } catch (err) {
+        showToast(err.message || 'Erro ao receber cartoes.', 'error');
+      }
+    }
+
+    async function conciliateSelectedCards() {
+      const ids = selectedCardConciliationList().filter(id => {
+        const item = cardConciliationRows.find(row => row.id === id);
+        return item && isCardConciliationSelectable(item);
+      });
+      if (!ids.length) {
+        showToast('Os recebiveis selecionados ja estao conciliados.', 'warning');
+        return;
+      }
+      try {
+        await updateCardConciliationStatus(ids, 'conciliado');
+        showToast('Recebiveis de cartao conciliados.', 'success');
+      } catch (err) {
+        showToast(err.message || 'Erro ao conciliar cartoes.', 'error');
+      }
+    }
+
+    async function receiveCard(id) {
+      try {
+        await updateCardConciliationStatus([id], 'recebido');
+        showToast('Recebivel de cartao recebido.', 'success');
+      } catch (err) {
+        showToast(err.message || 'Erro ao receber cartao.', 'error');
+      }
+    }
+
+    async function conciliateCard(id) {
+      try {
+        await updateCardConciliationStatus([id], 'conciliado');
+        showToast('Recebivel de cartao conciliado.', 'success');
+      } catch (err) {
+        showToast(err.message || 'Erro ao conciliar cartao.', 'error');
+      }
+    }
+
     let maisOpen = false;
 
     function switchTab(el, panelId, title, desc) {
@@ -3522,6 +3831,7 @@ transition: border-color .15s;
       if (panelId === 'fluxo-caixa') renderChartFluxo();
       if (panelId === 'centro-custo') { renderCustosKPIs(); renderCustosDonut(); loadCustosPage(1, true); }
       if (panelId === 'contas-bancarias') loadBankAccounts(true);
+      if (panelId === 'conciliacao') loadCardConciliation(true);
       if (panelId === 'dre') renderDRE();
     }
 
@@ -3536,6 +3846,7 @@ transition: border-color .15s;
       closeMais();
       if (panelId === 'centro-custo') { renderCustosKPIs(); renderCustosDonut(); loadCustosPage(1, true); }
       if (panelId === 'contas-bancarias') loadBankAccounts(true);
+      if (panelId === 'conciliacao') loadCardConciliation(true);
       if (panelId === 'dre') renderDRE();
     }
 
