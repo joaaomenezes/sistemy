@@ -23,8 +23,8 @@ O ponto mais importante: varias telas ja funcionam com backend real, mas o siste
 ## Principais riscos
 
 1. Dinheiro em `Float` no Prisma pode causar diferencas de centavos em vendas, taxas, caixa e DRE.
-2. Venda nao possui `caixaId` no model `Venda`; o vinculo do turno fica principalmente nos lancamentos financeiros.
-3. Caixa atual usa `todayStats` calculado no frontend e historico por operador/data, com risco de confusao entre turno atual e vendas antigas.
+2. Venda agora possui `caixaId` no model `Venda`.
+3. Backend calcula resumo oficial do caixa por `caixaId` e o frontend do PDV ja renderiza o fechamento usando esse endpoint.
 4. CORS permite qualquer origem em producao.
 5. Login nao tinha rate limit no backend. **Corrigido em 2026-06-26.**
 6. Dashboard considera apenas status `pago` em muitos pontos e ignora `recebido`/`conciliado`.
@@ -72,17 +72,20 @@ Criar migracao planejada de `Float` para `Decimal(12,2)` ou `Decimal(14,4)` conf
 - `C:\Users\Joao Pedro\Desktop\sistemy\pdv\pdv.js`
 - `C:\Users\Joao Pedro\Desktop\sistemy\pdv\pdv-cash-register.js`
 
-**O que foi encontrado:**
-O schema `Venda` nao possui `caixaId`. O frontend envia `caixaId` no payload, mas a rota remove esse campo antes de criar a venda. O `caixaId` fica nos lancamentos financeiros criados pela venda.
+**O que foi encontrado originalmente:**
+O schema `Venda` nao possuia `caixaId`. O frontend enviava `caixaId` no payload, mas a rota removia esse campo antes de criar a venda. O `caixaId` ficava apenas nos lancamentos financeiros criados pela venda.
+
+**Status atual apos correcoes:**
+A rota de vendas agora valida que venda PDV tenha `caixaId` no payload, confirma que esse caixa esteja aberto para o operador autenticado e persiste `caixaId` no model `Venda`.
 
 **Impacto:**
-Relatorios e fechamento de caixa ficam dependentes de lancamentos e do estado do frontend. Isso dificulta responder com seguranca: "quais vendas pertencem a este turno?".
+O risco principal foi reduzido, porque agora a venda tambem aponta para o caixa, o backend possui resumo oficial por `caixaId` e o frontend do PDV renderiza o fechamento usando esse endpoint.
 
 **Como deveria funcionar:**
 Cada venda de PDV deve ter `caixaId` obrigatorio quando a regra exige caixa aberto. Os lancamentos financeiros tambem devem apontar para o mesmo `caixaId`.
 
 **Como corrigir:**
-Adicionar `caixaId` no model `Venda`, validar caixa aberto no backend antes de aceitar venda PDV e calcular fechamento por `caixaId`, nao por data nem memoria local.
+A validacao de caixa aberto, a persistencia de `caixaId` no model `Venda`, o endpoint de resumo oficial e a integracao do frontend do PDV ja foram aplicados em 2026-06-26.
 
 **Status recomendado:** Corrigir antes de producao real.
 
@@ -102,6 +105,9 @@ Adicionar `caixaId` no model `Venda`, validar caixa aberto no backend antes de a
 **O que foi encontrado:**
 O fechamento usa `todayStats` e `salesHistory` do frontend para mostrar resumo e enviar `totalVendas`. O backend de caixas nao calcula o total oficial a partir das vendas/lancamentos do turno.
 
+**Status atual apos correcoes:**
+O backend agora expoe `GET /api/caixas/:id/resumo`, ao fechar caixa recalcula `totalVendas` no backend, e o frontend do PDV renderiza o modal/fechamento usando esse resumo oficial em vez de depender apenas de `todayStats`.
+
 **Impacto:**
 Se a tela travar, recarregar, abrir em outro navegador ou houver venda antiga no cache, o fechamento pode exibir valor incorreto.
 
@@ -109,7 +115,7 @@ Se a tela travar, recarregar, abrir em outro navegador ou houver venda antiga no
 O backend deve expor resumo oficial do caixa: dinheiro, Pix, debito, credito, fiado, voucher, sangrias, suprimentos, total vendido, dinheiro esperado.
 
 **Como corrigir:**
-Criar `GET /api/caixas/:id/resumo` calculando por `caixaId`. O frontend apenas renderiza esse resumo.
+Concluido em 2026-06-26: frontend integrado ao `GET /api/caixas/:id/resumo`, mantendo fallback local apenas em caso de falha da API.
 
 **Status recomendado:** Corrigir antes de cliente real.
 
@@ -338,13 +344,14 @@ Continuar extracao gradual, com validacao por pagina e sem refatorar regra de ne
 
 **Parcial/incompleto:**
 - Fechamento depende de resumo do frontend.
-- Venda nao tem `caixaId` no model `Venda`.
-- Caixa nao tem resumo oficial por endpoint.
+- Venda tem `caixaId` no model `Venda`.
+- Caixa tem resumo oficial por endpoint.
+- Tela do caixa usa resumo oficial da API para renderizar fechamento.
 - Voucher/vale ainda nao possuem regra especifica de operadora/recebivel.
 - Split funciona melhor que antes, mas precisa teste completo com Pix + cartao + dinheiro.
 - Suspensao de carrinho e estado pendente de Pix usam localStorage.
 
-**Risco principal:** caixa e turno precisam ser fechados pelo backend com `caixaId`.
+**Risco principal:** ainda faltam testes automatizados do fluxo completo de caixa.
 
 ### Fiado / Contas a receber
 
@@ -509,8 +516,10 @@ Continuar extracao gradual, com validacao por pagina e sem refatorar regra de ne
 ## Checklist final para producao
 
 - [ ] Migrar dinheiro de `Float` para `Decimal`.
-- [ ] Adicionar `caixaId` em `Venda`.
-- [ ] Fechamento de caixa calculado no backend.
+- [x] Adicionar `caixaId` em `Venda`.
+- [x] Validar caixa aberto no backend antes de aceitar venda PDV.
+- [x] Fechamento de caixa calculado no backend.
+- [x] Frontend do PDV renderiza fechamento pelo resumo oficial da API.
 - [ ] Dashboard corrigido para `pago/recebido/conciliado`.
 - [x] CORS por allowlist.
 - [x] Rate limit backend.
@@ -589,6 +598,123 @@ Reduz risco de forca bruta diretamente contra a API, que antes podia ignorar o b
 - Em producao com multiplas instancias, trocar rate limit em memoria por Redis ou store externo.
 - Implementar confirmacao de email.
 - Melhorar politica minima de senha.
+
+### 2026-06-26 - Validacao de caixa aberto na venda PDV
+
+**Prioridade original:** Critico
+**Modulo:** PDV / Caixa / Vendas
+**Status:** Concluido
+
+**O que foi feito:**
+A rota de vendas passou a exigir `caixaId` quando a venda for do tipo PDV. Dentro da transacao, a API confirma se o caixa existe, pertence a mesma empresa, pertence ao operador autenticado e esta aberto. A venda PDV tambem passa a forcar `operadorId` a partir do usuario autenticado.
+
+**Arquivos alterados:**
+- `src/routes/vendas.js`
+- `docs/auditoria-producao/ROADMAP_CORRECOES.md`
+- `docs/auditoria-producao/CHECKLIST_PRODUCAO.md`
+- `docs/auditoria-producao/PENDENCIAS_MODULOS.md`
+- `docs/auditoria-producao/RELATORIO_AUDITORIA_PRODUCAO.md`
+
+**Impacto:**
+Reduz o risco de o PDV registrar venda sem turno aberto ou usando caixa de outro operador. Isso protege o fluxo minimo de caixa antes de avancar para fechamento oficial por `caixaId`.
+
+**Validacao realizada:**
+- `node --check src/routes/vendas.js`
+- `node -e "require('./src/app'); console.log('app-load-ok')"`
+- Teste HTTP local em `/api/vendas` com venda PDV sem `caixaId`, confirmando retorno 409 com mensagem para abrir o caixa antes da venda.
+
+**Pendencias restantes:**
+- Criar teste automatizado cobrindo venda PDV com caixa aberto, caixa fechado e caixa de outro operador.
+
+### 2026-06-26 - `caixaId` persistido no model `Venda`
+
+**Prioridade original:** Critico
+**Modulo:** Banco / PDV / Caixa / Vendas
+**Status:** Concluido
+
+**O que foi feito:**
+Foi criado o campo `caixaId` no model `Venda`, com relacao opcional para `Caixa` e indice por `empresaId` + `caixaId`. A rota de vendas deixou de remover `caixaId` antes de criar a venda, entao vendas PDV validadas agora ficam vinculadas diretamente ao turno/caixa.
+
+**Arquivos alterados:**
+- `prisma/schema.prisma`
+- `prisma/migrations/20260626140000_add_caixa_id_to_vendas/migration.sql`
+- `src/routes/vendas.js`
+- `docs/auditoria-producao/ROADMAP_CORRECOES.md`
+- `docs/auditoria-producao/CHECKLIST_PRODUCAO.md`
+- `docs/auditoria-producao/PENDENCIAS_MODULOS.md`
+- `docs/auditoria-producao/RELATORIO_AUDITORIA_PRODUCAO.md`
+
+**Impacto:**
+O sistema passa a responder com mais seguranca quais vendas pertencem a cada caixa. Isso prepara o proximo passo: fechamento oficial calculado no backend por `caixaId`.
+
+**Validacao realizada:**
+- `npx prisma generate`
+- `npx prisma migrate deploy`
+- `npx prisma validate`
+- `node --check src/routes/vendas.js`
+- `node -e "require('./src/app'); console.log('app-load-ok')"`
+
+**Observacao de ambiente:**
+A migration foi aplicada com sucesso no Neon. Uma consulta direta via Prisma Client para ler uma venda encontrou erro TLS local do Windows/Neon, o mesmo tipo de erro ja observado antes neste ambiente; por isso a validacao final ficou concentrada em schema, migration e carregamento da API.
+
+**Pendencias restantes:**
+- Criar testes automatizados para venda PDV com caixa aberto, caixa fechado e caixa de outro operador.
+
+### 2026-06-26 - Resumo oficial de caixa por `caixaId`
+
+**Prioridade original:** Alto
+**Modulo:** PDV / Caixa / Financeiro
+**Status:** Concluido
+
+**O que foi feito:**
+Foi criado o endpoint `GET /api/caixas/:id/resumo`, calculando o resumo oficial do caixa a partir de vendas e lancamentos vinculados ao `caixaId`. O resumo retorna total vendido, quantidade de vendas, ticket medio, estornos, formas de pagamento, taxas previstas de cartao, valores a receber, sangrias, suprimentos e dinheiro esperado no caixa.
+
+Ao fechar caixa via `PUT /api/caixas/:id` com `aberto:false`, o backend passa a recalcular e gravar `totalVendas` pelo resumo oficial, sem confiar no valor enviado pelo frontend.
+
+**Arquivos alterados:**
+- `src/routes/caixas.js`
+- `docs/auditoria-producao/ROADMAP_CORRECOES.md`
+- `docs/auditoria-producao/CHECKLIST_PRODUCAO.md`
+- `docs/auditoria-producao/PENDENCIAS_MODULOS.md`
+- `docs/auditoria-producao/RELATORIO_AUDITORIA_PRODUCAO.md`
+
+**Impacto:**
+O fechamento passa a ter uma fonte oficial no backend, baseada no banco, reduzindo o risco de erro causado por cache, recarregamento da pagina, `todayStats` local ou vendas antigas em memoria.
+
+**Validacao realizada:**
+- `node --check src/routes/caixas.js`
+- `node -e "require('./src/app'); console.log('app-load-ok')"`
+
+**Pendencias restantes:**
+- Criar testes automatizados para o resumo com dinheiro, Pix, cartao, fiado, sangria, suprimento e estorno.
+
+### 2026-06-26 - Frontend do PDV integrado ao resumo oficial de caixa
+
+**Prioridade original:** Alto
+**Modulo:** PDV / Caixa
+**Status:** Concluido
+
+**O que foi feito:**
+O arquivo `pdv/pdv-cash-register.js` passou a carregar `GET /api/caixas/:id/resumo` quando encontra caixa aberto e quando abre o modal do caixa. O modal de gerenciamento e a tela de fechamento agora renderizam total vendido, formas de pagamento, sangrias, suprimentos, estornos, ticket medio e dinheiro esperado a partir do resumo oficial da API.
+
+Ao confirmar o fechamento, o frontend nao envia mais `totalVendas` calculado localmente. O backend recalcula e retorna o resumo final, usado tambem na mensagem de sucesso do fechamento.
+
+**Arquivos alterados:**
+- `pdv/pdv-cash-register.js`
+- `docs/auditoria-producao/ROADMAP_CORRECOES.md`
+- `docs/auditoria-producao/CHECKLIST_PRODUCAO.md`
+- `docs/auditoria-producao/PENDENCIAS_MODULOS.md`
+- `docs/auditoria-producao/RELATORIO_AUDITORIA_PRODUCAO.md`
+
+**Impacto:**
+Reduz o risco de fechamento errado por reload da pagina, cache local ou `todayStats` antigo. O resumo local permanece apenas como fallback se a API nao responder.
+
+**Validacao realizada:**
+- `node --check pdv/pdv-cash-register.js`
+
+**Pendencias restantes:**
+- Teste manual completo no navegador com abrir caixa, vender, registrar sangria/suprimento e fechar.
+- Criar testes automatizados para o fluxo de caixa.
 
 ## Recomendacao final
 

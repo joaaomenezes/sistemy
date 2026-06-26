@@ -70,10 +70,10 @@ Criar endpoint dedicado `/produtos/pdv?q=&cat=&page=&limit=` com campos minimos,
 **Funcao/trecho:** `renderCaixaAberto()` e `renderFechamentoCaixa()`.
 
 **Por que causa lentidao/risco:**
-Usa `todayStats` e `salesHistory`, recalculando e renderizando no modal. O problema principal e confiabilidade, nao so performance.
+Originalmente usava `todayStats` e `salesHistory`, recalculando e renderizando no modal. O problema principal era confiabilidade, nao so performance.
 
-**Como corrigir:**
-Endpoint backend de resumo por caixa.
+**Status atual:**
+Corrigido em 2026-06-26. O backend possui `GET /api/caixas/:id/resumo` e o PDV renderiza o modal/fechamento com esse resumo oficial, mantendo resumo local apenas como fallback.
 
 ## Problema: Financeiro concentra muitos submodulos
 
@@ -138,12 +138,10 @@ Filtros por empresa, data, status, cliente e venda ficarao pesados com muitos re
 
 ## Ordem de correcao recomendada
 
-1. Criar endpoint de resumo oficial do caixa.
-2. Criar endpoint de produtos do PDV com busca/paginacao.
-3. Criar endpoints-resumo do dashboard.
-4. Migrar relatorios pesados para backend.
-5. Debounce nas buscas.
-6. Quebrar `financeiro.html`.
-7. Quebrar `pdv.css`.
-8. Criar indices.
-
+1. Criar endpoint de produtos do PDV com busca/paginacao.
+2. Criar endpoints-resumo do dashboard.
+3. Migrar relatorios pesados para backend.
+4. Debounce nas buscas.
+5. Quebrar `financeiro.html`.
+6. Quebrar `pdv.css`.
+7. Criar indices.

@@ -21,9 +21,28 @@
 - [ ] Implementar confirmacao de email ou, no minimo, bloquear uso oficial sem verificacao.
 - [ ] Padronizar status financeiro: `pago`, `recebido`, `conciliado`, `avencer`, `cancelado`, `estornado`.
 - [ ] Corrigir dashboard para considerar `recebido` e `conciliado`.
-- [ ] Adicionar `caixaId` no model `Venda`.
-- [ ] Validar caixa aberto no backend antes de aceitar venda PDV.
-- [ ] Criar endpoint oficial de resumo de caixa por `caixaId`.
+- [x] Adicionar `caixaId` no model `Venda`.
+  - Concluido em: 2026-06-26
+  - Arquivos alterados:
+    - `prisma/schema.prisma`
+    - `prisma/migrations/20260626140000_add_caixa_id_to_vendas/migration.sql`
+    - `src/routes/vendas.js`
+  - Observacao: venda agora persiste `caixaId` e possui relacao opcional com `Caixa`; migration aplicada com `prisma migrate deploy`.
+- [x] Validar caixa aberto no backend antes de aceitar venda PDV.
+  - Concluido em: 2026-06-26
+  - Arquivos alterados:
+    - `src/routes/vendas.js`
+  - Observacao: venda PDV agora exige `caixaId` no payload e caixa aberto do operador autenticado. Pedido continua sem depender de caixa.
+- [x] Criar endpoint oficial de resumo de caixa por `caixaId`.
+  - Concluido em: 2026-06-26
+  - Arquivos alterados:
+    - `src/routes/caixas.js`
+  - Observacao: `GET /api/caixas/:id/resumo` calcula vendas, formas de pagamento, sangrias, suprimentos e dinheiro esperado. Fechamento passa a gravar `totalVendas` calculado pelo backend.
+- [x] Integrar frontend do PDV ao resumo oficial de caixa.
+  - Concluido em: 2026-06-26
+  - Arquivos alterados:
+    - `pdv/pdv-cash-register.js`
+  - Observacao: modal e fechamento do caixa usam `GET /api/caixas/:id/resumo`, com fallback local se a API falhar.
 - [ ] Migrar valores monetarios de `Float` para `Decimal` ou planejar essa migracao antes de dados reais.
 - [ ] Validar limite de credito no backend para venda fiado.
 - [ ] Validar assinatura/origem de webhooks Mercado Pago.

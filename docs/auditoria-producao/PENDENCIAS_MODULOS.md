@@ -8,16 +8,18 @@
 - Cartao gera contas a receber.
 - Fiado gera conta a receber.
 - Estorno devolve estoque e estorna financeiro.
+- Backend bloqueia venda PDV sem caixa aberto do operador autenticado.
+- Venda PDV persiste `caixaId` no model `Venda`.
+- Backend possui resumo oficial de caixa por `caixaId`.
+- Tela do caixa usa o resumo oficial da API para renderizar fechamento.
 
 **Parcial:**
 - Split precisa bateria de testes.
-- Caixa depende de resumo local.
+- Resumo local permanece apenas como fallback se a API falhar.
 - Voucher/vale sem regra de operadora.
 - Suspensao/pendencia Pix usa localStorage.
 
 **Falta backend/banco:**
-- `Venda.caixaId`.
-- Resumo oficial de caixa.
 - Validacao backend de limite de credito.
 - Auditoria de operador por acao.
 

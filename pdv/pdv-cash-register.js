@@ -4,11 +4,15 @@
     let caixaState = null;
     let caixaStatusLoaded = false;
     let caixaTab = 'sangria';
+    let caixaResumoState = null;
 
     async function loadCaixa() {
       try {
         const r = await NexoAuth.apiFetch('/caixas/aberto');
-        if (r.ok) caixaState = r.data;
+        if (r.ok) {
+          caixaState = r.data;
+          await loadCaixaResumo();
+        }
       } catch (_) { }
       finally { caixaStatusLoaded = true; }
     }
@@ -25,6 +29,65 @@
         btn.disabled = previousDisabled;
         btn.innerHTML = previousHtml;
       };
+    }
+
+    function _emptyPaymentSummary() {
+      return { count: 0, total: 0 };
+    }
+
+    function buildLocalCaixaResumo() {
+      const movs = caixaState?.movimentos || [];
+      const totalSang = movs.filter(m => m.tipo === 'Sangria').reduce((s, m) => s + Number(m.valor || 0), 0);
+      const totalSup = movs.filter(m => m.tipo === 'Suprimento').reduce((s, m) => s + Number(m.valor || 0), 0);
+      const formas = todayStats.formas || {};
+      const dinheiro = formas.dinheiro || 0;
+      const totalVendido = todayStats.total || 0;
+      return {
+        fonte: 'local',
+        movimentos: movs,
+        movimentacoes: { sangrias: totalSang, suprimentos: totalSup },
+        vendas: {
+          count: todayStats.count || 0,
+          total: totalVendido,
+          ticketMedio: todayStats.count > 0 ? totalVendido / todayStats.count : 0,
+          estornos: { count: salesHistory.filter(s => s.estornada).length, total: 0 },
+        },
+        formas: {
+          dinheiro: { count: 0, total: dinheiro },
+          pix:      { count: 0, total: formas.pix || 0 },
+          debito:   { count: 0, total: formas.debito || 0 },
+          credito:  { count: 0, total: formas.credito || 0 },
+          voucher:  { count: 0, total: formas.voucher || 0 },
+          vale:     { count: 0, total: formas.vale || 0 },
+          fiado:    { count: 0, total: formas.fiado || 0 },
+          outros:   { count: 0, total: formas.multiplo || 0 },
+        },
+        cartao: { taxasPrevistas: 0, liquidoPrevisto: (formas.debito || 0) + (formas.credito || 0) },
+        financeiro: { recebido: dinheiro + (formas.pix || 0), aReceber: (formas.debito || 0) + (formas.credito || 0) + (formas.fiado || 0) },
+        dinheiroEsperado: Number(caixaState?.fundo || 0) + totalSup - totalSang + dinheiro,
+        totalVendido,
+      };
+    }
+
+    function getCaixaResumo() {
+      return caixaResumoState || caixaState?.resumo || buildLocalCaixaResumo();
+    }
+
+    async function loadCaixaResumo({ rerender = false } = {}) {
+      if (!caixaState?.id) return null;
+      try {
+        const r = await NexoAuth.apiFetch(`/caixas/${caixaState.id}/resumo`);
+        if (!r.ok) return null;
+        caixaResumoState = r.data;
+        caixaState.resumo = r.data;
+        if (Array.isArray(r.data.movimentos)) caixaState.movimentos = r.data.movimentos;
+        if (rerender && document.getElementById('caixaOverlay')?.classList.contains('open')) {
+          renderCaixaAberto();
+        }
+        return r.data;
+      } catch (_) {
+        return null;
+      }
     }
 
     function initCaixaUI() {
@@ -52,7 +115,11 @@
       }
       document.getElementById('caixaOverlay').classList.add('open');
       if (!isCaixaAberto()) renderAberturaCaixa();
-      else { caixaTab = 'sangria'; renderCaixaAberto(); }
+      else {
+        caixaTab = 'sangria';
+        renderCaixaAberto();
+        loadCaixaResumo({ rerender: true });
+      }
     }
 
     function closeCaixa() {
@@ -100,6 +167,10 @@
 
         caixaStatusLoaded = true;
         caixaState = r.data;
+        caixaResumoState = null;
+        todayStats = _createTodayStats();
+        salesHistory = [];
+        updateStats();
         initCaixaUI(); closeCaixa();
         NexoToast.success('Caixa aberto - fundo R$ ' + fmt(fundo));
       } catch (_) {
@@ -111,26 +182,27 @@
 
     function renderCaixaAberto() {
       const tab = caixaTab;
-      const movs = caixaState.movimentos || [];
-      const totalSang = movs.filter(m => m.tipo === 'Sangria').reduce((s, m) => s + m.valor, 0);
-      const totalSup = movs.filter(m => m.tipo === 'Suprimento').reduce((s, m) => s + m.valor, 0);
-      const formas = todayStats.formas || {};
-      const vendasDinheiro = formas.dinheiro || 0;
-      const vendasBeneficios = (formas.voucher || 0) + (formas.vale || 0);
-      const saldo = caixaState.fundo + totalSup - totalSang + vendasDinheiro;
+      const resumo = getCaixaResumo();
+      const movs = resumo.movimentos || caixaState.movimentos || [];
+      const totalSang = resumo.movimentacoes?.sangrias || 0;
+      const totalSup = resumo.movimentacoes?.suprimentos || 0;
+      const formas = resumo.formas || {};
+      const vendasDinheiro = formas.dinheiro?.total || 0;
+      const vendasBeneficios = (formas.voucher?.total || 0) + (formas.vale?.total || 0);
+      const saldo = resumo.dinheiroEsperado || 0;
       document.getElementById('caixaModalTitle').textContent = 'Gerenciar Caixa';
       document.getElementById('caixaModalBody').innerHTML = `
         <div class="caixa-resumo">
           <div class="caixa-resumo-row"><span>Fundo inicial</span><span>R$ ${fmt(caixaState.fundo)}</span></div>
           <div class="caixa-resumo-row"><span>Suprimentos</span><span style="color:var(--accent)">+ R$ ${fmt(totalSup)}</span></div>
           <div class="caixa-resumo-row"><span>Sangrias</span><span style="color:var(--danger)">− R$ ${fmt(totalSang)}</span></div>
-          <div class="caixa-resumo-row"><span>Total vendido</span><span>R$ ${fmt(todayStats.total)}</span></div>
+          <div class="caixa-resumo-row"><span>Total vendido</span><span>R$ ${fmt(resumo.vendas?.total || resumo.totalVendido || 0)}</span></div>
           <div class="caixa-resumo-row"><span>Vendas em dinheiro</span><span style="color:var(--accent)">+ R$ ${fmt(vendasDinheiro)}</span></div>
-          <div class="caixa-resumo-row"><span>Pix recebido</span><span>R$ ${fmt(formas.pix || 0)}</span></div>
-          <div class="caixa-resumo-row"><span>Cartão débito</span><span>R$ ${fmt(formas.debito || 0)}</span></div>
-          <div class="caixa-resumo-row"><span>Cartão crédito</span><span>R$ ${fmt(formas.credito || 0)}</span></div>
+          <div class="caixa-resumo-row"><span>Pix recebido</span><span>R$ ${fmt(formas.pix?.total || 0)}</span></div>
+          <div class="caixa-resumo-row"><span>Cartão débito</span><span>R$ ${fmt(formas.debito?.total || 0)}</span></div>
+          <div class="caixa-resumo-row"><span>Cartão crédito</span><span>R$ ${fmt(formas.credito?.total || 0)}</span></div>
           <div class="caixa-resumo-row"><span>Voucher e vale</span><span>R$ ${fmt(vendasBeneficios)}</span></div>
-          <div class="caixa-resumo-row"><span>Fiado</span><span>R$ ${fmt(formas.fiado || 0)}</span></div>
+          <div class="caixa-resumo-row"><span>Fiado</span><span>R$ ${fmt(formas.fiado?.total || 0)}</span></div>
           <div class="caixa-resumo-row total"><span>Dinheiro esperado no caixa</span><span>R$ ${fmt(saldo)}</span></div>
         </div>
         <div class="caixa-tabs">
@@ -179,6 +251,7 @@
         if (!r.ok) { NexoToast.error('Erro ao registrar movimento'); return; }
 
         caixaState = r.data;
+        caixaResumoState = r.data.resumo || null;
         caixaTab = 'historico'; renderCaixaAberto();
         NexoToast.success((tipoAtual === 'sangria' ? 'Sangria' : 'Suprimento') + ' de R$ ' + fmt(valor) + ' registrado');
       } catch (_) {
@@ -188,38 +261,33 @@
       }
     }
 
-    function fecharCaixa() {
-      renderFechamentoCaixa();
+    async function fecharCaixa() {
+      await renderFechamentoCaixa();
     }
 
-    function renderFechamentoCaixa() {
+    async function renderFechamentoCaixa() {
+      document.getElementById('caixaModalTitle').textContent = 'Fechamento de Caixa';
+      document.getElementById('caixaModalBody').innerHTML = `
+        <p style="color:var(--muted);font-size:13px;text-align:center;padding:22px 0">Calculando resumo oficial do caixa...</p>`;
+      document.getElementById('caixaModalFooter').innerHTML = `
+        <button class="cm-btn ghost" onclick="renderCaixaAberto()"><i class="bi bi-arrow-left"></i> Voltar</button>`;
+      await loadCaixaResumo();
+
       const agora = new Date();
       const horaFechamento = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-      const movs = caixaState.movimentos || [];
-      const totalSang = movs.filter(m => m.tipo === 'Sangria').reduce((s, m) => s + m.valor, 0);
-      const totalSup = movs.filter(m => m.tipo === 'Suprimento').reduce((s, m) => s + m.valor, 0);
-      const vendasDinheiro = todayStats.formas?.dinheiro || 0;
-      const saldoEsperado = caixaState.fundo + totalSup - totalSang + vendasDinheiro;
-      const ticketMedio = todayStats.count > 0 ? todayStats.total / todayStats.count : 0;
+      const resumo = getCaixaResumo();
+      const totalSang = resumo.movimentacoes?.sangrias || 0;
+      const totalSup = resumo.movimentacoes?.suprimentos || 0;
+      const vendasDinheiro = resumo.formas?.dinheiro?.total || 0;
+      const saldoEsperado = resumo.dinheiroEsperado || 0;
+      const ticketMedio = resumo.vendas?.ticketMedio || 0;
+      const estornos = resumo.vendas?.estornos || { count: 0, total: 0 };
 
-      const breakdown = {};
-      const estornos = salesHistory.filter(s => s.estornada);
-      const totalEstornos = estornos.reduce((s, v) => s + (parseFloat(String(v.total).replace(/\./g, '').replace(',', '.')) || 0), 0);
-      salesHistory.filter(s => !s.estornada).forEach(sale => {
-        _getSalePayments(sale).forEach(payment => {
-          const key = payment.metodo || 'multiplo';
-          const val = payment.valor || 0;
-          if (!breakdown[key]) breakdown[key] = { count: 0, total: 0 };
-          breakdown[key].count++;
-          breakdown[key].total += val;
-        });
-      });
-
-      const labels = { dinheiro: 'Dinheiro', pix: 'Pix', credito: 'Crédito', debito: 'Débito', voucher: 'Voucher', vale: 'Vale-refeição', fiado: 'Fiado', multiplo: 'Múltiplo (sem detalhes)' };
-      const icons = { dinheiro: 'bi-cash-coin', pix: 'bi-qr-code-scan', credito: 'bi-credit-card-fill', debito: 'bi-credit-card', voucher: 'bi-ticket-perforated-fill', vale: 'bi-ticket-detailed', fiado: 'bi-journal-text', multiplo: 'bi-layout-split' };
-      const order = ['dinheiro', 'pix', 'debito', 'credito', 'voucher', 'vale', 'fiado', 'multiplo'];
-      const payRows = order.filter(key => breakdown[key]).map(k => {
-        const v = breakdown[k];
+      const labels = { dinheiro: 'Dinheiro', pix: 'Pix', credito: 'Crédito', debito: 'Débito', voucher: 'Voucher', vale: 'Vale-refeição', fiado: 'Fiado', outros: 'Outros' };
+      const icons = { dinheiro: 'bi-cash-coin', pix: 'bi-qr-code-scan', credito: 'bi-credit-card-fill', debito: 'bi-credit-card', voucher: 'bi-ticket-perforated-fill', vale: 'bi-ticket-detailed', fiado: 'bi-journal-text', outros: 'bi-wallet2' };
+      const order = ['dinheiro', 'pix', 'debito', 'credito', 'voucher', 'vale', 'fiado', 'outros'];
+      const payRows = order.filter(key => (resumo.formas?.[key]?.total || 0) > 0).map(k => {
+        const v = resumo.formas[k] || _emptyPaymentSummary();
         return `
         <div class="fcx-pay-row">
           <span class="fcx-pay-label"><i class="bi ${icons[k] || 'bi-wallet2'}" style="margin-right:6px"></i>${labels[k] || k}</span>
@@ -243,9 +311,9 @@
           <div class="fcx-row"><span>Fundo inicial</span><span>R$ ${fmt(caixaState.fundo)}</span></div>
           <div class="fcx-row g"><span>Suprimentos</span><span>+ R$ ${fmt(totalSup)}</span></div>
           <div class="fcx-row d"><span>Sangrias</span><span>− R$ ${fmt(totalSang)}</span></div>
-          <div class="fcx-row"><span>Total vendido (${todayStats.count})</span><span>R$ ${fmt(todayStats.total)}</span></div>
+          <div class="fcx-row"><span>Total vendido (${resumo.vendas?.count || 0})</span><span>R$ ${fmt(resumo.vendas?.total || resumo.totalVendido || 0)}</span></div>
           <div class="fcx-row g"><span>Vendas em dinheiro</span><span>+ R$ ${fmt(vendasDinheiro)}</span></div>
-          ${estornos.length ? `<div class="fcx-row d"><span>Estornos registrados (${estornos.length})</span><span>R$ ${fmt(totalEstornos)}</span></div>` : ''}
+          ${estornos.count ? `<div class="fcx-row d"><span>Estornos registrados (${estornos.count})</span><span>R$ ${fmt(estornos.total)}</span></div>` : ''}
           <div class="fcx-row total"><span>Dinheiro esperado no caixa</span><span>R$ ${fmt(saldoEsperado)}</span></div>
         </div>
         <div class="fcx-ticket">Ticket médio: <strong>R$ ${fmt(ticketMedio)}</strong></div>`;
@@ -264,18 +332,22 @@
           body: JSON.stringify({
             aberto: false,
             fechamento: new Date().toISOString(),
-            totalVendas: todayStats.total,
           }),
         });
 
         if (!r.ok) { NexoToast.error('Erro ao fechar caixa'); return; }
 
+        const resumoFinal = r.data?.resumo || caixaResumoState || buildLocalCaixaResumo();
         caixaState = null;
+        caixaResumoState = null;
+        todayStats = _createTodayStats();
+        salesHistory = [];
         caixaStatusLoaded = true;
         _overtimeShown = false;
         _overtimeLastShown = 0;
+        updateStats();
         initCaixaUI(); closeCaixa();
-        NexoToast.success(`Caixa fechado - ${todayStats.count} venda${todayStats.count !== 1 ? 's' : ''} - R$ ${fmt(todayStats.total)}`);
+        NexoToast.success(`Caixa fechado - ${resumoFinal.vendas?.count || 0} venda${(resumoFinal.vendas?.count || 0) !== 1 ? 's' : ''} - R$ ${fmt(resumoFinal.vendas?.total || resumoFinal.totalVendido || 0)}`);
       } catch (_) {
         NexoToast.error('Erro ao fechar caixa');
       } finally {

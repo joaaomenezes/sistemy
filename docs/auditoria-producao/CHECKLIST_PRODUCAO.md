@@ -8,9 +8,11 @@
 - [x] Validacao com Zod em varios endpoints.
 - [x] Rate limit backend em login/cadastro.
 - [x] CORS restrito por ambiente.
+- [x] Venda PDV exige caixa aberto no backend.
 - [ ] Logs de producao sem dados sensiveis.
 - [ ] Testes automatizados para vendas, caixa, estoque e financeiro.
-- [ ] Endpoints de resumo oficial para caixa e dashboard.
+- [x] Endpoint de resumo oficial para caixa.
+- [ ] Endpoints de resumo oficial para dashboard.
 - [ ] Webhooks com validacao de assinatura.
 
 ## Frontend
@@ -30,8 +32,8 @@
 - [x] PostgreSQL com Prisma.
 - [x] Multiempresa por `empresaId`.
 - [x] Migrations existem.
+- [x] `Venda.caixaId` criado e persistido para venda PDV.
 - [ ] Trocar `Float` por `Decimal` para dinheiro.
-- [ ] Adicionar `caixaId` em `Venda`.
 - [ ] Criar relacoes fortes entre venda, lancamento, cliente, caixa e operador.
 - [ ] Criar enums ou tabelas de status/metodos.
 - [ ] Adicionar indices financeiros e de relatorio.
@@ -71,8 +73,10 @@
 - [x] Venda fiado gera conta a receber.
 - [x] Estorno devolve estoque e estorna lancamento.
 - [x] Cadastro rapido de cliente.
-- [ ] Venda com `caixaId` persistido em `Venda`.
-- [ ] Fechamento oficial calculado no backend.
+- [x] API bloqueia venda PDV sem caixa aberto.
+- [x] Venda com `caixaId` persistido em `Venda`.
+- [x] Fechamento oficial calculado no backend.
+- [x] PDV renderiza fechamento usando resumo oficial da API.
 - [ ] Validacao backend de limite de credito.
 - [ ] Regra especifica para voucher/vale.
 - [ ] Teste automatizado de split.
