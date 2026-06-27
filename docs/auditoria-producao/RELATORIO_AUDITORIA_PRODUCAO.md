@@ -27,7 +27,7 @@ O ponto mais importante: varias telas ja funcionam com backend real, mas o siste
 3. Backend calcula resumo oficial do caixa por `caixaId` e o frontend do PDV ja renderiza o fechamento usando esse endpoint.
 4. CORS permite qualquer origem em producao.
 5. Login nao tinha rate limit no backend. **Corrigido em 2026-06-26.**
-6. Dashboard considera apenas status `pago` em muitos pontos e ignora `recebido`/`conciliado`.
+6. Dashboard ja foi corrigido no frontend para considerar `pago`, `recebido` e `conciliado`; ainda falta padronizar status financeiros de forma global.
 7. Relatorios carregam listas grandes e filtram no frontend.
 8. Financeiro e PDV ainda concentram muita responsabilidade em arquivos grandes.
 9. Status/metodos financeiros sao strings soltas, sem enums fortes.
@@ -158,7 +158,7 @@ Criar modulo de conciliacao com importacao CSV/OFX e depois integracoes por prov
 - `C:\Users\Joao Pedro\Desktop\sistemy\dashboard.html`
 
 **O que foi encontrado:**
-Varios calculos usam `status === 'pago'` e ignoram `recebido` e `conciliado`. Isso aparece em receitas, despesas, saldo, graficos e alertas.
+Varios calculos usavam `status === 'pago'` e ignoravam `recebido` e `conciliado`. Isso aparecia em receitas, despesas, saldo, graficos e alertas.
 
 **Impacto:**
 Recebimentos baixados como `recebido` ou `conciliado` podem ficar fora do dashboard, distorcendo receita, lucro, saldo e comparativos.
@@ -167,9 +167,9 @@ Recebimentos baixados como `recebido` ou `conciliado` podem ficar fora do dashbo
 Centralizar `isStatusRecebido(status)` = `pago`, `recebido`, `conciliado`; separar faturamento bruto de receita recebida.
 
 **Como corrigir:**
-Refatorar dashboard para consumir endpoints-resumo do backend ou helper global de status financeiro.
+Foi aplicado helper local no dashboard para considerar `pago`, `recebido` e `conciliado` como realizados, e para ignorar `cancelado`/`estornado` em contas abertas. A evolucao recomendada ainda e consumir endpoints-resumo do backend ou helper global de status financeiro.
 
-**Status recomendado:** Corrigir antes de producao real.
+**Status recomendado:** Corrigido no frontend em 2026-06-26; manter padronizacao global antes de producao real.
 
 ---
 
@@ -236,7 +236,10 @@ Adicionar `express-rate-limit` ou middleware proprio para `/auth/login` e `/auth
 - `C:\Users\Joao Pedro\Desktop\nexoerp-api\src\routes\auth.js`
 
 **O que foi encontrado:**
-Cadastro aceita senha com 6 caracteres. Alteracao de senha aceita 4 caracteres. Nao ha confirmacao de email implementada no backend.
+Cadastro aceita senha com 6 caracteres. Alteracao de senha aceita 4 caracteres. Originalmente nao havia confirmacao de email implementada no backend.
+
+**Status atual apos correcoes:**
+Confirmacao de email foi implementada em 2026-06-26 com token, tela frontend e bloqueio de login quando `EMAIL_VERIFICATION_REQUIRED=true`. Ainda falta revisar a politica minima de senha.
 
 **Impacto:**
 Conta vulneravel e cadastro com emails invalidos/terceiros.
@@ -245,7 +248,7 @@ Conta vulneravel e cadastro com emails invalidos/terceiros.
 Senha minima 8-10 caracteres, politica basica, email verificado para ativar conta.
 
 **Como corrigir:**
-Adicionar `emailVerified`, tokens de verificacao, envio de email e bloquear login/recursos enquanto nao confirmar.
+Confirmacao de email ja foi adicionada. Ainda falta endurecer a politica minima de senha.
 
 **Status recomendado:** Corrigir antes de clientes oficiais.
 
@@ -442,7 +445,7 @@ Continuar extracao gradual, com validacao por pagina e sem refatorar regra de ne
 - Traz vendas, clientes, produtos, pedidos e financeiro.
 
 **Parcial/incompleto:**
-- Mistura receita recebida com status `pago` apenas.
+- Status de recebido corrigido no frontend; ainda falta padronizacao global por enum/helper compartilhado.
 - Nao usa endpoints-resumo especificos suficientes.
 - Pode carregar dados demais.
 
@@ -478,14 +481,14 @@ Continuar extracao gradual, com validacao por pagina e sem refatorar regra de ne
 **Parcial/incompleto:**
 - Configuracoes gerais de empresa/aparencia ainda misturam localStorage e backend.
 - Fiscal ainda nao existe.
-- Confirmacao de email nao existe.
+- Confirmacao de email existe.
 
 ## Analise de seguranca
 
 **Critico antes de producao:**
 - CORS fechado por dominio.
 - Rate limit backend no login/cadastro. **Corrigido em 2026-06-26.**
-- Confirmacao de email.
+- Confirmacao de email. **Corrigido em 2026-06-26.**
 - Politica minima de senha.
 - Validacao forte de webhook.
 - Logs de erro sem expor stack ou dados sensiveis ao usuario.
@@ -520,10 +523,10 @@ Continuar extracao gradual, com validacao por pagina e sem refatorar regra de ne
 - [x] Validar caixa aberto no backend antes de aceitar venda PDV.
 - [x] Fechamento de caixa calculado no backend.
 - [x] Frontend do PDV renderiza fechamento pelo resumo oficial da API.
-- [ ] Dashboard corrigido para `pago/recebido/conciliado`.
+- [x] Dashboard corrigido para `pago/recebido/conciliado`.
 - [x] CORS por allowlist.
 - [x] Rate limit backend.
-- [ ] Confirmacao de email.
+- [x] Confirmacao de email.
 - [ ] Validacao de webhook.
 - [ ] Relatorios server-side para dados grandes.
 - [ ] Testes automatizados nos fluxos criticos.
@@ -561,7 +564,7 @@ Reduz o risco de a API ser consumida por frontends nao autorizados em producao. 
 
 **Pendencias restantes:**
 - Configurar `CORS_ORIGIN` no Railway com `https://nexoerp.netlify.app` e o dominio proprio quando existir.
-- Implementar confirmacao de email.
+- Configurar envio real de confirmacao de email em producao com `PUBLIC_APP_URL`, `EMAIL_FROM` e `RESEND_API_KEY`.
 
 ### 2026-06-26 - Rate limit backend em login e cadastro
 
@@ -596,7 +599,6 @@ Reduz risco de forca bruta diretamente contra a API, que antes podia ignorar o b
 
 **Pendencias restantes:**
 - Em producao com multiplas instancias, trocar rate limit em memoria por Redis ou store externo.
-- Implementar confirmacao de email.
 - Melhorar politica minima de senha.
 
 ### 2026-06-26 - Validacao de caixa aberto na venda PDV
@@ -715,6 +717,78 @@ Reduz o risco de fechamento errado por reload da pagina, cache local ou `todaySt
 **Pendencias restantes:**
 - Teste manual completo no navegador com abrir caixa, vender, registrar sangria/suprimento e fechar.
 - Criar testes automatizados para o fluxo de caixa.
+
+### 2026-06-26 - Confirmacao de email
+
+**Prioridade original:** Alto
+**Modulo:** Auth / Seguranca / Cadastro
+**Status:** Concluido
+
+**O que foi feito:**
+Foi adicionada confirmacao de email com token seguro armazenado como hash no banco. O cadastro gera token de verificacao quando `EMAIL_VERIFICATION_REQUIRED=true`, o login bloqueia conta nao confirmada, existe endpoint para confirmar email e endpoint para reenviar confirmacao.
+
+O frontend ganhou a pagina `confirmar-email.html`, suporte no cadastro para conta aguardando confirmacao e acao de reenviar confirmacao no login. O envio real foi preparado via Resend usando `RESEND_API_KEY` e `EMAIL_FROM`; em desenvolvimento, a API pode expor o link de confirmacao para teste.
+
+**Arquivos alterados:**
+- `prisma/schema.prisma`
+- `prisma/migrations/20260626153000_add_email_verification_to_users/migration.sql`
+- `src/services/emailVerification.js`
+- `src/routes/auth.js`
+- `.env.example`
+- `README.md`
+- `auth.js`
+- `cadastro.html`
+- `login.html`
+- `confirmar-email.html`
+- `docs/auditoria-producao/ROADMAP_CORRECOES.md`
+- `docs/auditoria-producao/CHECKLIST_PRODUCAO.md`
+- `docs/auditoria-producao/PENDENCIAS_MODULOS.md`
+- `docs/auditoria-producao/RELATORIO_AUDITORIA_PRODUCAO.md`
+
+**Impacto:**
+Reduz cadastro com email invalido ou de terceiro e prepara o sistema para bloquear acesso oficial ate a conta confirmar o email.
+
+**Validacao realizada:**
+- `npx prisma generate`
+- `npx prisma migrate deploy`
+- `npx prisma validate`
+- `node --check src/routes/auth.js`
+- `node --check src/services/emailVerification.js`
+- `node --check auth.js`
+- `node -e "require('./src/app'); console.log('app-load-ok')"`
+
+**Pendencias restantes:**
+- Configurar no Railway: `EMAIL_VERIFICATION_REQUIRED=true`, `PUBLIC_APP_URL`, `EMAIL_FROM` e `RESEND_API_KEY`.
+- Fazer teste manual real recebendo o e-mail pelo provedor configurado.
+
+### 2026-06-26 - Dashboard financeiro com status recebidos/conciliados
+
+**Prioridade original:** Alto
+**Modulo:** Dashboard / Financeiro
+**Status:** Concluido no frontend
+
+**O que foi feito:**
+O dashboard deixou de considerar apenas `status === 'pago'` nos calculos financeiros. Foram criados helpers locais para tratar `pago`, `recebido` e `conciliado` como status realizados, e para considerar como aberto apenas o que ainda nao foi realizado e nao esta `cancelado` ou `estornado`.
+
+Os KPIs de receitas, lucro, saldo, contas a receber/pagar, atividades recentes, resultado do mes, fluxo de caixa e alertas financeiros passaram a usar essa regra unica.
+
+**Arquivos alterados:**
+- `dashboard.html`
+- `docs/auditoria-producao/ROADMAP_CORRECOES.md`
+- `docs/auditoria-producao/CHECKLIST_PRODUCAO.md`
+- `docs/auditoria-producao/PENDENCIAS_MODULOS.md`
+- `docs/auditoria-producao/RELATORIO_AUDITORIA_PRODUCAO.md`
+
+**Impacto:**
+Recebimentos baixados como `recebido` ou conciliados deixam de ficar invisiveis no dashboard. Tambem reduz distorcao em saldo, lucro, graficos e alertas quando o financeiro usa contas a receber de cartao ou baixas manuais.
+
+**Validacao realizada:**
+- Check sintatico dos scripts inline de `dashboard.html` com `vm.Script`.
+- Busca por comparacoes antigas `status === 'pago'` e `status !== 'pago'` no dashboard.
+
+**Pendencias restantes:**
+- Padronizar status financeiro de forma global, idealmente com enum/helper compartilhado.
+- Criar endpoints-resumo no backend para reduzir carga no dashboard.
 
 ## Recomendacao final
 

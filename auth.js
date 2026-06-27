@@ -114,6 +114,14 @@
       });
 
       if (!data.ok) {
+        if (data.code === 'EMAIL_NOT_VERIFIED') {
+          return {
+            ok: false,
+            code: data.code,
+            email: data.email,
+            message: data.message || 'Confirme seu e-mail antes de acessar o sistema.',
+          };
+        }
         registerFailedAttempt();
         const remaining = MAX_ATTEMPTS - getLockout().attempts;
         if (remaining > 0) {
@@ -152,12 +160,53 @@
 
       if (!result.ok) return { ok: false, message: result.message || 'Erro ao criar conta.' };
 
+      if (result.requiresEmailVerification) {
+        return {
+          ok: true,
+          requiresEmailVerification: true,
+          email: result.email,
+          message: result.message,
+          verification: result.verification,
+        };
+      }
+
       const user    = normalizeUser(result.user);
       const session = createSession(user, result.token, true);
-      return { ok: true, user, session };
+      return { ok: true, user, session, verification: result.verification };
     } catch (err) {
       console.error('[NexoAuth] registerUser:', err);
       return { ok: false, message: 'Erro ao conectar com o servidor. Verifique se a API está rodando.' };
+    }
+  }
+
+  async function verifyEmail(token) {
+    try {
+      const result = await apiFetch('/auth/verify-email', {
+        method: 'POST',
+        body: JSON.stringify({ token }),
+      });
+      if (!result.ok) return { ok: false, message: result.message || 'Erro ao confirmar e-mail.' };
+      const user = normalizeUser(result.user);
+      const session = createSession(user, result.token, true);
+      return { ok: true, user, session, message: result.message };
+    } catch (err) {
+      console.error('[NexoAuth] verifyEmail:', err);
+      return { ok: false, message: 'Erro ao conectar com o servidor.' };
+    }
+  }
+
+  async function resendVerification(identifier) {
+    try {
+      const result = await apiFetch('/auth/resend-verification', {
+        method: 'POST',
+        body: JSON.stringify({ identifier: normalize(identifier) }),
+      });
+      return result.ok
+        ? { ok: true, message: result.message, verification: result.verification }
+        : { ok: false, message: result.message || 'Erro ao reenviar confirmação.' };
+    } catch (err) {
+      console.error('[NexoAuth] resendVerification:', err);
+      return { ok: false, message: 'Erro ao conectar com o servidor.' };
     }
   }
 
@@ -361,6 +410,8 @@
 
   window.NexoAuth = {
     registerUser,
+    verifyEmail,
+    resendVerification,
     login,
     getSession,
     getToken,

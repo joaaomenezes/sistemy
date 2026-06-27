@@ -18,9 +18,26 @@
     - `.env.example`
     - `README.md`
   - Observacao: login agora tem limite por IP e por IP+identificador; cadastro tem limite por IP. Limites podem ser ajustados por variaveis de ambiente.
-- [ ] Implementar confirmacao de email ou, no minimo, bloquear uso oficial sem verificacao.
+- [x] Implementar confirmacao de email ou, no minimo, bloquear uso oficial sem verificacao.
+  - Concluido em: 2026-06-26
+  - Arquivos alterados:
+    - `prisma/schema.prisma`
+    - `prisma/migrations/20260626153000_add_email_verification_to_users/migration.sql`
+    - `src/services/emailVerification.js`
+    - `src/routes/auth.js`
+    - `.env.example`
+    - `README.md`
+    - `auth.js`
+    - `cadastro.html`
+    - `login.html`
+    - `confirmar-email.html`
+  - Observacao: cadastro gera token de verificacao, login bloqueia conta nao confirmada quando `EMAIL_VERIFICATION_REQUIRED=true`, e o frontend possui tela de confirmacao.
 - [ ] Padronizar status financeiro: `pago`, `recebido`, `conciliado`, `avencer`, `cancelado`, `estornado`.
-- [ ] Corrigir dashboard para considerar `recebido` e `conciliado`.
+- [x] Corrigir dashboard para considerar `recebido` e `conciliado`.
+  - Concluido em: 2026-06-26
+  - Arquivos alterados:
+    - `dashboard.html`
+  - Observacao: dashboard agora trata `pago`, `recebido` e `conciliado` como status realizados; `cancelado` e `estornado` nao entram em aberto/recebido; contas a receber/pagar e alertas usam status aberto.
 - [x] Adicionar `caixaId` no model `Venda`.
   - Concluido em: 2026-06-26
   - Arquivos alterados:

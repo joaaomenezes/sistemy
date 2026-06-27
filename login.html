@@ -399,6 +399,10 @@
       if (!result.ok) {
         err.className = 'error-msg show';
         err.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${result.message}`;
+        if (result.code === 'EMAIL_NOT_VERIFIED') {
+          window._emailNaoVerificado = result.email || u;
+          err.innerHTML += ` <button type="button" onclick="reenviarConfirmacao(window._emailNaoVerificado)" style="margin-left:8px;border:0;background:transparent;color:var(--accent);font-weight:700;cursor:pointer">Reenviar</button>`;
+        }
         return;
       }
 
@@ -425,6 +429,18 @@
         window.location.href = firstPage ? firstPage[0] : 'login.html?reason=no-access';
       } else {
         window.location.href = 'dashboard.html';
+      }
+    }
+
+    async function reenviarConfirmacao(identifier) {
+      const err = document.getElementById('errorMsg');
+      err.className = 'error-msg show';
+      err.innerHTML = '<i class="bi bi-hourglass-split"></i> Enviando confirmação...';
+      const result = await NexoAuth.resendVerification(identifier);
+      err.innerHTML = `<i class="bi ${result.ok ? 'bi-envelope-check' : 'bi-exclamation-circle'}"></i> ${result.message}`;
+      const devLink = result.verification?.verificationUrl;
+      if (devLink) {
+        err.innerHTML += ` <a href="${devLink}" style="color:var(--accent);font-weight:700">Confirmar agora</a>`;
       }
     }
 

@@ -1699,6 +1699,10 @@ transition: var(--ease);
     function isMesAtual(dateStr) {
       if (!dateStr) return false;
       const now = new Date();
+      const dataLocal = parseDataLocal(dateStr);
+      if (dataLocal) {
+        return dataLocal.getMonth() === now.getMonth() && dataLocal.getFullYear() === now.getFullYear();
+      }
       const mes = String(now.getMonth() + 1).padStart(2, '0');
       const ano = String(now.getFullYear());
       // suporta formato dd/mm/yyyy e ISO
@@ -1710,8 +1714,63 @@ transition: var(--ease);
       return parts[1] === mes && parts[2] === ano;
     }
 
+    const FIN_STATUS_REALIZADO = new Set(['pago', 'recebido', 'conciliado']);
+    const FIN_STATUS_EXCLUIDO = new Set(['cancelado', 'estornado']);
+
+    function statusFinanceiro(lancamento) {
+      return String(lancamento?.status || '').toLowerCase();
+    }
+
+    function financeiroRealizado(lancamento) {
+      return FIN_STATUS_REALIZADO.has(statusFinanceiro(lancamento));
+    }
+
+    function financeiroEmAberto(lancamento) {
+      const status = statusFinanceiro(lancamento);
+      return !FIN_STATUS_REALIZADO.has(status) && !FIN_STATUS_EXCLUIDO.has(status);
+    }
+
+    function financeiroValido(lancamento) {
+      return !FIN_STATUS_EXCLUIDO.has(statusFinanceiro(lancamento));
+    }
+
+    function dataFinanceiraRealizada(lancamento) {
+      return lancamento?.pagoEm
+        || lancamento?.recebidoEm
+        || lancamento?.conciliadoEm
+        || lancamento?.dataRecebimento
+        || lancamento?.vencimento
+        || lancamento?.data
+        || null;
+    }
+
+    function parseDataLocal(valor) {
+      if (!valor) return null;
+      const str = String(valor);
+      if (/^\d{2}\/\d{2}\/\d{4}/.test(str)) {
+        const [dia, mes, ano] = str.slice(0, 10).split('/');
+        return new Date(`${ano}-${mes}-${dia}T00:00:00`);
+      }
+      if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+        return new Date(str + 'T00:00:00');
+      }
+      const data = new Date(str);
+      return Number.isNaN(data.getTime()) ? null : data;
+    }
+
+    function dataKeyLocal(valor) {
+      const data = parseDataLocal(valor);
+      if (!data) return '';
+      const y = data.getFullYear();
+      const m = String(data.getMonth() + 1).padStart(2, '0');
+      const d = String(data.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
     function tempoRelativo(dateISO) {
-      const diff = Date.now() - new Date(dateISO).getTime();
+      const data = parseDataLocal(dateISO);
+      if (!data) return '—';
+      const diff = Date.now() - data.getTime();
       const min  = Math.floor(diff / 60000);
       if (min < 1)  return 'agora mesmo';
       if (min < 60) return `há ${min} min`;
@@ -1759,29 +1818,32 @@ transition: var(--ease);
     // ── KPI 2: Receitas ───────────────────────────────────────
     // Receita recebida conta no mês do recebimento (pagoEm), não do vencimento.
     const receitasMes = financeiro.filter(l =>
-      l.tipo === 'receita' && l.status === 'pago' && isMesAtual(l.pagoEm || l.vencimento || l.data)
+      l.tipo === 'receita' && financeiroRealizado(l) && isMesAtual(dataFinanceiraRealizada(l))
     );
     const totalReceitas = receitasMes.reduce((s, l) => s + (l.valor || 0), 0);
     document.getElementById('kpi-receitas').textContent = fmtMoeda(totalReceitas);
-    const recPagas = receitasMes.filter(l => l.status === 'pago').length;
+    const recPagas = receitasMes.length;
     const badgeRec = document.getElementById('kpi-receitas-badge');
     if (recPagas > 0) { badgeRec.classList.add('up'); badgeRec.innerHTML = `<i class="bi bi-arrow-up-short"></i>${recPagas} recebida${recPagas > 1 ? 's' : ''}`; }
     else { badgeRec.textContent = receitasMes.length > 0 ? `${receitasMes.length} a receber` : '—'; }
 
     // ── KPI 3: Despesas ───────────────────────────────────────
     const despesasMes = financeiro.filter(l =>
-      l.tipo === 'despesa' && isMesAtual(l.vencimento || l.data)
+      l.tipo === 'despesa' && financeiroValido(l) && isMesAtual(l.vencimento || l.data)
     );
     const totalDespesas = despesasMes.reduce((s, l) => s + (l.valor || 0), 0);
     document.getElementById('kpi-despesas').textContent = fmtMoeda(totalDespesas);
-    const despVencidas = despesasMes.filter(l => l.status !== 'pago' && l.vencimento && new Date(l.vencimento) < new Date()).length;
+    const despVencidas = despesasMes.filter(l => {
+      const vencimento = parseDataLocal(l.vencimento);
+      return financeiroEmAberto(l) && vencimento && vencimento < new Date();
+    }).length;
     const badgeDesp = document.getElementById('kpi-despesas-badge');
     if (despVencidas > 0) { badgeDesp.classList.add('down'); badgeDesp.innerHTML = `<i class="bi bi-arrow-down-short"></i>${despVencidas} vencida${despVencidas > 1 ? 's' : ''}`; }
     else { badgeDesp.textContent = despesasMes.length > 0 ? `${despesasMes.length} lançamento${despesasMes.length > 1 ? 's' : ''}` : '—'; }
 
     // ── KPI 4: Lucro líquido ──────────────────────────────────
-    const recPagasMes = financeiro.filter(l => l.tipo === 'receita' && l.status === 'pago' && isMesAtual(l.pagoEm || l.vencimento || l.data));
-    const despPagasMes = financeiro.filter(l => l.tipo === 'despesa' && l.status === 'pago' && isMesAtual(l.pagoEm || l.vencimento || l.data));
+    const recPagasMes = financeiro.filter(l => l.tipo === 'receita' && financeiroRealizado(l) && isMesAtual(dataFinanceiraRealizada(l)));
+    const despPagasMes = financeiro.filter(l => l.tipo === 'despesa' && financeiroRealizado(l) && isMesAtual(dataFinanceiraRealizada(l)));
     const totalRecP  = recPagasMes.reduce((s, l) => s + (l.valor || 0), 0);
     const totalDespP = despPagasMes.reduce((s, l) => s + (l.valor || 0), 0);
     const lucro = totalRecP - totalDespP;
@@ -1797,8 +1859,8 @@ transition: var(--ease);
     }
 
     // ── KPI 5: Saldo em conta ─────────────────────────────────
-    const todasRecPagas  = financeiro.filter(l => l.tipo === 'receita' && l.status === 'pago');
-    const todasDespPagas = financeiro.filter(l => l.tipo === 'despesa' && l.status === 'pago');
+    const todasRecPagas  = financeiro.filter(l => l.tipo === 'receita' && financeiroRealizado(l));
+    const todasDespPagas = financeiro.filter(l => l.tipo === 'despesa' && financeiroRealizado(l));
     const saldo = todasRecPagas.reduce((s, l) => s + (l.valor || 0), 0)
                 - todasDespPagas.reduce((s, l) => s + (l.valor || 0), 0);
     const elSaldo    = document.getElementById('kpi-saldo');
@@ -1835,12 +1897,15 @@ transition: var(--ease);
     // ── Contas R/P ────────────────────────────────────────────
     (function () {
       const hoje    = new Date(); hoje.setHours(0, 0, 0, 0);
-      const isVenc  = l => l.vencimento && new Date(l.vencimento) < hoje;
+      const isVenc  = l => {
+        const vencimento = parseDataLocal(l.vencimento);
+        return vencimento && vencimento < hoje;
+      };
       const soma    = arr => arr.reduce((s, l) => s + (l.valor || 0), 0);
       const f       = v => v > 0 ? fmtMoeda(v) : '—';
 
-      const pendRec = financeiro.filter(l => l.tipo === 'receita' && l.status !== 'pago');
-      const pendPag = financeiro.filter(l => l.tipo === 'despesa' && l.status !== 'pago');
+      const pendRec = financeiro.filter(l => l.tipo === 'receita' && financeiroEmAberto(l));
+      const pendPag = financeiro.filter(l => l.tipo === 'despesa' && financeiroEmAberto(l));
       const totalRec = soma(pendRec);
       const totalPag = soma(pendPag);
       const vencRec  = soma(pendRec.filter(isVenc));
@@ -1922,11 +1987,12 @@ transition: var(--ease);
 
     // Lançamentos financeiros vencendo em breve
     financeiro
-      .filter(l => l.status === 'pendente' && l.vencimento)
+      .filter(l => financeiroEmAberto(l) && l.vencimento)
       .slice(0, 2)
       .forEach(l => {
-        const dias = Math.ceil((new Date(l.vencimento) - new Date()) / 864e5);
-        if (dias >= 0 && dias <= 7) {
+        const vencimento = parseDataLocal(l.vencimento);
+        const dias = vencimento ? Math.ceil((vencimento - new Date()) / 864e5) : null;
+        if (dias !== null && dias >= 0 && dias <= 7) {
           eventos.push({
             cor: 'var(--danger)',
             texto: `Título de <strong>R$ ${fmt(l.valor || 0)}</strong> vence em ${dias === 0 ? 'hoje' : dias + ' dia' + (dias > 1 ? 's' : '')}`,
@@ -1953,11 +2019,11 @@ transition: var(--ease);
         const nome = typeof v.cliente==='object' ? v.cliente.nome||'Cliente' : (v.cliente||'Cliente');
         todasAtividades.push({ tipo:'venda', titulo:'Venda concluída', desc:`${escapeHTML(nome)} · R$ ${fmt(v.total||0)}`, tempo:v.dataISO });
       });
-    financeiro.filter(l=>l.status==='pago')
-      .sort((a,b)=>new Date(b.pagoEm||b.vencimento||0)-new Date(a.pagoEm||a.vencimento||0))
+    financeiro.filter(l=>financeiroRealizado(l))
+      .sort((a,b)=>parseDataLocal(dataFinanceiraRealizada(b))-parseDataLocal(dataFinanceiraRealizada(a)))
       .forEach(l=>{
         const t = l.tipo==='receita' ? 'Recebimento registrado' : 'Pagamento realizado';
-        todasAtividades.push({ tipo:'financeiro', titulo:t, desc:`${escapeHTML(l.descricao||l.categoria||'—')} · R$ ${fmt(l.valor||0)}`, tempo:l.pagoEm||l.vencimento||null });
+        todasAtividades.push({ tipo:'financeiro', titulo:t, desc:`${escapeHTML(l.descricao||l.categoria||'—')} · R$ ${fmt(l.valor||0)}`, tempo:dataFinanceiraRealizada(l) });
       });
     pedidos.forEach(p=>{
       todasAtividades.push({ tipo:'pedido', titulo:'Pedido criado', desc:`${escapeHTML(p.id||'—')} · ${escapeHTML(p.cliente||'—')}`, tempo:p.dataISO||null });
@@ -2003,8 +2069,8 @@ transition: var(--ease);
 
     // ── Resultado do Mês ─────────────────────────────────────
     (function () {
-      const mesAtualRec  = financeiro.filter(l => l.tipo === 'receita' && l.status === 'pago' && isMesAtual(l.vencimento || l.data));
-      const mesAtualDesp = financeiro.filter(l => l.tipo === 'despesa' && l.status === 'pago' && isMesAtual(l.vencimento || l.data));
+      const mesAtualRec  = financeiro.filter(l => l.tipo === 'receita' && financeiroRealizado(l) && isMesAtual(dataFinanceiraRealizada(l)));
+      const mesAtualDesp = financeiro.filter(l => l.tipo === 'despesa' && financeiroRealizado(l) && isMesAtual(dataFinanceiraRealizada(l)));
       const rec  = mesAtualRec.reduce((s, l) => s + (l.valor || 0), 0);
       const desp = mesAtualDesp.reduce((s, l) => s + (l.valor || 0), 0);
       const lucro = rec - desp;
@@ -2014,13 +2080,13 @@ transition: var(--ease);
       const now = new Date();
       const isMesAnt = s => {
         if (!s) return false;
-        const d = new Date(s.includes('/') ? s.split('/').reverse().join('-') : s);
-        if (isNaN(d)) return false;
+        const d = parseDataLocal(s);
+        if (!d) return false;
         return d.getMonth() === (now.getMonth() === 0 ? 11 : now.getMonth() - 1) &&
                d.getFullYear() === (now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear());
       };
-      const recAnt  = financeiro.filter(l => l.tipo === 'receita' && l.status === 'pago' && isMesAnt(l.vencimento || l.data)).reduce((s,l)=>s+(l.valor||0),0);
-      const despAnt = financeiro.filter(l => l.tipo === 'despesa' && l.status === 'pago' && isMesAnt(l.vencimento || l.data)).reduce((s,l)=>s+(l.valor||0),0);
+      const recAnt  = financeiro.filter(l => l.tipo === 'receita' && financeiroRealizado(l) && isMesAnt(dataFinanceiraRealizada(l))).reduce((s,l)=>s+(l.valor||0),0);
+      const despAnt = financeiro.filter(l => l.tipo === 'despesa' && financeiroRealizado(l) && isMesAnt(dataFinanceiraRealizada(l))).reduce((s,l)=>s+(l.valor||0),0);
       const lucroAnt = recAnt - despAnt;
 
       // lucro líquido
@@ -2104,7 +2170,7 @@ transition: var(--ease);
     // ── Despesas por Categoria ────────────────────────────────
     (function () {
       const cats = {};
-      financeiro.filter(l => l.tipo === 'despesa').forEach(l => {
+      financeiro.filter(l => l.tipo === 'despesa' && financeiroValido(l)).forEach(l => {
         const c = escapeHTML(l.categoria || 'Outros');
         cats[c] = (cats[c] || 0) + (l.valor || 0);
       });
@@ -2157,26 +2223,26 @@ transition: var(--ease);
           const d = new Date(); d.setDate(d.getDate() - i);
           const key = d.toISOString().slice(0, 10);
           const lbl = i === 0 ? 'Hoje' : `${d.getDate()}/${d.getMonth()+1}`;
-          const ent = _financeiro.filter(l=>l.tipo==='receita'&&l.status==='pago'&&(l.pagoEm||l.vencimento||'').slice(0,10)===key).reduce((s,l)=>s+(l.valor||0),0);
-          const sai = _financeiro.filter(l=>l.tipo==='despesa'&&l.status==='pago'&&(l.pagoEm||l.vencimento||'').slice(0,10)===key).reduce((s,l)=>s+(l.valor||0),0);
+          const ent = _financeiro.filter(l=>l.tipo==='receita'&&financeiroRealizado(l)&&dataKeyLocal(dataFinanceiraRealizada(l))===key).reduce((s,l)=>s+(l.valor||0),0);
+          const sai = _financeiro.filter(l=>l.tipo==='despesa'&&financeiroRealizado(l)&&dataKeyLocal(dataFinanceiraRealizada(l))===key).reduce((s,l)=>s+(l.valor||0),0);
           pts.push({ lbl, ent, sai });
         }
       } else if (periodo === 'semanal') {
         for (let i = 5; i >= 0; i--) {
           const end = new Date(); end.setDate(end.getDate() - i*7);
           const start = new Date(end); start.setDate(start.getDate()-6);
-          const inR = l => { const d=new Date(l.pagoEm||l.vencimento||''); return d>=start&&d<=end; };
-          const ent = _financeiro.filter(l=>l.tipo==='receita'&&l.status==='pago'&&inR(l)).reduce((s,l)=>s+(l.valor||0),0);
-          const sai = _financeiro.filter(l=>l.tipo==='despesa'&&l.status==='pago'&&inR(l)).reduce((s,l)=>s+(l.valor||0),0);
+          const inR = l => { const d=parseDataLocal(dataFinanceiraRealizada(l)); return d&&d>=start&&d<=end; };
+          const ent = _financeiro.filter(l=>l.tipo==='receita'&&financeiroRealizado(l)&&inR(l)).reduce((s,l)=>s+(l.valor||0),0);
+          const sai = _financeiro.filter(l=>l.tipo==='despesa'&&financeiroRealizado(l)&&inR(l)).reduce((s,l)=>s+(l.valor||0),0);
           pts.push({ lbl:`S${6-i}`, ent, sai });
         }
       } else {
         for (let i = 5; i >= 0; i--) {
           const d = new Date(); d.setDate(1); d.setMonth(d.getMonth()-i);
           const m = d.getMonth(), y = d.getFullYear();
-          const match = l => { const dd=new Date(l.pagoEm||l.vencimento||''); return dd.getMonth()===m&&dd.getFullYear()===y; };
-          const ent = _financeiro.filter(l=>l.tipo==='receita'&&l.status==='pago'&&match(l)).reduce((s,l)=>s+(l.valor||0),0);
-          const sai = _financeiro.filter(l=>l.tipo==='despesa'&&l.status==='pago'&&match(l)).reduce((s,l)=>s+(l.valor||0),0);
+          const match = l => { const dd=parseDataLocal(dataFinanceiraRealizada(l)); return dd&&dd.getMonth()===m&&dd.getFullYear()===y; };
+          const ent = _financeiro.filter(l=>l.tipo==='receita'&&financeiroRealizado(l)&&match(l)).reduce((s,l)=>s+(l.valor||0),0);
+          const sai = _financeiro.filter(l=>l.tipo==='despesa'&&financeiroRealizado(l)&&match(l)).reduce((s,l)=>s+(l.valor||0),0);
           pts.push({ lbl: MESES_S[m], ent, sai });
         }
       }
@@ -2448,19 +2514,25 @@ transition: var(--ease);
         if (n) alertList.push({ ico: 'bi-box-seam', txt: n + ' produto(s) com estoque zerado' });
       }
       if (cfg.alertas.contasVencidas) {
-        const n = financeiro.filter(l => l.status !== 'pago' && l.vencimento && new Date(l.vencimento) < hoje).length;
+        const n = financeiro.filter(l => {
+          const vencimento = parseDataLocal(l.vencimento);
+          return financeiroEmAberto(l) && vencimento && vencimento < hoje;
+        }).length;
         if (n) alertList.push({ ico: 'bi-exclamation-circle', txt: n + ' conta(s) vencida(s)' });
       }
       if (cfg.alertas.fluxoNegativo) {
-        const recP  = financeiro.filter(l => l.tipo === 'receita' && l.status === 'pago');
-        const despP = financeiro.filter(l => l.tipo === 'despesa' && l.status === 'pago');
+        const recP  = financeiro.filter(l => l.tipo === 'receita' && financeiroRealizado(l));
+        const despP = financeiro.filter(l => l.tipo === 'despesa' && financeiroRealizado(l));
         const saldoAtual = recP.reduce((s, l) => s + (l.valor || 0), 0)
                          - despP.reduce((s, l) => s + (l.valor || 0), 0);
         if (saldoAtual < 0) alertList.push({ ico: 'bi-arrow-down-circle', txt: 'Fluxo de caixa negativo detectado' });
       }
       if (cfg.alertas.boletosVencendo) {
         const em3 = new Date(); em3.setDate(em3.getDate() + 3);
-        const n = financeiro.filter(l => l.status !== 'pago' && l.vencimento && new Date(l.vencimento) <= em3 && new Date(l.vencimento) >= new Date()).length;
+        const n = financeiro.filter(l => {
+          const vencimento = parseDataLocal(l.vencimento);
+          return financeiroEmAberto(l) && vencimento && vencimento <= em3 && vencimento >= hoje;
+        }).length;
         if (n) alertList.push({ ico: 'bi-calendar-x', txt: n + ' boleto(s) próximo(s) do vencimento' });
       }
       if (cfg.alertas.semGiro) {

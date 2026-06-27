@@ -1219,6 +1219,30 @@
 
       document.getElementById('successNome').textContent = nome;
       document.getElementById('successEmail').textContent = email || '—';
+      const successText = document.querySelector('#panel-success .success-screen p');
+      const successBtn = document.querySelector('#panel-success .success-screen .btn-next');
+      const devVerificationUrl = result.verification?.verificationUrl;
+      document.getElementById('devVerificationLink')?.remove();
+
+      if (result.requiresEmailVerification) {
+        if (successText) {
+          successText.innerHTML = `Conta criada, <strong>${nome}</strong>!<br>Confirme seu e-mail para ativar o acesso ao NexoERP.`;
+        }
+        if (successBtn) {
+          successBtn.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> Ir para o login';
+          successBtn.onclick = () => { window.location.href = 'login.html'; };
+        }
+        if (devVerificationUrl) {
+          const devLink = document.createElement('div');
+          devLink.id = 'devVerificationLink';
+          devLink.className = 'success-item';
+          devLink.innerHTML = `<i class="bi bi-link-45deg"></i><span>Link dev: <a href="${devVerificationUrl}" style="color:var(--accent)">confirmar e-mail agora</a></span>`;
+          document.querySelector('#panel-success .success-items')?.prepend(devLink);
+        }
+      } else if (successBtn) {
+        successBtn.innerHTML = '<i class="bi bi-grid-1x2-fill"></i> Acessar o painel agora';
+        successBtn.onclick = () => { window.location.href = 'dashboard.html'; };
+      }
       // hide progress bar & tracker update
       document.getElementById('progressFill').style.width = '100%';
       document.getElementById('progressStep').textContent = 'Concluído!';

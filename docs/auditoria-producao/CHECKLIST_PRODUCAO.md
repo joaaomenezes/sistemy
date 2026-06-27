@@ -44,7 +44,7 @@
 - [x] Senhas com bcrypt.
 - [x] JWT com expiracao.
 - [x] Permissoes por modulo.
-- [ ] Confirmacao de email.
+- [x] Confirmacao de email.
 - [ ] Recuperacao de senha segura.
 - [ ] Politica minima de senha.
 - [x] Rate limit no backend.
@@ -62,7 +62,7 @@
 - [ ] Extrato bancario real.
 - [ ] Conciliação bancaria por extrato.
 - [ ] Historico de pagamentos por cliente dedicado.
-- [ ] Dashboard financeiro corrigido para status `recebido/conciliado`.
+- [x] Dashboard financeiro corrigido para status `recebido/conciliado`.
 - [ ] Centro de custo integrado formalmente a contas a pagar.
 
 ## PDV

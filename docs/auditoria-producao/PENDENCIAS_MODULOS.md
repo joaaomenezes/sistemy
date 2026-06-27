@@ -131,9 +131,10 @@
 **Completo/parcialmente completo:**
 - Tela consome API real.
 - KPIs e graficos existem.
+- Status financeiros realizados agora consideram `pago`, `recebido` e `conciliado`.
+- Contas abertas ignoram lancamentos `cancelado` e `estornado`.
 
 **Parcial/problematico:**
-- Mistura `pago` com conceitos de recebido.
 - Carrega listas completas.
 
 **Falta backend:**
@@ -175,13 +176,13 @@
 - Config PDV.
 - Pix Mercado Pago.
 - Conta bancaria.
+- Confirmacao de email.
 
 **Parcial:**
 - Configuracoes de tema/aparencia locais.
 - Fiscal inexistente.
 
 **Falta seguranca/regra:**
-- Email confirmado.
 - Recuperacao de senha.
 - Permissoes por acao.
 
@@ -191,11 +192,12 @@
 - CORS agora usa allowlist por ambiente via `CORS_ORIGIN`.
 - Desenvolvimento local continua suportado por fallback para `127.0.0.1` e `localhost` quando `CORS_ORIGIN` nao estiver configurado e `NODE_ENV` nao for `production`.
 - Login e cadastro agora tem rate limit no backend, protegendo a API contra excesso de tentativas diretas.
+- Confirmacao de email implementada com token, tela frontend e bloqueio quando `EMAIL_VERIFICATION_REQUIRED=true`.
 
 ### Ainda pendente
 - Configurar `CORS_ORIGIN` no Railway com o dominio Netlify atual e futuro dominio proprio.
-- Implementar confirmacao de email.
+- Configurar `PUBLIC_APP_URL`, `EMAIL_FROM` e `RESEND_API_KEY` no Railway para envio real de confirmacao.
 - Validar assinatura/origem dos webhooks Mercado Pago.
 
 ### Status atual
-Parcialmente pronto para beta controlado. A API deixou de aceitar qualquer origem e agora limita tentativas de login/cadastro, mas ainda precisa das demais protecoes de seguranca da Fase 1.
+Parcialmente pronto para beta controlado. A API deixou de aceitar qualquer origem, limita tentativas de login/cadastro e ja tem confirmacao de email, mas ainda precisa das demais protecoes de seguranca da Fase 1.
