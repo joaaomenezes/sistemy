@@ -236,6 +236,99 @@ window.NexoConfig = {
   },
 };
 
+// ── Status financeiro ─────────────────────────────────
+window.NexoFinanceiroStatus = (() => {
+  const STATUS = Object.freeze({
+    PENDENTE: 'pendente',
+    A_VENCER: 'avencer',
+    VENCIDO: 'vencida',
+    PAGO: 'pago',
+    RECEBIDO: 'recebido',
+    CONCILIADO: 'conciliado',
+    CANCELADO: 'cancelado',
+    ESTORNADO: 'estornado',
+  });
+
+  const REALIZADOS = Object.freeze([STATUS.PAGO, STATUS.RECEBIDO, STATUS.CONCILIADO]);
+  const INATIVOS = Object.freeze([STATUS.CANCELADO, STATUS.ESTORNADO]);
+  const ABERTOS = Object.freeze([STATUS.PENDENTE, STATUS.A_VENCER, STATUS.VENCIDO]);
+
+  function normalizar(status) {
+    const value = String(status || '').trim().toLowerCase();
+    if (value === 'vencido') return STATUS.VENCIDO;
+    return value;
+  }
+
+  function isRealizado(status) {
+    return REALIZADOS.includes(normalizar(status));
+  }
+
+  function isInativo(status) {
+    return INATIVOS.includes(normalizar(status));
+  }
+
+  function isAberto(status) {
+    const normalized = normalizar(status);
+    return ABERTOS.includes(normalized) || (!isRealizado(normalized) && !isInativo(normalized));
+  }
+
+  function contaComoAberto(lancamento) {
+    return isAberto(lancamento?.status);
+  }
+
+  function contaComoValido(lancamento) {
+    return !isInativo(lancamento?.status);
+  }
+
+  function realizadosParam() {
+    return REALIZADOS.join(',');
+  }
+
+  function inativosParam() {
+    return INATIVOS.join(',');
+  }
+
+  function abertosParam() {
+    return ABERTOS.join(',');
+  }
+
+  function dataRealizada(lancamento) {
+    return lancamento?.pagoEm
+      || lancamento?.recebidoEm
+      || lancamento?.conciliadoEm
+      || lancamento?.dataRecebimento
+      || lancamento?.vencimento
+      || lancamento?.data
+      || null;
+  }
+
+  function matchesFiltro(status, filtro) {
+    const normalizedFiltro = normalizar(filtro);
+    if (!normalizedFiltro || normalizedFiltro === 'todos') return true;
+    if (normalizedFiltro === STATUS.PENDENTE) return isAberto(status);
+    if (normalizedFiltro === STATUS.RECEBIDO) return isRealizado(status);
+    return normalizar(status) === normalizedFiltro;
+  }
+
+  return {
+    STATUS,
+    REALIZADOS,
+    INATIVOS,
+    ABERTOS,
+    normalizar,
+    isRealizado,
+    isInativo,
+    isAberto,
+    contaComoAberto,
+    contaComoValido,
+    realizadosParam,
+    inativosParam,
+    abertosParam,
+    dataRealizada,
+    matchesFiltro,
+  };
+})();
+
 // ── Export CSV ────────────────────────────────────────
 function downloadCSV(filename, header, rows) {
   const escape = v => `"${String(v == null ? '' : v).replace(/"/g, '""')}"`;

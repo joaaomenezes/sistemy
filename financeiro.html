@@ -2770,7 +2770,9 @@ transition: border-color .15s;
       params.set('tipo', isPagar ? 'despesa' : 'receita');
       params.set('page', String(page));
       params.set('limit', String(getFinDetailPerPage(isPagar ? 'contas-pagar' : 'contas-receber')));
-      params.set('excludeStatus', isPagar ? 'cancelado' : 'pago,recebido,conciliado,cancelado,estornado');
+      params.set('excludeStatus', isPagar
+        ? NexoFinanceiroStatus.inativosParam()
+        : `${NexoFinanceiroStatus.realizadosParam()},${NexoFinanceiroStatus.inativosParam()}`);
       if (!isPagar && receberClienteId) params.set('clienteId', receberClienteId);
       return params.toString();
     }
@@ -2878,11 +2880,11 @@ transition: border-color .15s;
     }
 
     function isStatusRecebido(status) {
-      return ['pago', 'recebido', 'conciliado'].includes(String(status || '').toLowerCase());
+      return NexoFinanceiroStatus.isRealizado(status);
     }
 
     function isStatusFinalizado(status) {
-      return isStatusRecebido(status) || ['cancelado', 'estornado'].includes(String(status || '').toLowerCase());
+      return isStatusRecebido(status) || NexoFinanceiroStatus.isInativo(status);
     }
 
     function buildKPIs() {
@@ -3612,10 +3614,10 @@ transition: border-color .15s;
       params.set('formaPagamento', forma || 'cartao');
 
       const status = document.getElementById('cardConcStatus')?.value || 'abertos';
-      if (status === 'abertos') params.set('excludeStatus', 'pago,recebido,conciliado,cancelado,estornado');
-      if (status === 'recebidos') params.set('statusIn', 'pago,recebido');
+      if (status === 'abertos') params.set('excludeStatus', `${NexoFinanceiroStatus.realizadosParam()},${NexoFinanceiroStatus.inativosParam()}`);
+      if (status === 'recebidos') params.set('statusIn', `${NexoFinanceiroStatus.STATUS.PAGO},${NexoFinanceiroStatus.STATUS.RECEBIDO}`);
       if (status === 'conciliados') params.set('status', 'conciliado');
-      if (status === 'todos') params.set('excludeStatus', 'cancelado,estornado');
+      if (status === 'todos') params.set('excludeStatus', NexoFinanceiroStatus.inativosParam());
 
       return params.toString();
     }
@@ -3683,7 +3685,7 @@ transition: border-color .15s;
         const status = String(item.status || 'avencer').toLowerCase();
         const selectable = isCardConciliationSelectable(item);
         const canReceive = !isStatusRecebido(status);
-        const canConciliate = status !== 'conciliado' && !['cancelado', 'estornado'].includes(status);
+        const canConciliate = status !== NexoFinanceiroStatus.STATUS.CONCILIADO && !NexoFinanceiroStatus.isInativo(status);
         const saleLabel = item.vendaId ? `Venda ${String(item.vendaId).slice(-8)}` : (item.descricao || 'Venda no cartao');
         const acquiring = [item.adquirenteCartao || item.adquirente || item.maquininhaNome, item.terminalId]
           .filter(Boolean)
@@ -4851,7 +4853,7 @@ transition: border-color .15s;
         const params = new URLSearchParams({
           tipo: 'receita',
           clienteId: receberClienteId,
-          excludeStatus: 'pago,cancelado,estornado',
+          excludeStatus: `${NexoFinanceiroStatus.realizadosParam()},${NexoFinanceiroStatus.inativosParam()}`,
           page: String(page),
           limit: '100',
         });
@@ -5027,7 +5029,7 @@ transition: border-color .15s;
     }
 
     function buildRecebParams(page, paginate) {
-      const params = new URLSearchParams({ tipo: 'receita', statusIn: 'pago,recebido,conciliado', sortBy: 'pagoEm' });
+      const params = new URLSearchParams({ tipo: 'receita', statusIn: NexoFinanceiroStatus.realizadosParam(), sortBy: 'pagoEm' });
       if (paginate) { params.set('page', String(page)); params.set('limit', '20'); }
       const q      = document.getElementById('recebSearch')?.value.trim()  || '';
       const dIni   = document.getElementById('recebDtIni')?.value           || '';

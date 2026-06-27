@@ -14,6 +14,7 @@
 - [x] Endpoint de resumo oficial para caixa.
 - [ ] Endpoints de resumo oficial para dashboard.
 - [ ] Webhooks com validacao de assinatura.
+- [ ] Healthcheck/monitoramento de API em producao.
 
 ## Frontend
 
@@ -22,7 +23,7 @@
 - [x] PDV foi parcialmente extraido para arquivos.
 - [ ] Separar `financeiro.html` em CSS/JS por feature.
 - [ ] Reduzir `pdv.css` e `pdv.js`.
-- [ ] Criar helpers globais para status financeiro.
+- [x] Criar helpers globais para status financeiro.
 - [ ] Debounce padronizado em buscas.
 - [ ] Tratamento de erro padronizado.
 - [ ] Remover/ocultar telas visuais sem backend real.
@@ -51,6 +52,7 @@
 - [x] CORS fechado.
 - [ ] Auditoria de dependencias.
 - [ ] Backup/restore documentado.
+- [ ] Restore testado em ambiente separado.
 
 ## Financeiro
 
@@ -77,7 +79,7 @@
 - [x] Venda com `caixaId` persistido em `Venda`.
 - [x] Fechamento oficial calculado no backend.
 - [x] PDV renderiza fechamento usando resumo oficial da API.
-- [ ] Validacao backend de limite de credito.
+- [x] Validacao backend de limite de credito.
 - [ ] Regra especifica para voucher/vale.
 - [ ] Teste automatizado de split.
 
@@ -99,7 +101,7 @@
 - [x] Consulta de credito.
 - [ ] Validacao CPF/CNPJ no backend.
 - [ ] Historico unificado de compras e pagamentos.
-- [ ] Limite de credito validado no backend.
+- [x] Limite de credito validado no backend.
 - [ ] KPI novos no mes usando `criadoEm`, nao string `cadastro`.
 
 ## Relatorios

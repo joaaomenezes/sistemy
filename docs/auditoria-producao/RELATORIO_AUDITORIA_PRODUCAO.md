@@ -27,10 +27,10 @@ O ponto mais importante: varias telas ja funcionam com backend real, mas o siste
 3. Backend calcula resumo oficial do caixa por `caixaId` e o frontend do PDV ja renderiza o fechamento usando esse endpoint.
 4. CORS permite qualquer origem em producao.
 5. Login nao tinha rate limit no backend. **Corrigido em 2026-06-26.**
-6. Dashboard ja foi corrigido no frontend para considerar `pago`, `recebido` e `conciliado`; ainda falta padronizar status financeiros de forma global.
+6. Dashboard ja foi corrigido no frontend para considerar `pago`, `recebido` e `conciliado`; status financeiros de `Lancamento` tambem foram padronizados em helper/constantes compartilhados.
 7. Relatorios carregam listas grandes e filtram no frontend.
 8. Financeiro e PDV ainda concentram muita responsabilidade em arquivos grandes.
-9. Status/metodos financeiros sao strings soltas, sem enums fortes.
+9. Metodos financeiros ainda sao strings soltas; status financeiros ja possuem helper/constantes compartilhados, mas ainda nao viraram enum forte no banco.
 10. Rotas de webhook nao usam assinatura/secret de forma completa para validar origem.
 
 ---
@@ -169,7 +169,7 @@ Centralizar `isStatusRecebido(status)` = `pago`, `recebido`, `conciliado`; separ
 **Como corrigir:**
 Foi aplicado helper local no dashboard para considerar `pago`, `recebido` e `conciliado` como realizados, e para ignorar `cancelado`/`estornado` em contas abertas. A evolucao recomendada ainda e consumir endpoints-resumo do backend ou helper global de status financeiro.
 
-**Status recomendado:** Corrigido no frontend em 2026-06-26; manter padronizacao global antes de producao real.
+**Status recomendado:** Corrigido no frontend em 2026-06-26 e padronizado globalmente em helper/constantes em 2026-06-27. Enum forte no banco pode ficar para uma etapa posterior, depois de mapear dados legados.
 
 ---
 
@@ -363,13 +363,13 @@ Continuar extracao gradual, com validacao por pagina e sem refatorar regra de ne
 - Cliente e vencimento sao obrigatorios para fiado no backend.
 - Existe consulta de credito do cliente.
 - Contas a receber tem filtro por cliente e receber tudo.
+- Venda fiado valida limite de credito no backend e permite liberacao com PIN de supervisor.
 
 **Parcial/incompleto:**
-- Limite de credito e controle de bloqueio dependem mais do frontend.
 - Historico completo de pagamentos por cliente ainda nao e uma tela dedicada forte.
 - `Cliente.compras` e `Cliente.pedidos` sao contadores gravados, sujeitos a divergencia.
 
-**Risco principal:** limite de credito deveria ser validado no backend na venda fiado.
+**Risco principal:** politica de credito ainda nao e configuravel por empresa; por enquanto o backend bloqueia acima do limite e libera com PIN de supervisor.
 
 ### Clientes
 
@@ -397,7 +397,7 @@ Continuar extracao gradual, com validacao por pagina e sem refatorar regra de ne
 - Extrato bancario ainda visual/em desenvolvimento.
 - Cobrancas/regua ainda em desenvolvimento.
 - Categorias financeiras de custo/despesa ficam em localStorage.
-- Status e metodos sao strings livres.
+- Status financeiros usam helper/constantes compartilhados; metodos financeiros ainda sao strings livres.
 - Dashboard financeiro usa varias buscas locais.
 
 ### Centro de custo
@@ -512,7 +512,8 @@ Continuar extracao gradual, com validacao por pagina e sem refatorar regra de ne
 **Problemas:**
 - `Float` para dinheiro.
 - Poucas relacoes Prisma fortes entre venda, caixa, lancamento, cliente, operador e produto.
-- Status/metodos como String.
+- Status financeiros ainda sao `String` no banco, mas usam helper/constantes compartilhados na aplicacao.
+- Metodos financeiros como `String`.
 - Falta indice em `Lancamento(empresaId,status,vencimento)`, `Lancamento(empresaId,vendaId)`, `Venda(empresaId,caixaId)` quando existir, `Venda(empresaId,dataISO)`, `Movimentacao(empresaId,prodId,dataISO)`.
 - Cliente nao tem unique por documento dentro da empresa.
 
@@ -532,6 +533,16 @@ Continuar extracao gradual, com validacao por pagina e sem refatorar regra de ne
 - [ ] Testes automatizados nos fluxos criticos.
 - [ ] Backup e rotina de restore testada.
 - [ ] Monitoramento/logs de producao.
+
+## Pendencias restantes da Fase 1
+
+- Evoluir status financeiro para enum forte no banco, se a base real estiver limpa e a migracao for planejada.
+- Migrar valores monetarios de `Float` para `Decimal`, ou fechar um plano de migracao antes de dados reais.
+- Evoluir politica de credito para configuracao por empresa, se necessario.
+- Validar webhook Mercado Pago com assinatura/origem, idempotencia e confirmacao no provedor antes de alterar cobranca.
+- Criar testes automatizados dos fluxos criticos: venda, caixa, estoque, fiado, Pix, cartao, estorno e dashboard financeiro.
+- Documentar e testar backup/restore.
+- Configurar monitoramento minimo de producao: healthcheck, uptime, erros e logs sem dados sensiveis.
 
 ## Historico de correcoes apos auditoria
 
@@ -787,8 +798,94 @@ Recebimentos baixados como `recebido` ou conciliados deixam de ficar invisiveis 
 - Busca por comparacoes antigas `status === 'pago'` e `status !== 'pago'` no dashboard.
 
 **Pendencias restantes:**
-- Padronizar status financeiro de forma global, idealmente com enum/helper compartilhado.
+- Avaliar enum forte no Prisma em etapa posterior, depois de mapear dados existentes.
 - Criar endpoints-resumo no backend para reduzir carga no dashboard.
+
+### 2026-06-27 - Status financeiro padronizado globalmente
+
+**Prioridade original:** Alto
+**Modulo:** Backend / Frontend / Financeiro
+**Status:** Concluido sem migration
+
+**O que foi feito:**
+Foi criado um helper de status financeiro no backend (`src/utils/financeiroStatus.js`) e um helper equivalente no frontend (`NexoFinanceiroStatus` em `utils.js`). As rotas de financeiro, caixa, clientes, vendas e pedidos passaram a usar constantes compartilhadas para `Lancamento.status`; dashboard, financeiro, clientes e relatorios passaram a usar o helper global para status realizados, inativos, abertos e filtros `statusIn`/`excludeStatus`.
+
+**Arquivos alterados:**
+- `src/utils/financeiroStatus.js`
+- `src/routes/financeiro.js`
+- `src/routes/caixas.js`
+- `src/routes/clientes.js`
+- `src/routes/vendas.js`
+- `src/routes/pedidos.js`
+- `utils.js`
+- `dashboard.html`
+- `financeiro.html`
+- `clientes.html`
+- `relatorios.html`
+- `docs/auditoria-producao/ROADMAP_CORRECOES.md`
+- `docs/auditoria-producao/CHECKLIST_PRODUCAO.md`
+- `docs/auditoria-producao/PENDENCIAS_MODULOS.md`
+- `docs/auditoria-producao/RELATORIO_AUDITORIA_PRODUCAO.md`
+
+**Impacto:**
+Reduz divergencia entre telas e backend sobre o que conta como recebido, aberto ou inativo. O fluxo continua conservador: nao houve migration, enum Prisma ou renomeacao de status existentes.
+
+**Validacao realizada:**
+- `node --check utils.js`
+- `node --check src/utils/financeiroStatus.js`
+- `node --check src/routes/financeiro.js`
+- `node --check src/routes/caixas.js`
+- `node --check src/routes/clientes.js`
+- `node --check src/routes/vendas.js`
+- `node --check src/routes/pedidos.js`
+- `node -e "require('./src/routes/financeiro'); require('./src/routes/caixas'); require('./src/routes/clientes'); require('./src/routes/vendas'); require('./src/routes/pedidos'); console.log('routes-load-ok')"`
+- Validacao via `vm.Script` dos scripts inline de `dashboard.html`, `financeiro.html`, `clientes.html` e `relatorios.html`.
+
+**Pendencias restantes:**
+- Avaliar enum forte no Prisma apenas depois de mapear dados existentes.
+- Padronizar metodos financeiros em etapa separada.
+
+### 2026-06-27 - Limite de credito no backend para venda fiado
+
+**Prioridade original:** Alto
+**Modulo:** Backend / PDV / Clientes / Financeiro
+**Status:** Concluido
+
+**O que foi feito:**
+A venda fiado passou a validar o limite de credito dentro do backend antes de baixar estoque, criar venda ou lancamento. A API soma o valor em aberto do cliente com a nova parte fiada da venda; se `totalEmAberto + novaVendaFiado > limite`, a venda e bloqueada e exige liberacao com PIN de supervisor. O PIN e salvo no backend como hash na configuracao do PDV.
+
+**Arquivos alterados:**
+- `prisma/schema.prisma`
+- `prisma/migrations/20260627100000_add_supervisor_pin_to_pdv_config/migration.sql`
+- `src/routes/configuracoes-pdv.js`
+- `src/routes/vendas.js`
+- `src/middleware/errorHandler.js`
+- `configuracoes.html`
+- `pdv/pdv.js`
+- `pdv/pdv-cart.js`
+- `docs/auditoria-producao/ROADMAP_CORRECOES.md`
+- `docs/auditoria-producao/CHECKLIST_PRODUCAO.md`
+- `docs/auditoria-producao/PENDENCIAS_MODULOS.md`
+- `docs/auditoria-producao/RELATORIO_AUDITORIA_PRODUCAO.md`
+
+**Impacto:**
+O frontend continua avisando antes da venda, mas a trava oficial passa a ser o backend. Isso protege chamadas diretas para a API e casos de tela desatualizada. Quando o limite e excedido, o PDV mostra a escolha entre cancelar ou liberar; ao liberar, solicita o PIN de supervisor e reenvia a venda para validacao no backend.
+
+**Validacao realizada:**
+- `node --check src/routes/configuracoes-pdv.js`
+- `node --check src/routes/vendas.js`
+- `node --check src/middleware/errorHandler.js`
+- `node --check pdv/pdv.js`
+- `node --check pdv/pdv-cart.js`
+- Validacao via `vm.Script` do script inline de `configuracoes.html`.
+- `node -e "require('./src/routes/configuracoes-pdv'); require('./src/routes/vendas'); console.log('routes-load-ok')"`
+- `npx.cmd prisma validate`
+- `npx.cmd prisma migrate deploy`
+- `npx.cmd prisma generate`
+
+**Pendencias restantes:**
+- Criar teste automatizado para venda fiado dentro do limite, acima do limite sem PIN, acima do limite com PIN valido e acima do limite com PIN invalido.
+- Decidir se a politica de credito sera sempre "bloquear ou liberar com PIN" ou configuravel por empresa.
 
 ## Recomendacao final
 

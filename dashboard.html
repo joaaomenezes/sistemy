@@ -1714,34 +1714,20 @@ transition: var(--ease);
       return parts[1] === mes && parts[2] === ano;
     }
 
-    const FIN_STATUS_REALIZADO = new Set(['pago', 'recebido', 'conciliado']);
-    const FIN_STATUS_EXCLUIDO = new Set(['cancelado', 'estornado']);
-
-    function statusFinanceiro(lancamento) {
-      return String(lancamento?.status || '').toLowerCase();
-    }
-
     function financeiroRealizado(lancamento) {
-      return FIN_STATUS_REALIZADO.has(statusFinanceiro(lancamento));
+      return NexoFinanceiroStatus.isRealizado(lancamento?.status);
     }
 
     function financeiroEmAberto(lancamento) {
-      const status = statusFinanceiro(lancamento);
-      return !FIN_STATUS_REALIZADO.has(status) && !FIN_STATUS_EXCLUIDO.has(status);
+      return NexoFinanceiroStatus.contaComoAberto(lancamento);
     }
 
     function financeiroValido(lancamento) {
-      return !FIN_STATUS_EXCLUIDO.has(statusFinanceiro(lancamento));
+      return NexoFinanceiroStatus.contaComoValido(lancamento);
     }
 
     function dataFinanceiraRealizada(lancamento) {
-      return lancamento?.pagoEm
-        || lancamento?.recebidoEm
-        || lancamento?.conciliadoEm
-        || lancamento?.dataRecebimento
-        || lancamento?.vencimento
-        || lancamento?.data
-        || null;
+      return NexoFinanceiroStatus.dataRealizada(lancamento);
     }
 
     function parseDataLocal(valor) {

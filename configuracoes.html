@@ -1609,9 +1609,18 @@ font-size: 12px;
       return `rgb(${r}, ${g}, ${b})`;
     }
 
-    function saveChanges() {
+    async function saveChanges() {
       const cfg = _collectConfig();
       try {
+        const pinSection = document.getElementById('pinSection');
+        if (pinSection && pinSection.style.display !== 'none') {
+          const pin = String(cfg._supervisorPin || '');
+          const pinResponse = await NexoAuth.apiFetch('/configuracoes-pdv/supervisor-pin', {
+            method: 'PUT',
+            body: JSON.stringify({ pin }),
+          });
+          if (!pinResponse.ok) throw new Error(pinResponse.message || 'Erro ao salvar PIN de supervisor.');
+        }
         localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
         isDirty = false;
         document.getElementById('saveBar').classList.remove('show');

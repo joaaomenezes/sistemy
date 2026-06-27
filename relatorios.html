@@ -1449,7 +1449,7 @@
         case 'fin-pagar': {
           let desp = filterByPeriod(DATA.financeiro.filter(l=>l.tipo==='despesa'), dr);
           const stF = document.getElementById('rf-status-fin')?.value || 'Todos';
-          if (stF !== 'Todos') desp = desp.filter(l => l.status === stF);
+          if (stF !== 'Todos') desp = desp.filter(l => NexoFinanceiroStatus.matchesFiltro(l.status, stF));
           downloadData(`contas_pagar_${today}.csv`, [['Vencimento','Descrição','Categoria','Valor','Status'], ...desp.map(l=>[l.vencimento||'—',l.descricao||'—',l.categoria||'—',fmtVal(l.valor),l.status||'—'])]);
           break;
         }
@@ -1457,7 +1457,7 @@
         case 'fin-receber': {
           let rec = filterByPeriod(DATA.financeiro.filter(l=>l.tipo==='receita'), dr);
           const stF = document.getElementById('rf-status-rec')?.value || 'Todos';
-          if (stF !== 'Todos') rec = rec.filter(l => l.status === stF);
+          if (stF !== 'Todos') rec = rec.filter(l => NexoFinanceiroStatus.matchesFiltro(l.status, stF));
           downloadData(`contas_receber_${today}.csv`, [['Vencimento','Descrição','Categoria','Valor','Status'], ...rec.map(l=>[l.vencimento||'—',l.descricao||'—',l.categoria||'—',fmtVal(l.valor),l.status||'—'])]);
           break;
         }

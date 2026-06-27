@@ -2319,6 +2319,24 @@ NexoAuth.requireAuth();
       }
     }
 
+    function _showFiadoLimitRelease(fiado, onPin) {
+      const limite = fiado?.limiteCredito || 0;
+      const aberto = fiado?.totalEmAberto || 0;
+      const total = fiado?.total || fiado?.novaVendaFiado || getTotal();
+      const depois = fiado?.novoTotalEmAberto ?? (aberto + total);
+      showConfirm(
+        'Limite de credito excedido',
+        `Aberto: R$ ${fmt(aberto)} | Venda: R$ ${fmt(total)} | Limite: R$ ${fmt(limite)} | Apos venda: R$ ${fmt(depois)}. Deseja liberar com PIN de supervisor?`,
+        async () => {
+          const pin = await requestSupervisorPin({
+            sub: 'Digite o PIN de supervisor para liberar a venda fiado acima do limite',
+          });
+          if (pin) onPin(pin);
+        },
+        { confirmText: 'Liberar', icon: '!' }
+      );
+    }
+
     function confirmPayment() {
       if (selectedMethod === 'pix' && !pixPago) {
         NexoToast.warning('Aguardando confirmação do PIX.');
@@ -2337,7 +2355,7 @@ NexoAuth.requireAuth();
           return;
         }
         if (fiado.depois < 0) {
-          NexoToast.warning('Limite de crédito insuficiente para esta venda.');
+          _showFiadoLimitRelease(fiado, (pin) => finalizarVenda({ supervisorPin: pin }));
           return;
         }
       }
@@ -2691,7 +2709,7 @@ NexoAuth.requireAuth();
       };
     }
 
-    async function _registrarVenda(sale) {
+    async function _registrarVenda(sale, options = {}) {
       const session = NexoAuth.getSession();
       const operador = session?.user?.name || 'PDV';
       const operadorId = session?.user?.id || null;
@@ -2723,6 +2741,7 @@ NexoAuth.requireAuth();
         horaStr: sale.time || now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
         ...(_isFiado && sale.fiado ? {
           vencimentoFiado: sale.fiado.vencimento,
+          ...(options.supervisorPin ? { supervisorPin: options.supervisorPin } : {}),
           fiado: {
             clienteId:  sale.fiado.clienteId,
             vencimento: sale.fiado.vencimento,
@@ -2731,7 +2750,12 @@ NexoAuth.requireAuth();
       };
 
       const r = await NexoAuth.apiFetch('/vendas', { method: 'POST', body: JSON.stringify(payload) });
-      if (!r.ok) throw new Error(r.message || 'Erro ao registrar venda');
+      if (!r.ok) {
+        const err = new Error(r.message || 'Erro ao registrar venda');
+        err.code = r.code;
+        err.data = r.data;
+        throw err;
+      }
 
       // Usa o id gerado pela API
       sale.id = r.data.id;
@@ -2890,19 +2914,24 @@ NexoAuth.requireAuth();
       if (cd) cd.style.display = 'none';
     }
 
-    async function finalizarVenda() {
+    async function finalizarVenda(options = {}) {
       const btn = document.getElementById('btnConfirmPay');
       const restoreLoading = setButtonLoading(btn, 'Finalizando...');
       try {
         const total = getTotal();
         const sale = _buildSale(total);
         salvarVendaPixPendente(sale);
-        await _registrarVenda(sale);
+        await _registrarVenda(sale, options);
         limparVendaPixPendente();
         await closePayModal(true);
         _mostrarSucesso(sale);
         clearCart();
       } catch (err) {
+        if (err.code === 'CREDIT_LIMIT_EXCEEDED') {
+          limparVendaPixPendente();
+          _showFiadoLimitRelease(err.data || getFiadoData(), (pin) => finalizarVenda({ supervisorPin: pin }));
+          return;
+        }
         NexoToast.error(err.message || 'Erro ao registrar venda. Tente novamente.');
       } finally {
         restoreLoading();

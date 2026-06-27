@@ -20,7 +20,6 @@
 - Suspensao/pendencia Pix usa localStorage.
 
 **Falta backend/banco:**
-- Validacao backend de limite de credito.
 - Auditoria de operador por acao.
 
 **Precisa teste:**
@@ -35,13 +34,12 @@
 - Conta a receber e baixa existem.
 - Receber tudo por cliente existe.
 - Credito do cliente consulta aberto.
+- Venda fiado valida limite de credito no backend e permite liberacao com PIN de supervisor.
 
 **Parcial:**
-- Limite de credito e bloqueio ainda dependem muito do frontend.
 - Historico de pagamentos por cliente nao e dedicado.
 
 **Falta banco/regra:**
-- Validacao de limite no backend.
 - Politica configuravel: bloquear ou pedir autorizacao.
 
 ## Clientes
@@ -68,6 +66,7 @@
 - Contas bancarias.
 - Cartao a receber e conciliacao manual.
 - Centro de custo.
+- Status financeiro padronizado em helper/constantes compartilhados.
 
 **Mockado/visual/parcial:**
 - Extrato bancario.
@@ -77,7 +76,8 @@
 **Falta backend/banco:**
 - Conciliação bancaria real.
 - Historico formal de baixa.
-- Status/metodos como enums.
+- Metodos financeiros como enums.
+- Status financeiro como enum forte no banco, se a migracao for planejada.
 - Conta bancaria vinculada a todos os recebimentos/pagamentos.
 
 ## Centro de custo
@@ -198,6 +198,9 @@
 - Configurar `CORS_ORIGIN` no Railway com o dominio Netlify atual e futuro dominio proprio.
 - Configurar `PUBLIC_APP_URL`, `EMAIL_FROM` e `RESEND_API_KEY` no Railway para envio real de confirmacao.
 - Validar assinatura/origem dos webhooks Mercado Pago.
+- Criar testes automatizados dos fluxos criticos: venda, caixa, estoque, fiado, Pix, cartao, estorno e dashboard financeiro.
+- Documentar e testar backup/restore antes de qualquer cliente oficial.
+- Configurar monitoramento minimo de producao: healthcheck, uptime, erros e logs sem dados sensiveis.
 
 ### Status atual
 Parcialmente pronto para beta controlado. A API deixou de aceitar qualquer origem, limita tentativas de login/cadastro e ja tem confirmacao de email, mas ainda precisa das demais protecoes de seguranca da Fase 1.

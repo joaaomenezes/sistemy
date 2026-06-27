@@ -74,6 +74,8 @@
     let _pendingItemEdit = null;
     let _iedDiscTipo    = '%';
     let _pinInput       = '';
+    let _pinMode        = 'itemEdit';
+    let _pinResolve     = null;
 
     function openItemEdit(id) {
       const item = cart.find(c => c.id === id);
@@ -144,16 +146,46 @@
     }
 
     // ── PIN supervisor ────────────────────────────────────
-    function openPinModal() {
+    function openPinModal(options = {}) {
+      _pinMode = options.mode || 'itemEdit';
+      _pinResolve = typeof options.resolve === 'function' ? options.resolve : null;
       _pinInput = '';
       _updatePinDots();
+      const title = document.querySelector('#pinOverlay .pin-title');
+      const sub = document.querySelector('#pinOverlay .pin-sub');
+      if (title) title.textContent = options.title || 'PIN de Supervisor';
+      if (sub) sub.textContent = options.sub || 'Autorização necessária para alterar preço ou desconto';
       document.getElementById('pinOverlay').classList.add('open');
     }
 
     function closePinModal() {
       document.getElementById('pinOverlay').classList.remove('open');
       _pinInput = '';
+      if (_pinResolve) {
+        _pinResolve(null);
+        _pinResolve = null;
+      }
+      _pinMode = 'itemEdit';
       _updatePinDots();
+    }
+
+    function _closePinModalSilent() {
+      document.getElementById('pinOverlay').classList.remove('open');
+      _pinInput = '';
+      _pinResolve = null;
+      _pinMode = 'itemEdit';
+      _updatePinDots();
+    }
+
+    function requestSupervisorPin(options = {}) {
+      return new Promise(resolve => {
+        openPinModal({
+          mode: 'collect',
+          resolve,
+          title: options.title || 'PIN de Supervisor',
+          sub: options.sub || 'Autorização necessária para liberar esta venda fiado',
+        });
+      });
     }
 
     function pinKey(val) {
@@ -173,6 +205,14 @@
     }
 
     function _verifyPin() {
+      if (_pinMode === 'collect') {
+        const pin = _pinInput;
+        const resolve = _pinResolve;
+        _closePinModalSilent();
+        if (resolve) resolve(pin);
+        return;
+      }
+
       const cfg = JSON.parse(localStorage.getItem('nexoerp.config') || '{}');
       if (_pinInput === String(cfg._supervisorPin || '')) {
         applyItemEdit();

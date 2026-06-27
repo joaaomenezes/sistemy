@@ -32,7 +32,21 @@
     - `login.html`
     - `confirmar-email.html`
   - Observacao: cadastro gera token de verificacao, login bloqueia conta nao confirmada quando `EMAIL_VERIFICATION_REQUIRED=true`, e o frontend possui tela de confirmacao.
-- [ ] Padronizar status financeiro: `pago`, `recebido`, `conciliado`, `avencer`, `cancelado`, `estornado`.
+- [x] Padronizar status financeiro: `pendente`, `avencer`, `vencida`, `pago`, `recebido`, `conciliado`, `cancelado`, `estornado`.
+  - Concluido em: 2026-06-27
+  - Arquivos alterados:
+    - `src/utils/financeiroStatus.js`
+    - `src/routes/financeiro.js`
+    - `src/routes/caixas.js`
+    - `src/routes/clientes.js`
+    - `src/routes/vendas.js`
+    - `src/routes/pedidos.js`
+    - `utils.js`
+    - `dashboard.html`
+    - `financeiro.html`
+    - `clientes.html`
+    - `relatorios.html`
+  - Observacao: criados helper/constantes compartilhados para status de `Lancamento`; sem migration, sem enum Prisma e sem renomear status existentes.
 - [x] Corrigir dashboard para considerar `recebido` e `conciliado`.
   - Concluido em: 2026-06-26
   - Arquivos alterados:
@@ -61,9 +75,22 @@
     - `pdv/pdv-cash-register.js`
   - Observacao: modal e fechamento do caixa usam `GET /api/caixas/:id/resumo`, com fallback local se a API falhar.
 - [ ] Migrar valores monetarios de `Float` para `Decimal` ou planejar essa migracao antes de dados reais.
-- [ ] Validar limite de credito no backend para venda fiado.
+- [x] Validar limite de credito no backend para venda fiado.
+  - Concluido em: 2026-06-27
+  - Arquivos alterados:
+    - `prisma/schema.prisma`
+    - `prisma/migrations/20260627100000_add_supervisor_pin_to_pdv_config/migration.sql`
+    - `src/routes/configuracoes-pdv.js`
+    - `src/routes/vendas.js`
+    - `src/middleware/errorHandler.js`
+    - `configuracoes.html`
+    - `pdv/pdv.js`
+    - `pdv/pdv-cart.js`
+  - Observacao: venda fiado agora valida `totalEmAberto + novaVendaFiado > limite` no backend; se exceder, exige liberacao com PIN de supervisor salvo como hash na configuracao do PDV.
 - [ ] Validar assinatura/origem de webhooks Mercado Pago.
-- [ ] Criar bateria minima de testes manuais documentados para venda, estoque, fiado, Pix, cartao e estorno.
+- [ ] Criar testes automatizados dos fluxos criticos: venda, caixa, estoque, fiado, Pix, cartao, estorno e dashboard financeiro.
+- [ ] Documentar e testar backup/restore antes de producao.
+- [ ] Configurar monitoramento minimo de producao: healthcheck, uptime, erros e logs sem dados sensiveis.
 
 ## Fase 2 - Beta controlado
 

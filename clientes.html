@@ -1979,10 +1979,10 @@
 
       const [rAberto, rPago] = await Promise.all([
         NexoAuth.apiFetch(`/financeiro?tipo=receita&clienteId=${clienteId}&limit=5&sortBy=pagoEm`),
-        NexoAuth.apiFetch(`/financeiro?tipo=receita&status=pago&clienteId=${clienteId}&limit=5&sortBy=pagoEm`),
+        NexoAuth.apiFetch(`/financeiro?tipo=receita&statusIn=${NexoFinanceiroStatus.realizadosParam()}&clienteId=${clienteId}&limit=5&sortBy=pagoEm`),
       ]);
 
-      const aberto = (rAberto.ok ? rAberto.data : []).filter(l => l.status !== 'pago' && l.status !== 'cancelado' && l.status !== 'estornado');
+      const aberto = (rAberto.ok ? rAberto.data : []).filter(l => NexoFinanceiroStatus.contaComoAberto(l));
       const pagos  = rPago.ok ? (rPago.data || []) : [];
 
       let html = '';
