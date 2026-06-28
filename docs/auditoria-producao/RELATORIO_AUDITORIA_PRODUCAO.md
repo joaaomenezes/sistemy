@@ -31,7 +31,8 @@ O ponto mais importante: varias telas ja funcionam com backend real, mas o siste
 7. Relatorios carregam listas grandes e filtram no frontend.
 8. Financeiro e PDV ainda concentram muita responsabilidade em arquivos grandes.
 9. Metodos financeiros ainda sao strings soltas; status financeiros ja possuem helper/constantes compartilhados, mas ainda nao viraram enum forte no banco.
-10. Rotas de webhook nao usam assinatura/secret de forma completa para validar origem.
+10. Webhook Mercado Pago agora exige assinatura/secret e consulta o provedor antes de alterar cobranca; ainda falta teste automatizado especifico.
+11. Testes automatizados foram criados em banco Neon separado (`nexoerp-test`) para os fluxos criticos da Fase 1: venda, caixa, estoque, fiado, Pix, cartao, estorno, dashboard/resumo financeiro, pedido, permissoes e webhook.
 
 ---
 
@@ -276,7 +277,7 @@ Validar assinatura do provedor, idempotencia, status no provedor antes de atuali
 **Como corrigir:**
 Implementar validacao oficial do Mercado Pago para webhook, secret por empresa e idempotency key.
 
-**Status recomendado:** Corrigir antes de producao real com Pix automatico.
+**Status recomendado:** Corrigido em 2026-06-28; criar teste automatizado de assinatura invalida, evento repetido e evento atrasado.
 
 ---
 
@@ -539,8 +540,8 @@ Continuar extracao gradual, com validacao por pagina e sem refatorar regra de ne
 - Evoluir status financeiro para enum forte no banco, se a base real estiver limpa e a migracao for planejada.
 - Executar migracao real de valores monetarios de `Float` para `Decimal` conforme `PLANO_MIGRACAO_DECIMAL.md`.
 - Evoluir politica de credito para configuracao por empresa, se necessario.
-- Validar webhook Mercado Pago com assinatura/origem, idempotencia e confirmacao no provedor antes de alterar cobranca.
-- Criar testes automatizados dos fluxos criticos: venda, caixa, estoque, fiado, Pix, cartao, estorno e dashboard financeiro.
+- Criar testes automatizados para webhook Mercado Pago com assinatura/origem, idempotencia e confirmacao no provedor.
+- Manter e expandir testes automatizados conforme novos fluxos surgirem. A cobertura critica da Fase 1 foi criada para fiado/limite/PIN/recebimento, venda dinheiro, fechamento de caixa, estorno, estoque insuficiente, Pix confirmado/pendente/expirado, cartao/conciliacao, dashboard/resumo financeiro, pedido faturado/cancelado, permissoes e webhook sem assinatura/evento atrasado.
 - Documentar e testar backup/restore.
 - Configurar monitoramento minimo de producao: healthcheck, uptime, erros e logs sem dados sensiveis.
 
@@ -886,6 +887,83 @@ O frontend continua avisando antes da venda, mas a trava oficial passa a ser o b
 **Pendencias restantes:**
 - Criar teste automatizado para venda fiado dentro do limite, acima do limite sem PIN, acima do limite com PIN valido e acima do limite com PIN invalido.
 - Decidir se a politica de credito sera sempre "bloquear ou liberar com PIN" ou configuravel por empresa.
+
+### 2026-06-28 - Webhook Mercado Pago endurecido
+
+**Prioridade original:** Alto
+**Modulo:** Backend / Pix / Integracoes / Seguranca
+**Status:** Concluido
+
+**O que foi feito:**
+A rota de webhook Mercado Pago passou a exigir `webhookSecret`, `x-signature` e `x-request-id` antes de processar qualquer evento. A assinatura oficial e validada com tolerancia de 300 segundos. Depois da assinatura valida, o backend continua consultando o Mercado Pago para confirmar o estado real da cobranca antes de alterar `PixCobranca`.
+
+Tambem foi adicionada protecao contra regressao de status: eventos atrasados nao rebaixam uma cobranca ja consolidada como `pago`, `estornado`, `contestado` ou `divergente`.
+
+**Arquivos alterados:**
+- `src/routes/webhooks.js`
+- `docs/auditoria-producao/ROADMAP_CORRECOES.md`
+- `docs/auditoria-producao/CHECKLIST_PRODUCAO.md`
+- `docs/auditoria-producao/PENDENCIAS_MODULOS.md`
+- `docs/auditoria-producao/RELATORIO_AUDITORIA_PRODUCAO.md`
+
+**Impacto:**
+Reduz risco de notificacao forjada, evento sem assinatura ou evento atrasado alterar indevidamente uma cobranca Pix. A rota agora falha com `401` quando a assinatura e ausente ou invalida.
+
+**Validacao realizada:**
+- `node --check src/routes/webhooks.js`
+- `node -e "require('./src/routes/webhooks'); console.log('webhooks-load-ok')"`
+
+**Pendencias restantes:**
+- Criar teste automatizado cobrindo assinatura ausente/invalida.
+- Criar teste automatizado cobrindo evento repetido e evento atrasado.
+
+### 2026-06-28 - Testes automatizados iniciais em banco separado
+
+**Prioridade original:** Alto  
+**Modulo:** Backend / PDV / Caixa / Fiado  
+**Status:** Parcial iniciado  
+
+**O que foi feito:**
+Foi criado um arquivo `.env.test` fora do versionamento para apontar para o branch Neon `nexoerp-test`. Tambem foi adicionado um runner que carrega `.env.test`, recusa rodar se a `DATABASE_URL` for igual ao `.env` principal e executa comandos de teste/migration nesse ambiente separado.
+
+O primeiro teste automatizado cobre o fluxo critico de fiado com limite de credito e PIN de supervisor. O teste cria empresa temporaria, configura PIN, abre caixa, cria cliente com limite e valida os cenarios principais.
+
+**Arquivos alterados:**
+- `scripts/run-with-test-env.js`
+- `test/api/credit-limit.test.js`
+- `test/api/pdv-critical-flows.test.js`
+- `package.json`
+- `.gitignore`
+- `docs/auditoria-producao/ROADMAP_CORRECOES.md`
+- `docs/auditoria-producao/CHECKLIST_PRODUCAO.md`
+- `docs/auditoria-producao/RELATORIO_AUDITORIA_PRODUCAO.md`
+
+**Validacao realizada:**
+- `npm run test:migrate`
+- `npm test`
+- Resultado: 19 testes passando, 0 falhas.
+
+**Cobertura atual:**
+- Venda PDV sem caixa aberto do operador retorna 409.
+- Venda fiado dentro do limite passa.
+- Venda fiado acima do limite sem PIN retorna `CREDIT_LIMIT_EXCEEDED`.
+- Venda fiado acima do limite com PIN invalido retorna `INVALID_SUPERVISOR_PIN`.
+- Venda fiado acima do limite com PIN valido e liberada.
+- Lancamentos de fiado podem ser baixados como `recebido`.
+- Venda dinheiro baixa estoque, cria lancamento `pago`, compoe resumo oficial e fecha caixa com `totalVendas` calculado no backend.
+- Estorno devolve estoque, cria movimentacao de entrada e marca lancamento como `estornado`.
+- Venda com estoque insuficiente retorna erro e nao cria venda, lancamento ou movimentacao.
+- Venda credito parcelado cria recebiveis `avencer` com valor bruto, taxa e liquido previsto.
+- Recebivel de cartao pode ser marcado como `recebido` e depois `conciliado`.
+- Venda Pix so passa com cobranca `pago`; cobrancas `pendente` e `expirado` bloqueiam a venda.
+- Resumo financeiro considera `pago`, `recebido` e `conciliado` como realizados.
+- Pedido faturado baixa estoque, cria venda/lancamento e cancelamento reverte estoque, venda e lancamento.
+- Subusuario sem permissao e bloqueado em modulo negado e acessa modulo liberado.
+- Webhook Mercado Pago sem assinatura retorna 401 quando a integracao ativa possui secret configurado.
+- Evento webhook atrasado/repetido nao rebaixa status consolidado.
+
+**Pendencias restantes:**
+- Integrar testes adicionais conforme novos fluxos de Pix real, adquirentes, fiscal e relatorios server-side forem implementados.
 
 ## Recomendacao final
 

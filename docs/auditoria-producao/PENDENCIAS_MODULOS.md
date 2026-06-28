@@ -22,10 +22,16 @@
 **Falta backend/banco:**
 - Auditoria de operador por acao.
 
-**Precisa teste:**
+**Testes automatizados criados em 2026-06-28:**
 - Venda com cartao parcelado.
+- Venda dinheiro e fechamento de caixa.
+- Fiado com limite/PIN e recebimento.
+- Pix confirmado, pendente e expirado.
+- Estorno de venda com devolucao de estoque.
+
+**Ainda exige teste manual/especifico:**
 - Split com Pix + cartao.
-- Estorno Pix automatico.
+- Estorno Pix automatico contra provedor real.
 - Caixa aberto/fechado em dois navegadores.
 
 ## Fiado / Contas a receber
@@ -197,8 +203,7 @@
 ### Ainda pendente
 - Configurar `CORS_ORIGIN` no Railway com o dominio Netlify atual e futuro dominio proprio.
 - Configurar `PUBLIC_APP_URL`, `EMAIL_FROM` e `RESEND_API_KEY` no Railway para envio real de confirmacao.
-- Validar assinatura/origem dos webhooks Mercado Pago.
-- Criar testes automatizados dos fluxos criticos: venda, caixa, estoque, fiado, Pix, cartao, estorno e dashboard financeiro.
+- Manter testes automatizados dos fluxos criticos ja criados e expandir quando surgirem novos fluxos de Pix real, adquirentes e relatorios server-side.
 - Documentar e testar backup/restore antes de qualquer cliente oficial.
 - Configurar monitoramento minimo de producao: healthcheck, uptime, erros e logs sem dados sensiveis.
 

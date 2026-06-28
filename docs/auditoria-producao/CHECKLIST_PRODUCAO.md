@@ -10,10 +10,11 @@
 - [x] CORS restrito por ambiente.
 - [x] Venda PDV exige caixa aberto no backend.
 - [ ] Logs de producao sem dados sensiveis.
-- [ ] Testes automatizados para vendas, caixa, estoque e financeiro.
+- [x] Testes automatizados para vendas, caixa, estoque e financeiro.
+  - Cobertura inicial concluida em `test/api`: venda dinheiro, caixa, estoque insuficiente, estorno, fiado/recebimento, Pix, cartao/conciliacao, pedido, permissoes, resumo financeiro e webhook.
 - [x] Endpoint de resumo oficial para caixa.
 - [ ] Endpoints de resumo oficial para dashboard.
-- [ ] Webhooks com validacao de assinatura.
+- [x] Webhooks com validacao de assinatura.
 - [ ] Healthcheck/monitoramento de API em producao.
 
 ## Frontend
@@ -139,13 +140,19 @@
 
 ## Testes
 
-- [ ] Teste venda dinheiro.
-- [ ] Teste venda Pix confirmado.
-- [ ] Teste venda Pix pendente/expirada.
-- [ ] Teste debito/credito e conciliacao.
-- [ ] Teste fiado e recebimento.
-- [ ] Teste estorno.
-- [ ] Teste abertura/fechamento de caixa.
-- [ ] Teste pedido faturado/concluido/cancelado.
-- [ ] Teste estoque insuficiente.
-- [ ] Teste permissoes por usuario.
+- [x] Teste venda dinheiro.
+- [x] Teste venda Pix confirmado.
+- [x] Teste venda Pix pendente/expirada.
+- [x] Teste debito/credito e conciliacao.
+- [x] Teste credito parcelado com taxa e liquido previsto.
+- [x] Teste fiado e recebimento.
+- [x] Teste fiado com limite de credito e PIN supervisor.
+- [x] Teste estorno.
+- [x] Teste abertura/fechamento de caixa.
+- [x] Teste bloqueio de venda PDV sem caixa aberto do operador.
+- [x] Teste webhook Mercado Pago sem assinatura.
+- [x] Teste webhook Mercado Pago evento repetido/atrasado.
+- [x] Teste pedido faturado/concluido/cancelado.
+- [x] Teste estoque insuficiente.
+- [x] Teste permissoes por usuario.
+- [x] Teste resumo financeiro/dashboard.

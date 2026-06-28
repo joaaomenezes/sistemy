@@ -94,8 +94,24 @@
     - `pdv/pdv.js`
     - `pdv/pdv-cart.js`
   - Observacao: venda fiado agora valida `totalEmAberto + novaVendaFiado > limite` no backend; se exceder, exige liberacao com PIN de supervisor salvo como hash na configuracao do PDV.
-- [ ] Validar assinatura/origem de webhooks Mercado Pago.
-- [ ] Criar testes automatizados dos fluxos criticos: venda, caixa, estoque, fiado, Pix, cartao, estorno e dashboard financeiro.
+- [x] Validar assinatura/origem de webhooks Mercado Pago.
+  - Concluido em: 2026-06-28
+  - Arquivos alterados:
+    - `src/routes/webhooks.js`
+    - `docs/auditoria-producao/ROADMAP_CORRECOES.md`
+    - `docs/auditoria-producao/CHECKLIST_PRODUCAO.md`
+    - `docs/auditoria-producao/PENDENCIAS_MODULOS.md`
+    - `docs/auditoria-producao/RELATORIO_AUDITORIA_PRODUCAO.md`
+  - Observacao: webhook agora exige `webhookSecret`, `x-signature`, `x-request-id`, valida assinatura oficial, consulta o Mercado Pago antes de alterar cobranca e evita regressao de status por evento atrasado.
+- [x] Criar testes automatizados dos fluxos criticos: venda, caixa, estoque, fiado, Pix, cartao, estorno e dashboard financeiro.
+  - Concluido em: 2026-06-28
+  - Arquivos alterados:
+    - `scripts/run-with-test-env.js`
+    - `test/api/credit-limit.test.js`
+    - `test/api/pdv-critical-flows.test.js`
+    - `package.json`
+    - `.gitignore`
+  - Observacao: criado runner seguro com `.env.test`, banco Neon separado `nexoerp-test` e cobertura automatizada para venda dinheiro, caixa, estoque insuficiente, estorno, fiado/limite/PIN/recebimento, Pix pago/pendente/expirado, cartao/conciliacao, resumo financeiro, pedido faturado/cancelado, permissoes e webhook Mercado Pago sem assinatura/evento atrasado.
 - [ ] Documentar e testar backup/restore antes de producao.
 - [ ] Configurar monitoramento minimo de producao: healthcheck, uptime, erros e logs sem dados sensiveis.
 

@@ -143,6 +143,7 @@ Observacao: movimentos dentro de `sangrias` ficam em JSON. A aplicacao deve norm
 
 - Backup/restore testado.
 - Testes automatizados minimos de PDV, caixa, financeiro e estorno criados.
+  - Concluido em 2026-06-28 para a cobertura critica da Fase 1: venda dinheiro, caixa, estoque insuficiente, estorno, fiado/recebimento, Pix, cartao/conciliacao, resumo financeiro, pedido, permissoes e webhook.
 - Helper monetario backend implementado.
 - Rotas criticas convertendo entrada/saida de forma padronizada.
 - Plano de rollback documentado.
