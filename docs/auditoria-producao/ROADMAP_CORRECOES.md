@@ -142,7 +142,7 @@
     - `docs/auditoria-producao/ROADMAP_CORRECOES.md`
     - `docs/auditoria-producao/CHECKLIST_PRODUCAO.md`
     - `docs/auditoria-producao/RELATORIO_AUDITORIA_PRODUCAO.md`
-  - Observacao: `/health` validado em producao, logs HTTP nao registram query string em producao, erros produzem logs sanitizados e foi criado healthcheck agendado via GitHub Actions a cada 5 minutos.
+  - Observacao: `/health` validado em producao, logs HTTP nao registram query string em producao, erros produzem logs sanitizados, GitHub Actions monitora a cada 5 minutos e UptimeRobot foi configurado com alerta em `alertas@azzys.com.br`.
 
 ## Fase 2 - Beta controlado
 

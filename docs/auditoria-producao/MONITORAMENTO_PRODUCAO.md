@@ -40,20 +40,20 @@ Esse workflow:
 
 Importante: o alerta depende das notificacoes do GitHub estarem ativas para falha de workflow.
 
-## Uptime monitor externo opcional
+## Monitor externo ativo
 
-Para redundancia, ainda e recomendado configurar um monitor externo com estes parametros:
+Foi configurado monitor externo no UptimeRobot para redundancia:
 
 - Tipo: HTTP/HTTPS.
 - Metodo: `GET`.
 - URL: `https://nexoerp-api-production.up.railway.app/health`.
-- Intervalo recomendado: 1 a 5 minutos.
-- Timeout recomendado: 20 segundos.
-- Alerta minimo: e-mail do dono/responsavel tecnico.
+- Intervalo: 5 minutos.
+- Alerta: `alertas@azzys.com.br`.
 
-Servicos possiveis:
+O e-mail `alertas@azzys.com.br` foi criado como alias do e-mail principal do dominio. Assim, alertas tecnicos ficam separados do e-mail pessoal.
 
-- UptimeRobot.
+Servicos alternativos futuros:
+
 - Better Stack.
 - Railway observability, quando disponivel no plano.
 
@@ -84,13 +84,15 @@ Em 2026-06-28:
 - API publica respondeu `200 OK` em `/health`.
 - `npx prisma migrate status` confirmou banco principal atualizado.
 - Testes criticos do backend passaram com `19/19`.
+- GitHub Actions configurado para healthcheck a cada 5 minutos.
+- UptimeRobot configurado para monitor externo com alerta em `alertas@azzys.com.br`.
 
 ## Rotina recomendada
 
 Antes de cliente oficial:
 
-- Confirmar monitor externo ativo.
-- Confirmar recebimento de alerta por e-mail.
+- Confirmar periodicamente que o monitor externo continua ativo.
+- Confirmar periodicamente que o alias `alertas@azzys.com.br` continua recebendo e-mails.
 - Revisar logs apos uma venda teste, um erro 4xx esperado e um erro 5xx simulado em ambiente controlado.
 
 Durante operacao:
