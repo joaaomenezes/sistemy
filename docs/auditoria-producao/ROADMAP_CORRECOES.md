@@ -133,7 +133,16 @@
     - `.env.example`
     - `docs/auditoria-producao/BACKUP_RESTORE.md`
   - Observacao: rotina documentada e scripts seguros criados. Backup real gerado em `backups/nexoerp-2026-06-28T20-50-14-344Z.dump`; restore validado em branch separado via `.env.restore` com tabelas essenciais presentes.
-- [ ] Configurar monitoramento minimo de producao: healthcheck, uptime, erros e logs sem dados sensiveis.
+- [x] Configurar monitoramento minimo de producao: healthcheck, uptime, erros e logs sem dados sensiveis.
+  - Concluido em: 2026-06-28
+  - Arquivos alterados:
+    - `src/app.js`
+    - `src/middleware/errorHandler.js`
+    - `docs/auditoria-producao/MONITORAMENTO_PRODUCAO.md`
+    - `docs/auditoria-producao/ROADMAP_CORRECOES.md`
+    - `docs/auditoria-producao/CHECKLIST_PRODUCAO.md`
+    - `docs/auditoria-producao/RELATORIO_AUDITORIA_PRODUCAO.md`
+  - Observacao: `/health` validado em producao, logs HTTP nao registram query string em producao e erros produzem logs sanitizados.
 
 ## Fase 2 - Beta controlado
 
@@ -155,7 +164,7 @@
 - [ ] Criar DRE oficial no backend.
 - [ ] Criar relatorios server-side exportaveis.
 - [x] Criar rotina de backup/restore e documentar.
-- [ ] Adicionar monitoramento de erro e uptime.
+- [x] Adicionar monitoramento de erro e uptime.
 - [ ] Implementar recuperacao de senha.
 - [ ] Criar politica de permissoes mais granular por acao.
 - [ ] Criar importacao de extrato para conciliacao bancaria.

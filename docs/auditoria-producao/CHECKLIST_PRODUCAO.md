@@ -9,13 +9,13 @@
 - [x] Rate limit backend em login/cadastro.
 - [x] CORS restrito por ambiente.
 - [x] Venda PDV exige caixa aberto no backend.
-- [ ] Logs de producao sem dados sensiveis.
+- [x] Logs de producao sem dados sensiveis.
 - [x] Testes automatizados para vendas, caixa, estoque e financeiro.
   - Cobertura inicial concluida em `test/api`: venda dinheiro, caixa, estoque insuficiente, estorno, fiado/recebimento, Pix, cartao/conciliacao, pedido, permissoes, resumo financeiro e webhook.
 - [x] Endpoint de resumo oficial para caixa.
 - [ ] Endpoints de resumo oficial para dashboard.
 - [x] Webhooks com validacao de assinatura.
-- [ ] Healthcheck/monitoramento de API em producao.
+- [x] Healthcheck/monitoramento de API em producao.
 
 ## Frontend
 
@@ -126,7 +126,7 @@
 - [ ] Dominio proprio configurado.
 - [ ] Variaveis de producao revisadas.
 - [x] `prisma migrate deploy` no fluxo de deploy.
-- [ ] Healthcheck monitorado.
+- [x] Healthcheck monitorado.
 - [x] Backup Neon configurado e testado.
   - Backup real gerado e restore validado em branch separado.
 

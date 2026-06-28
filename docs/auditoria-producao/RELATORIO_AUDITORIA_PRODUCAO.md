@@ -534,7 +534,7 @@ Continuar extracao gradual, com validacao por pagina e sem refatorar regra de ne
 - [x] Testes automatizados nos fluxos criticos.
 - [x] Backup e rotina de restore testada.
   - Rotina documentada, scripts criados, backup real gerado e restore validado em branch separado.
-- [ ] Monitoramento/logs de producao.
+- [x] Monitoramento/logs de producao.
 
 ## Pendencias restantes da Fase 1
 
@@ -544,7 +544,7 @@ Continuar extracao gradual, com validacao por pagina e sem refatorar regra de ne
 - Expandir testes automatizados do webhook Mercado Pago com casos reais de assinatura/origem e confirmacao no provedor.
 - Manter e expandir testes automatizados conforme novos fluxos surgirem. A cobertura critica da Fase 1 foi criada para fiado/limite/PIN/recebimento, venda dinheiro, fechamento de caixa, estorno, estoque insuficiente, Pix confirmado/pendente/expirado, cartao/conciliacao, dashboard/resumo financeiro, pedido faturado/cancelado, permissoes e webhook sem assinatura/evento atrasado.
 - Backup/restore validado em branch separado. Manter rotina antes de migrations sensiveis e antes de clientes oficiais.
-- Configurar monitoramento minimo de producao: healthcheck, uptime, erros e logs sem dados sensiveis.
+- Manter monitoramento minimo de producao ativo: healthcheck, uptime, erros e logs sem dados sensiveis.
 
 ## Historico de correcoes apos auditoria
 
