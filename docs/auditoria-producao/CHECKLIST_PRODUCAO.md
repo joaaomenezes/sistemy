@@ -127,6 +127,7 @@
 - [ ] Variaveis de producao revisadas.
 - [x] `prisma migrate deploy` no fluxo de deploy.
 - [x] Healthcheck monitorado.
+  - Monitor inicial criado via GitHub Actions a cada 5 minutos.
 - [x] Backup Neon configurado e testado.
   - Backup real gerado e restore validado em branch separado.
 

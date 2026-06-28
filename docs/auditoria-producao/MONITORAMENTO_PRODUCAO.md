@@ -23,9 +23,26 @@ Resposta esperada:
 
 Status esperado: `200 OK`.
 
-## Uptime monitor
+## Monitor ativo
 
-Configurar um monitor externo com estes parametros:
+Foi criado um monitor inicial via GitHub Actions no repositorio `nexoerp-api`:
+
+```text
+.github/workflows/healthcheck.yml
+```
+
+Esse workflow:
+
+- Executa automaticamente a cada 5 minutos.
+- Tambem pode ser executado manualmente pelo GitHub em `Actions`.
+- Faz `GET` em `https://nexoerp-api-production.up.railway.app/health`.
+- Falha se o status HTTP nao for `200` ou se a resposta nao contiver `"ok":true`.
+
+Importante: o alerta depende das notificacoes do GitHub estarem ativas para falha de workflow.
+
+## Uptime monitor externo opcional
+
+Para redundancia, ainda e recomendado configurar um monitor externo com estes parametros:
 
 - Tipo: HTTP/HTTPS.
 - Metodo: `GET`.
