@@ -36,7 +36,8 @@
 - [x] Migrations existem.
 - [x] `Venda.caixaId` criado e persistido para venda PDV.
 - [x] Planejar troca de `Float` por `Decimal` para dinheiro.
-- [ ] Executar troca de `Float` por `Decimal` para dinheiro.
+- [x] Executar troca de `Float` por `Decimal` para dinheiro em banco de teste.
+- [ ] Aplicar troca de `Float` por `Decimal` no banco principal apos backup/restore.
 - [ ] Criar relacoes fortes entre venda, lancamento, cliente, caixa e operador.
 - [ ] Criar enums ou tabelas de status/metodos.
 - [ ] Adicionar indices financeiros e de relatorio.
@@ -53,8 +54,8 @@
 - [x] Rate limit no backend.
 - [x] CORS fechado.
 - [ ] Auditoria de dependencias.
-- [ ] Backup/restore documentado.
-- [ ] Restore testado em ambiente separado.
+- [x] Backup/restore documentado.
+- [x] Restore testado em ambiente separado.
 
 ## Financeiro
 
@@ -126,7 +127,8 @@
 - [ ] Variaveis de producao revisadas.
 - [ ] `prisma migrate deploy` no fluxo de deploy.
 - [ ] Healthcheck monitorado.
-- [ ] Backup Neon configurado e testado.
+- [x] Backup Neon configurado e testado.
+  - Backup real gerado e restore validado em branch separado.
 
 ## Performance
 

@@ -57,7 +57,7 @@ Usar `Decimal` no Prisma/PostgreSQL para valores monetarios, com padrao de arred
 **Como corrigir:**
 Criar migracao planejada de `Float` para `Decimal(14,2)` para campos monetarios e `Decimal(7,4)` para percentuais que exigirem precisao formal. Ajustar parsers no backend e frontend.
 
-**Status recomendado:** Plano concluido em 2026-06-27 no arquivo `docs/auditoria-producao/PLANO_MIGRACAO_DECIMAL.md`. Migracao real continua pendente e deve ser feita com backup, testes automatizados e revisao de serializacao JSON.
+**Status recomendado:** Plano concluido em 2026-06-27 no arquivo `docs/auditoria-producao/PLANO_MIGRACAO_DECIMAL.md`. Implementacao testada em `nexoerp-test` em 2026-06-28 com campos monetarios em `Decimal(14,2)`, `Lancamento.taxaPercentual` em `Decimal(7,4)` e serializacao JSON de `Prisma.Decimal` como numero. Aplicacao no banco principal ainda depende de backup/restore e deploy com `prisma migrate deploy`.
 
 ---
 
@@ -532,17 +532,18 @@ Continuar extracao gradual, com validacao por pagina e sem refatorar regra de ne
 - [ ] Validacao de webhook.
 - [ ] Relatorios server-side para dados grandes.
 - [ ] Testes automatizados nos fluxos criticos.
-- [ ] Backup e rotina de restore testada.
+- [x] Backup e rotina de restore testada.
+  - Rotina documentada, scripts criados, backup real gerado e restore validado em branch separado.
 - [ ] Monitoramento/logs de producao.
 
 ## Pendencias restantes da Fase 1
 
 - Evoluir status financeiro para enum forte no banco, se a base real estiver limpa e a migracao for planejada.
-- Executar migracao real de valores monetarios de `Float` para `Decimal` conforme `PLANO_MIGRACAO_DECIMAL.md`.
+- Aplicar migracao real de valores monetarios de `Float` para `Decimal` no banco principal apos backup/restore validado.
 - Evoluir politica de credito para configuracao por empresa, se necessario.
 - Criar testes automatizados para webhook Mercado Pago com assinatura/origem, idempotencia e confirmacao no provedor.
 - Manter e expandir testes automatizados conforme novos fluxos surgirem. A cobertura critica da Fase 1 foi criada para fiado/limite/PIN/recebimento, venda dinheiro, fechamento de caixa, estorno, estoque insuficiente, Pix confirmado/pendente/expirado, cartao/conciliacao, dashboard/resumo financeiro, pedido faturado/cancelado, permissoes e webhook sem assinatura/evento atrasado.
-- Documentar e testar backup/restore.
+- Backup/restore validado em branch separado. Manter rotina antes de migrations sensiveis e antes de clientes oficiais.
 - Configurar monitoramento minimo de producao: healthcheck, uptime, erros e logs sem dados sensiveis.
 
 ## Historico de correcoes apos auditoria

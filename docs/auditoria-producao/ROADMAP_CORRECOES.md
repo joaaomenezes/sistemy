@@ -82,6 +82,15 @@
     - `docs/auditoria-producao/CHECKLIST_PRODUCAO.md`
     - `docs/auditoria-producao/RELATORIO_AUDITORIA_PRODUCAO.md`
   - Observacao: migracao real continua pendente; plano define campos, precisao, riscos, ordem e criterios antes de alterar o schema.
+- [x] Implementar migracao monetaria de `Float` para `Decimal` em ambiente de teste.
+  - Concluido em: 2026-06-28
+  - Arquivos alterados:
+    - `prisma/schema.prisma`
+    - `prisma/migrations/20260628170000_migrate_money_float_to_decimal/migration.sql`
+    - `src/app.js`
+    - `test/api/credit-limit.test.js`
+    - `test/api/pdv-critical-flows.test.js`
+  - Observacao: campos monetarios foram migrados para `Decimal(14,2)` e `Lancamento.taxaPercentual` para `Decimal(7,4)` no banco `nexoerp-test`; API serializa `Prisma.Decimal` como numero no JSON para manter compatibilidade com o frontend. Producao ainda depende de deploy com `prisma migrate deploy`.
 - [x] Validar limite de credito no backend para venda fiado.
   - Concluido em: 2026-06-27
   - Arquivos alterados:
@@ -112,7 +121,18 @@
     - `package.json`
     - `.gitignore`
   - Observacao: criado runner seguro com `.env.test`, banco Neon separado `nexoerp-test` e cobertura automatizada para venda dinheiro, caixa, estoque insuficiente, estorno, fiado/limite/PIN/recebimento, Pix pago/pendente/expirado, cartao/conciliacao, resumo financeiro, pedido faturado/cancelado, permissoes e webhook Mercado Pago sem assinatura/evento atrasado.
-- [ ] Documentar e testar backup/restore antes de producao.
+- [x] Documentar e testar backup/restore antes de producao.
+  - Concluido em: 2026-06-28
+  - Arquivos alterados:
+    - `scripts/db-env.js`
+    - `scripts/db-backup.js`
+    - `scripts/db-restore.js`
+    - `scripts/db-validate.js`
+    - `package.json`
+    - `.gitignore`
+    - `.env.example`
+    - `docs/auditoria-producao/BACKUP_RESTORE.md`
+  - Observacao: rotina documentada e scripts seguros criados. Backup real gerado em `backups/nexoerp-2026-06-28T20-50-14-344Z.dump`; restore validado em branch separado via `.env.restore` com tabelas essenciais presentes.
 - [ ] Configurar monitoramento minimo de producao: healthcheck, uptime, erros e logs sem dados sensiveis.
 
 ## Fase 2 - Beta controlado
@@ -130,7 +150,7 @@
 
 ## Fase 3 - Producao real
 
-- [ ] Concluir migracao monetaria com `Decimal`.
+- [ ] Aplicar migracao monetaria com `Decimal` em producao apos backup/restore validado.
 - [ ] Criar indices de banco para relatorios, financeiro, caixa e estoque.
 - [ ] Criar DRE oficial no backend.
 - [ ] Criar relatorios server-side exportaveis.

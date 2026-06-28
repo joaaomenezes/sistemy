@@ -204,6 +204,7 @@
 - Configurar `CORS_ORIGIN` no Railway com o dominio Netlify atual e futuro dominio proprio.
 - Configurar `PUBLIC_APP_URL`, `EMAIL_FROM` e `RESEND_API_KEY` no Railway para envio real de confirmacao.
 - Manter testes automatizados dos fluxos criticos ja criados e expandir quando surgirem novos fluxos de Pix real, adquirentes e relatorios server-side.
+- Aplicar migracao monetaria `Float` -> `Decimal` no banco principal somente apos backup/restore validado; implementacao ja foi testada em `nexoerp-test`.
 - Documentar e testar backup/restore antes de qualquer cliente oficial.
 - Configurar monitoramento minimo de producao: healthcheck, uptime, erros e logs sem dados sensiveis.
 
