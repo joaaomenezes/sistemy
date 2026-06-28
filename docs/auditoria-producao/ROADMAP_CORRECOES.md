@@ -74,7 +74,14 @@
   - Arquivos alterados:
     - `pdv/pdv-cash-register.js`
   - Observacao: modal e fechamento do caixa usam `GET /api/caixas/:id/resumo`, com fallback local se a API falhar.
-- [ ] Migrar valores monetarios de `Float` para `Decimal` ou planejar essa migracao antes de dados reais.
+- [x] Planejar migracao de valores monetarios de `Float` para `Decimal` antes de dados reais.
+  - Concluido em: 2026-06-27
+  - Arquivos alterados:
+    - `docs/auditoria-producao/PLANO_MIGRACAO_DECIMAL.md`
+    - `docs/auditoria-producao/ROADMAP_CORRECOES.md`
+    - `docs/auditoria-producao/CHECKLIST_PRODUCAO.md`
+    - `docs/auditoria-producao/RELATORIO_AUDITORIA_PRODUCAO.md`
+  - Observacao: migracao real continua pendente; plano define campos, precisao, riscos, ordem e criterios antes de alterar o schema.
 - [x] Validar limite de credito no backend para venda fiado.
   - Concluido em: 2026-06-27
   - Arquivos alterados:

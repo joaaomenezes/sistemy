@@ -54,9 +54,9 @@ Pode gerar diferenca de centavos em caixa, cartão, Pix, DRE, relatorios e conci
 Usar `Decimal` no Prisma/PostgreSQL para valores monetarios, com padrao de arredondamento centralizado.
 
 **Como corrigir:**
-Criar migracao planejada de `Float` para `Decimal(12,2)` ou `Decimal(14,4)` conforme campo. Ajustar parsers no backend e frontend.
+Criar migracao planejada de `Float` para `Decimal(14,2)` para campos monetarios e `Decimal(7,4)` para percentuais que exigirem precisao formal. Ajustar parsers no backend e frontend.
 
-**Status recomendado:** Corrigir antes de producao real.
+**Status recomendado:** Plano concluido em 2026-06-27 no arquivo `docs/auditoria-producao/PLANO_MIGRACAO_DECIMAL.md`. Migracao real continua pendente e deve ser feita com backup, testes automatizados e revisao de serializacao JSON.
 
 ---
 
@@ -537,7 +537,7 @@ Continuar extracao gradual, com validacao por pagina e sem refatorar regra de ne
 ## Pendencias restantes da Fase 1
 
 - Evoluir status financeiro para enum forte no banco, se a base real estiver limpa e a migracao for planejada.
-- Migrar valores monetarios de `Float` para `Decimal`, ou fechar um plano de migracao antes de dados reais.
+- Executar migracao real de valores monetarios de `Float` para `Decimal` conforme `PLANO_MIGRACAO_DECIMAL.md`.
 - Evoluir politica de credito para configuracao por empresa, se necessario.
 - Validar webhook Mercado Pago com assinatura/origem, idempotencia e confirmacao no provedor antes de alterar cobranca.
 - Criar testes automatizados dos fluxos criticos: venda, caixa, estoque, fiado, Pix, cartao, estorno e dashboard financeiro.

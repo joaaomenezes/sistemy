@@ -34,7 +34,8 @@
 - [x] Multiempresa por `empresaId`.
 - [x] Migrations existem.
 - [x] `Venda.caixaId` criado e persistido para venda PDV.
-- [ ] Trocar `Float` por `Decimal` para dinheiro.
+- [x] Planejar troca de `Float` por `Decimal` para dinheiro.
+- [ ] Executar troca de `Float` por `Decimal` para dinheiro.
 - [ ] Criar relacoes fortes entre venda, lancamento, cliente, caixa e operador.
 - [ ] Criar enums ou tabelas de status/metodos.
 - [ ] Adicionar indices financeiros e de relatorio.
