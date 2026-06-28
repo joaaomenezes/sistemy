@@ -4,6 +4,5 @@
 // Em produção: coloque a URL do Railway/servidor.
 
 window.NEXO_CONFIG = {
-  apiUrl: null,
-  // apiUrl: 'https://nexoerp-api.up.railway.app/api',
+  apiUrl: 'https://nexoerp-api-production.up.railway.app/api',
 };
