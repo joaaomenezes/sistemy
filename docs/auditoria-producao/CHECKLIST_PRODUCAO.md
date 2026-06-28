@@ -37,7 +37,7 @@
 - [x] `Venda.caixaId` criado e persistido para venda PDV.
 - [x] Planejar troca de `Float` por `Decimal` para dinheiro.
 - [x] Executar troca de `Float` por `Decimal` para dinheiro em banco de teste.
-- [ ] Aplicar troca de `Float` por `Decimal` no banco principal apos backup/restore.
+- [x] Aplicar troca de `Float` por `Decimal` no banco principal apos backup/restore.
 - [ ] Criar relacoes fortes entre venda, lancamento, cliente, caixa e operador.
 - [ ] Criar enums ou tabelas de status/metodos.
 - [ ] Adicionar indices financeiros e de relatorio.
@@ -125,7 +125,7 @@
 - [x] `config.js` apontando para API Railway.
 - [ ] Dominio proprio configurado.
 - [ ] Variaveis de producao revisadas.
-- [ ] `prisma migrate deploy` no fluxo de deploy.
+- [x] `prisma migrate deploy` no fluxo de deploy.
 - [ ] Healthcheck monitorado.
 - [x] Backup Neon configurado e testado.
   - Backup real gerado e restore validado em branch separado.

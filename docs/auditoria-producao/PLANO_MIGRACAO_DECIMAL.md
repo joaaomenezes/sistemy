@@ -150,7 +150,7 @@ Observacao: movimentos dentro de `sangrias` ficam em JSON. A aplicacao deve norm
 
 ## Status
 
-Planejamento concluido e migracao implementada/testada em `nexoerp-test` em 2026-06-28.
+Planejamento concluido, migracao implementada/testada em `nexoerp-test` e aplicada no banco principal em 2026-06-28.
 
 Validacoes realizadas:
 - `npx prisma validate`
@@ -158,4 +158,4 @@ Validacoes realizadas:
 - `node scripts/run-with-test-env.js npx prisma generate`
 - `npm test` com 19 testes passando
 
-Producao ainda pendente: aplicar `prisma migrate deploy` somente apos backup/restore validado.
+Producao validada: backup/restore foi testado antes da aplicacao, `prisma migrate status` confirmou o banco principal atualizado e a API publica respondeu em `/health`.

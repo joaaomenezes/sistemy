@@ -81,8 +81,8 @@
     - `docs/auditoria-producao/ROADMAP_CORRECOES.md`
     - `docs/auditoria-producao/CHECKLIST_PRODUCAO.md`
     - `docs/auditoria-producao/RELATORIO_AUDITORIA_PRODUCAO.md`
-  - Observacao: migracao real continua pendente; plano define campos, precisao, riscos, ordem e criterios antes de alterar o schema.
-- [x] Implementar migracao monetaria de `Float` para `Decimal` em ambiente de teste.
+  - Observacao: plano definiu campos, precisao, riscos, ordem e criterios antes de alterar o schema. A migracao real foi aplicada depois de backup/restore validado.
+- [x] Implementar e aplicar migracao monetaria de `Float` para `Decimal`.
   - Concluido em: 2026-06-28
   - Arquivos alterados:
     - `prisma/schema.prisma`
@@ -90,7 +90,7 @@
     - `src/app.js`
     - `test/api/credit-limit.test.js`
     - `test/api/pdv-critical-flows.test.js`
-  - Observacao: campos monetarios foram migrados para `Decimal(14,2)` e `Lancamento.taxaPercentual` para `Decimal(7,4)` no banco `nexoerp-test`; API serializa `Prisma.Decimal` como numero no JSON para manter compatibilidade com o frontend. Producao ainda depende de deploy com `prisma migrate deploy`.
+  - Observacao: campos monetarios foram migrados para `Decimal(14,2)` e `Lancamento.taxaPercentual` para `Decimal(7,4)`; API serializa `Prisma.Decimal` como numero no JSON para manter compatibilidade com o frontend. Validado em `nexoerp-test` e aplicado no banco principal apos backup/restore validado.
 - [x] Validar limite de credito no backend para venda fiado.
   - Concluido em: 2026-06-27
   - Arquivos alterados:
@@ -150,11 +150,11 @@
 
 ## Fase 3 - Producao real
 
-- [ ] Aplicar migracao monetaria com `Decimal` em producao apos backup/restore validado.
+- [x] Aplicar migracao monetaria com `Decimal` em producao apos backup/restore validado.
 - [ ] Criar indices de banco para relatorios, financeiro, caixa e estoque.
 - [ ] Criar DRE oficial no backend.
 - [ ] Criar relatorios server-side exportaveis.
-- [ ] Criar rotina de backup/restore e documentar.
+- [x] Criar rotina de backup/restore e documentar.
 - [ ] Adicionar monitoramento de erro e uptime.
 - [ ] Implementar recuperacao de senha.
 - [ ] Criar politica de permissoes mais granular por acao.
