@@ -545,6 +545,24 @@ Continuar extracao gradual, com validacao por pagina e sem refatorar regra de ne
 - Manter e expandir testes automatizados conforme novos fluxos surgirem. A cobertura critica da Fase 1 foi criada para fiado/limite/PIN/recebimento, venda dinheiro, fechamento de caixa, estorno, estoque insuficiente, Pix confirmado/pendente/expirado, cartao/conciliacao, dashboard/resumo financeiro, pedido faturado/cancelado, permissoes e webhook sem assinatura/evento atrasado.
 - Backup/restore validado em branch separado. Manter rotina antes de migrations sensiveis e antes de clientes oficiais.
 - Manter monitoramento minimo de producao ativo: healthcheck, uptime, erros e logs sem dados sensiveis.
+- Concluir pendencias operacionais finais: rotacionar `RESEND_API_KEY` se a chave antiga do `.env.example` for real e conferir variaveis nos paineis Railway, Netlify, Neon e Resend.
+
+## Auditoria final da Fase 1
+
+Executada em 2026-06-28 e documentada em `docs/auditoria-producao/AUDITORIA_FINAL_FASE1.md`.
+
+Validado:
+
+- API publica saudavel em `/health`.
+- Banco principal sem migrations pendentes.
+- GitHub Actions e UptimeRobot configurados para monitoramento.
+- Backup/restore validado previamente.
+- `.env.example` corrigido para remover chave com formato real do Resend.
+
+Pendencias operacionais:
+
+- Rotacionar a chave Resend se a chave antiga era real.
+- Conferir visualmente variaveis nos paineis Railway, Netlify, Neon e Resend.
 
 ## Historico de correcoes apos auditoria
 
