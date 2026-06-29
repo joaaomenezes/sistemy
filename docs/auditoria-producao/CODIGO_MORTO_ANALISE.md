@@ -3,8 +3,8 @@
 ## Resumo
 
 - Total de itens analisados: 39
-- Seguro remover: 9
-- Provavelmente seguro, mas precisa validar: 19
+- Seguro remover: 16
+- Provavelmente seguro, mas precisa validar: 12
 - Nao remover: 11
 - Possivel impacto em performance: medio/alto no frontend, principalmente por HTML/CSS grandes, CSS duplicado por pagina, imagens da landing e bibliotecas externas carregadas em paginas especificas.
 
@@ -26,6 +26,22 @@ Validacao apos remocao:
 - Busca por todos os nomes removidos nao retornou referencias restantes.
 - Remocao limitada a funcoes sem chamada encontrada.
 - Nenhuma regra de negocio, layout, banco, endpoint ou fluxo financeiro foi alterado.
+
+Data: 2026-06-29
+
+Segundo lote seguro removido apos nova validacao:
+
+- `financeiro.html`: removidos `_movTime` e `setPeriod`.
+- `pedidos.html`: removido stub `gerarParcelas`.
+- `global.css`: removidos seletor `.nx-btn-icon`, bloco `.dp-btn.purple` e aliases `.nx-skeleton-*`.
+- `pdv/pdv.css`: removido bloco `.pay-body`.
+
+Validacao apos remocao:
+
+- Busca por `_movTime`, `setPeriod(`, `gerarParcelas(`, `nx-btn-icon`, `.dp-btn.purple`, `pay-body` e `nx-skeleton` nao retornou referencias restantes.
+- Scripts JS externos passaram em `node --check`.
+- Scripts inline de `financeiro.html` e `pedidos.html` foram extraidos e passaram no parse com `new Function`.
+- Remocao limitada a funcoes/stubs/classes CSS sem referencia encontrada.
 
 ---
 
@@ -169,6 +185,7 @@ Validacao apos remocao:
 
 **Tipo:** Funcao
 **Arquivo:** `pedidos.html`
+**Status:** Removido no segundo lote seguro.
 **Motivo:** Stub que apenas comenta que parcelas sao geradas na hora de salvar por `gerarParcelasCalc`.
 **Possivel uso indireto:** Pode estar preso em algum evento inline antigo nao capturado por busca simples, embora a busca tenha encontrado apenas a declaracao.
 **Como validar antes de remover:** Criar/editar pedido parcelado e verificar se `gerarParcelasCalc` segue gerando as parcelas no save.
@@ -235,6 +252,7 @@ Validacao apos remocao:
 
 **Tipo:** Funcao
 **Arquivo:** `financeiro.html`
+**Status:** Removido no segundo lote seguro.
 **Motivo:** Helper declarado dentro de `renderTabelas()`, mas sem chamada encontrada. A ordenacao/paginacao atual das movimentacoes usa outros caminhos.
 **Possivel uso indireto:** Baixo. Por estar dentro de escopo local, nao pode ser chamado por HTML inline externo.
 **Como validar antes de remover:** Abrir Financeiro, conferir aba de movimentacoes, contas a pagar/receber e DRE; depois buscar novamente por `_movTime`.
@@ -246,6 +264,7 @@ Validacao apos remocao:
 
 **Tipo:** Funcao
 **Arquivo:** `financeiro.html`
+**Status:** Removido no segundo lote seguro.
 **Motivo:** Funcao antiga de botao de periodo. A tela atual usa o date picker `finSelPeriod`, `finApplyCustom` e `_finUpdateLabelStr`.
 **Possivel uso indireto:** Pode sobrar de HTML antigo se algum botao inline ainda for reintroduzido manualmente, mas a busca atual encontrou apenas a declaracao.
 **Como validar antes de remover:** Testar todos os filtros de periodo do Financeiro, principalmente DRE e graficos.
@@ -257,6 +276,7 @@ Validacao apos remocao:
 
 **Tipo:** CSS
 **Arquivo:** `global.css`
+**Status:** Removido no segundo lote seguro.
 **Motivo:** Seletor aparece apenas na definicao CSS. Nao ha classe `nx-btn-icon` em HTML/JS atual.
 **Possivel uso indireto:** Pode ser classe reservada para componentes futuros ou HTML inserido manualmente.
 **Como validar antes de remover:** Buscar por `nx-btn-icon` depois de abrir todas as telas principais; se continuar sem uso, remover do CSS global.
@@ -279,6 +299,7 @@ Validacao apos remocao:
 
 **Tipo:** CSS
 **Arquivo:** `global.css`
+**Status:** Removido no segundo lote seguro.
 **Motivo:** Variante visual de botao roxo encontrada apenas na definicao CSS.
 **Possivel uso indireto:** Pode ser usada por componente antigo de date picker ou por classe aplicada dinamicamente.
 **Como validar antes de remover:** Testar filtros de data em dashboard/financeiro/relatorios e inspecionar DOM por `dp-btn purple`.
@@ -290,6 +311,7 @@ Validacao apos remocao:
 
 **Tipo:** CSS
 **Arquivo:** `pdv/pdv.css`
+**Status:** Removido no segundo lote seguro.
 **Motivo:** Classe aparece apenas na definicao CSS. A area de pagamento atual usa outras classes `pay-*`.
 **Possivel uso indireto:** Pode ter sido removida do HTML do modal de pagamento, mas CSS ficou.
 **Como validar antes de remover:** Abrir modal de pagamento no PDV e buscar no DOM por `pay-body`.
@@ -301,6 +323,7 @@ Validacao apos remocao:
 
 **Tipo:** CSS
 **Arquivo:** `global.css`, `utils.js`
+**Status:** Removido no segundo lote seguro.
 **Motivo:** O JS atual gera classes `skeleton`, `skeleton-line`, `skeleton-title`, `skeleton-avatar`, `skeleton-stack`. As aliases com prefixo `nx-skeleton-*` aparecem apenas no CSS.
 **Possivel uso indireto:** Podem ser compatibilidade para telas antigas ou HTML futuro.
 **Como validar antes de remover:** Buscar no DOM apos carregamento das telas com loading; se so aparecerem classes sem prefixo `nx-`, remover aliases `nx-skeleton-*` mantendo `skeleton-*`.
@@ -450,7 +473,7 @@ Os maiores pesos estao no frontend: paginas HTML muito grandes com CSS/JS inline
 
 2. O que e realmente codigo morto.
 
-Os candidatos mais fortes ja removidos foram funcoes declaradas e sem chamadas: `applyFiltersLegacyUnused`, `loadVendas`, `filterTable`, `_normalizeLancamentos`, `_finUpdateLabel`, `getCategorias`, `setItemPrice`, `parseMoneyInput` e `fecharImpressao`. Na segunda varredura, os candidatos mais fortes restantes sao `_movTime`, `setPeriod`, `gerarParcelas`, `.nx-btn-icon`, `.dp-btn.purple`, `.pay-body` e aliases antigos `nx-skeleton-*`.
+Os candidatos mais fortes ja removidos foram funcoes declaradas e sem chamadas e CSS sem referencia: `applyFiltersLegacyUnused`, `loadVendas`, `filterTable`, `_normalizeLancamentos`, `_finUpdateLabel`, `getCategorias`, `setItemPrice`, `parseMoneyInput`, `fecharImpressao`, `_movTime`, `setPeriod`, `gerarParcelas`, `.nx-btn-icon`, `.dp-btn.purple`, `.pay-body` e aliases antigos `nx-skeleton-*`.
 
 3. O que e apenas codigo duplicado, mas ainda usado.
 
@@ -458,20 +481,16 @@ Ha duplicacao de CSS/componentes entre paginas e funcoes parecidas de mascara/fo
 
 4. O que pode ser removido com baixo risco.
 
-Proximo lote de baixo risco: `_movTime`, `setPeriod`, `gerarParcelas`, `.nx-btn-icon`, `.dp-btn.purple`, `.pay-body` e aliases `nx-skeleton-*`, desde que a validacao visual/DOM confirme ausencia de uso.
+Com baixo risco, o lote atual ja foi removido. O que resta de baixo risco e mais documental: limpar referencias antigas a Netlify em docs, desde que confirmado quais documentos seguem ativos.
 
 5. O que precisa de teste antes de remover.
 
-PDV (`_checkCaixaBeforeLogout`, `.pay-body`), login/e-mail (`recConfirm`), pedidos parcelados (`gerarParcelas`), CSS de status dinamico (`.status-pill.orcamento`), aliases de skeleton e qualquer endpoint REST nao consumido diretamente pelo frontend.
+PDV (`_checkCaixaBeforeLogout`), login/e-mail (`recConfirm`), CSS de status dinamico (`.status-pill.orcamento`), `dashboard-prototipo.html`, `catalogo.html` e qualquer endpoint REST nao consumido diretamente pelo frontend.
 
 6. Quais arquivos devem ser limpos primeiro.
 
 Ordem recomendada:
 
-- `financeiro.html`: validar/remover `_movTime` e `setPeriod`.
-- `pedidos.html`: validar/remover `gerarParcelas`.
-- `global.css`: validar/remover `.nx-btn-icon`, `.dp-btn.purple` e aliases `nx-skeleton-*`.
-- `pdv/pdv.css`: validar/remover `.pay-body`.
 - `dashboard-prototipo.html`: remover somente se nao for mais referencia visual nem rota publica.
 - `ROADMAP.md`, `ROADMAP_AUTH_EMAIL.md` e `nexoerp-api/README.md`: limpar referencias antigas a Netlify/Vercel depois de confirmar quais docs seguem ativos.
 

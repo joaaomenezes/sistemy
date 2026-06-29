@@ -667,7 +667,6 @@ body {
   border-color: rgba(255, 77, 109, .42);
 }
 
-.nx-btn-icon,
 .icon-btn,
 .view-btn,
 .act-btn,
@@ -1624,12 +1623,6 @@ textarea.field::placeholder {
   color: var(--accent2);
 }
 
-.dp-btn.purple {
-  background: rgba(167, 139, 250, .1);
-  border: 1px solid rgba(167, 139, 250, .3);
-  color: var(--purple);
-}
-
 .dp-btn:hover {
   opacity: .85;
 }
@@ -2148,8 +2141,7 @@ tbody tr:hover .dp-id {
   0%   { background-position: -400px 0 }
   100% { background-position:  400px 0 }
 }
-.skeleton,
-.nx-skeleton {
+.skeleton {
   background: linear-gradient(90deg,
     rgba(255,255,255,.03) 25%,
     rgba(255,255,255,.08) 50%,
@@ -2160,58 +2152,50 @@ tbody tr:hover .dp-id {
   display: inline-block;
 }
 
-.skeleton-line,
-.nx-skeleton-line {
+.skeleton-line {
   display: block;
   width: 100%;
   height: 12px;
 }
 
-.skeleton-title,
-.nx-skeleton-title {
+.skeleton-title {
   display: block;
   width: min(180px, 70%);
   height: 18px;
 }
 
-.skeleton-pill,
-.nx-skeleton-pill {
+.skeleton-pill {
   width: 72px;
   height: 22px;
   border-radius: 999px;
 }
 
-.skeleton-card,
-.nx-skeleton-card {
+.skeleton-card {
   display: block;
   min-height: 96px;
   border-radius: var(--radius-lg);
 }
 
-.skeleton-kpi,
-.nx-skeleton-kpi {
+.skeleton-kpi {
   width: 100%;
   min-height: 74px;
   border-radius: var(--radius-lg);
 }
 
-.skeleton-avatar,
-.nx-skeleton-avatar {
+.skeleton-avatar {
   width: 36px;
   height: 36px;
   border-radius: var(--radius-md);
   flex-shrink: 0;
 }
 
-.skeleton-stack,
-.nx-skeleton-stack {
+.skeleton-stack {
   display: grid;
   gap: var(--space-2);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .skeleton,
-  .nx-skeleton {
+  .skeleton {
     animation: none;
   }
 }

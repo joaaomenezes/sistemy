@@ -3174,10 +3174,6 @@ transition: border-color .15s;
         return `${data} ${hora}`;
       };
       const _movDateRaw = l => l.criadoEm || l.dataISO || l.pagoEm || l.data || l.vencimento || '';
-      const _movTime = l => {
-        const d = new Date(_movDateRaw(l));
-        return isNaN(d.getTime()) ? 0 : d.getTime();
-      };
       const _movTipoHtml = l => {
         if (l.status === 'estornado') return '<span class="vencer-pill vencida">Estorno</span>';
         if (l.status === 'cancelado') return '<span class="vencer-pill vencida">Cancelado</span>';
@@ -4166,11 +4162,6 @@ transition: border-color .15s;
 
     // ═══════════════════════════════════════════════
     // ═══════════════════════════════════════════════
-    function setPeriod(el, period) {
-      document.querySelectorAll('.topbar-right .period-btn').forEach(b => b.classList.remove('active'));
-      el.classList.add('active');
-      showToast(`Período: ${el.textContent}`);
-    }
 
     function setFiltro(tipo) {
       showToast(`Abrindo lista de ${tipo === 'receber' ? 'Contas a Receber' : 'Contas a Pagar'}…`);
