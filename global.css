@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 
 /* ═══════════════════════════════════════════════════
@@ -22,7 +22,7 @@
   --text: #FFFFFF;
   --muted: #4A5568;
   --sub: #94A3B8;
-  --font-h: 'Syne', sans-serif;
+  --font-h: 'Inter', sans-serif;
   --font-b: 'Inter', sans-serif;
   --font-num: 'Inter', sans-serif;
   --sidebar: 240px;
@@ -1708,21 +1708,16 @@ tbody tr:hover .action-cell {
 }
 
 
-/* ══════════════════════════════════════════════════
-   FONT CENTRALIZATION — páginas internas
-   ──────────────────────────────────────────────────
-   Syne  (--font-h) → títulos, valores, KPIs, avatares
-   Inter (--font-b) → corpo, botões, inputs, labels
+/* FONT CENTRALIZATION - paginas internas
+   Inter (--font-h)   -> titulos, valores, KPIs, avatares
+   Inter (--font-b)   -> corpo, botoes, inputs, labels
+   Inter (--font-num) -> numeros e valores financeiros
 
-   ⚠️  NÃO declarar font-family nas páginas internas.
-       Toda tipografia é controlada aqui.
-   ⚠️  NÃO alterar: cadastro.html, landing.html,
-       login.html e pdv.html — são páginas independentes
-       com tipografia própria.
-
-   MANUTENÇÃO: ao renomear/remover uma classe,
-   atualizar o grupo correspondente abaixo.
-   ══════════════════════════════════════════════════ */
+   Nao declarar font-family nas paginas internas.
+   Toda tipografia e controlada aqui.
+   Paginas independentes como cadastro, login, catalogo e PDV
+   devem ser alteradas somente com revisao visual.
+*/
 
 /* ── Headings globais (todas as páginas internas) ── */
 h1,

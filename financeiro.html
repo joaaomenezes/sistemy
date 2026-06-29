@@ -4067,7 +4067,7 @@ transition: border-color .15s;
       document.getElementById('dreDonutSvg').innerHTML =
         `<circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="14"/>
         ${circles}
-        <text x="60" y="55" text-anchor="middle" fill="#FFF" font-size="10" font-weight="800" font-family="Syne,sans-serif">${liqLabel}</text>
+        <text x="60" y="55" text-anchor="middle" fill="#FFF" font-size="10" font-weight="800" font-family="Inter,sans-serif">${liqLabel}</text>
         <text x="60" y="68" text-anchor="middle" fill="rgba(148,163,184,.55)" font-size="7.5">Lucro Líquido</text>`;
       document.getElementById('dreDonutLegend').innerHTML = slices.map(s =>
         `<div class="dre-leg-row"><div class="dre-leg-dot" style="background:${s.color}"></div>${s.label}<span class="dre-leg-pct">${(s.pct*100).toFixed(1)}%</span></div>`
