@@ -2,9 +2,9 @@
 
 ## Resumo
 
-- Total de itens analisados: 39
-- Seguro remover: 16
-- Provavelmente seguro, mas precisa validar: 12
+- Total de itens analisados: 40
+- Seguro remover: 17
+- Provavelmente seguro, mas precisa validar: 11
 - Nao remover: 11
 - Possivel impacto em performance: medio/alto no frontend, principalmente por HTML/CSS grandes, CSS duplicado por pagina, imagens da landing e bibliotecas externas carregadas em paginas especificas.
 
@@ -42,6 +42,23 @@ Validacao apos remocao:
 - Scripts JS externos passaram em `node --check`.
 - Scripts inline de `financeiro.html` e `pedidos.html` foram extraidos e passaram no parse com `new Function`.
 - Remocao limitada a funcoes/stubs/classes CSS sem referencia encontrada.
+
+Data: 2026-06-29
+
+Terceiro lote seguro removido focado em `global.css`:
+
+- Aliases de botao sem uso: `.nx-btn`, `.nx-btn-primary`, `.nx-btn-ghost`, `.nx-btn-warning`, `.nx-btn-danger`, `.btn-sm-primary`, `.btn-sm-ghost`.
+- Aliases de cards/campos/modal sem uso: `.nx-card`, `.nx-kpi-card`, `.nx-section-card`, `.nx-field`, `.nx-modal-sm`, `.nx-modal-md`.
+- Seletores tipograficos sem uso: `.kanban-title`, `.pc-id`, `.pc-total`, `.pc-btn`, `.rbtn`, `.rel-chip`, `.rel-filtro-select`, `.add-item-sel`, `.date-range input`.
+- Skeletons sem uso: `.skeleton-pill`, `.skeleton-card`, `.skeleton-kpi`.
+
+Validacao apos remocao:
+
+- Busca por todos os seletores removidos dentro de `global.css` nao retornou referencias restantes.
+- Antes da remocao, busca fora de `global.css` tambem nao encontrou uso real desses seletores.
+- Validacao simples de chaves CSS retornou `braceDepth=0` e `minDepth=0`.
+- Mantido `.nx-modal-lg`, pois e usado por `ajuda.html`.
+- Mantido `.status-pill.orcamento`, pois status e montado dinamicamente por `status-pill ${p.status}`.
 
 ---
 
