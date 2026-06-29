@@ -49,7 +49,7 @@
 - [x] JWT com expiracao.
 - [x] Permissoes por modulo.
 - [x] Confirmacao de email.
-- [ ] Recuperacao de senha segura.
+- [x] Recuperacao de senha segura.
 - [ ] Politica minima de senha.
 - [x] Rate limit no backend.
 - [x] CORS fechado.

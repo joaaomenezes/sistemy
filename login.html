@@ -241,6 +241,28 @@
       margin-bottom: 16px;
     }
     .modal-box input:focus { border-color: var(--accent); }
+    .recovery-status {
+      display: none;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      font-size: 12.5px;
+      line-height: 1.45;
+      border: 1px solid rgba(255,255,255,.08);
+      color: var(--muted);
+      background: rgba(255,255,255,.035);
+    }
+    .recovery-status.show { display: block; }
+    .recovery-status.success {
+      color: var(--text);
+      border-color: rgba(0,200,150,.22);
+      background: rgba(0,200,150,.08);
+    }
+    .recovery-status.error {
+      color: #ff6b7a;
+      border-color: rgba(255,71,87,.25);
+      background: rgba(255,71,87,.08);
+    }
     .modal-actions { display: flex; gap: 8px; }
     .btn-modal-cancel {
       flex: 1; padding: 11px; border-radius: 10px;
@@ -336,13 +358,17 @@
   <!-- MODAL RECUPERAÇÃO DE SENHA -->
   <div class="modal-overlay" id="recoveryOverlay" onclick="if(event.target===this)closeRecovery()">
     <div class="modal-box">
-      <div id="recStep1">
+      <form id="recoveryForm" onsubmit="submitPasswordReset(event)">
         <h3>Recuperar acesso</h3>
-        <p>Para redefinir sua senha, entre em contato com o administrador da sua conta.</p>
+        <p>Informe o e-mail cadastrado. Se ele existir no sistema, enviaremos um link para criar uma nova senha.</p>
+        <label for="recEmail">E-mail cadastrado</label>
+        <input type="email" id="recEmail" placeholder="voce@empresa.com" autocomplete="email">
+        <div class="recovery-status" id="recStatus"></div>
         <div class="modal-actions">
-          <button class="btn-modal-ok" style="width:100%" onclick="closeRecovery()">Entendido</button>
+          <button type="button" class="btn-modal-cancel" onclick="closeRecovery()">Voltar</button>
+          <button type="submit" class="btn-modal-ok" id="recSubmitBtn">Enviar link</button>
         </div>
-      </div>
+      </form>
     </div>
   </div>
 
@@ -448,12 +474,42 @@
 
     // ── Recuperação de senha ────────────────────────────
     function openRecovery() {
-      document.getElementById('recStep1').style.display = 'block';
+      const typed = document.getElementById('usuario').value.trim();
+      const email = document.getElementById('recEmail');
+      const status = document.getElementById('recStatus');
+      const btn = document.getElementById('recSubmitBtn');
+      email.value = typed.includes('@') ? typed : '';
+      status.className = 'recovery-status';
+      status.textContent = '';
+      btn.disabled = false;
+      btn.textContent = 'Enviar link';
       document.getElementById('recoveryOverlay').classList.add('open');
+      setTimeout(() => email.focus(), 50);
     }
 
     function closeRecovery() {
       document.getElementById('recoveryOverlay').classList.remove('open');
+    }
+
+    async function submitPasswordReset(event) {
+      event.preventDefault();
+      const email = document.getElementById('recEmail').value.trim();
+      const status = document.getElementById('recStatus');
+      const btn = document.getElementById('recSubmitBtn');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        status.className = 'recovery-status show error';
+        status.textContent = 'Informe um e-mail válido.';
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+      status.className = 'recovery-status show';
+      status.textContent = 'Enviando instruções de recuperação...';
+      const result = await NexoAuth.forgotPassword(email);
+      status.className = `recovery-status show ${result.ok ? 'success' : 'error'}`;
+      status.textContent = result.message || 'Se este e-mail estiver cadastrado, enviaremos um link para redefinir sua senha.';
+      btn.disabled = false;
+      btn.textContent = 'Enviar novamente';
     }
   </script>
 </body>

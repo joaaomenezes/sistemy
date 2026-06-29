@@ -210,6 +210,36 @@
     }
   }
 
+  async function forgotPassword(email) {
+    try {
+      const result = await apiFetch('/auth/forgot-password', {
+        method: 'POST',
+        body: JSON.stringify({ email: normalize(email) }),
+      });
+      return result.ok
+        ? { ok: true, message: result.message }
+        : { ok: false, message: result.message || 'Erro ao solicitar recuperacao de senha.' };
+    } catch (err) {
+      console.error('[NexoAuth] forgotPassword:', err);
+      return { ok: false, message: 'Erro ao conectar com o servidor.' };
+    }
+  }
+
+  async function resetPassword(token, password, confirmPassword) {
+    try {
+      const result = await apiFetch('/auth/reset-password', {
+        method: 'POST',
+        body: JSON.stringify({ token, password, confirmPassword }),
+      });
+      return result.ok
+        ? { ok: true, message: result.message }
+        : { ok: false, message: result.message || 'Erro ao redefinir senha.' };
+    } catch (err) {
+      console.error('[NexoAuth] resetPassword:', err);
+      return { ok: false, message: 'Erro ao conectar com o servidor.' };
+    }
+  }
+
   // ── Gerenciamento de sub-usuários ────────────────────
   async function addSubUser(data) {
     try {
@@ -412,6 +442,8 @@
     registerUser,
     verifyEmail,
     resendVerification,
+    forgotPassword,
+    resetPassword,
     login,
     getSession,
     getToken,

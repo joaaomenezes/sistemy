@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resetar senha - AzzysERP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --bg: #07100d;
+      --panel: #101815;
+      --border: rgba(255,255,255,.1);
+      --text: #e8edf5;
+      --muted: #8ba19a;
+      --accent: #00c896;
+      --danger: #ff4757;
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: radial-gradient(circle at top, rgba(0,200,150,.16), transparent 32%), var(--bg);
+      color: var(--text);
+      font-family: Inter, sans-serif;
+    }
+    .card {
+      width: min(440px, 100%);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 34px 30px;
+      box-shadow: 0 24px 70px rgba(0,0,0,.35);
+    }
+    .icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 18px;
+      background: rgba(0,200,150,.12);
+      color: var(--accent);
+      font-size: 26px;
+    }
+    h1 { margin: 0 0 10px; font-size: 24px; text-align: center; }
+    p { margin: 0 0 22px; color: var(--muted); line-height: 1.55; font-size: 14px; text-align: center; }
+    label {
+      display: block;
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .field-wrap { position: relative; margin-bottom: 14px; }
+    .field-wrap i {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 15px;
+    }
+    input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 13px 14px 13px 40px;
+      background: rgba(255,255,255,.035);
+      color: var(--text);
+      font: 600 14px Inter, sans-serif;
+      outline: none;
+      transition: border-color .18s, box-shadow .18s;
+    }
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0,200,150,.12);
+    }
+    .hint {
+      margin: -4px 0 16px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .status {
+      display: none;
+      border-radius: 12px;
+      padding: 11px 12px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      line-height: 1.45;
+      border: 1px solid rgba(255,255,255,.08);
+      color: var(--muted);
+      background: rgba(255,255,255,.035);
+    }
+    .status.show { display: block; }
+    .status.error {
+      color: #ff6b7a;
+      border-color: rgba(255,71,87,.25);
+      background: rgba(255,71,87,.08);
+    }
+    .status.success {
+      color: var(--text);
+      border-color: rgba(0,200,150,.22);
+      background: rgba(0,200,150,.08);
+    }
+    .btn {
+      width: 100%;
+      border: 0;
+      border-radius: 12px;
+      padding: 13px 16px;
+      font-weight: 800;
+      font-size: 14px;
+      color: #021c14;
+      background: var(--accent);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn:disabled { opacity: .6; cursor: not-allowed; }
+    .btn.secondary {
+      margin-top: 10px;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .error .icon { background: rgba(255,71,87,.12); color: var(--danger); }
+  </style>
+</head>
+<body>
+  <main class="card" id="card">
+    <div class="icon" id="icon"><i class="bi bi-shield-lock"></i></div>
+    <h1 id="title">Criar nova senha</h1>
+    <p id="msg">Informe uma nova senha para voltar a acessar sua conta.</p>
+
+    <form id="resetForm" onsubmit="submitReset(event)">
+      <label for="password">Nova senha</label>
+      <div class="field-wrap">
+        <i class="bi bi-lock"></i>
+        <input type="password" id="password" autocomplete="new-password" placeholder="Minimo 8 caracteres">
+      </div>
+      <label for="confirmPassword">Confirmar senha</label>
+      <div class="field-wrap">
+        <i class="bi bi-lock-fill"></i>
+        <input type="password" id="confirmPassword" autocomplete="new-password" placeholder="Repita a nova senha">
+      </div>
+      <div class="hint">Use pelo menos 8 caracteres, com letra e numero.</div>
+      <div class="status" id="status"></div>
+      <button class="btn" id="submitBtn" type="submit">
+        <i class="bi bi-check2-circle"></i> Salvar nova senha
+      </button>
+      <a class="btn secondary" href="login.html">
+        <i class="bi bi-arrow-left"></i> Voltar para o login
+      </a>
+    </form>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token') || '';
+    const form = document.getElementById('resetForm');
+    const statusEl = document.getElementById('status');
+    const submitBtn = document.getElementById('submitBtn');
+    const card = document.getElementById('card');
+    const icon = document.getElementById('icon');
+    const title = document.getElementById('title');
+    const msg = document.getElementById('msg');
+
+    function setStatus(type, message) {
+      statusEl.className = `status show ${type || ''}`;
+      statusEl.textContent = message;
+    }
+
+    function invalidate(message) {
+      card.classList.add('error');
+      icon.innerHTML = '<i class="bi bi-x-circle-fill"></i>';
+      title.textContent = 'Link invalido';
+      msg.textContent = message;
+      form.querySelectorAll('input, button[type="submit"]').forEach(el => { el.disabled = true; });
+    }
+
+    if (!token) {
+      invalidate('O link de redefinicao esta incompleto. Solicite um novo link.');
+    }
+
+    async function submitReset(event) {
+      event.preventDefault();
+      if (!token) return;
+
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      if (password.length < 8 || !/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) {
+        setStatus('error', 'A senha deve ter pelo menos 8 caracteres, com letra e numero.');
+        return;
+      }
+      if (password !== confirmPassword) {
+        setStatus('error', 'As senhas nao conferem.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Salvando...';
+      setStatus('', 'Validando link e salvando nova senha...');
+
+      const result = await NexoAuth.resetPassword(token, password, confirmPassword);
+      if (!result.ok) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="bi bi-check2-circle"></i> Salvar nova senha';
+        setStatus('error', result.message || 'Nao foi possivel redefinir a senha.');
+        return;
+      }
+
+      icon.innerHTML = '<i class="bi bi-check-circle-fill"></i>';
+      title.textContent = 'Senha alterada';
+      msg.textContent = 'Sua senha foi atualizada com sucesso.';
+      setStatus('success', result.message || 'Acesse sua conta com a nova senha.');
+      form.querySelectorAll('input, button[type="submit"]').forEach(el => { el.disabled = true; });
+      setTimeout(() => { window.location.href = 'login.html'; }, 1800);
+    }
+  </script>
+</body>
+</html>

@@ -173,7 +173,19 @@
 - [ ] Criar relatorios server-side exportaveis.
 - [x] Criar rotina de backup/restore e documentar.
 - [x] Adicionar monitoramento de erro e uptime.
-- [ ] Implementar recuperacao de senha.
+- [x] Implementar recuperacao de senha.
+  - Concluido em: 2026-06-29
+  - Arquivos alterados:
+    - `prisma/schema.prisma`
+    - `prisma/migrations/20260629120000_add_password_reset_tokens/migration.sql`
+    - `src/services/passwordReset.js`
+    - `src/middleware/rateLimit.js`
+    - `src/routes/auth.js`
+    - `auth.js`
+    - `login.html`
+    - `resetar-senha.html`
+    - `docs/auditoria-producao/RECUPERACAO_SENHA.md`
+  - Observacao: fluxo real via Resend com token hash, expiracao, uso unico, rate limit por IP/e-mail e resposta generica para nao revelar cadastro.
 - [ ] Criar politica de permissoes mais granular por acao.
 - [ ] Criar importacao de extrato para conciliacao bancaria.
 - [ ] Validar uso multioperador simultaneo em PDV.
