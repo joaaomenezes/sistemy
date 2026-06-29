@@ -73,7 +73,7 @@ Valores esperados em producao:
 - `JWT_SECRET`: valor forte, nao compartilhado.
 - `INTEGRATION_ENCRYPTION_KEY`: chave com pelo menos 32 caracteres.
 - `PUBLIC_API_URL=https://nexoerp-api-production.up.railway.app`
-- `PUBLIC_APP_URL`: URL real do Netlify ou dominio proprio.
+- `PUBLIC_APP_URL`: URL real do Vercel ou dominio proprio.
 - `CORS_ORIGIN`: URL real do frontend, sem barra final.
 - `EMAIL_VERIFICATION_REQUIRED=true`
 - `EMAIL_FROM`: remetente validado no provedor de e-mail.
@@ -86,10 +86,11 @@ Deploy:
 - Pre-deploy command: `npx prisma migrate deploy`
 - Start command: pode usar o padrao do `package.json`, desde que o Railway rode `npm start`.
 
-## Checklist Netlify
+## Checklist Vercel
 
 - Frontend aponta para `https://nexoerp-api-production.up.railway.app/api`.
 - Deploy publicado a partir do branch correto.
+- `vercel.json` mantido para redirect raiz -> `landing.html` e headers basicos.
 - Se usar build command, confirmar que `API_URL` aponta para a API de producao.
 - Se usar dominio proprio, atualizar tambem `CORS_ORIGIN` e `PUBLIC_APP_URL` no Railway.
 
@@ -105,6 +106,6 @@ Deploy:
 Fase 1 tecnicamente pronta pelo codigo e pelas validacoes automatizadas, com duas pendencias operacionais obrigatorias:
 
 - Rotacionar a chave Resend caso a chave antiga do `.env.example` seja real.
-- Conferir visualmente as variaveis nos paineis Railway, Netlify, Neon e Resend.
+- Conferir visualmente as variaveis nos paineis Railway, Vercel, Neon e Resend.
 
 Depois dessa rotacao e da conferencia visual das variaveis, a Fase 1 pode ser marcada como fechada para avancar para Fase 2 ou teste manual guiado em producao.

@@ -120,11 +120,11 @@
 
 ## Deploy
 
-- [x] Frontend no Netlify.
+- [x] Frontend no Vercel.
 - [x] Backend no Railway.
 - [x] `config.js` apontando para API Railway.
 - [ ] Dominio proprio configurado.
-- [ ] Variaveis de producao revisadas nos paineis Railway/Netlify/Neon/Resend.
+- [ ] Variaveis de producao revisadas nos paineis Railway/Vercel/Neon/Resend.
   - Auditoria final criada em `docs/auditoria-producao/AUDITORIA_FINAL_FASE1.md`.
   - Pendencia operacional: rotacionar `RESEND_API_KEY` se a chave antiga do `.env.example` for real.
 - [x] `prisma migrate deploy` no fluxo de deploy.

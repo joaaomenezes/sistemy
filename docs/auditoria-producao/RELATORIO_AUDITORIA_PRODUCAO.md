@@ -190,7 +190,7 @@ Foi aplicado helper local no dashboard para considerar `pago`, `recebido` e `con
 Qualquer site pode tentar consumir a API usando tokens capturados do navegador. Nao e aceitavel para producao aberta.
 
 **Como deveria funcionar:**
-Permitir somente origens configuradas por ambiente, como dominio Netlify e dominio proprio.
+Permitir somente origens configuradas por ambiente, como dominio Vercel e dominio proprio.
 
 **Como corrigir:**
 Usar `CORS_ORIGIN` com allowlist e negar origens desconhecidas.
@@ -545,7 +545,7 @@ Continuar extracao gradual, com validacao por pagina e sem refatorar regra de ne
 - Manter e expandir testes automatizados conforme novos fluxos surgirem. A cobertura critica da Fase 1 foi criada para fiado/limite/PIN/recebimento, venda dinheiro, fechamento de caixa, estorno, estoque insuficiente, Pix confirmado/pendente/expirado, cartao/conciliacao, dashboard/resumo financeiro, pedido faturado/cancelado, permissoes e webhook sem assinatura/evento atrasado.
 - Backup/restore validado em branch separado. Manter rotina antes de migrations sensiveis e antes de clientes oficiais.
 - Manter monitoramento minimo de producao ativo: healthcheck, uptime, erros e logs sem dados sensiveis.
-- Concluir pendencias operacionais finais: rotacionar `RESEND_API_KEY` se a chave antiga do `.env.example` for real e conferir variaveis nos paineis Railway, Netlify, Neon e Resend.
+- Concluir pendencias operacionais finais: rotacionar `RESEND_API_KEY` se a chave antiga do `.env.example` for real e conferir variaveis nos paineis Railway, Vercel, Neon e Resend.
 
 ## Auditoria final da Fase 1
 
@@ -562,7 +562,7 @@ Validado:
 Pendencias operacionais:
 
 - Rotacionar a chave Resend se a chave antiga era real.
-- Conferir visualmente variaveis nos paineis Railway, Netlify, Neon e Resend.
+- Conferir visualmente variaveis nos paineis Railway, Vercel, Neon e Resend.
 
 ## Historico de correcoes apos auditoria
 
@@ -585,7 +585,7 @@ O backend deixou de aceitar qualquer origem no CORS. A API agora monta uma allow
 - `docs/auditoria-producao/RELATORIO_AUDITORIA_PRODUCAO.md`
 
 **Impacto:**
-Reduz o risco de a API ser consumida por frontends nao autorizados em producao. Tambem deixa claro como configurar Netlify, dominio proprio e ambiente local.
+Reduz o risco de a API ser consumida por frontends nao autorizados em producao. Tambem deixa claro como configurar Vercel, dominio proprio e ambiente local.
 
 **Validacao realizada:**
 - `node --check src/app.js`
@@ -594,7 +594,7 @@ Reduz o risco de a API ser consumida por frontends nao autorizados em producao. 
 - Teste HTTP local com origem desconhecida bloqueada pelo CORS.
 
 **Pendencias restantes:**
-- Configurar `CORS_ORIGIN` no Railway com `https://nexoerp.netlify.app` e o dominio proprio quando existir.
+- Configurar `CORS_ORIGIN` no Railway com o dominio Vercel atual e o dominio proprio quando existir.
 - Configurar envio real de confirmacao de email em producao com `PUBLIC_APP_URL`, `EMAIL_FROM` e `RESEND_API_KEY`.
 
 ### 2026-06-26 - Rate limit backend em login e cadastro

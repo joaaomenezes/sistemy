@@ -201,7 +201,7 @@
 - Confirmacao de email implementada com token, tela frontend e bloqueio quando `EMAIL_VERIFICATION_REQUIRED=true`.
 
 ### Ainda pendente
-- Configurar `CORS_ORIGIN` no Railway com o dominio Netlify atual e futuro dominio proprio.
+- Configurar `CORS_ORIGIN` no Railway com o dominio Vercel atual e futuro dominio proprio.
 - Configurar `PUBLIC_APP_URL`, `EMAIL_FROM` e `RESEND_API_KEY` no Railway para envio real de confirmacao.
 - Manter testes automatizados dos fluxos criticos ja criados e expandir quando surgirem novos fluxos de Pix real, adquirentes e relatorios server-side.
 - Aplicar migracao monetaria `Float` -> `Decimal` no banco principal somente apos backup/restore validado; implementacao ja foi testada em `nexoerp-test`.
