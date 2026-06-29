@@ -982,21 +982,6 @@
       return currentSection === 'pedidos' ? 'Nº Pedido' : 'Nº Venda';
     }
 
-    async function loadVendas(tipo) {
-      try {
-        const r = await NexoAuth.apiFetch(`/vendas?tipo=${tipo}`);
-        if (!r.ok) return [];
-        const lista = r.data;
-        lista.forEach(v => {
-          v.data = new Date(v.dataISO);
-          // Deriva data/hora de exibição do dataISO quando o backend não os gravou
-          if (!v.dataStr) v.dataStr = v.data.toLocaleDateString('pt-BR');
-          if (!v.horaStr) v.horaStr = v.data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-        });
-        return lista;
-      } catch (_) { return []; }
-    }
-
     let vendas = [];
     let currentFilter = 'todos';
     let currentPage = 1;
@@ -1242,31 +1227,6 @@
       currentFilter = val;
       currentPage = 1;
       applyFilters();
-    }
-
-    function applyFiltersLegacyUnused() {
-      return applyFilters();
-      const q = (document.getElementById('searchInput').value || '').toLowerCase();
-      const metodo = document.getElementById('metodoPag').value;
-      const dIni = document.getElementById('dataInicio').value;
-      const dFim = document.getElementById('dataFim').value;
-
-      filtered = vendas.filter(v => {
-        const matchQ = !q || (v.id || '').toLowerCase().includes(q) ||
-          (v.cliente || '').toLowerCase().includes(q) ||
-          fmt(v.total).includes(q);
-        const matchF = currentFilter === 'todos' || v.status === currentFilter;
-        const matchM = !metodo || getMethodMeta(v.metodo).key === metodo;
-        let matchD = true;
-        // Datas interpretadas no fuso local (anexar horário evita o parse UTC de "YYYY-MM-DD")
-        if (dIni) matchD = matchD && v.data >= new Date(dIni + 'T00:00:00');
-        if (dFim) matchD = matchD && v.data <= new Date(dFim + 'T23:59:59');
-        return matchQ && matchF && matchM && matchD;
-      });
-
-      currentPage = 1;
-      updateKPIs();
-      renderTable();
     }
 
     // ═══════════════════════════════════════════════

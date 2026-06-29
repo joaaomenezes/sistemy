@@ -685,16 +685,6 @@ NexoAuth.requireAuth();
       selectMethod(document.getElementById('payMethodDinheiro'), 'dinheiro');
     }
 
-    function parseMoneyInput(value) {
-      const normalized = String(value || '')
-        .replace(/\s/g, '')
-        .replace('R$', '')
-        .replace(/\./g, '')
-        .replace(',', '.')
-        .replace(/[^\d.]/g, '');
-      return parseFloat(normalized) || 0;
-    }
-
     function parsePercentInput(value) {
       const normalized = String(value || '').replace(/\s/g, '').replace(',', '.').replace(/[^\d.]/g, '');
       return parseFloat(normalized) || 0;
@@ -3418,8 +3408,6 @@ NexoAuth.requireAuth();
       // frame permanece oculto — @media print { display: block !important } o exibe só na impressão
       setTimeout(() => { window.print(); frame.innerHTML = ''; }, 150);
     }
-
-    function fecharImpressao() { const f = document.getElementById('printFrame'); f.style.display = 'none'; f.innerHTML = ''; }
 
     function openAtalhos() { document.getElementById('atalhosOverlay').classList.add('open'); }
     function closeAtalhos() { document.getElementById('atalhosOverlay').classList.remove('open'); }

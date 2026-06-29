@@ -60,15 +60,6 @@
       renderProducts();
     }
 
-    function setItemPrice(id, rawVal) {
-      const item = cart.find(c => c.id === id);
-      if (!item) return;
-      const price = Math.max(0, parseFloat(String(rawVal).replace(',', '.')) || 0);
-      item.preco = price;
-      item._precoNegociado = price !== (PRODUCTS.find(p => p.id === id) || {}).preco;
-      renderCart();
-    }
-
     // ── Item edit modal ───────────────────────────────────
     let _editingItemId  = null;
     let _pendingItemEdit = null;

@@ -2848,25 +2848,6 @@ transition: border-color .15s;
     // KPI / CHART / DONUT — calculados a partir de nexoerp.financeiro
     // ═══════════════════════════════════════════════
 
-    // Migra registros legados (desc/venc/categ) para o schema canônico (descricao/vencimento/categoria).
-    function _normalizeLancamentos(list) {
-      let dirty = false;
-      const result = list.map(l => {
-        if (!('descricao' in l) || !('vencimento' in l) || !('categoria' in l)) {
-          dirty = true;
-          const { desc, venc, categ, ...rest } = l;
-          return {
-            ...rest,
-            descricao:  rest.descricao  ?? desc  ?? '',
-            vencimento: rest.vencimento ?? venc  ?? '',
-            categoria:  rest.categoria  ?? categ ?? '',
-          };
-        }
-        return l;
-      });
-      return { list: result, dirty };
-    }
-
     function _parseLancDate(l) {
       const raw = l.data || l.vencimento || '';
       if (!raw) return null;
@@ -4347,10 +4328,6 @@ transition: border-color .15s;
       document.getElementById('finDpDrop').style.display = 'none';
       showToast('Período atualizado: ' + _finFmt(s) + ' – ' + _finFmt(e));
       if (document.getElementById('panel-dre')?.classList.contains('active')) renderDRE();
-    }
-
-    function _finUpdateLabel(ini, fim) {
-      _finUpdateLabelStr(_finFmtD(ini) + ' – ' + _finFmtD(fim));
     }
 
     function _finUpdateLabelStr(str) {
