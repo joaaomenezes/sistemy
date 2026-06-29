@@ -256,19 +256,6 @@
       transition: opacity .2s;
     }
     .btn-modal-ok:hover { opacity: .85; }
-    .modal-success {
-      display: none; text-align: center;
-      padding: 8px 0 4px;
-    }
-    .modal-success i { font-size: 40px; color: var(--accent); margin-bottom: 12px; display: block; }
-    .modal-success p { color: var(--text); font-size: 14px; margin: 0; }
-    .rec-error {
-      display: none; background: rgba(255,71,87,.1);
-      border: 1px solid rgba(255,71,87,.25); border-radius: 8px;
-      padding: 9px 12px; color: #ff4757; font-size: 13px;
-      margin-bottom: 14px;
-    }
-    .rec-error.show { display: block; }
   </style>
 </head>
 <body>
@@ -352,16 +339,9 @@
       <div id="recStep1">
         <h3>Recuperar acesso</h3>
         <p>Para redefinir sua senha, entre em contato com o administrador da sua conta.</p>
-        <div class="rec-error" id="recError"></div>
-        <div id="recStep2" style="display:none"></div>
         <div class="modal-actions">
           <button class="btn-modal-ok" style="width:100%" onclick="closeRecovery()">Entendido</button>
         </div>
-      </div>
-      <div class="modal-success" id="recSuccess" style="display:none">
-        <i class="bi bi-check-circle-fill"></i>
-        <p><strong>Contate o administrador.</strong></p>
-        <button class="btn-modal-ok" style="width:100%;margin-top:20px" onclick="closeRecovery()">Fechar</button>
       </div>
     </div>
   </div>
@@ -469,24 +449,11 @@
     // ── Recuperação de senha ────────────────────────────
     function openRecovery() {
       document.getElementById('recStep1').style.display = 'block';
-      document.getElementById('recStep2').style.display = 'none';
-      document.getElementById('recSuccess').style.display = 'none';
-      document.getElementById('recError').className = 'rec-error';
       document.getElementById('recoveryOverlay').classList.add('open');
     }
 
     function closeRecovery() {
       document.getElementById('recoveryOverlay').classList.remove('open');
-    }
-
-    function recStep2() {
-      document.getElementById('recStep1').style.display = 'none';
-      document.getElementById('recStep2').style.display = 'block';
-    }
-
-    function recConfirm() {
-      document.getElementById('recStep2').style.display = 'none';
-      document.getElementById('recSuccess').style.display = 'block';
     }
   </script>
 </body>

@@ -3,8 +3,8 @@
 ## Resumo
 
 - Total de itens analisados: 40
-- Seguro remover: 17
-- Provavelmente seguro, mas precisa validar: 11
+- Seguro remover: 18
+- Provavelmente seguro, mas precisa validar: 10
 - Nao remover: 11
 - Possivel impacto em performance: medio/alto no frontend, principalmente por HTML/CSS grandes, CSS duplicado por pagina, imagens da landing e bibliotecas externas carregadas em paginas especificas.
 
@@ -59,6 +59,18 @@ Validacao apos remocao:
 - Validacao simples de chaves CSS retornou `braceDepth=0` e `minDepth=0`.
 - Mantido `.nx-modal-lg`, pois e usado por `ajuda.html`.
 - Mantido `.status-pill.orcamento`, pois status e montado dinamicamente por `status-pill ${p.status}`.
+
+Data: 2026-06-29
+
+Quarto lote seguro removido focado em recuperacao visual antiga do login:
+
+- `login.html`: removidos `recStep2`, `recConfirm`, elementos `recSuccess`/`recError` e CSS associado.
+
+Validacao apos remocao:
+
+- Fluxo atual de "Esqueceu a senha?" exibe apenas o modal informativo "Recuperar acesso" com botao "Entendido".
+- Busca por `recConfirm`, `recStep2`, `recSuccess` e `recError` em `login.html` nao retornou referencias restantes.
+- Scripts inline de `login.html` passaram no parse com `new Function`.
 
 ---
 
@@ -191,10 +203,11 @@ Validacao apos remocao:
 
 **Tipo:** Funcao
 **Arquivo:** `login.html`
-**Motivo:** Funcao encontrada sem chamada direta no codigo. Parece relacionada a reenvio/confirmacao de e-mail.
-**Possivel uso indireto:** Pode ser chamada por HTML gerado dinamicamente ou por evento inline em modal de confirmacao.
-**Como validar antes de remover:** Testar fluxo de login com e-mail nao confirmado e reenvio de confirmacao. Remover apenas se nenhuma acao depender dela.
-**Risco:** Medio
+**Status:** Removido no quarto lote seguro.
+**Motivo:** Funcao de etapa antiga do modal de recuperacao de senha. O fluxo atual mostra apenas um aviso para contatar o administrador e fecha com o botao "Entendido".
+**Possivel uso indireto:** Nao encontrado apos busca por `recConfirm`, `recStep2`, `recSuccess` e `recError`.
+**Como validar antes de remover:** Validado clicando em "Esqueceu a senha?"; o modal atual nao usa etapas nem tela de sucesso antiga.
+**Risco:** Baixo
 
 ---
 
@@ -502,7 +515,7 @@ Com baixo risco, o lote atual ja foi removido. O que resta de baixo risco e mais
 
 5. O que precisa de teste antes de remover.
 
-PDV (`_checkCaixaBeforeLogout`), login/e-mail (`recConfirm`), CSS de status dinamico (`.status-pill.orcamento`), `dashboard-prototipo.html`, `catalogo.html` e qualquer endpoint REST nao consumido diretamente pelo frontend.
+PDV (`_checkCaixaBeforeLogout`), CSS de status dinamico (`.status-pill.orcamento`), `dashboard-prototipo.html`, `catalogo.html` e qualquer endpoint REST nao consumido diretamente pelo frontend.
 
 6. Quais arquivos devem ser limpos primeiro.
 
