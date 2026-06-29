@@ -2,11 +2,11 @@
 
 ## Resumo
 
-- Total de itens analisados: 24
+- Total de itens analisados: 39
 - Seguro remover: 9
-- Provavelmente seguro, mas precisa validar: 9
-- Nao remover: 6
-- Possivel impacto em performance: medio no frontend, principalmente por HTML/CSS grandes, pagina prototipo, CSS duplicado por pagina e bibliotecas externas carregadas em paginas especificas.
+- Provavelmente seguro, mas precisa validar: 19
+- Nao remover: 11
+- Possivel impacto em performance: medio/alto no frontend, principalmente por HTML/CSS grandes, CSS duplicado por pagina, imagens da landing e bibliotecas externas carregadas em paginas especificas.
 
 ## Remocao executada
 
@@ -231,7 +231,162 @@ Validacao apos remocao:
 
 ---
 
+### Item: `_movTime`
+
+**Tipo:** Funcao
+**Arquivo:** `financeiro.html`
+**Motivo:** Helper declarado dentro de `renderTabelas()`, mas sem chamada encontrada. A ordenacao/paginacao atual das movimentacoes usa outros caminhos.
+**Possivel uso indireto:** Baixo. Por estar dentro de escopo local, nao pode ser chamado por HTML inline externo.
+**Como validar antes de remover:** Abrir Financeiro, conferir aba de movimentacoes, contas a pagar/receber e DRE; depois buscar novamente por `_movTime`.
+**Risco:** Baixo
+
+---
+
+### Item: `setPeriod`
+
+**Tipo:** Funcao
+**Arquivo:** `financeiro.html`
+**Motivo:** Funcao antiga de botao de periodo. A tela atual usa o date picker `finSelPeriod`, `finApplyCustom` e `_finUpdateLabelStr`.
+**Possivel uso indireto:** Pode sobrar de HTML antigo se algum botao inline ainda for reintroduzido manualmente, mas a busca atual encontrou apenas a declaracao.
+**Como validar antes de remover:** Testar todos os filtros de periodo do Financeiro, principalmente DRE e graficos.
+**Risco:** Baixo
+
+---
+
+### Item: `.nx-btn-icon`
+
+**Tipo:** CSS
+**Arquivo:** `global.css`
+**Motivo:** Seletor aparece apenas na definicao CSS. Nao ha classe `nx-btn-icon` em HTML/JS atual.
+**Possivel uso indireto:** Pode ser classe reservada para componentes futuros ou HTML inserido manualmente.
+**Como validar antes de remover:** Buscar por `nx-btn-icon` depois de abrir todas as telas principais; se continuar sem uso, remover do CSS global.
+**Risco:** Baixo
+
+---
+
+### Item: `.status-pill.orcamento`
+
+**Tipo:** CSS
+**Arquivo:** `global.css`
+**Motivo:** Classe especifica para status `orcamento`, mas a busca atual nao encontrou uso literal no HTML/JS. Os status de pedidos podem estar usando outras classes.
+**Possivel uso indireto:** Pode ser montada dinamicamente por `status-pill ${status}` caso algum pedido tenha status `orcamento`.
+**Como validar antes de remover:** Criar/abrir pedido em status orcamento e inspecionar se a classe aparece no DOM.
+**Risco:** Medio
+
+---
+
+### Item: `.dp-btn.purple`
+
+**Tipo:** CSS
+**Arquivo:** `global.css`
+**Motivo:** Variante visual de botao roxo encontrada apenas na definicao CSS.
+**Possivel uso indireto:** Pode ser usada por componente antigo de date picker ou por classe aplicada dinamicamente.
+**Como validar antes de remover:** Testar filtros de data em dashboard/financeiro/relatorios e inspecionar DOM por `dp-btn purple`.
+**Risco:** Baixo
+
+---
+
+### Item: `.pay-body`
+
+**Tipo:** CSS
+**Arquivo:** `pdv/pdv.css`
+**Motivo:** Classe aparece apenas na definicao CSS. A area de pagamento atual usa outras classes `pay-*`.
+**Possivel uso indireto:** Pode ter sido removida do HTML do modal de pagamento, mas CSS ficou.
+**Como validar antes de remover:** Abrir modal de pagamento no PDV e buscar no DOM por `pay-body`.
+**Risco:** Baixo
+
+---
+
+### Item: aliases antigos de skeleton (`.nx-skeleton-*`)
+
+**Tipo:** CSS
+**Arquivo:** `global.css`, `utils.js`
+**Motivo:** O JS atual gera classes `skeleton`, `skeleton-line`, `skeleton-title`, `skeleton-avatar`, `skeleton-stack`. As aliases com prefixo `nx-skeleton-*` aparecem apenas no CSS.
+**Possivel uso indireto:** Podem ser compatibilidade para telas antigas ou HTML futuro.
+**Como validar antes de remover:** Buscar no DOM apos carregamento das telas com loading; se so aparecerem classes sem prefixo `nx-`, remover aliases `nx-skeleton-*` mantendo `skeleton-*`.
+**Risco:** Baixo
+
+---
+
+### Item: referencias antigas a Netlify no roadmap raiz
+
+**Tipo:** Documento antigo
+**Arquivo:** `ROADMAP.md`
+**Motivo:** O frontend agora esta no Vercel, mas o roadmap raiz ainda menciona deploy no Netlify.
+**Possivel uso indireto:** Documentacao historica; nao pesa runtime, mas pode confundir deploy.
+**Como validar antes de remover:** Confirmar se `ROADMAP.md` ainda e documento ativo ou se foi substituido por `docs/auditoria-producao/ROADMAP_CORRECOES.md`.
+**Risco:** Baixo
+
+---
+
+### Item: referencias antigas a Netlify no backend
+
+**Tipo:** Documento antigo / configuracao de exemplo
+**Arquivo:** `nexoerp-api/README.md`
+**Motivo:** O README do backend ainda usa `https://nexoerp.netlify.app` como exemplo de `CORS_ORIGIN` e `PUBLIC_APP_URL`.
+**Possivel uso indireto:** Nao afeta deploy se as variaveis reais do Railway estiverem corretas, mas pode induzir erro em nova configuracao.
+**Como validar antes de remover:** Atualizar exemplo para dominio Vercel/dominio proprio e conferir Railway.
+**Risco:** Baixo
+
+---
+
+### Item: dump local de backup
+
+**Tipo:** Arquivo local / backup
+**Arquivo:** `nexoerp-api/backups/*.dump`
+**Motivo:** Existe dump local de teste no backend. Nao e codigo e nao deve ir para o Git se `backups/` estiver ignorado.
+**Possivel uso indireto:** Pode ser evidencia do teste de restore feito na Fase 1.
+**Como validar antes de remover:** Confirmar que nao esta trackeado no Git e que existe backup/branch de restore no Neon antes de apagar localmente.
+**Risco:** Baixo
+
+---
+
 ## Nao remover
+
+### Item: `confirmar-email.html`
+
+**Tipo:** HTML / fluxo de autenticacao
+**Arquivo:** `confirmar-email.html`
+**Motivo:** Parece pouco referenciado no frontend, mas e chamado por link gerado pelo backend via `PUBLIC_APP_URL/confirmar-email.html?token=...`.
+**Onde ainda e usado:** `nexoerp-api/src/services/emailVerification.js`.
+
+---
+
+### Item: `NexoSkeleton.tableRows` e classes `skeleton-*`
+
+**Tipo:** JS / CSS
+**Arquivo:** `utils.js`, `global.css`
+**Motivo:** Alguns seletores pareciam pouco usados, mas `NexoSkeleton.tableRows()` e `NexoSkeleton.kpiVal()` sao usados por clientes, produtos, pedidos, vendas, estoque, financeiro e dashboard.
+**Onde ainda e usado:** Chamadas `NexoSkeleton.*` em praticamente todas as telas de listagem.
+
+---
+
+### Item: bibliotecas externas de relatorio
+
+**Tipo:** Biblioteca externa
+**Arquivo:** `relatorios.html`
+**Motivo:** `jspdf`, `jspdf-autotable` e `xlsx` aumentam peso da pagina, mas sustentam exportacao/relatorios.
+**Onde ainda e usado:** Exportacao PDF/Excel/CSV em `relatorios.html`.
+
+---
+
+### Item: dependencias principais do backend
+
+**Tipo:** Dependencia npm
+**Arquivo:** `nexoerp-api/package.json`
+**Motivo:** A varredura encontrou uso direto de `@prisma/client`, `prisma`, `zod`, `bcryptjs`, `jsonwebtoken`, `cors`, `helmet`, `dotenv`, `morgan` e `mercadopago`. Nao ha pacote obvio para remover agora.
+**Onde ainda e usado:** Rotas, middlewares, scripts de backup/restore/teste e integracao Mercado Pago.
+
+---
+
+### Item: `terminalOperadora: 'demo'`
+
+**Tipo:** Configuracao default
+**Arquivo:** `nexoerp-api/src/routes/configuracoes-pdv.js`, `nexoerp-api/prisma/schema.prisma`
+**Motivo:** Parece mock pela palavra `demo`, mas e default real da configuracao de terminal/cartao do PDV.
+**Onde ainda e usado:** Configuracoes do PDV e schema Prisma.
+
+---
 
 ### Item: `utils.js`
 
@@ -291,34 +446,34 @@ Validacao apos remocao:
 
 1. O que pode estar pesando o sistema.
 
-Os maiores pesos estao no frontend: paginas HTML muito grandes com CSS/JS inline, `financeiro.html`, `pdv.html`/`pdv.css`, `produtos.html`, `clientes.html` e `dashboard.html`; alem de bibliotecas externas em `relatorios.html` (`jspdf`, `jspdf-autotable`, `xlsx`) carregadas quando a pagina abre. Isso pesa mais que as pequenas funcoes mortas.
+Os maiores pesos estao no frontend: paginas HTML muito grandes com CSS/JS inline, principalmente `financeiro.html` (~245 KB), `pdv/pdv.js` (~165 KB), `pdv/pdv.css` (~156 KB), `dashboard.html` (~137 KB), `produtos.html` (~102 KB), `clientes.html` (~88 KB), `pedidos.html` (~88 KB) e `estoque.html` (~82 KB). Tambem pesam as imagens de marketing em `assets/screenshots/*.png` e as bibliotecas externas em `relatorios.html` (`jspdf`, `jspdf-autotable`, `xlsx`) carregadas quando a pagina abre. Isso pesa mais que as pequenas funcoes mortas.
 
 2. O que e realmente codigo morto.
 
-Os candidatos mais fortes sao funcoes declaradas e sem chamadas: `applyFiltersLegacyUnused`, `loadVendas`, `filterTable`, `_normalizeLancamentos`, `_finUpdateLabel`, `getCategorias`, `setItemPrice`, `parseMoneyInput` e `fecharImpressao`.
+Os candidatos mais fortes ja removidos foram funcoes declaradas e sem chamadas: `applyFiltersLegacyUnused`, `loadVendas`, `filterTable`, `_normalizeLancamentos`, `_finUpdateLabel`, `getCategorias`, `setItemPrice`, `parseMoneyInput` e `fecharImpressao`. Na segunda varredura, os candidatos mais fortes restantes sao `_movTime`, `setPeriod`, `gerarParcelas`, `.nx-btn-icon`, `.dp-btn.purple`, `.pay-body` e aliases antigos `nx-skeleton-*`.
 
 3. O que e apenas codigo duplicado, mas ainda usado.
 
-Ha duplicacao de CSS/componentes entre paginas e funcoes parecidas de mascara/formato em HTMLs diferentes, mas parte disso ainda e usado por eventos inline. `global.css` tambem convive com CSS proprio por pagina; isso e duplicacao/arquitetura, nao codigo morto seguro.
+Ha duplicacao de CSS/componentes entre paginas e funcoes parecidas de mascara/formato em HTMLs diferentes, mas parte disso ainda e usado por eventos inline. `global.css` convive com CSS proprio por pagina, e `pdv/pdv.css` concentra muito estilo especifico. Isso e duplicacao/arquitetura, nao codigo morto seguro.
 
 4. O que pode ser removido com baixo risco.
 
-Primeiro lote recomendado: `applyFiltersLegacyUnused`, `loadVendas`, `filterTable`, `_normalizeLancamentos`, `_finUpdateLabel`, `getCategorias`, `gerarParcelas` e, apos teste rapido do PDV, `setItemPrice`, `parseMoneyInput`, `fecharImpressao`.
+Proximo lote de baixo risco: `_movTime`, `setPeriod`, `gerarParcelas`, `.nx-btn-icon`, `.dp-btn.purple`, `.pay-body` e aliases `nx-skeleton-*`, desde que a validacao visual/DOM confirme ausencia de uso.
 
 5. O que precisa de teste antes de remover.
 
-PDV (`setItemPrice`, `parseMoneyInput`, `fecharImpressao`, `_checkCaixaBeforeLogout`), login/e-mail (`recConfirm`), pedidos parcelados (`gerarParcelas`) e qualquer endpoint REST nao consumido diretamente pelo frontend.
+PDV (`_checkCaixaBeforeLogout`, `.pay-body`), login/e-mail (`recConfirm`), pedidos parcelados (`gerarParcelas`), CSS de status dinamico (`.status-pill.orcamento`), aliases de skeleton e qualquer endpoint REST nao consumido diretamente pelo frontend.
 
 6. Quais arquivos devem ser limpos primeiro.
 
 Ordem recomendada:
 
-- `vendas.html`: remover `applyFiltersLegacyUnused` e `loadVendas`.
-- `financeiro.html`: remover `_normalizeLancamentos` e `_finUpdateLabel`.
-- `clientes.html`: remover `filterTable`.
-- `relatorios.html`: remover `getCategorias`.
+- `financeiro.html`: validar/remover `_movTime` e `setPeriod`.
 - `pedidos.html`: validar/remover `gerarParcelas`.
-- `pdv/pdv.js` e `pdv/pdv-cart.js`: limpar somente depois de teste manual do PDV.
+- `global.css`: validar/remover `.nx-btn-icon`, `.dp-btn.purple` e aliases `nx-skeleton-*`.
+- `pdv/pdv.css`: validar/remover `.pay-body`.
+- `dashboard-prototipo.html`: remover somente se nao for mais referencia visual nem rota publica.
+- `ROADMAP.md`, `ROADMAP_AUTH_EMAIL.md` e `nexoerp-api/README.md`: limpar referencias antigas a Netlify/Vercel depois de confirmar quais docs seguem ativos.
 
 7. Se vale a pena fazer a limpeza antes do beta.
 
