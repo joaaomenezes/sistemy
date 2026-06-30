@@ -124,9 +124,10 @@
 - [x] Backend no Railway.
 - [x] `config.js` apontando para API Railway.
 - [ ] Dominio proprio configurado.
-- [ ] Variaveis de producao revisadas nos paineis Railway/Vercel/Neon/Resend.
+- [x] Variaveis de producao revisadas nos paineis Railway/Vercel/Neon/Resend.
   - Auditoria final criada em `docs/auditoria-producao/AUDITORIA_FINAL_FASE1.md`.
   - Pendencia operacional: rotacionar `RESEND_API_KEY` se a chave antiga do `.env.example` for real.
+  - Recuperacao de senha via Resend validada em producao em 2026-06-30.
 - [x] `prisma migrate deploy` no fluxo de deploy.
 - [x] Healthcheck monitorado.
   - Monitor inicial criado via GitHub Actions a cada 5 minutos.

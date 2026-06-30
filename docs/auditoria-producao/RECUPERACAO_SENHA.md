@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementado em 2026-06-29. Pendente apenas deploy, migration em producao e teste real com e-mail via Resend.
+Implementado em 2026-06-29 e validado em producao em 2026-06-30 com e-mail real via Resend.
 
 ## Fluxo
 
@@ -73,6 +73,18 @@ Valor esperado de `PUBLIC_APP_URL`:
 
 - URL real do frontend na Vercel, sem barra no final.
 
+## Validacao em producao
+
+Validado em 2026-06-30:
+
+- API de producao respondeu `POST /api/auth/forgot-password`.
+- Token foi criado em `password_reset_tokens` para o e-mail cadastrado.
+- E-mail de recuperacao chegou quando usado o endereco correto.
+- Link de recuperacao abriu a tela `resetar-senha.html`.
+- Comportamento generico para e-mail inexistente mantido por seguranca.
+
+Observacao: durante o diagnostico, a ausencia de e-mail foi causada por teste com endereco diferente do cadastrado, nao por falha no backend ou Resend.
+
 ## Deploy
 
 1. Subir backend no GitHub.
@@ -89,4 +101,4 @@ Valor esperado de `PUBLIC_APP_URL`:
 
 ## Risco
 
-Baixo a medio. A mudanca nao altera o login atual, mas adiciona uma tabela nova e duas rotas publicas com rate limit. O ponto critico e garantir que a migration rode no Railway antes do teste em producao.
+Baixo. A mudanca nao altera o login atual, adiciona uma tabela nova e duas rotas publicas com rate limit. Migration, geracao de token e envio real foram validados em producao.

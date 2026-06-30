@@ -185,7 +185,7 @@
     - `login.html`
     - `resetar-senha.html`
     - `docs/auditoria-producao/RECUPERACAO_SENHA.md`
-  - Observacao: fluxo real via Resend com token hash, expiracao, uso unico, rate limit por IP/e-mail e resposta generica para nao revelar cadastro.
+  - Observacao: fluxo real via Resend com token hash, expiracao, uso unico, rate limit por IP/e-mail e resposta generica para nao revelar cadastro. Validado em producao em 2026-06-30 com token criado no banco e e-mail entregue ao endereco correto cadastrado.
 - [ ] Criar politica de permissoes mais granular por acao.
 - [ ] Criar importacao de extrato para conciliacao bancaria.
 - [ ] Validar uso multioperador simultaneo em PDV.

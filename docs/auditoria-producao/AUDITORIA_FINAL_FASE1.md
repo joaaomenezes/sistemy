@@ -103,9 +103,15 @@ Deploy:
 
 ## Status
 
-Fase 1 tecnicamente pronta pelo codigo e pelas validacoes automatizadas, com duas pendencias operacionais obrigatorias:
+Fase 1 fechada para avancar para Fase 2 / beta controlado.
 
-- Rotacionar a chave Resend caso a chave antiga do `.env.example` seja real.
-- Conferir visualmente as variaveis nos paineis Railway, Vercel, Neon e Resend.
+Validacoes finais confirmadas:
 
-Depois dessa rotacao e da conferencia visual das variaveis, a Fase 1 pode ser marcada como fechada para avancar para Fase 2 ou teste manual guiado em producao.
+- Healthcheck de producao ativo.
+- Monitoramento e alerta configurados.
+- Backup/restore documentado e testado.
+- Migrations sensiveis aplicadas apos validacao.
+- Recuperacao de senha via Resend validada em producao em 2026-06-30.
+- Link de recuperacao gerou token no banco e e-mail chegou quando usado o endereco correto cadastrado.
+
+Observacao operacional permanente: se a chave antiga removida do `.env.example` tiver sido real, manter a recomendacao de rotacionar a chave no Resend/Railway.
