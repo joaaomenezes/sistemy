@@ -6,7 +6,7 @@
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistemy — Central de Ajuda</title>
+  <title>Azzys — Central de Ajuda</title>
   <link rel="stylesheet" href="global.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
@@ -113,7 +113,7 @@
       overflow: hidden;
     }
 
-    .checklist-bar > span {
+    .checklist-bar>span {
       display: block;
       height: 100%;
       width: 0;
@@ -230,11 +230,30 @@
       font-size: 20px;
     }
 
-    .mod-icon.g { background: rgba(0, 208, 132, .1); color: var(--accent); }
-    .mod-icon.b { background: rgba(47, 128, 255, .1); color: var(--accent2); }
-    .mod-icon.o { background: rgba(255, 140, 66, .1); color: var(--warn); }
-    .mod-icon.p { background: rgba(167, 139, 250, .1); color: var(--purple); }
-    .mod-icon.y { background: rgba(245, 183, 0, .1); color: var(--yellow); }
+    .mod-icon.g {
+      background: rgba(0, 208, 132, .1);
+      color: var(--accent);
+    }
+
+    .mod-icon.b {
+      background: rgba(47, 128, 255, .1);
+      color: var(--accent2);
+    }
+
+    .mod-icon.o {
+      background: rgba(255, 140, 66, .1);
+      color: var(--warn);
+    }
+
+    .mod-icon.p {
+      background: rgba(167, 139, 250, .1);
+      color: var(--purple);
+    }
+
+    .mod-icon.y {
+      background: rgba(245, 183, 0, .1);
+      color: var(--yellow);
+    }
 
     .mod-card-top h3 {
       font-size: 15.5px;
@@ -271,7 +290,9 @@
       gap: 5px;
     }
 
-    .mod-status.completo { color: var(--accent); }
+    .mod-status.completo {
+      color: var(--accent);
+    }
 
     .ajuda-empty {
       display: none;
@@ -283,12 +304,19 @@
       color: var(--sub);
     }
 
-    .ajuda-empty.show { display: flex; }
+    .ajuda-empty.show {
+      display: flex;
+    }
 
-    .ajuda-empty i { font-size: 30px; color: var(--muted); }
+    .ajuda-empty i {
+      font-size: 30px;
+      color: var(--muted);
+    }
 
     /* ══ MODAL DE TUTORIAL ══ */
-    #tutModal .modal { max-width: 720px; }
+    #tutModal .modal {
+      max-width: 720px;
+    }
 
     .tut-hero {
       display: flex;
@@ -296,9 +324,15 @@
       gap: 14px;
     }
 
-    .tut-hero .mod-icon { width: 48px; height: 48px; font-size: 22px; }
+    .tut-hero .mod-icon {
+      width: 48px;
+      height: 48px;
+      font-size: 22px;
+    }
 
-    .tut-block { margin-bottom: 22px; }
+    .tut-block {
+      margin-bottom: 22px;
+    }
 
     .tut-block-title {
       font-size: 11px;
@@ -312,7 +346,10 @@
       gap: 8px;
     }
 
-    .tut-block-title i { color: var(--accent); font-size: 14px; }
+    .tut-block-title i {
+      color: var(--accent);
+      font-size: 14px;
+    }
 
     .tut-text {
       font-size: 13.5px;
@@ -321,7 +358,10 @@
     }
 
     /* botões da página */
-    .btn-list { display: grid; gap: 8px; }
+    .btn-list {
+      display: grid;
+      gap: 8px;
+    }
 
     .btn-list-item {
       display: flex;
@@ -346,7 +386,10 @@
     }
 
     /* accordion de tutoriais (ações comuns) */
-    .tut-acc { display: grid; gap: 8px; }
+    .tut-acc {
+      display: grid;
+      gap: 8px;
+    }
 
     .tut-acc-item {
       border: 1px solid var(--border);
@@ -365,7 +408,9 @@
       user-select: none;
     }
 
-    .tut-acc-head:hover { background: rgba(255, 255, 255, .03); }
+    .tut-acc-head:hover {
+      background: rgba(255, 255, 255, .03);
+    }
 
     .tut-acc-num {
       width: 24px;
@@ -394,14 +439,18 @@
       transition: transform .2s;
     }
 
-    .tut-acc-item.open .chev { transform: rotate(180deg); }
+    .tut-acc-item.open .chev {
+      transform: rotate(180deg);
+    }
 
     .tut-acc-body {
       display: none;
       padding: 0 14px 14px 49px;
     }
 
-    .tut-acc-item.open .tut-acc-body { display: block; }
+    .tut-acc-item.open .tut-acc-body {
+      display: block;
+    }
 
     .tut-acc-body ol {
       margin: 0;
@@ -429,7 +478,10 @@
     }
 
     /* dicas / erros */
-    .tip-list { display: grid; gap: 9px; }
+    .tip-list {
+      display: grid;
+      gap: 9px;
+    }
 
     .tip-row {
       display: flex;
@@ -439,18 +491,40 @@
       line-height: 1.55;
     }
 
-    .tip-row i { flex-shrink: 0; margin-top: 2px; font-size: 15px; }
-    .tip-row.dica i { color: var(--accent); }
-    .tip-row.erro i { color: var(--danger); }
-    .tip-row b { font-weight: 600; }
+    .tip-row i {
+      flex-shrink: 0;
+      margin-top: 2px;
+      font-size: 15px;
+    }
+
+    .tip-row.dica i {
+      color: var(--accent);
+    }
+
+    .tip-row.erro i {
+      color: var(--danger);
+    }
+
+    .tip-row b {
+      font-weight: 600;
+    }
 
     @media (max-width: 900px) {
-      .checklist-grid { grid-template-columns: repeat(2, 1fr); }
-      .modulos-grid { grid-template-columns: repeat(2, 1fr); }
+      .checklist-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .modulos-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
 
     @media (max-width: 600px) {
-      .checklist-grid, .modulos-grid { grid-template-columns: 1fr; }
+
+      .checklist-grid,
+      .modulos-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -574,12 +648,12 @@
     // (progresso salvo localmente; preparado p/ sincronizar com backend futuramente)
     // ═══════════════════════════════════════════════════
     const CHECKLIST = [
-      { id: 'empresa',   label: 'Cadastre sua empresa',     href: 'configuracoes.html' },
-      { id: 'clientes',  label: 'Cadastre seus clientes',   href: 'clientes.html' },
-      { id: 'produtos',  label: 'Cadastre seus produtos',   href: 'produtos.html' },
+      { id: 'empresa', label: 'Cadastre sua empresa', href: 'configuracoes.html' },
+      { id: 'clientes', label: 'Cadastre seus clientes', href: 'clientes.html' },
+      { id: 'produtos', label: 'Cadastre seus produtos', href: 'produtos.html' },
       { id: 'pagamento', label: 'Configure formas de pagamento', href: 'configuracoes.html' },
-      { id: 'venda',     label: 'Faça sua primeira venda',  href: 'pdv.html' },
-      { id: 'financeiro',label: 'Confira o financeiro',     href: 'financeiro.html' },
+      { id: 'venda', label: 'Faça sua primeira venda', href: 'pdv.html' },
+      { id: 'financeiro', label: 'Confira o financeiro', href: 'financeiro.html' },
     ];
 
     const PROGRESS_KEY = 'nexoerp.ajuda.checklist';

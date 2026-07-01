@@ -3,15 +3,47 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistemy — Vendas</title>
+  <title>Azzys — Vendas</title>
   <link rel="stylesheet" href="global.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
-    .section-tabs { display:flex; flex-wrap:wrap; gap:4px; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:4px; width:fit-content; max-width:100%; margin-bottom:20px; }
-    .sec-tab { padding:8px 20px; border-radius:9px; border:none; background:none; color:var(--muted); font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:7px; transition:all .18s; min-width:0; }
-    .sec-tab.active { background:var(--card); color:var(--text); box-shadow:0 1px 4px rgba(0,0,0,.25); }
+    .section-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px;
+      width: fit-content;
+      max-width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .sec-tab {
+      padding: 8px 20px;
+      border-radius: 9px;
+      border: none;
+      background: none;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: all .18s;
+      min-width: 0;
+    }
+
+    .sec-tab.active {
+      background: var(--card);
+      color: var(--text);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .25);
+    }
 
     .kpi-trend {
       font-size: 11px;
@@ -676,7 +708,7 @@
         flex-wrap: wrap;
       }
 
-      .toolbar-right > *,
+      .toolbar-right>*,
       .search-input,
       .select-filter,
       .vnd-dp-wrap,
@@ -732,15 +764,18 @@
         </div>
         <div class="header-actions">
           <button class="btn-sm btn-ghost-sm" onclick="exportCSV()"><i class="bi bi-download"></i> Exportar CSV</button>
-          <button class="btn-sm btn-primary-sm" id="btnAbrirOrigem" onclick="window.location.href='pdv.html'"><i class="bi bi-display"></i>
+          <button class="btn-sm btn-primary-sm" id="btnAbrirOrigem" onclick="window.location.href='pdv.html'"><i
+              class="bi bi-display"></i>
             <span>Abrir PDV</span></button>
         </div>
       </div>
 
       <!-- Section Tabs -->
       <div class="section-tabs">
-        <button class="sec-tab active" id="sec-pdv" onclick="switchSection('pdv')"><i class="bi bi-display"></i> PDV</button>
-        <button class="sec-tab" id="sec-pedidos" onclick="switchSection('pedidos')"><i class="bi bi-file-earmark-text-fill"></i> Pedidos de Venda</button>
+        <button class="sec-tab active" id="sec-pdv" onclick="switchSection('pdv')"><i class="bi bi-display"></i>
+          PDV</button>
+        <button class="sec-tab" id="sec-pedidos" onclick="switchSection('pedidos')"><i
+            class="bi bi-file-earmark-text-fill"></i> Pedidos de Venda</button>
       </div>
 
       <!-- KPIs -->
@@ -786,11 +821,14 @@
         </div>
         <div class="filter-group">
           <button class="filter-btn active" onclick="setFilter(this,'todos')">Todas</button>
-          <button class="filter-btn" id="filterConcluidas" onclick="setFilter(this,'concluida')"><i class="bi bi-check-circle"></i>
+          <button class="filter-btn" id="filterConcluidas" onclick="setFilter(this,'concluida')"><i
+              class="bi bi-check-circle"></i>
             Concluídas</button>
-          <button class="filter-btn" id="filterFaturadas" onclick="setFilter(this,'faturada')"><i class="bi bi-receipt"></i>
+          <button class="filter-btn" id="filterFaturadas" onclick="setFilter(this,'faturada')"><i
+              class="bi bi-receipt"></i>
             Faturadas</button>
-          <button class="filter-btn" id="filterCanceladas" onclick="setFilter(this,'cancelada')"><i class="bi bi-x-circle"></i>
+          <button class="filter-btn" id="filterCanceladas" onclick="setFilter(this,'cancelada')"><i
+              class="bi bi-x-circle"></i>
             Canceladas</button>
           <button class="filter-btn" onclick="setFilter(this,'estornada')"><i class="bi bi-arrow-counterclockwise"></i>
             Estornadas</button>
@@ -812,7 +850,8 @@
             <i class="bi bi-person" style="color:var(--muted);font-size:13px"></i>
             <input type="text" id="clienteFilterInput" placeholder="Filtrar por cliente..."
               oninput="onClienteFilterInput()" autocomplete="off">
-            <button class="vnd-cliente-clear" id="clienteFilterClear" onclick="clearClienteFilter()" style="display:none">
+            <button class="vnd-cliente-clear" id="clienteFilterClear" onclick="clearClienteFilter()"
+              style="display:none">
               <i class="bi bi-x"></i>
             </button>
           </div>
@@ -850,7 +889,8 @@
           <table>
             <thead>
               <tr>
-                <th id="numeroHeader" onclick="sortVendas(currentSection === 'pedidos' ? 'pedidoId' : 'id')">Nº Venda ↕</th>
+                <th id="numeroHeader" onclick="sortVendas(currentSection === 'pedidos' ? 'pedidoId' : 'id')">Nº Venda ↕
+                </th>
                 <th onclick="sortVendas('cliente')">Cliente ↕</th>
                 <th>Itens</th>
                 <th>Método</th>
@@ -1519,7 +1559,7 @@
         v.dataStr, v.horaStr, v.operador || ''
       ]);
       const d = new Date();
-      const dt = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+      const dt = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
       downloadCSV(`nexoerp_vendas_${dt}.csv`, header, rows);
     }
 
