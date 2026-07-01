@@ -1,0 +1,206 @@
+@import url('./tokens.css');
+
+body {
+  font-family: var(--font-family-base);
+  background: var(--bg-main);
+  color: var(--text-primary);
+}
+
+.brand-wordmark {
+  font-family: var(--font-family-logo);
+  font-weight: var(--font-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.text-gradient-brand {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-success {
+  color: var(--success);
+}
+
+.text-info {
+  color: var(--info);
+}
+
+.text-warning {
+  color: var(--warning);
+}
+
+.text-danger {
+  color: var(--danger);
+}
+
+.card-dark {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+}
+
+.card-public {
+  background: var(--bg-public-card);
+  border: 1px solid var(--border-public);
+  border-radius: var(--radius-2xl);
+}
+
+.btn-brand,
+.btn-brand-secondary,
+.btn-info,
+.btn-danger {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-base);
+  font-size: var(--font-base);
+  font-weight: var(--font-bold);
+  line-height: 1;
+  cursor: pointer;
+  transition: transform var(--transition-fast), opacity var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.btn-brand {
+  background: var(--gradient-primary);
+  color: var(--text-on-primary);
+  border: none;
+}
+
+.btn-brand:hover {
+  transform: translateY(-1px);
+}
+
+.btn-brand-secondary {
+  background: transparent;
+  color: var(--text-public-primary);
+  border: 1px solid var(--border-hover);
+}
+
+.btn-brand-secondary:hover {
+  border-color: rgba(0, 208, 132, .34);
+  color: var(--brand-primary);
+}
+
+.btn-info {
+  background: var(--info);
+  color: var(--text-primary);
+  border: none;
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: var(--text-primary);
+  border: none;
+}
+
+.input-dark {
+  width: 100%;
+  min-height: 40px;
+  background: var(--bg-public-surface);
+  border: 1px solid var(--border-public);
+  border-radius: var(--radius-md);
+  color: var(--text-public-primary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-base);
+  padding: 0 var(--space-3);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.input-dark::placeholder {
+  color: var(--text-public-secondary);
+}
+
+.input-dark:focus {
+  border-color: var(--brand-primary-alt);
+  box-shadow: 0 0 0 3px rgba(0, 200, 150, 0.12);
+  outline: none;
+}
+
+.modal-dark {
+  background: var(--bg-modal);
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-modal);
+  color: var(--text-primary);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-xs);
+  font-weight: var(--font-semibold);
+  line-height: 1;
+}
+
+.badge-success {
+  background: rgba(0, 208, 132, .12);
+  color: var(--success);
+}
+
+.badge-info {
+  background: rgba(47, 128, 255, .12);
+  color: var(--info);
+}
+
+.badge-warning {
+  background: rgba(255, 140, 66, .12);
+  color: var(--warning);
+}
+
+.badge-danger {
+  background: rgba(255, 77, 109, .12);
+  color: var(--danger);
+}
+
+.badge-muted {
+  background: rgba(148, 163, 184, .12);
+  color: var(--text-secondary);
+}
+
+.sidebar-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.sidebar-logo-symbol {
+  width: 36px;
+  height: 36px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: var(--radius-md);
+  background: var(--gradient-brand);
+  color: var(--text-on-primary);
+  font-weight: var(--font-bold);
+}
+
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 208, 132, .16);
+}

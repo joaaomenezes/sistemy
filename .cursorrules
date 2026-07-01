@@ -1,0 +1,117 @@
+# NexoERP Frontend Architecture Specification
+**Pattern Name:** Modular Vanilla JS + Shared Services
+**Target Engine:** Native Browser Environment (No Build Tools/No Frameworks)
+
+## 1. Architectural Philosophy
+The NexoERP frontend is built on **Modular Vanilla JS**. We intentionally avoid modern Single Page Application (SPA) frameworks (like React, Vue, Angular) and heavy compilation tools to maintain maximum simplicity, instant browser caching, low cognitive load, and high development velocity.
+
+Every page or feature behaves as an independent horizontal slice (Module), consuming centralized utilities from a shared core.
+
+---
+
+## 2. Directory Structure
+All new developments and refactors must strictly adhere to this folder layout:
+
+```text
+/auth.js              -> Session management, authentication state, apiFetch overrides
+/sidebar.js           -> Global navigation, sidebar rendering, RBAC (Role-Based Access)
+/global.css           -> Main design system variables, resets, and shared layout classes
+
+/shared/              -> Globally available, independent vanilla utility scripts
+  ├── api.js          -> Centralized HTTP Client (handles API_URL, global interceptors)
+  ├── toast.js        -> UI notification manager (success, error, warning popups)
+  ├── formatters.js   -> Pure data formatters (Currency, Dates, CPF/CNPJ, Percentages)
+  ├── permissions.js  -> Feature-flag and user permission evaluators
+  └── modal.js        -> Dynamic DOM injected helpers for reusable modal dialogs
+
+/modules/             -> Business domains. Each module contains its isolated triplet
+  ├── produtos/
+  │    ├── produtos.html
+  │    ├── produtos.js
+  │    └── produtos.css
+  ├── clientes/
+  │    ├── clientes.html
+  │    ├── clientes.js
+  │    └── clientes.css
+  └── financeiro/
+       ├── financeiro.html
+       ├── financeiro.js
+       └── financeiro.css
+```
+
+---
+
+## 3. Module Script Lifecycle Pattern
+Every module script (`module_name.js`) must isolate its scope using ES6 Modules (`type="module"`) and must follow this explicit lifecycle order:
+
+1. **Imports:** Explicitly bring tools from `/shared/*`.
+2. **Local State:** A predictable single object holding the screen data.
+3. **Init Controller:** The orchestrator kicked off by `DOMContentLoaded`.
+4. **Data Loader (Service):** Functions calling the centralized API wrapper.
+5. **DOM Renderer:** Pure JS DOM manipulation using templates or template literals.
+6. **Event Binders:** Attaching listeners to user actions.
+
+### Implementation Blueprint:
+```javascript
+import { api } from '../../shared/api.js';
+import { toast } from '../../shared/toast.js';
+import { formatCurrency } from '../../shared/formatters.js';
+
+// 1. Screen Isolated State
+const state = {
+    items: [],
+    filters: { search: '' }
+};
+
+// 2. Lifecycle Orchestrator
+async function init() {
+    // Implicit or explicit: requireAuth()
+    await loadData();
+    bindEvents();
+}
+
+// 3. Service Layer (API Fetching)
+async function loadData() {
+    try {
+        state.items = await api.get('/endpoint', state.filters);
+        render();
+    } catch (error) {
+        toast.error('Failed to load domain data.');
+    }
+}
+
+// 4. Pure UI Rendering
+function render() {
+    const container = document.getElementById('table-body');
+    if (!container) return;
+
+    container.innerHTML = state.items.map(item => `
+        <tr>
+            <td>${item.name}</td>
+            <td>${formatCurrency(item.price)}</td>
+        </tr>
+    `).join('');
+}
+
+// 5. DOM Event Binding
+function bindEvents() {
+    document.getElementById('btn-filter')?.addEventListener('click', () => {
+        state.filters.search = document.getElementById('input-search').value;
+        loadData();
+    });
+}
+
+// Kickstart
+document.addEventListener('DOMContentLoaded', init);
+```
+
+---
+
+## 4. Coding Rules for Cursor AI
+When writing code for NexoERP, you **MUST**:
+- Use strict ES6+ Vanilla JavaScript.
+- Always assume scripts are imported using `<script type="module">` to maintain local scoping.
+- Do NOT output React/Vue code, JSX, Tailwind syntax (unless requested), or TypeScript.
+- Prevent global scope pollution; never attach variables directly to `window` unless it belongs to the global core bootstrap (`NexoAuth`).
+- Rely heavily on native browser behaviors (Forms, URLSearchParams for filters, native HTML5 validations).
+- Keep HTML structures cleanly separated from JS logic, except for the explicit string interpolation inside `render()` methods.
