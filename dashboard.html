@@ -3,10 +3,12 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistemy — Dashboard</title>
-  <link rel="stylesheet" href="global.css">  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <title>Azzys — Dashboard</title>
+  <link rel="stylesheet" href="global.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
   <style>
     *,
@@ -82,46 +84,109 @@
     }
 
     #searchInput {
-      width: 100%; height: 100%; border: none; background: transparent;
-      color: var(--text); font-size: 12.5px; font-family: var(--font-b);
-      padding: 0 12px 0 32px; outline: none;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 12.5px;
+      font-family: var(--font-b);
+      padding: 0 12px 0 32px;
+      outline: none;
     }
-    #searchInput::placeholder { color: var(--muted); }
+
+    #searchInput::placeholder {
+      color: var(--muted);
+    }
+
     #searchIcon {
-      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
-      color: var(--muted); font-size: 13px; pointer-events: none;
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 13px;
+      pointer-events: none;
     }
-    .search-box { position: relative !important; }
+
+    .search-box {
+      position: relative !important;
+    }
 
     /* Estilos do dropdown de busca global — layout interno */
 
     .sd-group-label {
       padding: 10px 14px 6px;
-      font-size: 10px; font-weight: 700; letter-spacing: .08em;
-      color: var(--muted); text-transform: uppercase;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      color: var(--muted);
+      text-transform: uppercase;
     }
+
     .sd-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 9px 14px; cursor: pointer;
-      transition: background .15s; text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      cursor: pointer;
+      transition: background .15s;
+      text-decoration: none;
     }
-    .sd-item:hover, .sd-item.active { background: rgba(255,255,255,.05); }
+
+    .sd-item:hover,
+    .sd-item.active {
+      background: rgba(255, 255, 255, .05);
+    }
+
     .sd-item-icon {
-      width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center; font-size: 13px;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
     }
-    .sd-item-text { flex: 1; min-width: 0; }
+
+    .sd-item-text {
+      flex: 1;
+      min-width: 0;
+    }
+
     .sd-item-name {
-      font-size: 13px; color: var(--text); font-weight: 500;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .sd-item-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
-    .sd-item-arrow { color: var(--muted); font-size: 11px; }
+
+    .sd-item-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .sd-item-arrow {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
     .sd-empty {
-      padding: 24px 14px; text-align: center;
-      font-size: 13px; color: var(--muted);
+      padding: 24px 14px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
     }
-    .sd-divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+    .sd-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 4px 0;
+    }
 
     /* ═══════════════════════════════
        SIDEBAR OVERRIDE — icon-only premium
@@ -197,7 +262,7 @@
       border-radius: 10px;
       font-size: 12.5px;
       font-weight: 600;
-cursor: pointer;
+      cursor: pointer;
       white-space: nowrap;
       transition: var(--ease);
       text-decoration: none;
@@ -242,7 +307,7 @@ cursor: pointer;
       color: var(--sub);
       font-size: 12.5px;
       font-weight: 500;
-cursor: pointer;
+      cursor: pointer;
       transition: var(--ease);
     }
 
@@ -285,7 +350,7 @@ cursor: pointer;
       font-size: 12.5px;
       color: var(--sub);
       cursor: pointer;
-display: flex;
+      display: flex;
       align-items: center;
       justify-content: space-between;
       transition: background .1s, color .1s;
@@ -338,7 +403,7 @@ display: flex;
       padding: 5px 9px;
       outline: none;
       color-scheme: dark;
-transition: border-color .15s;
+      transition: border-color .15s;
     }
 
     .dp-custom input[type="date"]+input {
@@ -361,7 +426,7 @@ transition: border-color .15s;
       color: var(--green);
       font-size: 11.5px;
       font-weight: 700;
-cursor: pointer;
+      cursor: pointer;
       transition: background .15s;
     }
 
@@ -396,10 +461,21 @@ cursor: pointer;
       animation: fadeUp .3s ease both;
     }
 
-    .kpi:nth-child(1) { animation-delay: .04s; }
-    .kpi:nth-child(2) { animation-delay: .08s; }
-    .kpi:nth-child(3) { animation-delay: .12s; }
-    .kpi:nth-child(4) { animation-delay: .16s; }
+    .kpi:nth-child(1) {
+      animation-delay: .04s;
+    }
+
+    .kpi:nth-child(2) {
+      animation-delay: .08s;
+    }
+
+    .kpi:nth-child(3) {
+      animation-delay: .12s;
+    }
+
+    .kpi:nth-child(4) {
+      animation-delay: .16s;
+    }
 
     .kpi:hover {
       border-color: var(--border-h);
@@ -407,10 +483,21 @@ cursor: pointer;
       background: rgba(14, 22, 40, .98);
     }
 
-    .kpi.g { --kpi-accent: var(--green); }
-    .kpi.b { --kpi-accent: var(--blue); }
-    .kpi.o { --kpi-accent: var(--orange); }
-    .kpi.r { --kpi-accent: var(--red); }
+    .kpi.g {
+      --kpi-accent: var(--green);
+    }
+
+    .kpi.b {
+      --kpi-accent: var(--blue);
+    }
+
+    .kpi.o {
+      --kpi-accent: var(--orange);
+    }
+
+    .kpi.r {
+      --kpi-accent: var(--red);
+    }
 
     .kpi-ico {
       width: 34px;
@@ -423,12 +510,34 @@ cursor: pointer;
       flex-shrink: 0;
     }
 
-    .kpi.g .kpi-ico { background: rgba(0, 208, 132, .10); color: var(--green); }
-    .kpi.b .kpi-ico { background: rgba(47, 128, 255, .10); color: var(--blue); }
-    .kpi.o .kpi-ico { background: rgba(255, 140, 66, .10); color: var(--orange); }
-    .kpi.r .kpi-ico { background: rgba(255, 77, 109, .10); color: var(--red); }
-    .kpi.p { --kpi-accent: var(--purple); }
-    .kpi.p .kpi-ico { background: rgba(167, 139, 250, .10); color: var(--purple); }
+    .kpi.g .kpi-ico {
+      background: rgba(0, 208, 132, .10);
+      color: var(--green);
+    }
+
+    .kpi.b .kpi-ico {
+      background: rgba(47, 128, 255, .10);
+      color: var(--blue);
+    }
+
+    .kpi.o .kpi-ico {
+      background: rgba(255, 140, 66, .10);
+      color: var(--orange);
+    }
+
+    .kpi.r .kpi-ico {
+      background: rgba(255, 77, 109, .10);
+      color: var(--red);
+    }
+
+    .kpi.p {
+      --kpi-accent: var(--purple);
+    }
+
+    .kpi.p .kpi-ico {
+      background: rgba(167, 139, 250, .10);
+      color: var(--purple);
+    }
 
     .kpi-body {
       flex: 1;
@@ -491,275 +600,942 @@ cursor: pointer;
 
     /* ─── Contas R/P ─── */
     .rp-section {
-      font-size: 10px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .5px; color: var(--muted); margin: 10px 0 6px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+      margin: 10px 0 6px;
     }
+
     .rp-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.04);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .04);
     }
-    .rp-row:last-child { border-bottom: none; }
-    .rp-label { font-size: 12px; color: var(--sub); }
-    .rp-val   { font-weight: 700; font-size: 12.5px; }
-    .rp-val.pos { color: var(--green); }
-    .rp-val.neg { color: var(--red); }
+
+    .rp-row:last-child {
+      border-bottom: none;
+    }
+
+    .rp-label {
+      font-size: 12px;
+      color: var(--sub);
+    }
+
+    .rp-val {
+      font-weight: 700;
+      font-size: 12.5px;
+    }
+
+    .rp-val.pos {
+      color: var(--green);
+    }
+
+    .rp-val.neg {
+      color: var(--red);
+    }
 
     /* ─── Contas R/P — duas colunas ─── */
     /* ── Contas R/P ── */
-    .rp-prop-bar  { height: 6px; border-radius: 3px; overflow: hidden; background: rgba(255,77,109,.35); margin: 0 16px 2px; }
-    .rp-prop-fill { height: 100%; border-radius: 3px; background: #00D084; transition: width .5s ease; }
-    .rp-prop-lbls { display: flex; justify-content: space-between; padding: 0 16px 10px; font-size: 10px; font-weight: 700; }
-    .rp-liquida   { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; border-top: 1px solid rgba(255,255,255,.05); border-bottom: 1px solid rgba(255,255,255,.05); margin-bottom: 2px; }
-    .rp-liquida-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
-    .rp-liquida-val { font-size: 14px; font-weight: 800; letter-spacing: -.5px; }
-    .rp-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .rp-col  { padding: 10px 14px 8px; }
-    .rp-col:first-child { border-right: 1px solid rgba(255,255,255,.05); }
-    .rp-col-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
-    .rp-col-total { font-size: 17px; font-weight: 800; margin-bottom: 8px; line-height: 1.1; }
-    .rp-col-row   { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-top: 1px solid rgba(255,255,255,.04); font-size: 11.5px; }
-    .rp-col-lbl   { color: var(--sub); }
-    .rp-col-val   { font-weight: 600; }
-    .rp-venc-badge { display:inline-flex; align-items:center; gap:3px; font-size:10px; font-weight:700; color:#FF4D6D; }
+    .rp-prop-bar {
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
+      background: rgba(255, 77, 109, .35);
+      margin: 0 16px 2px;
+    }
+
+    .rp-prop-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: #00D084;
+      transition: width .5s ease;
+    }
+
+    .rp-prop-lbls {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 16px 10px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .rp-liquida {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      border-top: 1px solid rgba(255, 255, 255, .05);
+      border-bottom: 1px solid rgba(255, 255, 255, .05);
+      margin-bottom: 2px;
+    }
+
+    .rp-liquida-lbl {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+    }
+
+    .rp-liquida-val {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+    }
+
+    .rp-cols {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .rp-col {
+      padding: 10px 14px 8px;
+    }
+
+    .rp-col:first-child {
+      border-right: 1px solid rgba(255, 255, 255, .05);
+    }
+
+    .rp-col-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 4px;
+    }
+
+    .rp-col-total {
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      line-height: 1.1;
+    }
+
+    .rp-col-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+      border-top: 1px solid rgba(255, 255, 255, .04);
+      font-size: 11.5px;
+    }
+
+    .rp-col-lbl {
+      color: var(--sub);
+    }
+
+    .rp-col-val {
+      font-weight: 600;
+    }
+
+    .rp-venc-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #FF4D6D;
+    }
+
     .rp-detail-btn {
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      margin: 0 14px 14px; padding: 8px 14px; border-radius: 9px;
-      border: 1px solid var(--border); background: none; color: var(--sub);
-      font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin: 0 14px 14px;
+      padding: 8px 14px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--sub);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
       transition: var(--ease);
     }
-    .rp-detail-btn:hover { border-color: var(--border-h); color: var(--text); }
+
+    .rp-detail-btn:hover {
+      border-color: var(--border-h);
+      color: var(--text);
+    }
 
     /* ─── Resultado do Mês ─── */
-    .resultado-body { display: flex; flex-direction: column; padding: 14px 18px; height: 100%; gap: 10px; justify-content: center; }
-    .resultado-lbl  { font-size: 10px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .6px; }
-    .resultado-val  { font-size: 24px; font-weight: 800; letter-spacing: -1px; line-height: 1.1; }
-    .resultado-sub  { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
-    .resultado-div  { height: 1px; background: var(--border); }
-    .res-bar-row    { display: flex; align-items: center; gap: 8px; }
-    .res-bar-lbl    { width: 58px; color: var(--muted); font-weight: 600; font-size: 11px; flex-shrink: 0; }
-    .res-bar-track  { flex: 1; height: 5px; background: rgba(255,255,255,.06); border-radius: 3px; overflow: hidden; }
-    .res-bar-fill   { height: 100%; border-radius: 3px; transition: width .5s ease; }
-    .res-bar-val    { width: 68px; text-align: right; font-weight: 700; font-size: 11px; }
-    .resultado-vs   { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; }
+    .resultado-body {
+      display: flex;
+      flex-direction: column;
+      padding: 14px 18px;
+      height: 100%;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .resultado-lbl {
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+
+    .resultado-val {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.1;
+    }
+
+    .resultado-sub {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .resultado-div {
+      height: 1px;
+      background: var(--border);
+    }
+
+    .res-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .res-bar-lbl {
+      width: 58px;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    .res-bar-track {
+      flex: 1;
+      height: 5px;
+      background: rgba(255, 255, 255, .06);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .res-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width .5s ease;
+    }
+
+    .res-bar-val {
+      width: 68px;
+      text-align: right;
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    .resultado-vs {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 600;
+    }
 
     /* ─── Atividades Recentes ─── */
     .act-item {
-      display: flex; align-items: flex-start; gap: 10px;
-      padding: 9px 16px; border-bottom: 1px solid rgba(255,255,255,.03);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 9px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, .03);
       transition: background .12s;
     }
-    .act-item:hover { background: rgba(255,255,255,.018); }
-    .act-item:last-child { border-bottom: none; }
-    .act-ico {
-      width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center; font-size: 13px; margin-top: 2px;
+
+    .act-item:hover {
+      background: rgba(255, 255, 255, .018);
     }
-    .act-body  { flex: 1; min-width: 0; }
-    .act-title { font-size: 12.5px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .act-desc  { font-size: 11px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .act-time  { font-size: 10px; color: var(--muted); flex-shrink: 0; margin-top: 4px; white-space: nowrap; }
+
+    .act-item:last-child {
+      border-bottom: none;
+    }
+
+    .act-ico {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    .act-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .act-title {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .act-desc {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .act-time {
+      font-size: 10px;
+      color: var(--muted);
+      flex-shrink: 0;
+      margin-top: 4px;
+      white-space: nowrap;
+    }
+
     .act-ver-btn {
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      margin: 4px 16px 12px; padding: 7px; border-radius: 9px;
-      border: 1px solid var(--border); background: none; color: var(--sub);
-      font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin: 4px 16px 12px;
+      padding: 7px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--sub);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
       transition: var(--ease);
     }
-    .act-ver-btn:hover { border-color: var(--border-h); color: var(--text); }
+
+    .act-ver-btn:hover {
+      border-color: var(--border-h);
+      color: var(--text);
+    }
 
     /* ─── Configurar Painel — Drawer ─── */
     .painel-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,.55);
-      z-index: 900; opacity: 0; pointer-events: none; transition: opacity .3s;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .55);
+      z-index: 900;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s;
     }
-    .painel-overlay.open { opacity: 1; pointer-events: all; }
+
+    .painel-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
     .painel-drawer {
-      position: fixed; top: 0; right: 0; bottom: 0; width: 460px; max-width: 95vw;
-      background: #0b1220; border-left: 1px solid rgba(255,255,255,.08);
-      z-index: 901; display: flex; flex-direction: column;
-      transform: translateX(100%); transition: transform .32s cubic-bezier(.4,0,.2,1);
-      box-shadow: -24px 0 64px rgba(0,0,0,.45);
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 460px;
+      max-width: 95vw;
+      background: #0b1220;
+      border-left: 1px solid rgba(255, 255, 255, .08);
+      z-index: 901;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform .32s cubic-bezier(.4, 0, .2, 1);
+      box-shadow: -24px 0 64px rgba(0, 0, 0, .45);
     }
-    .painel-drawer.open { transform: translateX(0); }
+
+    .painel-drawer.open {
+      transform: translateX(0);
+    }
+
     .painel-head {
-      display: flex; align-items: flex-start; justify-content: space-between;
-      padding: 22px 22px 18px; border-bottom: 1px solid rgba(255,255,255,.06); flex-shrink: 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 22px 22px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, .06);
+      flex-shrink: 0;
     }
-    .painel-title { font-size: 15px; font-weight: 700; color: var(--text); }
-    .painel-sub   { font-size: 11.5px; color: var(--sub); margin-top: 4px; line-height: 1.5; max-width: 320px; }
+
+    .painel-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .painel-sub {
+      font-size: 11.5px;
+      color: var(--sub);
+      margin-top: 4px;
+      line-height: 1.5;
+      max-width: 320px;
+    }
+
     .painel-close {
-      width: 30px; height: 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,.08);
-      background: none; color: var(--sub); cursor: pointer;
-      display: flex; align-items: center; justify-content: center; transition: var(--ease); flex-shrink: 0;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, .08);
+      background: none;
+      color: var(--sub);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--ease);
+      flex-shrink: 0;
     }
-    .painel-close:hover { background: rgba(255,255,255,.05); color: var(--text); }
-    .painel-body { flex: 1; overflow-y: auto; }
-    .painel-body::-webkit-scrollbar { width: 3px; }
-    .painel-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,.07); border-radius: 2px; }
-    .painel-section { padding: 16px 22px; border-bottom: 1px solid rgba(255,255,255,.04); }
+
+    .painel-close:hover {
+      background: rgba(255, 255, 255, .05);
+      color: var(--text);
+    }
+
+    .painel-body {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .painel-body::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    .painel-body::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, .07);
+      border-radius: 2px;
+    }
+
+    .painel-section {
+      padding: 16px 22px;
+      border-bottom: 1px solid rgba(255, 255, 255, .04);
+    }
+
     .painel-sec-title {
-      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px;
-      color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; gap: 7px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: var(--muted);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
     }
-    .painel-sec-title i { font-size: 12px; }
+
+    .painel-sec-title i {
+      font-size: 12px;
+    }
+
     /* Toggle switch */
     .cfg-row {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,.03);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .03);
     }
-    .cfg-row:last-child { border-bottom: none; }
-    .cfg-lbl { font-size: 12.5px; color: var(--sub); font-weight: 500; }
-    .cfg-lbl small { font-size: 10.5px; color: var(--muted); display: block; margin-top: 1px; }
-    .cfg-sw { position: relative; width: 34px; height: 19px; flex-shrink: 0; }
-    .cfg-sw input { opacity: 0; width: 0; height: 0; position: absolute; }
+
+    .cfg-row:last-child {
+      border-bottom: none;
+    }
+
+    .cfg-lbl {
+      font-size: 12.5px;
+      color: var(--sub);
+      font-weight: 500;
+    }
+
+    .cfg-lbl small {
+      font-size: 10.5px;
+      color: var(--muted);
+      display: block;
+      margin-top: 1px;
+    }
+
+    .cfg-sw {
+      position: relative;
+      width: 34px;
+      height: 19px;
+      flex-shrink: 0;
+    }
+
+    .cfg-sw input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
     .cfg-sw-track {
-      position: absolute; inset: 0; background: rgba(255,255,255,.1);
-      border-radius: 100px; cursor: pointer; transition: background .2s;
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, .1);
+      border-radius: 100px;
+      cursor: pointer;
+      transition: background .2s;
     }
+
     .cfg-sw-track::after {
-      content: ''; position: absolute; width: 13px; height: 13px; border-radius: 50%;
-      background: #fff; top: 3px; left: 3px; transition: left .2s;
+      content: '';
+      position: absolute;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: #fff;
+      top: 3px;
+      left: 3px;
+      transition: left .2s;
     }
-    .cfg-sw input:checked ~ .cfg-sw-track { background: var(--accent); }
-    .cfg-sw input:checked ~ .cfg-sw-track::after { left: 18px; }
+
+    .cfg-sw input:checked~.cfg-sw-track {
+      background: var(--accent);
+    }
+
+    .cfg-sw input:checked~.cfg-sw-track::after {
+      left: 18px;
+    }
+
     /* Drag rows */
-    .cfg-drag-list { display: flex; flex-direction: column; gap: 4px; }
-    .cfg-drag-item {
-      display: flex; align-items: center; gap: 10px; padding: 8px 10px;
-      border-radius: 8px; background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.05);
-      cursor: grab; transition: background .15s, border-color .15s; user-select: none;
+    .cfg-drag-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
-    .cfg-drag-item:active { cursor: grabbing; }
-    .cfg-drag-item.drag-over { border-color: var(--accent); background: rgba(0,200,150,.07); }
-    .cfg-drag-item.dragging  { opacity: .4; }
-    .cfg-drag-handle { color: var(--muted); font-size: 13px; }
-    .cfg-drag-lbl    { font-size: 12.5px; color: var(--sub); flex: 1; }
+
+    .cfg-drag-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .02);
+      border: 1px solid rgba(255, 255, 255, .05);
+      cursor: grab;
+      transition: background .15s, border-color .15s;
+      user-select: none;
+    }
+
+    .cfg-drag-item:active {
+      cursor: grabbing;
+    }
+
+    .cfg-drag-item.drag-over {
+      border-color: var(--accent);
+      background: rgba(0, 200, 150, .07);
+    }
+
+    .cfg-drag-item.dragging {
+      opacity: .4;
+    }
+
+    .cfg-drag-handle {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .cfg-drag-lbl {
+      font-size: 12.5px;
+      color: var(--sub);
+      flex: 1;
+    }
+
     /* Select */
     .cfg-select {
-      width: 100%; padding: 8px 12px; border-radius: 9px; background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.08); color: var(--text); font-size: 13px;
-      font-family: var(--font-b); cursor: pointer; outline: none; transition: border-color .15s;
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 9px;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(255, 255, 255, .08);
+      color: var(--text);
+      font-size: 13px;
+      font-family: var(--font-b);
+      cursor: pointer;
+      outline: none;
+      transition: border-color .15s;
     }
-    .cfg-select:focus { border-color: rgba(0,200,150,.4); }
-    .cfg-select option { background: #0b1220; }
+
+    .cfg-select:focus {
+      border-color: rgba(0, 200, 150, .4);
+    }
+
+    .cfg-select option {
+      background: #0b1220;
+    }
+
     /* KPI chips */
-    .cfg-kpi-counter { font-size: 11px; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
-    .cfg-kpi-counter b { color: var(--accent); }
-    .cfg-chip-grid { display: flex; flex-direction: column; gap: 5px; }
+    .cfg-kpi-counter {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .cfg-kpi-counter b {
+      color: var(--accent);
+    }
+
+    .cfg-chip-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
     .cfg-chip {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 8px 12px; border-radius: 9px; border: 1px solid rgba(255,255,255,.06);
-      background: rgba(255,255,255,.02); cursor: pointer; transition: var(--ease);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: 9px;
+      border: 1px solid rgba(255, 255, 255, .06);
+      background: rgba(255, 255, 255, .02);
+      cursor: pointer;
+      transition: var(--ease);
     }
-    .cfg-chip:hover:not(.cfg-chip-disabled) { border-color: rgba(255,255,255,.1); background: rgba(255,255,255,.04); }
-    .cfg-chip.cfg-chip-on  { border-color: rgba(0,200,150,.35); background: rgba(0,200,150,.06); }
-    .cfg-chip.cfg-chip-disabled { opacity: .35; cursor: not-allowed; }
-    .cfg-chip-name { font-size: 12.5px; color: var(--sub); font-weight: 500; }
-    .cfg-chip-ico  { color: var(--accent); font-size: 13px; }
+
+    .cfg-chip:hover:not(.cfg-chip-disabled) {
+      border-color: rgba(255, 255, 255, .1);
+      background: rgba(255, 255, 255, .04);
+    }
+
+    .cfg-chip.cfg-chip-on {
+      border-color: rgba(0, 200, 150, .35);
+      background: rgba(0, 200, 150, .06);
+    }
+
+    .cfg-chip.cfg-chip-disabled {
+      opacity: .35;
+      cursor: not-allowed;
+    }
+
+    .cfg-chip-name {
+      font-size: 12.5px;
+      color: var(--sub);
+      font-weight: 500;
+    }
+
+    .cfg-chip-ico {
+      color: var(--accent);
+      font-size: 13px;
+    }
+
     /* Layout options */
-    .cfg-layout-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+    .cfg-layout-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
     .cfg-layout-opt {
-      padding: 12px 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,.06);
-      background: rgba(255,255,255,.02); cursor: pointer; text-align: center; transition: var(--ease);
+      padding: 12px 8px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, .06);
+      background: rgba(255, 255, 255, .02);
+      cursor: pointer;
+      text-align: center;
+      transition: var(--ease);
     }
-    .cfg-layout-opt:hover { border-color: rgba(255,255,255,.1); background: rgba(255,255,255,.04); }
-    .cfg-layout-opt.cfg-layout-on { border-color: rgba(0,200,150,.4); background: rgba(0,200,150,.07); }
-    .cfg-layout-opt i { font-size: 20px; color: var(--muted); display: block; margin-bottom: 5px; }
-    .cfg-layout-opt.cfg-layout-on i { color: var(--accent); }
-    .cfg-layout-name { font-size: 12px; font-weight: 600; color: var(--sub); }
-    .cfg-layout-desc { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+    .cfg-layout-opt:hover {
+      border-color: rgba(255, 255, 255, .1);
+      background: rgba(255, 255, 255, .04);
+    }
+
+    .cfg-layout-opt.cfg-layout-on {
+      border-color: rgba(0, 200, 150, .4);
+      background: rgba(0, 200, 150, .07);
+    }
+
+    .cfg-layout-opt i {
+      font-size: 20px;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .cfg-layout-opt.cfg-layout-on i {
+      color: var(--accent);
+    }
+
+    .cfg-layout-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--sub);
+    }
+
+    .cfg-layout-desc {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
     /* Colors */
-    .cfg-colors { display: flex; gap: 10px; align-items: center; }
+    .cfg-colors {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
     .cfg-color {
-      width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
-      border: 3px solid transparent; transition: var(--ease); position: relative; flex-shrink: 0;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 3px solid transparent;
+      transition: var(--ease);
+      position: relative;
+      flex-shrink: 0;
     }
-    .cfg-color:hover { transform: scale(1.12); }
-    .cfg-color.cfg-color-on { border-color: #fff; }
+
+    .cfg-color:hover {
+      transform: scale(1.12);
+    }
+
+    .cfg-color.cfg-color-on {
+      border-color: #fff;
+    }
+
     .cfg-color.cfg-color-on::after {
-      content: '✓'; position: absolute; inset: 0; display: flex;
-      align-items: center; justify-content: center; color: #fff; font-size: 13px; font-weight: 700;
+      content: '✓';
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
     }
+
     /* Nexo AI card */
     .cfg-ai-badge {
-      background: linear-gradient(135deg, rgba(0,200,150,.1), rgba(47,128,255,.08));
-      border: 1px solid rgba(0,200,150,.2); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px;
+      background: linear-gradient(135deg, rgba(0, 200, 150, .1), rgba(47, 128, 255, .08));
+      border: 1px solid rgba(0, 200, 150, .2);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
     }
+
     .cfg-ai-badge-title {
-      font-size: 13px; font-weight: 700; color: var(--accent);
-      display: flex; align-items: center; gap: 6px; margin-bottom: 3px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 3px;
     }
-    .cfg-ai-badge-sub { font-size: 11px; color: var(--muted); }
+
+    .cfg-ai-badge-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
     /* Footer */
     .painel-footer {
-      display: flex; gap: 8px; padding: 14px 22px;
-      border-top: 1px solid rgba(255,255,255,.06); flex-shrink: 0;
+      display: flex;
+      gap: 8px;
+      padding: 14px 22px;
+      border-top: 1px solid rgba(255, 255, 255, .06);
+      flex-shrink: 0;
     }
+
     .painel-btn-rst {
-      padding: 8px 12px; border-radius: 9px; border: 1px solid rgba(255,255,255,.07);
-      background: none; color: var(--muted); font-size: 12px; font-weight: 600;
-      cursor: pointer; font-family: var(--font-b); transition: var(--ease); white-space: nowrap;
+      padding: 8px 12px;
+      border-radius: 9px;
+      border: 1px solid rgba(255, 255, 255, .07);
+      background: none;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-b);
+      transition: var(--ease);
+      white-space: nowrap;
     }
-    .painel-btn-rst:hover { color: var(--text); border-color: rgba(255,255,255,.14); }
+
+    .painel-btn-rst:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, .14);
+    }
+
     .painel-btn-cancel {
-      flex: 1; padding: 9px 16px; border-radius: 9px; border: 1px solid rgba(255,255,255,.07);
-      background: none; color: var(--sub); font-size: 13px; font-weight: 600;
-      cursor: pointer; font-family: var(--font-b); transition: var(--ease);
+      flex: 1;
+      padding: 9px 16px;
+      border-radius: 9px;
+      border: 1px solid rgba(255, 255, 255, .07);
+      background: none;
+      color: var(--sub);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-b);
+      transition: var(--ease);
     }
-    .painel-btn-cancel:hover { color: var(--text); border-color: rgba(255,255,255,.14); }
+
+    .painel-btn-cancel:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, .14);
+    }
+
     .painel-btn-save {
-      flex: 2; padding: 9px 20px; border-radius: 9px; border: none;
-      background: var(--accent); color: #021c14; font-size: 13px; font-weight: 700;
-      cursor: pointer; font-family: var(--font-b); transition: opacity .18s;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
+      flex: 2;
+      padding: 9px 20px;
+      border-radius: 9px;
+      border: none;
+      background: var(--accent);
+      color: #021c14;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-b);
+      transition: opacity .18s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
-    .painel-btn-save:hover { opacity: .88; }
+
+    .painel-btn-save:hover {
+      opacity: .88;
+    }
+
     /* Layout effects */
-    .layout-compacto .kpi        { padding: 10px 12px; }
-    .layout-compacto .kpi-val    { font-size: 16px; }
-    .layout-compacto .dcard-head { padding: 8px 14px 7px; }
-    .layout-executivo .kpi       { padding: 18px 20px; }
-    .layout-executivo .kpi-val   { font-size: 24px; }
-    .layout-executivo .kpi-grid  { gap: 16px; margin-bottom: 16px; }
+    .layout-compacto .kpi {
+      padding: 10px 12px;
+    }
+
+    .layout-compacto .kpi-val {
+      font-size: 16px;
+    }
+
+    .layout-compacto .dcard-head {
+      padding: 8px 14px 7px;
+    }
+
+    .layout-executivo .kpi {
+      padding: 18px 20px;
+    }
+
+    .layout-executivo .kpi-val {
+      font-size: 24px;
+    }
+
+    .layout-executivo .kpi-grid {
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
     /* Alert card */
     .dash-alert-card {
-      background: rgba(255,77,109,.05); border: 1px solid rgba(255,77,109,.18);
-      border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; animation: fadeUp .3s ease;
+      background: rgba(255, 77, 109, .05);
+      border: 1px solid rgba(255, 77, 109, .18);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      animation: fadeUp .3s ease;
     }
+
     .dash-alert-title {
-      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px;
-      color: var(--danger); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--danger);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
+
     .dash-alert-item {
-      display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--sub);
-      padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.03);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12.5px;
+      color: var(--sub);
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .03);
     }
-    .dash-alert-item:last-child { border-bottom: none; }
-    .dash-alert-item i { color: var(--danger); font-size: 13px; flex-shrink: 0; }
-    .dash-hidden { display: none !important; }
+
+    .dash-alert-item:last-child {
+      border-bottom: none;
+    }
+
+    .dash-alert-item i {
+      color: var(--danger);
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .dash-hidden {
+      display: none !important;
+    }
 
     /* ─── Ações Rápidas ─── */
     .aq-title {
-      font-size: 11px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .5px; color: var(--muted); margin: 14px 0 8px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+      margin: 14px 0 8px;
     }
+
     .aq-grid {
-      display: grid; grid-template-columns: repeat(6, 1fr);
-      gap: 10px; animation: fadeUp .35s .32s ease both;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      animation: fadeUp .35s .32s ease both;
     }
+
     .aq-card {
-      background: rgba(11,18,32,.95); border: 1px solid var(--border);
-      border-radius: 14px; padding: 16px 12px; display: flex;
-      flex-direction: column; align-items: center; gap: 8px;
-      cursor: pointer; transition: var(--ease); text-decoration: none;
+      background: rgba(11, 18, 32, .95);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: var(--ease);
+      text-decoration: none;
     }
+
     .aq-card:hover {
-      border-color: var(--border-h); background: rgba(14,22,40,.98);
+      border-color: var(--border-h);
+      background: rgba(14, 22, 40, .98);
       transform: translateY(-2px);
     }
-    .aq-card i   { font-size: 22px; }
-    .aq-card span { font-size: 11.5px; font-weight: 600; color: var(--sub); text-align: center; }
+
+    .aq-card i {
+      font-size: 22px;
+    }
+
+    .aq-card span {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--sub);
+      text-align: center;
+    }
 
     /* shared card */
     .dcard {
@@ -832,7 +1608,7 @@ cursor: pointer;
       background: none;
       color: var(--sub);
       cursor: pointer;
-transition: var(--ease);
+      transition: var(--ease);
     }
 
     .chip:hover {
@@ -868,11 +1644,40 @@ transition: var(--ease);
     }
 
     /* ── Fluxo de Caixa — faixa de resumo ── */
-    .fluxo-strip        { display:flex; border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
-    .fluxo-metric       { flex:1; padding:7px 14px; display:flex; flex-direction:column; gap:1px; }
-    .fluxo-metric + .fluxo-metric { border-left:1px solid rgba(255,255,255,.06); }
-    .fluxo-metric-lbl   { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); display:flex; align-items:center; gap:4px; }
-    .fluxo-metric-val   { font-size:15px; font-weight:800; letter-spacing:-.5px; }
+    .fluxo-strip {
+      display: flex;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .fluxo-metric {
+      flex: 1;
+      padding: 7px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .fluxo-metric+.fluxo-metric {
+      border-left: 1px solid rgba(255, 255, 255, .06);
+    }
+
+    .fluxo-metric-lbl {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .fluxo-metric-val {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+    }
 
     /* bar chart */
     svg.bars {
@@ -931,15 +1736,68 @@ transition: var(--ease);
     }
 
     /* ── Despesas por Categoria — layout horizontal ── */
-    .despc-body   { display:flex; height:100%; padding:10px 16px 14px; gap:14px; align-items:center; }
-    .despc-donut  { flex-shrink:0; }
-    .despc-donut svg { width:148px; height:148px; display:block; }
-    .despc-legend { flex:1; display:flex; flex-direction:column; gap:10px; justify-content:center; min-width:0; }
-    .despc-row    { display:flex; align-items:center; gap:7px; }
-    .despc-dot    { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
-    .despc-name   { flex:1; font-size:12px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text); }
-    .despc-val    { font-size:11px; color:var(--muted); white-space:nowrap; }
-    .despc-pct    { font-size:12px; font-weight:800; min-width:36px; text-align:right; }
+    .despc-body {
+      display: flex;
+      height: 100%;
+      padding: 10px 16px 14px;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .despc-donut {
+      flex-shrink: 0;
+    }
+
+    .despc-donut svg {
+      width: 148px;
+      height: 148px;
+      display: block;
+    }
+
+    .despc-legend {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .despc-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .despc-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .despc-name {
+      flex: 1;
+      font-size: 12px;
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--text);
+    }
+
+    .despc-val {
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .despc-pct {
+      font-size: 12px;
+      font-weight: 800;
+      min-width: 36px;
+      text-align: right;
+    }
 
     /* ═══════════════════════════════
        BOTTOM GRID
@@ -987,7 +1845,9 @@ transition: var(--ease);
       white-space: nowrap;
     }
 
-    .stbl tbody tr:last-child td { border-bottom: none; }
+    .stbl tbody tr:last-child td {
+      border-bottom: none;
+    }
 
     .td-name {
       font-weight: 600;
@@ -1009,9 +1869,17 @@ transition: var(--ease);
       font-variant-numeric: tabular-nums;
     }
 
-    .td-amt.pos { color: var(--green); }
-    .td-amt.neg { color: var(--red); }
-    .td-amt.neu { color: var(--text); }
+    .td-amt.pos {
+      color: var(--green);
+    }
+
+    .td-amt.neg {
+      color: var(--red);
+    }
+
+    .td-amt.neu {
+      color: var(--text);
+    }
 
     /* status pills */
     .spill {
@@ -1033,9 +1901,20 @@ transition: var(--ease);
       background: currentColor;
     }
 
-    .spill.ok   { background: rgba(0, 208, 132, .10); color: var(--green); }
-    .spill.pend { background: rgba(245, 183, 0, .10);  color: var(--yellow); }
-    .spill.canc { background: rgba(255, 77, 109, .10); color: var(--red); }
+    .spill.ok {
+      background: rgba(0, 208, 132, .10);
+      color: var(--green);
+    }
+
+    .spill.pend {
+      background: rgba(245, 183, 0, .10);
+      color: var(--yellow);
+    }
+
+    .spill.canc {
+      background: rgba(255, 77, 109, .10);
+      color: var(--red);
+    }
 
     /* ─── Timeline activity ─── */
     .tl {
@@ -1081,7 +1960,9 @@ transition: var(--ease);
       box-shadow: 0 0 0 2px rgba(255, 255, 255, .05);
     }
 
-    .tl-body { flex: 1; }
+    .tl-body {
+      flex: 1;
+    }
 
     .tl-text {
       font-size: 12.5px;
@@ -1112,7 +1993,9 @@ transition: var(--ease);
       transition: color .15s;
     }
 
-    .dlink:hover { color: var(--text); }
+    .dlink:hover {
+      color: var(--text);
+    }
 
     /* ═══════════════════════════════
        ANIMATIONS
@@ -1133,16 +2016,37 @@ transition: var(--ease);
        RESPONSIVE
     ═══════════════════════════════ */
     @media (max-width: 1200px) {
-      .chart-grid  { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .bottom-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .chart-main, .donut-card { height: auto; max-height: none; }
+      .chart-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .bottom-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .chart-main,
+      .donut-card {
+        height: auto;
+        max-height: none;
+      }
     }
 
     @media (max-width: 900px) {
-      .chart-grid  { grid-template-columns: 1fr; }
-      .bottom-grid { grid-template-columns: 1fr; }
-      .kpi-grid    { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .aq-grid     { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .chart-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .bottom-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .kpi-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .aq-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
 
       .db-header {
         align-items: flex-start;
@@ -1166,14 +2070,27 @@ transition: var(--ease);
     }
 
     @media (max-width: 860px) {
-      .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .content  { padding: 12px 14px 20px; }
-      .aq-grid  { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .content {
+        padding: 12px 14px 20px;
+      }
+
+      .aq-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
     }
 
     @media (max-width: 500px) {
-      .kpi-grid { grid-template-columns: 1fr; }
-      .aq-grid  { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .aq-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
 
       .content {
         padding: 14px;
@@ -1205,9 +2122,9 @@ transition: var(--ease);
 
 <body>
 
-   <!-- SIDEBAR -->
-<div id="sidebar-root"></div>
-<script src="sidebar.js"></script>
+  <!-- SIDEBAR -->
+  <div id="sidebar-root"></div>
+  <script src="sidebar.js"></script>
 
   <!-- MAIN -->
   <div class="main collapsed" id="mainContent">
@@ -1266,7 +2183,8 @@ transition: var(--ease);
             </div>
           </div>
 
-          <button class="hbtn hbtn-ghost" onclick="openPainelConfig()"><i class="bi bi-sliders"></i> Configurar Painel</button>
+          <button class="hbtn hbtn-ghost" onclick="openPainelConfig()"><i class="bi bi-sliders"></i> Configurar
+            Painel</button>
         </div>
       </div>
 
@@ -1324,22 +2242,34 @@ transition: var(--ease);
         <!-- KPIs extras (ocultos, ativados via config) -->
         <div class="kpi b" id="kpi-card-ticket" data-kpi="ticket" style="display:none">
           <div class="kpi-ico"><i class="bi bi-receipt"></i></div>
-          <div class="kpi-body"><div class="kpi-val" id="kpi-ticket">—</div><div class="kpi-lbl">Ticket Médio</div></div>
+          <div class="kpi-body">
+            <div class="kpi-val" id="kpi-ticket">—</div>
+            <div class="kpi-lbl">Ticket Médio</div>
+          </div>
           <div class="kpi-badge" id="kpi-ticket-badge"></div>
         </div>
         <div class="kpi g" id="kpi-card-pedidos" data-kpi="pedidos" style="display:none">
           <div class="kpi-ico"><i class="bi bi-bag-check"></i></div>
-          <div class="kpi-body"><div class="kpi-val" id="kpi-pedidos-total">—</div><div class="kpi-lbl">Total de Pedidos</div></div>
+          <div class="kpi-body">
+            <div class="kpi-val" id="kpi-pedidos-total">—</div>
+            <div class="kpi-lbl">Total de Pedidos</div>
+          </div>
           <div class="kpi-badge" id="kpi-pedidos-total-badge"></div>
         </div>
         <div class="kpi o" id="kpi-card-clientes-ativos" data-kpi="clientesAtivos" style="display:none">
           <div class="kpi-ico"><i class="bi bi-people-fill"></i></div>
-          <div class="kpi-body"><div class="kpi-val" id="kpi-clientes-ativos">—</div><div class="kpi-lbl">Clientes Ativos</div></div>
+          <div class="kpi-body">
+            <div class="kpi-val" id="kpi-clientes-ativos">—</div>
+            <div class="kpi-lbl">Clientes Ativos</div>
+          </div>
           <div class="kpi-badge" id="kpi-clientes-ativos-badge"></div>
         </div>
         <div class="kpi p" id="kpi-card-margem" data-kpi="margem" style="display:none">
           <div class="kpi-ico"><i class="bi bi-percent"></i></div>
-          <div class="kpi-body"><div class="kpi-val" id="kpi-margem">—</div><div class="kpi-lbl">Margem de Lucro</div></div>
+          <div class="kpi-body">
+            <div class="kpi-val" id="kpi-margem">—</div>
+            <div class="kpi-lbl">Margem de Lucro</div>
+          </div>
           <div class="kpi-badge" id="kpi-margem-badge"></div>
         </div>
 
@@ -1357,8 +2287,12 @@ transition: var(--ease);
             </div>
             <div style="display:flex;align-items:center;gap:10px">
               <div class="clegend">
-                <div class="cleg"><div class="cleg-dot" style="background:#00D084;border-radius:2px;width:9px;height:9px"></div>Saldo</div>
-                <div class="cleg"><div class="cleg-dot" style="background:#FF4D6D;border-radius:2px;width:9px;height:9px"></div>Saídas</div>
+                <div class="cleg">
+                  <div class="cleg-dot" style="background:#00D084;border-radius:2px;width:9px;height:9px"></div>Saldo
+                </div>
+                <div class="cleg">
+                  <div class="cleg-dot" style="background:#FF4D6D;border-radius:2px;width:9px;height:9px"></div>Saídas
+                </div>
               </div>
               <div class="chips">
                 <button class="chip" onclick="setFluxoFiltro(this,'diario')">Diário</button>
@@ -1369,11 +2303,13 @@ transition: var(--ease);
           </div>
           <div class="fluxo-strip">
             <div class="fluxo-metric">
-              <div class="fluxo-metric-lbl"><i class="bi bi-arrow-down-circle-fill" style="color:#00D084"></i> Entradas</div>
+              <div class="fluxo-metric-lbl"><i class="bi bi-arrow-down-circle-fill" style="color:#00D084"></i> Entradas
+              </div>
               <div class="fluxo-metric-val" id="fluxo-sum-ent" style="color:#00D084">—</div>
             </div>
             <div class="fluxo-metric">
-              <div class="fluxo-metric-lbl"><i class="bi bi-arrow-up-circle-fill" style="color:#FF4D6D"></i> Saídas</div>
+              <div class="fluxo-metric-lbl"><i class="bi bi-arrow-up-circle-fill" style="color:#FF4D6D"></i> Saídas
+              </div>
               <div class="fluxo-metric-val" id="fluxo-sum-sai" style="color:#FF4D6D">—</div>
             </div>
             <div class="fluxo-metric">
@@ -1418,7 +2354,9 @@ transition: var(--ease);
           </div>
           <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
             <!-- Barra de proporção -->
-            <div class="rp-prop-bar"><div class="rp-prop-fill" id="rp-prop-fill" style="width:50%"></div></div>
+            <div class="rp-prop-bar">
+              <div class="rp-prop-fill" id="rp-prop-fill" style="width:50%"></div>
+            </div>
             <div class="rp-prop-lbls">
               <span style="color:#00D084" id="rp-prop-rec-pct">A Receber 50%</span>
               <span style="color:#FF4D6D" id="rp-prop-pag-pct">A Pagar 50%</span>
@@ -1503,7 +2441,8 @@ transition: var(--ease);
             <a href="vendas.html" class="dlink">Ver todas <i class="bi bi-arrow-right"></i></a>
           </div>
           <div style="flex:1;overflow:hidden" id="activityTimeline">
-            <div style="text-align:center;color:var(--muted);padding:28px;font-size:13px">Nenhuma atividade recente.</div>
+            <div style="text-align:center;color:var(--muted);padding:28px;font-size:13px">Nenhuma atividade recente.
+            </div>
           </div>
         </div>
 
@@ -1512,12 +2451,18 @@ transition: var(--ease);
       <div id="section-aq">
         <div class="aq-title">Ações Rápidas</div>
         <div class="aq-grid" id="aq-grid-container">
-          <a class="aq-card" href="pdv.html"        id="aq-novaVenda">  <i class="bi bi-display"           style="color:var(--green)"></i>  <span>Nova Venda (PDV)</span></a>
-          <a class="aq-card" href="pedidos.html"    id="aq-novoPedido"> <i class="bi bi-file-earmark-plus" style="color:var(--blue)"></i>   <span>Novo Pedido</span></a>
-          <a class="aq-card" href="clientes.html"   id="aq-novoCliente"><i class="bi bi-person-plus"        style="color:var(--orange)"></i> <span>Novo Cliente</span></a>
-          <a class="aq-card" href="produtos.html"   id="aq-novoProduto"><i class="bi bi-box-seam"           style="color:var(--purple)"></i> <span>Novo Produto</span></a>
-          <a class="aq-card" href="financeiro.html" id="aq-financeiro"> <i class="bi bi-currency-dollar"   style="color:var(--yellow)"></i> <span>Financeiro</span></a>
-          <a class="aq-card" href="estoque.html"    id="aq-estoque">    <i class="bi bi-stack"              style="color:var(--red)"></i>    <span>Estoque</span></a>
+          <a class="aq-card" href="pdv.html" id="aq-novaVenda"> <i class="bi bi-display" style="color:var(--green)"></i>
+            <span>Nova Venda (PDV)</span></a>
+          <a class="aq-card" href="pedidos.html" id="aq-novoPedido"> <i class="bi bi-file-earmark-plus"
+              style="color:var(--blue)"></i> <span>Novo Pedido</span></a>
+          <a class="aq-card" href="clientes.html" id="aq-novoCliente"><i class="bi bi-person-plus"
+              style="color:var(--orange)"></i> <span>Novo Cliente</span></a>
+          <a class="aq-card" href="produtos.html" id="aq-novoProduto"><i class="bi bi-box-seam"
+              style="color:var(--purple)"></i> <span>Novo Produto</span></a>
+          <a class="aq-card" href="financeiro.html" id="aq-financeiro"> <i class="bi bi-currency-dollar"
+              style="color:var(--yellow)"></i> <span>Financeiro</span></a>
+          <a class="aq-card" href="estoque.html" id="aq-estoque"> <i class="bi bi-stack" style="color:var(--red)"></i>
+            <span>Estoque</span></a>
         </div>
       </div>
 
@@ -1530,7 +2475,8 @@ transition: var(--ease);
 
     <div class="painel-head">
       <div>
-        <div class="painel-title"><i class="bi bi-sliders" style="margin-right:7px;color:var(--accent)"></i>Configurar Dashboard</div>
+        <div class="painel-title"><i class="bi bi-sliders" style="margin-right:7px;color:var(--accent)"></i>Configurar
+          Dashboard</div>
         <div class="painel-sub">Personalize os indicadores e widgets exibidos na sua tela inicial.</div>
       </div>
       <button class="painel-close" onclick="closePainelConfig()"><i class="bi bi-x-lg"></i></button>
@@ -1541,19 +2487,37 @@ transition: var(--ease);
       <!-- S1: Widgets -->
       <div class="painel-section">
         <div class="painel-sec-title"><i class="bi bi-grid-1x2-fill"></i>Widgets visíveis</div>
-        <div class="cfg-row"><span class="cfg-lbl">KPIs — linha de indicadores</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-kpis"  onchange="cfgWidget('kpiGrid',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Fluxo de Caixa</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-fluxo" onchange="cfgWidget('fluxoCaixa',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Resultado do Mês</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-rd"    onchange="cfgWidget('resultado',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Contas a Receber e Pagar</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-rp"    onchange="cfgWidget('contasRP',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Faturamento dos Últimos 6 Meses</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-fat6"  onchange="cfgWidget('fat6meses',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Despesas por Categoria</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-desp"  onchange="cfgWidget('despCat',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Atividades Recentes</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-atv"   onchange="cfgWidget('atividades',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Ações Rápidas</span><label class="cfg-sw"><input type="checkbox" id="cfg-w-aq"    onchange="cfgWidget('acoesRapidas',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">KPIs — linha de indicadores</span><label class="cfg-sw"><input
+              type="checkbox" id="cfg-w-kpis" onchange="cfgWidget('kpiGrid',this.checked)"><span
+              class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Fluxo de Caixa</span><label class="cfg-sw"><input type="checkbox"
+              id="cfg-w-fluxo" onchange="cfgWidget('fluxoCaixa',this.checked)"><span
+              class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Resultado do Mês</span><label class="cfg-sw"><input type="checkbox"
+              id="cfg-w-rd" onchange="cfgWidget('resultado',this.checked)"><span class="cfg-sw-track"></span></label>
+        </div>
+        <div class="cfg-row"><span class="cfg-lbl">Contas a Receber e Pagar</span><label class="cfg-sw"><input
+              type="checkbox" id="cfg-w-rp" onchange="cfgWidget('contasRP',this.checked)"><span
+              class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Faturamento dos Últimos 6 Meses</span><label class="cfg-sw"><input
+              type="checkbox" id="cfg-w-fat6" onchange="cfgWidget('fat6meses',this.checked)"><span
+              class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Despesas por Categoria</span><label class="cfg-sw"><input
+              type="checkbox" id="cfg-w-desp" onchange="cfgWidget('despCat',this.checked)"><span
+              class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Atividades Recentes</span><label class="cfg-sw"><input
+              type="checkbox" id="cfg-w-atv" onchange="cfgWidget('atividades',this.checked)"><span
+              class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Ações Rápidas</span><label class="cfg-sw"><input type="checkbox"
+              id="cfg-w-aq" onchange="cfgWidget('acoesRapidas',this.checked)"><span class="cfg-sw-track"></span></label>
+        </div>
       </div>
 
       <!-- S2: Ordem dos KPIs -->
       <div class="painel-section">
-        <div class="painel-sec-title"><i class="bi bi-arrow-down-up"></i>Ordem dos KPIs <span style="font-size:10px;color:var(--muted);text-transform:none;letter-spacing:0;font-weight:400">— arraste para reorganizar</span></div>
+        <div class="painel-sec-title"><i class="bi bi-arrow-down-up"></i>Ordem dos KPIs <span
+            style="font-size:10px;color:var(--muted);text-transform:none;letter-spacing:0;font-weight:400">— arraste
+            para reorganizar</span></div>
         <div class="cfg-drag-list" id="cfg-kpi-order-list"></div>
       </div>
 
@@ -1572,7 +2536,9 @@ transition: var(--ease);
 
       <!-- S4: KPIs principais -->
       <div class="painel-section">
-        <div class="painel-sec-title"><i class="bi bi-bar-chart-fill"></i>KPIs Principais <span style="font-size:10px;color:var(--muted);text-transform:none;letter-spacing:0;font-weight:400">— máx. 5</span></div>
+        <div class="painel-sec-title"><i class="bi bi-bar-chart-fill"></i>KPIs Principais <span
+            style="font-size:10px;color:var(--muted);text-transform:none;letter-spacing:0;font-weight:400">— máx.
+            5</span></div>
         <div class="cfg-kpi-counter">Selecionados: <b id="cfg-kpi-count">5</b>/5</div>
         <div class="cfg-chip-grid" id="cfg-kpi-chips"></div>
       </div>
@@ -1580,23 +2546,47 @@ transition: var(--ease);
       <!-- S5: Alertas -->
       <div class="painel-section">
         <div class="painel-sec-title"><i class="bi bi-bell-fill"></i>Alertas no Dashboard</div>
-        <div class="cfg-row"><span class="cfg-lbl">Estoque Baixo<small>Produto atingiu o mínimo configurado</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-a-estoque"  onchange="cfgAlerta('estoqueBaixo',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Contas Vencidas<small>Títulos a pagar/receber em atraso</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-a-vencidas" onchange="cfgAlerta('contasVencidas',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Fluxo de Caixa Negativo<small>Saldo projetado abaixo de zero</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-a-fluxo"    onchange="cfgAlerta('fluxoNegativo',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Metas Não Atingidas<small>Indicadores abaixo da meta mensal</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-a-metas"    onchange="cfgAlerta('metasNaoAtingidas',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Produtos Sem Giro<small>Sem venda nos últimos 30 dias</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-a-giro"     onchange="cfgAlerta('semGiro',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Boletos Próximos do Vencimento<small>Vencendo nos próximos 3 dias</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-a-boletos"  onchange="cfgAlerta('boletosVencendo',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Estoque Baixo<small>Produto atingiu o mínimo
+              configurado</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-a-estoque"
+              onchange="cfgAlerta('estoqueBaixo',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Contas Vencidas<small>Títulos a pagar/receber em
+              atraso</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-a-vencidas"
+              onchange="cfgAlerta('contasVencidas',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Fluxo de Caixa Negativo<small>Saldo projetado abaixo de
+              zero</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-a-fluxo"
+              onchange="cfgAlerta('fluxoNegativo',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Metas Não Atingidas<small>Indicadores abaixo da meta
+              mensal</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-a-metas"
+              onchange="cfgAlerta('metasNaoAtingidas',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Produtos Sem Giro<small>Sem venda nos últimos 30
+              dias</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-a-giro"
+              onchange="cfgAlerta('semGiro',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Boletos Próximos do Vencimento<small>Vencendo nos próximos 3
+              dias</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-a-boletos"
+              onchange="cfgAlerta('boletosVencendo',this.checked)"><span class="cfg-sw-track"></span></label></div>
       </div>
 
       <!-- S6: Ações rápidas -->
       <div class="painel-section">
         <div class="painel-sec-title"><i class="bi bi-lightning-fill"></i>Ações Rápidas</div>
-        <div class="cfg-row"><span class="cfg-lbl">Nova Venda (PDV)</span><label class="cfg-sw"><input type="checkbox" id="cfg-aq-venda"   onchange="cfgAcao('novaVenda',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Novo Pedido</span><label class="cfg-sw"><input type="checkbox" id="cfg-aq-pedido"  onchange="cfgAcao('novoPedido',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Novo Cliente</span><label class="cfg-sw"><input type="checkbox" id="cfg-aq-cliente" onchange="cfgAcao('novoCliente',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Novo Produto</span><label class="cfg-sw"><input type="checkbox" id="cfg-aq-produto" onchange="cfgAcao('novoProduto',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Financeiro</span><label class="cfg-sw"><input type="checkbox" id="cfg-aq-fin"     onchange="cfgAcao('financeiro',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Estoque</span><label class="cfg-sw"><input type="checkbox" id="cfg-aq-est"     onchange="cfgAcao('estoque',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Nova Venda (PDV)</span><label class="cfg-sw"><input type="checkbox"
+              id="cfg-aq-venda" onchange="cfgAcao('novaVenda',this.checked)"><span class="cfg-sw-track"></span></label>
+        </div>
+        <div class="cfg-row"><span class="cfg-lbl">Novo Pedido</span><label class="cfg-sw"><input type="checkbox"
+              id="cfg-aq-pedido" onchange="cfgAcao('novoPedido',this.checked)"><span
+              class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Novo Cliente</span><label class="cfg-sw"><input type="checkbox"
+              id="cfg-aq-cliente" onchange="cfgAcao('novoCliente',this.checked)"><span
+              class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Novo Produto</span><label class="cfg-sw"><input type="checkbox"
+              id="cfg-aq-produto" onchange="cfgAcao('novoProduto',this.checked)"><span
+              class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Financeiro</span><label class="cfg-sw"><input type="checkbox"
+              id="cfg-aq-fin" onchange="cfgAcao('financeiro',this.checked)"><span class="cfg-sw-track"></span></label>
+        </div>
+        <div class="cfg-row"><span class="cfg-lbl">Estoque</span><label class="cfg-sw"><input type="checkbox"
+              id="cfg-aq-est" onchange="cfgAcao('estoque',this.checked)"><span class="cfg-sw-track"></span></label>
+        </div>
       </div>
 
       <!-- S7: Nexo AI -->
@@ -1606,26 +2596,44 @@ transition: var(--ease);
           <div class="cfg-ai-badge-title"><i class="bi bi-stars"></i>Nexo AI — Inteligência Integrada</div>
           <div class="cfg-ai-badge-sub">Widgets que analisam seus dados automaticamente.</div>
         </div>
-        <div class="cfg-row"><span class="cfg-lbl">Insights Automáticos<small>Análise do desempenho diário</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-ai-insights" onchange="cfgAI('insights',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Oportunidades de Venda<small>Produtos com potencial de crescimento</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-ai-oportun"  onchange="cfgAI('oportunidades',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Alertas Financeiros<small>Anomalias no fluxo de caixa</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-ai-alertas"  onchange="cfgAI('alertasFinanceiros',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Previsão de Caixa<small>Projeção para os próximos 30 dias</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-ai-previsao" onchange="cfgAI('previsaoCaixa',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Sugestões de Compra<small>Reposição baseada em histórico</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-ai-sugest"   onchange="cfgAI('sugestoes',this.checked)"><span class="cfg-sw-track"></span></label></div>
-        <div class="cfg-row"><span class="cfg-lbl">Produtos Sem Giro<small>Identifica itens parados no estoque</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-ai-giro"     onchange="cfgAI('semGiro',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Insights Automáticos<small>Análise do desempenho
+              diário</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-ai-insights"
+              onchange="cfgAI('insights',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Oportunidades de Venda<small>Produtos com potencial de
+              crescimento</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-ai-oportun"
+              onchange="cfgAI('oportunidades',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Alertas Financeiros<small>Anomalias no fluxo de
+              caixa</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-ai-alertas"
+              onchange="cfgAI('alertasFinanceiros',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Previsão de Caixa<small>Projeção para os próximos 30
+              dias</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-ai-previsao"
+              onchange="cfgAI('previsaoCaixa',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Sugestões de Compra<small>Reposição baseada em
+              histórico</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-ai-sugest"
+              onchange="cfgAI('sugestoes',this.checked)"><span class="cfg-sw-track"></span></label></div>
+        <div class="cfg-row"><span class="cfg-lbl">Produtos Sem Giro<small>Identifica itens parados no
+              estoque</small></span><label class="cfg-sw"><input type="checkbox" id="cfg-ai-giro"
+              onchange="cfgAI('semGiro',this.checked)"><span class="cfg-sw-track"></span></label></div>
       </div>
 
       <!-- S8: Layout -->
       <div class="painel-section">
         <div class="painel-sec-title"><i class="bi bi-layout-three-columns"></i>Modo de Visualização</div>
         <div class="cfg-layout-grid">
-          <div class="cfg-layout-opt" id="cfg-l-compacto"   onclick="cfgLayout('compacto')">
-            <i class="bi bi-grid-3x3-gap"></i><div class="cfg-layout-name">Compacto</div><div class="cfg-layout-desc">Mais info por tela</div>
+          <div class="cfg-layout-opt" id="cfg-l-compacto" onclick="cfgLayout('compacto')">
+            <i class="bi bi-grid-3x3-gap"></i>
+            <div class="cfg-layout-name">Compacto</div>
+            <div class="cfg-layout-desc">Mais info por tela</div>
           </div>
           <div class="cfg-layout-opt" id="cfg-l-confortavel" onclick="cfgLayout('confortavel')">
-            <i class="bi bi-grid"></i><div class="cfg-layout-name">Confortável</div><div class="cfg-layout-desc">Espaçamento padrão</div>
+            <i class="bi bi-grid"></i>
+            <div class="cfg-layout-name">Confortável</div>
+            <div class="cfg-layout-desc">Espaçamento padrão</div>
           </div>
-          <div class="cfg-layout-opt" id="cfg-l-executivo"  onclick="cfgLayout('executivo')">
-            <i class="bi bi-display"></i><div class="cfg-layout-name">Executivo</div><div class="cfg-layout-desc">Cards em destaque</div>
+          <div class="cfg-layout-opt" id="cfg-l-executivo" onclick="cfgLayout('executivo')">
+            <i class="bi bi-display"></i>
+            <div class="cfg-layout-name">Executivo</div>
+            <div class="cfg-layout-desc">Cards em destaque</div>
           </div>
         </div>
       </div>
@@ -1634,10 +2642,14 @@ transition: var(--ease);
       <div class="painel-section">
         <div class="painel-sec-title"><i class="bi bi-palette-fill"></i>Cor de Destaque</div>
         <div class="cfg-colors">
-          <div class="cfg-color" id="cfg-c-verde"   style="background:#00D084" title="Verde NexoERP" onclick="cfgCor('verde',  '#00D084')"></div>
-          <div class="cfg-color" id="cfg-c-azul"    style="background:#2F80FF" title="Azul"          onclick="cfgCor('azul',   '#2F80FF')"></div>
-          <div class="cfg-color" id="cfg-c-roxo"    style="background:#A78BFA" title="Roxo"          onclick="cfgCor('roxo',   '#A78BFA')"></div>
-          <div class="cfg-color" id="cfg-c-laranja" style="background:#FF8C42" title="Laranja"       onclick="cfgCor('laranja','#FF8C42')"></div>
+          <div class="cfg-color" id="cfg-c-verde" style="background:#00D084" title="Verde NexoERP"
+            onclick="cfgCor('verde',  '#00D084')"></div>
+          <div class="cfg-color" id="cfg-c-azul" style="background:#2F80FF" title="Azul"
+            onclick="cfgCor('azul',   '#2F80FF')"></div>
+          <div class="cfg-color" id="cfg-c-roxo" style="background:#A78BFA" title="Roxo"
+            onclick="cfgCor('roxo',   '#A78BFA')"></div>
+          <div class="cfg-color" id="cfg-c-laranja" style="background:#FF8C42" title="Laranja"
+            onclick="cfgCor('laranja','#FF8C42')"></div>
         </div>
       </div>
 
@@ -1645,8 +2657,10 @@ transition: var(--ease);
       <div class="painel-section" id="cfg-admin-sec" style="display:none">
         <div class="painel-sec-title"><i class="bi bi-shield-check"></i>Permissões</div>
         <div class="cfg-row">
-          <span class="cfg-lbl">Tornar padrão para todos os usuários<small>Aplica este layout para toda a empresa</small></span>
-          <label class="cfg-sw"><input type="checkbox" id="cfg-padrao-empresa" onchange="cfgPadraoEmpresa(this.checked)"><span class="cfg-sw-track"></span></label>
+          <span class="cfg-lbl">Tornar padrão para todos os usuários<small>Aplica este layout para toda a
+              empresa</small></span>
+          <label class="cfg-sw"><input type="checkbox" id="cfg-padrao-empresa"
+              onchange="cfgPadraoEmpresa(this.checked)"><span class="cfg-sw-track"></span></label>
         </div>
       </div>
 
@@ -1668,14 +2682,16 @@ transition: var(--ease);
     requirePermission();
     NexoAuth.renderCurrentUser();
     // Avisa acesso negado redirecionado de outro módulo
-    (function() {
+    (function () {
       const denied = new URLSearchParams(location.search).get('denied');
       if (denied) {
-        const names = { 'produtos.html':'Produtos', 'estoque.html':'Estoque', 'financeiro.html':'Financeiro',
-          'relatorios.html':'Relatorios', 'configuracoes.html':'Configuracoes',
-          'pedidos.html':'Pedidos', 'vendas.html':'Vendas', 'clientes.html':'Clientes' };
+        const names = {
+          'produtos.html': 'Produtos', 'estoque.html': 'Estoque', 'financeiro.html': 'Financeiro',
+          'relatorios.html': 'Relatorios', 'configuracoes.html': 'Configuracoes',
+          'pedidos.html': 'Pedidos', 'vendas.html': 'Vendas', 'clientes.html': 'Clientes'
+        };
         const modulo = names[denied] || denied;
-        setTimeout(function(){ showToast('Sem permissao para acessar ' + modulo + '.', 'warning'); }, 300);
+        setTimeout(function () { showToast('Sem permissao para acessar ' + modulo + '.', 'warning'); }, 300);
         history.replaceState(null, '', location.pathname);
       }
     })();
@@ -1683,8 +2699,8 @@ transition: var(--ease);
     // ── Data atual ────────────────────────────────────────────
     (function () {
       const d = new Date();
-      const dias = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
-      const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+      const dias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+      const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
       document.getElementById('dbDate').textContent =
         `${dias[d.getDay()]}, ${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()} · Operação de hoje`;
     })();
@@ -1757,11 +2773,11 @@ transition: var(--ease);
       const data = parseDataLocal(dateISO);
       if (!data) return '—';
       const diff = Date.now() - data.getTime();
-      const min  = Math.floor(diff / 60000);
-      if (min < 1)  return 'agora mesmo';
+      const min = Math.floor(diff / 60000);
+      if (min < 1) return 'agora mesmo';
       if (min < 60) return `há ${min} min`;
       const h = Math.floor(min / 60);
-      if (h < 24)   return `há ${h}h`;
+      if (h < 24) return `há ${h}h`;
       const d = Math.floor(h / 24);
       return `há ${d} dia${d > 1 ? 's' : ''}`;
     }
@@ -1778,259 +2794,259 @@ transition: var(--ease);
         NexoAuth.apiFetch('/pedidos'),
         NexoAuth.apiFetch('/financeiro'),
       ]);
-      _vendas     = rV.ok    ? rV.data    : [];
-      _clientes   = rC.ok    ? rC.data    : [];
-      _produtos   = rP.ok    ? rP.data    : [];
-      _pedidos    = rPed.ok  ? rPed.data  : [];
-      _financeiro = rF.ok    ? rF.data    : [];
+      _vendas = rV.ok ? rV.data : [];
+      _clientes = rC.ok ? rC.data : [];
+      _produtos = rP.ok ? rP.data : [];
+      _pedidos = rPed.ok ? rPed.data : [];
+      _financeiro = rF.ok ? rF.data : [];
 
-      const vendas    = _vendas;
-      const clientes  = _clientes;
-      const produtos  = _produtos;
-      const pedidos   = _pedidos;
+      const vendas = _vendas;
+      const clientes = _clientes;
+      const produtos = _produtos;
+      const pedidos = _pedidos;
       const financeiro = _financeiro;
 
-    // ── KPI 1: Faturamento bruto ──────────────────────────────
-    const vendasMes = vendas.filter(v =>
-      v.status === 'concluida' && isMesAtual(v.dataISO || v.dataStr)
-    );
-    const faturamento = vendasMes.reduce((s, v) => s + (v.total || 0), 0);
-    document.getElementById('kpi-faturamento').textContent = fmtMoeda(faturamento);
-    const badgeFat = document.getElementById('kpi-faturamento-badge');
-    if (vendasMes.length > 0) {
-      badgeFat.textContent = `${vendasMes.length} venda${vendasMes.length > 1 ? 's' : ''}`;
-    } else { badgeFat.textContent = '—'; }
+      // ── KPI 1: Faturamento bruto ──────────────────────────────
+      const vendasMes = vendas.filter(v =>
+        v.status === 'concluida' && isMesAtual(v.dataISO || v.dataStr)
+      );
+      const faturamento = vendasMes.reduce((s, v) => s + (v.total || 0), 0);
+      document.getElementById('kpi-faturamento').textContent = fmtMoeda(faturamento);
+      const badgeFat = document.getElementById('kpi-faturamento-badge');
+      if (vendasMes.length > 0) {
+        badgeFat.textContent = `${vendasMes.length} venda${vendasMes.length > 1 ? 's' : ''}`;
+      } else { badgeFat.textContent = '—'; }
 
-    // ── KPI 2: Receitas ───────────────────────────────────────
-    // Receita recebida conta no mês do recebimento (pagoEm), não do vencimento.
-    const receitasMes = financeiro.filter(l =>
-      l.tipo === 'receita' && financeiroRealizado(l) && isMesAtual(dataFinanceiraRealizada(l))
-    );
-    const totalReceitas = receitasMes.reduce((s, l) => s + (l.valor || 0), 0);
-    document.getElementById('kpi-receitas').textContent = fmtMoeda(totalReceitas);
-    const recPagas = receitasMes.length;
-    const badgeRec = document.getElementById('kpi-receitas-badge');
-    if (recPagas > 0) { badgeRec.classList.add('up'); badgeRec.innerHTML = `<i class="bi bi-arrow-up-short"></i>${recPagas} recebida${recPagas > 1 ? 's' : ''}`; }
-    else { badgeRec.textContent = receitasMes.length > 0 ? `${receitasMes.length} a receber` : '—'; }
+      // ── KPI 2: Receitas ───────────────────────────────────────
+      // Receita recebida conta no mês do recebimento (pagoEm), não do vencimento.
+      const receitasMes = financeiro.filter(l =>
+        l.tipo === 'receita' && financeiroRealizado(l) && isMesAtual(dataFinanceiraRealizada(l))
+      );
+      const totalReceitas = receitasMes.reduce((s, l) => s + (l.valor || 0), 0);
+      document.getElementById('kpi-receitas').textContent = fmtMoeda(totalReceitas);
+      const recPagas = receitasMes.length;
+      const badgeRec = document.getElementById('kpi-receitas-badge');
+      if (recPagas > 0) { badgeRec.classList.add('up'); badgeRec.innerHTML = `<i class="bi bi-arrow-up-short"></i>${recPagas} recebida${recPagas > 1 ? 's' : ''}`; }
+      else { badgeRec.textContent = receitasMes.length > 0 ? `${receitasMes.length} a receber` : '—'; }
 
-    // ── KPI 3: Despesas ───────────────────────────────────────
-    const despesasMes = financeiro.filter(l =>
-      l.tipo === 'despesa' && financeiroValido(l) && isMesAtual(l.vencimento || l.data)
-    );
-    const totalDespesas = despesasMes.reduce((s, l) => s + (l.valor || 0), 0);
-    document.getElementById('kpi-despesas').textContent = fmtMoeda(totalDespesas);
-    const despVencidas = despesasMes.filter(l => {
-      const vencimento = parseDataLocal(l.vencimento);
-      return financeiroEmAberto(l) && vencimento && vencimento < new Date();
-    }).length;
-    const badgeDesp = document.getElementById('kpi-despesas-badge');
-    if (despVencidas > 0) { badgeDesp.classList.add('down'); badgeDesp.innerHTML = `<i class="bi bi-arrow-down-short"></i>${despVencidas} vencida${despVencidas > 1 ? 's' : ''}`; }
-    else { badgeDesp.textContent = despesasMes.length > 0 ? `${despesasMes.length} lançamento${despesasMes.length > 1 ? 's' : ''}` : '—'; }
-
-    // ── KPI 4: Lucro líquido ──────────────────────────────────
-    const recPagasMes = financeiro.filter(l => l.tipo === 'receita' && financeiroRealizado(l) && isMesAtual(dataFinanceiraRealizada(l)));
-    const despPagasMes = financeiro.filter(l => l.tipo === 'despesa' && financeiroRealizado(l) && isMesAtual(dataFinanceiraRealizada(l)));
-    const totalRecP  = recPagasMes.reduce((s, l) => s + (l.valor || 0), 0);
-    const totalDespP = despPagasMes.reduce((s, l) => s + (l.valor || 0), 0);
-    const lucro = totalRecP - totalDespP;
-    const elLucro    = document.getElementById('kpi-lucro');
-    const badgeLucro = document.getElementById('kpi-lucro-badge');
-    if (totalRecP === 0 && totalDespP === 0) {
-      elLucro.textContent = '—'; badgeLucro.textContent = '—';
-    } else {
-      elLucro.textContent = fmtMoeda(Math.abs(lucro));
-      if (lucro > 0)      { badgeLucro.classList.add('up');   badgeLucro.innerHTML = `<i class="bi bi-arrow-up-short"></i>Lucro`; }
-      else if (lucro < 0) { badgeLucro.classList.add('down'); badgeLucro.innerHTML = `<i class="bi bi-arrow-down-short"></i>Prejuízo`; }
-      else                { badgeLucro.textContent = 'Neutro'; }
-    }
-
-    // ── KPI 5: Saldo em conta ─────────────────────────────────
-    const todasRecPagas  = financeiro.filter(l => l.tipo === 'receita' && financeiroRealizado(l));
-    const todasDespPagas = financeiro.filter(l => l.tipo === 'despesa' && financeiroRealizado(l));
-    const saldo = todasRecPagas.reduce((s, l) => s + (l.valor || 0), 0)
-                - todasDespPagas.reduce((s, l) => s + (l.valor || 0), 0);
-    const elSaldo    = document.getElementById('kpi-saldo');
-    const badgeSaldo = document.getElementById('kpi-saldo-badge');
-    elSaldo.textContent = fmtMoeda(Math.abs(saldo));
-    if (todasRecPagas.length === 0 && todasDespPagas.length === 0) {
-      elSaldo.textContent = '—'; badgeSaldo.textContent = '—';
-    } else if (saldo >= 0) { badgeSaldo.classList.add('up');   badgeSaldo.innerHTML = `<i class="bi bi-arrow-up-short"></i>Positivo`; }
-    else                   { badgeSaldo.classList.add('down'); badgeSaldo.innerHTML = `<i class="bi bi-arrow-down-short"></i>Negativo`; }
-
-    // ── KPI Ticket Médio ─────────────────────────────────────
-    const ticket = vendasMes.length > 0 ? faturamento / vendasMes.length : 0;
-    const elTicket = document.getElementById('kpi-ticket');
-    const badgeTicket = document.getElementById('kpi-ticket-badge');
-    if (elTicket) {
-      elTicket.textContent = ticket > 0 ? fmtMoeda(ticket) : '—';
-      if (badgeTicket) badgeTicket.textContent = vendasMes.length > 0 ? `${vendasMes.length} venda${vendasMes.length > 1 ? 's' : ''}` : '—';
-    }
-
-    // ── KPI Margem de Lucro ───────────────────────────────────
-    const margemPct = totalRecP > 0 ? (lucro / totalRecP * 100) : null;
-    const elMargem = document.getElementById('kpi-margem');
-    const badgeMargem = document.getElementById('kpi-margem-badge');
-    if (elMargem) {
-      elMargem.textContent = margemPct !== null ? margemPct.toFixed(1) + '%' : '—';
-      if (badgeMargem) {
-        if (margemPct === null) { badgeMargem.textContent = '—'; }
-        else if (margemPct > 0) { badgeMargem.classList.add('up');   badgeMargem.innerHTML = `<i class="bi bi-arrow-up-short"></i>Positiva`; }
-        else if (margemPct < 0) { badgeMargem.classList.add('down'); badgeMargem.innerHTML = `<i class="bi bi-arrow-down-short"></i>Negativa`; }
-        else                    { badgeMargem.textContent = 'Neutra'; }
-      }
-    }
-
-    // ── Contas R/P ────────────────────────────────────────────
-    (function () {
-      const hoje    = new Date(); hoje.setHours(0, 0, 0, 0);
-      const isVenc  = l => {
+      // ── KPI 3: Despesas ───────────────────────────────────────
+      const despesasMes = financeiro.filter(l =>
+        l.tipo === 'despesa' && financeiroValido(l) && isMesAtual(l.vencimento || l.data)
+      );
+      const totalDespesas = despesasMes.reduce((s, l) => s + (l.valor || 0), 0);
+      document.getElementById('kpi-despesas').textContent = fmtMoeda(totalDespesas);
+      const despVencidas = despesasMes.filter(l => {
         const vencimento = parseDataLocal(l.vencimento);
-        return vencimento && vencimento < hoje;
-      };
-      const soma    = arr => arr.reduce((s, l) => s + (l.valor || 0), 0);
-      const f       = v => v > 0 ? fmtMoeda(v) : '—';
+        return financeiroEmAberto(l) && vencimento && vencimento < new Date();
+      }).length;
+      const badgeDesp = document.getElementById('kpi-despesas-badge');
+      if (despVencidas > 0) { badgeDesp.classList.add('down'); badgeDesp.innerHTML = `<i class="bi bi-arrow-down-short"></i>${despVencidas} vencida${despVencidas > 1 ? 's' : ''}`; }
+      else { badgeDesp.textContent = despesasMes.length > 0 ? `${despesasMes.length} lançamento${despesasMes.length > 1 ? 's' : ''}` : '—'; }
 
-      const pendRec = financeiro.filter(l => l.tipo === 'receita' && financeiroEmAberto(l));
-      const pendPag = financeiro.filter(l => l.tipo === 'despesa' && financeiroEmAberto(l));
-      const totalRec = soma(pendRec);
-      const totalPag = soma(pendPag);
-      const vencRec  = soma(pendRec.filter(isVenc));
-      const vencPag  = soma(pendPag.filter(isVenc));
+      // ── KPI 4: Lucro líquido ──────────────────────────────────
+      const recPagasMes = financeiro.filter(l => l.tipo === 'receita' && financeiroRealizado(l) && isMesAtual(dataFinanceiraRealizada(l)));
+      const despPagasMes = financeiro.filter(l => l.tipo === 'despesa' && financeiroRealizado(l) && isMesAtual(dataFinanceiraRealizada(l)));
+      const totalRecP = recPagasMes.reduce((s, l) => s + (l.valor || 0), 0);
+      const totalDespP = despPagasMes.reduce((s, l) => s + (l.valor || 0), 0);
+      const lucro = totalRecP - totalDespP;
+      const elLucro = document.getElementById('kpi-lucro');
+      const badgeLucro = document.getElementById('kpi-lucro-badge');
+      if (totalRecP === 0 && totalDespP === 0) {
+        elLucro.textContent = '—'; badgeLucro.textContent = '—';
+      } else {
+        elLucro.textContent = fmtMoeda(Math.abs(lucro));
+        if (lucro > 0) { badgeLucro.classList.add('up'); badgeLucro.innerHTML = `<i class="bi bi-arrow-up-short"></i>Lucro`; }
+        else if (lucro < 0) { badgeLucro.classList.add('down'); badgeLucro.innerHTML = `<i class="bi bi-arrow-down-short"></i>Prejuízo`; }
+        else { badgeLucro.textContent = 'Neutro'; }
+      }
 
-      // totais e detalhe
-      document.getElementById('rp-rec-total').textContent = f(totalRec);
-      document.getElementById('rp-rec-venc').textContent  = f(vencRec);
-      document.getElementById('rp-rec-av').textContent    = f(soma(pendRec.filter(l => !isVenc(l))));
-      document.getElementById('rp-pag-total').textContent = f(totalPag);
-      document.getElementById('rp-pag-venc').textContent  = f(vencPag);
-      document.getElementById('rp-pag-av').textContent    = f(soma(pendPag.filter(l => !isVenc(l))));
+      // ── KPI 5: Saldo em conta ─────────────────────────────────
+      const todasRecPagas = financeiro.filter(l => l.tipo === 'receita' && financeiroRealizado(l));
+      const todasDespPagas = financeiro.filter(l => l.tipo === 'despesa' && financeiroRealizado(l));
+      const saldo = todasRecPagas.reduce((s, l) => s + (l.valor || 0), 0)
+        - todasDespPagas.reduce((s, l) => s + (l.valor || 0), 0);
+      const elSaldo = document.getElementById('kpi-saldo');
+      const badgeSaldo = document.getElementById('kpi-saldo-badge');
+      elSaldo.textContent = fmtMoeda(Math.abs(saldo));
+      if (todasRecPagas.length === 0 && todasDespPagas.length === 0) {
+        elSaldo.textContent = '—'; badgeSaldo.textContent = '—';
+      } else if (saldo >= 0) { badgeSaldo.classList.add('up'); badgeSaldo.innerHTML = `<i class="bi bi-arrow-up-short"></i>Positivo`; }
+      else { badgeSaldo.classList.add('down'); badgeSaldo.innerHTML = `<i class="bi bi-arrow-down-short"></i>Negativo`; }
 
-      // badge de alerta em vencidos
-      const recVencLbl = document.getElementById('rp-rec-venc-lbl');
-      const pagVencLbl = document.getElementById('rp-pag-venc-lbl');
-      if (recVencLbl) recVencLbl.innerHTML = vencRec > 0 ? `<span class="rp-venc-badge"><i class="bi bi-exclamation-circle-fill"></i>Vencidos</span>` : 'Vencidos';
-      if (pagVencLbl) pagVencLbl.innerHTML = vencPag > 0 ? `<span class="rp-venc-badge"><i class="bi bi-exclamation-circle-fill"></i>Vencidos</span>` : 'Vencidos';
+      // ── KPI Ticket Médio ─────────────────────────────────────
+      const ticket = vendasMes.length > 0 ? faturamento / vendasMes.length : 0;
+      const elTicket = document.getElementById('kpi-ticket');
+      const badgeTicket = document.getElementById('kpi-ticket-badge');
+      if (elTicket) {
+        elTicket.textContent = ticket > 0 ? fmtMoeda(ticket) : '—';
+        if (badgeTicket) badgeTicket.textContent = vendasMes.length > 0 ? `${vendasMes.length} venda${vendasMes.length > 1 ? 's' : ''}` : '—';
+      }
 
-      // barra de proporção
-      const grandTotal = totalRec + totalPag;
-      const recPct = grandTotal > 0 ? (totalRec / grandTotal * 100) : 50;
-      const fill = document.getElementById('rp-prop-fill');
-      const recLbl = document.getElementById('rp-prop-rec-pct');
-      const pagLbl = document.getElementById('rp-prop-pag-pct');
-      if (fill)   fill.style.width = recPct.toFixed(1) + '%';
-      if (recLbl) recLbl.textContent = `A Receber ${recPct.toFixed(0)}%`;
-      if (pagLbl) pagLbl.textContent = `A Pagar ${(100 - recPct).toFixed(0)}%`;
-
-      // posição líquida
-      const liquida = totalRec - totalPag;
-      const elLiq = document.getElementById('rp-liquida-val');
-      if (elLiq) {
-        elLiq.textContent = grandTotal > 0 ? fmtMoeda(Math.abs(liquida)) : '—';
-        elLiq.style.color = liquida >= 0 ? '#00D084' : '#FF4D6D';
-        if (grandTotal > 0) {
-          elLiq.innerHTML = `<i class="bi bi-arrow-${liquida>=0?'up':'down'}-short"></i>${fmtMoeda(Math.abs(liquida))}`;
+      // ── KPI Margem de Lucro ───────────────────────────────────
+      const margemPct = totalRecP > 0 ? (lucro / totalRecP * 100) : null;
+      const elMargem = document.getElementById('kpi-margem');
+      const badgeMargem = document.getElementById('kpi-margem-badge');
+      if (elMargem) {
+        elMargem.textContent = margemPct !== null ? margemPct.toFixed(1) + '%' : '—';
+        if (badgeMargem) {
+          if (margemPct === null) { badgeMargem.textContent = '—'; }
+          else if (margemPct > 0) { badgeMargem.classList.add('up'); badgeMargem.innerHTML = `<i class="bi bi-arrow-up-short"></i>Positiva`; }
+          else if (margemPct < 0) { badgeMargem.classList.add('down'); badgeMargem.innerHTML = `<i class="bi bi-arrow-down-short"></i>Negativa`; }
+          else { badgeMargem.textContent = 'Neutra'; }
         }
       }
-    })();
 
-    // ── Atividade Recente ─────────────────────────────────────
-    const eventos = [];
+      // ── Contas R/P ────────────────────────────────────────────
+      (function () {
+        const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+        const isVenc = l => {
+          const vencimento = parseDataLocal(l.vencimento);
+          return vencimento && vencimento < hoje;
+        };
+        const soma = arr => arr.reduce((s, l) => s + (l.valor || 0), 0);
+        const f = v => v > 0 ? fmtMoeda(v) : '—';
 
-    // Últimas 3 vendas concluídas
-    vendas
-      .filter(v => v.status === 'concluida' && v.dataISO)
-      .sort((a, b) => new Date(b.dataISO) - new Date(a.dataISO))
-      .slice(0, 3)
-      .forEach(v => {
-        const clienteNome = typeof v.cliente === 'object' ? v.cliente.nome || '—' : (v.cliente || 'Cliente');
-        eventos.push({
-          cor: 'var(--green)',
-          texto: `Venda <strong>${escapeHTML(v.id || '')}</strong> de R$ ${fmt(v.total || 0)} — ${escapeHTML(clienteNome)}`,
-          tempo: v.dataISO,
+        const pendRec = financeiro.filter(l => l.tipo === 'receita' && financeiroEmAberto(l));
+        const pendPag = financeiro.filter(l => l.tipo === 'despesa' && financeiroEmAberto(l));
+        const totalRec = soma(pendRec);
+        const totalPag = soma(pendPag);
+        const vencRec = soma(pendRec.filter(isVenc));
+        const vencPag = soma(pendPag.filter(isVenc));
+
+        // totais e detalhe
+        document.getElementById('rp-rec-total').textContent = f(totalRec);
+        document.getElementById('rp-rec-venc').textContent = f(vencRec);
+        document.getElementById('rp-rec-av').textContent = f(soma(pendRec.filter(l => !isVenc(l))));
+        document.getElementById('rp-pag-total').textContent = f(totalPag);
+        document.getElementById('rp-pag-venc').textContent = f(vencPag);
+        document.getElementById('rp-pag-av').textContent = f(soma(pendPag.filter(l => !isVenc(l))));
+
+        // badge de alerta em vencidos
+        const recVencLbl = document.getElementById('rp-rec-venc-lbl');
+        const pagVencLbl = document.getElementById('rp-pag-venc-lbl');
+        if (recVencLbl) recVencLbl.innerHTML = vencRec > 0 ? `<span class="rp-venc-badge"><i class="bi bi-exclamation-circle-fill"></i>Vencidos</span>` : 'Vencidos';
+        if (pagVencLbl) pagVencLbl.innerHTML = vencPag > 0 ? `<span class="rp-venc-badge"><i class="bi bi-exclamation-circle-fill"></i>Vencidos</span>` : 'Vencidos';
+
+        // barra de proporção
+        const grandTotal = totalRec + totalPag;
+        const recPct = grandTotal > 0 ? (totalRec / grandTotal * 100) : 50;
+        const fill = document.getElementById('rp-prop-fill');
+        const recLbl = document.getElementById('rp-prop-rec-pct');
+        const pagLbl = document.getElementById('rp-prop-pag-pct');
+        if (fill) fill.style.width = recPct.toFixed(1) + '%';
+        if (recLbl) recLbl.textContent = `A Receber ${recPct.toFixed(0)}%`;
+        if (pagLbl) pagLbl.textContent = `A Pagar ${(100 - recPct).toFixed(0)}%`;
+
+        // posição líquida
+        const liquida = totalRec - totalPag;
+        const elLiq = document.getElementById('rp-liquida-val');
+        if (elLiq) {
+          elLiq.textContent = grandTotal > 0 ? fmtMoeda(Math.abs(liquida)) : '—';
+          elLiq.style.color = liquida >= 0 ? '#00D084' : '#FF4D6D';
+          if (grandTotal > 0) {
+            elLiq.innerHTML = `<i class="bi bi-arrow-${liquida >= 0 ? 'up' : 'down'}-short"></i>${fmtMoeda(Math.abs(liquida))}`;
+          }
+        }
+      })();
+
+      // ── Atividade Recente ─────────────────────────────────────
+      const eventos = [];
+
+      // Últimas 3 vendas concluídas
+      vendas
+        .filter(v => v.status === 'concluida' && v.dataISO)
+        .sort((a, b) => new Date(b.dataISO) - new Date(a.dataISO))
+        .slice(0, 3)
+        .forEach(v => {
+          const clienteNome = typeof v.cliente === 'object' ? v.cliente.nome || '—' : (v.cliente || 'Cliente');
+          eventos.push({
+            cor: 'var(--green)',
+            texto: `Venda <strong>${escapeHTML(v.id || '')}</strong> de R$ ${fmt(v.total || 0)} — ${escapeHTML(clienteNome)}`,
+            tempo: v.dataISO,
+          });
         });
-      });
 
-    // Produtos com estoque zerado
-    produtos.filter(p => p.estoque === 0 && p.status !== 'inativo').slice(0, 2).forEach(p => {
-      eventos.push({
-        cor: 'var(--yellow)',
-        texto: `Estoque zerado: <strong>${escapeHTML(p.nome)}</strong>`,
-        tempo: null,
-      });
-    });
-
-    // Clientes recentes
-    clientes
-      .filter(c => c.cadastro)
-      .slice(0, 2)
-      .forEach(c => {
+      // Produtos com estoque zerado
+      produtos.filter(p => p.estoque === 0 && p.status !== 'inativo').slice(0, 2).forEach(p => {
         eventos.push({
-          cor: 'var(--blue)',
-          texto: `Novo cliente cadastrado: <strong>${escapeHTML(c.nome)}</strong>`,
+          cor: 'var(--yellow)',
+          texto: `Estoque zerado: <strong>${escapeHTML(p.nome)}</strong>`,
           tempo: null,
         });
       });
 
-    // Lançamentos financeiros vencendo em breve
-    financeiro
-      .filter(l => financeiroEmAberto(l) && l.vencimento)
-      .slice(0, 2)
-      .forEach(l => {
-        const vencimento = parseDataLocal(l.vencimento);
-        const dias = vencimento ? Math.ceil((vencimento - new Date()) / 864e5) : null;
-        if (dias !== null && dias >= 0 && dias <= 7) {
+      // Clientes recentes
+      clientes
+        .filter(c => c.cadastro)
+        .slice(0, 2)
+        .forEach(c => {
           eventos.push({
-            cor: 'var(--danger)',
-            texto: `Título de <strong>R$ ${fmt(l.valor || 0)}</strong> vence em ${dias === 0 ? 'hoje' : dias + ' dia' + (dias > 1 ? 's' : '')}`,
+            cor: 'var(--blue)',
+            texto: `Novo cliente cadastrado: <strong>${escapeHTML(c.nome)}</strong>`,
             tempo: null,
           });
-        }
+        });
+
+      // Lançamentos financeiros vencendo em breve
+      financeiro
+        .filter(l => financeiroEmAberto(l) && l.vencimento)
+        .slice(0, 2)
+        .forEach(l => {
+          const vencimento = parseDataLocal(l.vencimento);
+          const dias = vencimento ? Math.ceil((vencimento - new Date()) / 864e5) : null;
+          if (dias !== null && dias >= 0 && dias <= 7) {
+            eventos.push({
+              cor: 'var(--danger)',
+              texto: `Título de <strong>R$ ${fmt(l.valor || 0)}</strong> vence em ${dias === 0 ? 'hoje' : dias + ' dia' + (dias > 1 ? 's' : '')}`,
+              tempo: null,
+            });
+          }
+        });
+
+      const tl = document.getElementById('activityTimeline');
+      const ACT_TIPOS = {
+        venda: { ico: 'bi-currency-dollar', bg: 'rgba(0,208,132,.12)', cor: 'var(--green)' },
+        estoque: { ico: 'bi-exclamation-triangle', bg: 'rgba(245,183,0,.12)', cor: 'var(--yellow)' },
+        cliente: { ico: 'bi-person-plus', bg: 'rgba(47,128,255,.12)', cor: 'var(--blue)' },
+        financeiro: { ico: 'bi-file-earmark-text', bg: 'rgba(255,77,109,.12)', cor: 'var(--red)' },
+        pedido: { ico: 'bi-bag-check', bg: 'rgba(167,139,250,.12)', cor: 'var(--purple)' },
+        sistema: { ico: 'bi-person-check', bg: 'rgba(107,127,150,.12)', cor: 'var(--sub)' },
+      };
+
+      // Monta lista completa de atividades (mais recentes primeiro)
+      const todasAtividades = [];
+      vendas.filter(v => v.status === 'concluida' && v.dataISO)
+        .sort((a, b) => new Date(b.dataISO) - new Date(a.dataISO))
+        .forEach(v => {
+          const nome = typeof v.cliente === 'object' ? v.cliente.nome || 'Cliente' : (v.cliente || 'Cliente');
+          todasAtividades.push({ tipo: 'venda', titulo: 'Venda concluída', desc: `${escapeHTML(nome)} · R$ ${fmt(v.total || 0)}`, tempo: v.dataISO });
+        });
+      financeiro.filter(l => financeiroRealizado(l))
+        .sort((a, b) => parseDataLocal(dataFinanceiraRealizada(b)) - parseDataLocal(dataFinanceiraRealizada(a)))
+        .forEach(l => {
+          const t = l.tipo === 'receita' ? 'Recebimento registrado' : 'Pagamento realizado';
+          todasAtividades.push({ tipo: 'financeiro', titulo: t, desc: `${escapeHTML(l.descricao || l.categoria || '—')} · R$ ${fmt(l.valor || 0)}`, tempo: dataFinanceiraRealizada(l) });
+        });
+      pedidos.forEach(p => {
+        todasAtividades.push({ tipo: 'pedido', titulo: 'Pedido criado', desc: `${escapeHTML(p.id || '—')} · ${escapeHTML(p.cliente || '—')}`, tempo: p.dataISO || null });
+      });
+      produtos.filter(p => p.estoque === 0 && p.status !== 'inativo').forEach(p => {
+        todasAtividades.push({ tipo: 'estoque', titulo: 'Estoque zerado', desc: escapeHTML(p.nome), tempo: null });
+      });
+      clientes.forEach(c => {
+        todasAtividades.push({ tipo: 'cliente', titulo: 'Novo cliente cadastrado', desc: escapeHTML(c.nome || '—'), tempo: null });
+      });
+      // Ordena por tempo (com tempo primeiro, sem tempo no final)
+      todasAtividades.sort((a, b) => {
+        if (!a.tempo && !b.tempo) return 0;
+        if (!a.tempo) return 1;
+        if (!b.tempo) return -1;
+        return new Date(b.tempo) - new Date(a.tempo);
       });
 
-    const tl = document.getElementById('activityTimeline');
-    const ACT_TIPOS = {
-      venda:     { ico: 'bi-currency-dollar',    bg: 'rgba(0,208,132,.12)',   cor: 'var(--green)'  },
-      estoque:   { ico: 'bi-exclamation-triangle',bg: 'rgba(245,183,0,.12)',  cor: 'var(--yellow)' },
-      cliente:   { ico: 'bi-person-plus',         bg: 'rgba(47,128,255,.12)', cor: 'var(--blue)'   },
-      financeiro:{ ico: 'bi-file-earmark-text',   bg: 'rgba(255,77,109,.12)', cor: 'var(--red)'    },
-      pedido:    { ico: 'bi-bag-check',           bg: 'rgba(167,139,250,.12)',cor: 'var(--purple)' },
-      sistema:   { ico: 'bi-person-check',        bg: 'rgba(107,127,150,.12)',cor: 'var(--sub)'    },
-    };
-
-    // Monta lista completa de atividades (mais recentes primeiro)
-    const todasAtividades = [];
-    vendas.filter(v=>v.status==='concluida'&&v.dataISO)
-      .sort((a,b)=>new Date(b.dataISO)-new Date(a.dataISO))
-      .forEach(v=>{
-        const nome = typeof v.cliente==='object' ? v.cliente.nome||'Cliente' : (v.cliente||'Cliente');
-        todasAtividades.push({ tipo:'venda', titulo:'Venda concluída', desc:`${escapeHTML(nome)} · R$ ${fmt(v.total||0)}`, tempo:v.dataISO });
-      });
-    financeiro.filter(l=>financeiroRealizado(l))
-      .sort((a,b)=>parseDataLocal(dataFinanceiraRealizada(b))-parseDataLocal(dataFinanceiraRealizada(a)))
-      .forEach(l=>{
-        const t = l.tipo==='receita' ? 'Recebimento registrado' : 'Pagamento realizado';
-        todasAtividades.push({ tipo:'financeiro', titulo:t, desc:`${escapeHTML(l.descricao||l.categoria||'—')} · R$ ${fmt(l.valor||0)}`, tempo:dataFinanceiraRealizada(l) });
-      });
-    pedidos.forEach(p=>{
-      todasAtividades.push({ tipo:'pedido', titulo:'Pedido criado', desc:`${escapeHTML(p.id||'—')} · ${escapeHTML(p.cliente||'—')}`, tempo:p.dataISO||null });
-    });
-    produtos.filter(p=>p.estoque===0&&p.status!=='inativo').forEach(p=>{
-      todasAtividades.push({ tipo:'estoque', titulo:'Estoque zerado', desc:escapeHTML(p.nome), tempo:null });
-    });
-    clientes.forEach(c=>{
-      todasAtividades.push({ tipo:'cliente', titulo:'Novo cliente cadastrado', desc:escapeHTML(c.nome||'—'), tempo:null });
-    });
-    // Ordena por tempo (com tempo primeiro, sem tempo no final)
-    todasAtividades.sort((a,b)=>{
-      if (!a.tempo && !b.tempo) return 0;
-      if (!a.tempo) return 1;
-      if (!b.tempo) return -1;
-      return new Date(b.tempo) - new Date(a.tempo);
-    });
-
-    function buildActItem(a) {
-      const cfg = ACT_TIPOS[a.tipo] || ACT_TIPOS.sistema;
-      return `<div class="act-item">
+      function buildActItem(a) {
+        const cfg = ACT_TIPOS[a.tipo] || ACT_TIPOS.sistema;
+        return `<div class="act-item">
         <div class="act-ico" style="background:${cfg.bg};color:${cfg.cor}"><i class="bi ${cfg.ico}"></i></div>
         <div class="act-body">
           <div class="act-title">${a.titulo}</div>
@@ -2038,162 +3054,162 @@ transition: var(--ease);
         </div>
         <div class="act-time">${a.tempo ? tempoRelativo(a.tempo) : '—'}</div>
       </div>`;
-    }
-
-    if (!tl) {
-      // sem elemento, ignora
-    } else if (todasAtividades.length === 0) {
-      tl.innerHTML = `<div style="text-align:center;color:var(--muted);padding:28px;font-size:13px">Nenhuma atividade recente.</div>`;
-    } else {
-      // Renderiza 1 item para medir a altura real
-      tl.innerHTML = buildActItem(todasAtividades[0]);
-      const itemH = tl.firstElementChild.offsetHeight || 50;
-      const availH = tl.clientHeight || 188;
-      const maxItems = Math.max(1, Math.floor(availH / itemH));
-      tl.innerHTML = todasAtividades.slice(0, maxItems).map(buildActItem).join('');
-    }
-
-    // ── Resultado do Mês ─────────────────────────────────────
-    (function () {
-      const mesAtualRec  = financeiro.filter(l => l.tipo === 'receita' && financeiroRealizado(l) && isMesAtual(dataFinanceiraRealizada(l)));
-      const mesAtualDesp = financeiro.filter(l => l.tipo === 'despesa' && financeiroRealizado(l) && isMesAtual(dataFinanceiraRealizada(l)));
-      const rec  = mesAtualRec.reduce((s, l) => s + (l.valor || 0), 0);
-      const desp = mesAtualDesp.reduce((s, l) => s + (l.valor || 0), 0);
-      const lucro = rec - desp;
-      const margem = rec > 0 ? (lucro / rec * 100) : null;
-
-      // mês anterior para comparativo
-      const now = new Date();
-      const isMesAnt = s => {
-        if (!s) return false;
-        const d = parseDataLocal(s);
-        if (!d) return false;
-        return d.getMonth() === (now.getMonth() === 0 ? 11 : now.getMonth() - 1) &&
-               d.getFullYear() === (now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear());
-      };
-      const recAnt  = financeiro.filter(l => l.tipo === 'receita' && financeiroRealizado(l) && isMesAnt(dataFinanceiraRealizada(l))).reduce((s,l)=>s+(l.valor||0),0);
-      const despAnt = financeiro.filter(l => l.tipo === 'despesa' && financeiroRealizado(l) && isMesAnt(dataFinanceiraRealizada(l))).reduce((s,l)=>s+(l.valor||0),0);
-      const lucroAnt = recAnt - despAnt;
-
-      // lucro líquido
-      const elVal = document.getElementById('res-lucro');
-      const elMarg = document.getElementById('res-margem');
-      const isLucro = lucro >= 0;
-      const cor = rec === 0 && desp === 0 ? 'var(--muted)' : isLucro ? '#00D084' : '#FF4D6D';
-      elVal.textContent = rec === 0 && desp === 0 ? '—' : fmtMoeda(Math.abs(lucro));
-      elVal.style.color = cor;
-      if (margem !== null) {
-        elMarg.innerHTML = `<i class="bi bi-percent" style="font-size:11px"></i><span style="color:${cor};font-weight:700">${margem.toFixed(1)}%</span> de margem`;
       }
 
-      // mini barras
-      const max = Math.max(rec, desp, Math.abs(lucro), 1);
-      const bar = (lbl, val, color) => `
+      if (!tl) {
+        // sem elemento, ignora
+      } else if (todasAtividades.length === 0) {
+        tl.innerHTML = `<div style="text-align:center;color:var(--muted);padding:28px;font-size:13px">Nenhuma atividade recente.</div>`;
+      } else {
+        // Renderiza 1 item para medir a altura real
+        tl.innerHTML = buildActItem(todasAtividades[0]);
+        const itemH = tl.firstElementChild.offsetHeight || 50;
+        const availH = tl.clientHeight || 188;
+        const maxItems = Math.max(1, Math.floor(availH / itemH));
+        tl.innerHTML = todasAtividades.slice(0, maxItems).map(buildActItem).join('');
+      }
+
+      // ── Resultado do Mês ─────────────────────────────────────
+      (function () {
+        const mesAtualRec = financeiro.filter(l => l.tipo === 'receita' && financeiroRealizado(l) && isMesAtual(dataFinanceiraRealizada(l)));
+        const mesAtualDesp = financeiro.filter(l => l.tipo === 'despesa' && financeiroRealizado(l) && isMesAtual(dataFinanceiraRealizada(l)));
+        const rec = mesAtualRec.reduce((s, l) => s + (l.valor || 0), 0);
+        const desp = mesAtualDesp.reduce((s, l) => s + (l.valor || 0), 0);
+        const lucro = rec - desp;
+        const margem = rec > 0 ? (lucro / rec * 100) : null;
+
+        // mês anterior para comparativo
+        const now = new Date();
+        const isMesAnt = s => {
+          if (!s) return false;
+          const d = parseDataLocal(s);
+          if (!d) return false;
+          return d.getMonth() === (now.getMonth() === 0 ? 11 : now.getMonth() - 1) &&
+            d.getFullYear() === (now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear());
+        };
+        const recAnt = financeiro.filter(l => l.tipo === 'receita' && financeiroRealizado(l) && isMesAnt(dataFinanceiraRealizada(l))).reduce((s, l) => s + (l.valor || 0), 0);
+        const despAnt = financeiro.filter(l => l.tipo === 'despesa' && financeiroRealizado(l) && isMesAnt(dataFinanceiraRealizada(l))).reduce((s, l) => s + (l.valor || 0), 0);
+        const lucroAnt = recAnt - despAnt;
+
+        // lucro líquido
+        const elVal = document.getElementById('res-lucro');
+        const elMarg = document.getElementById('res-margem');
+        const isLucro = lucro >= 0;
+        const cor = rec === 0 && desp === 0 ? 'var(--muted)' : isLucro ? '#00D084' : '#FF4D6D';
+        elVal.textContent = rec === 0 && desp === 0 ? '—' : fmtMoeda(Math.abs(lucro));
+        elVal.style.color = cor;
+        if (margem !== null) {
+          elMarg.innerHTML = `<i class="bi bi-percent" style="font-size:11px"></i><span style="color:${cor};font-weight:700">${margem.toFixed(1)}%</span> de margem`;
+        }
+
+        // mini barras
+        const max = Math.max(rec, desp, Math.abs(lucro), 1);
+        const bar = (lbl, val, color) => `
         <div class="res-bar-row">
           <span class="res-bar-lbl">${lbl}</span>
-          <div class="res-bar-track"><div class="res-bar-fill" style="width:${(val/max*100).toFixed(1)}%;background:${color}"></div></div>
+          <div class="res-bar-track"><div class="res-bar-fill" style="width:${(val / max * 100).toFixed(1)}%;background:${color}"></div></div>
           <span class="res-bar-val" style="color:${color}">${val > 0 ? fmtMoeda(val) : '—'}</span>
         </div>`;
-      document.getElementById('res-bars').innerHTML =
-        bar('Receitas', rec, '#00D084') +
-        bar('Despesas', desp, '#FF4D6D') +
-        bar(isLucro ? 'Lucro' : 'Prejuízo', Math.abs(lucro), cor);
+        document.getElementById('res-bars').innerHTML =
+          bar('Receitas', rec, '#00D084') +
+          bar('Despesas', desp, '#FF4D6D') +
+          bar(isLucro ? 'Lucro' : 'Prejuízo', Math.abs(lucro), cor);
 
-      // vs mês anterior
-      const elVs = document.getElementById('res-vs');
-      if (lucroAnt !== 0 && (rec > 0 || desp > 0)) {
-        const delta = ((lucro - lucroAnt) / Math.abs(lucroAnt) * 100);
-        const up = delta >= 0;
-        elVs.innerHTML = `<i class="bi bi-arrow-${up?'up':'down'}-short" style="color:${up?'#00D084':'#FF4D6D'}"></i>
-          <span style="color:${up?'#00D084':'#FF4D6D'}">${up?'+':''}${delta.toFixed(1)}%</span>
+        // vs mês anterior
+        const elVs = document.getElementById('res-vs');
+        if (lucroAnt !== 0 && (rec > 0 || desp > 0)) {
+          const delta = ((lucro - lucroAnt) / Math.abs(lucroAnt) * 100);
+          const up = delta >= 0;
+          elVs.innerHTML = `<i class="bi bi-arrow-${up ? 'up' : 'down'}-short" style="color:${up ? '#00D084' : '#FF4D6D'}"></i>
+          <span style="color:${up ? '#00D084' : '#FF4D6D'}">${up ? '+' : ''}${delta.toFixed(1)}%</span>
           <span style="color:var(--muted);font-weight:400">vs mês anterior</span>`;
-      } else {
-        elVs.innerHTML = `<span style="color:var(--muted);font-size:12px">Sem dados do mês anterior</span>`;
-      }
-    })();
+        } else {
+          elVs.innerHTML = `<span style="color:var(--muted);font-size:12px">Sem dados do mês anterior</span>`;
+        }
+      })();
 
-    // ── Faturamento dos Últimos 6 Meses ──────────────────────
-    (function () {
-      const MESES_S = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-      const months  = [];
-      for (let i = 5; i >= 0; i--) {
-        const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i);
-        months.push({ m: d.getMonth(), y: d.getFullYear(), lbl: MESES_S[d.getMonth()] + '/' + String(d.getFullYear()).slice(2) });
-      }
-      const data = months.map(mo => ({
-        lbl: mo.lbl,
-        total: vendas.filter(v => {
-          if (v.status !== 'concluida') return false;
-          const d = v.dataISO ? new Date(v.dataISO) : null;
-          return d && d.getMonth() === mo.m && d.getFullYear() === mo.y;
-        }).reduce((s, v) => s + (v.total || 0), 0)
-      }));
-      const max  = Math.max(...data.map(d => d.total), 1);
-      const W = 520, H = 120, bW = 54, pad = 16;
-      const step = (W - pad * 2) / 6;
-      const bars = data.map((d, i) => {
-        const h = Math.max(d.total > 0 ? 5 : 0, (d.total / max) * H);
-        const x = (pad + i * step + (step - bW) / 2).toFixed(1);
-        const y = (H - h).toFixed(1);
-        return `<g class="bgrp">
+      // ── Faturamento dos Últimos 6 Meses ──────────────────────
+      (function () {
+        const MESES_S = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const months = [];
+        for (let i = 5; i >= 0; i--) {
+          const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i);
+          months.push({ m: d.getMonth(), y: d.getFullYear(), lbl: MESES_S[d.getMonth()] + '/' + String(d.getFullYear()).slice(2) });
+        }
+        const data = months.map(mo => ({
+          lbl: mo.lbl,
+          total: vendas.filter(v => {
+            if (v.status !== 'concluida') return false;
+            const d = v.dataISO ? new Date(v.dataISO) : null;
+            return d && d.getMonth() === mo.m && d.getFullYear() === mo.y;
+          }).reduce((s, v) => s + (v.total || 0), 0)
+        }));
+        const max = Math.max(...data.map(d => d.total), 1);
+        const W = 520, H = 120, bW = 54, pad = 16;
+        const step = (W - pad * 2) / 6;
+        const bars = data.map((d, i) => {
+          const h = Math.max(d.total > 0 ? 5 : 0, (d.total / max) * H);
+          const x = (pad + i * step + (step - bW) / 2).toFixed(1);
+          const y = (H - h).toFixed(1);
+          return `<g class="bgrp">
           <rect x="${x}" y="${y}" width="${bW}" height="${h.toFixed(1)}" rx="5" fill="url(#gBl)" opacity=".85"/>
-          ${h > 10 ? `<text x="${(parseFloat(x)+bW/2).toFixed(1)}" y="${(parseFloat(y)-4).toFixed(1)}" text-anchor="middle" fill="rgba(148,163,184,.65)" font-size="7.5" font-family="Inter">${fmtMoeda(d.total)}</text>` : ''}
-          <text x="${(parseFloat(x)+bW/2).toFixed(1)}" y="${(H+14).toFixed(1)}" text-anchor="middle" fill="rgba(148,163,184,.5)" font-size="8.5" font-family="Inter">${d.lbl}</text>
+          ${h > 10 ? `<text x="${(parseFloat(x) + bW / 2).toFixed(1)}" y="${(parseFloat(y) - 4).toFixed(1)}" text-anchor="middle" fill="rgba(148,163,184,.65)" font-size="7.5" font-family="Inter">${fmtMoeda(d.total)}</text>` : ''}
+          <text x="${(parseFloat(x) + bW / 2).toFixed(1)}" y="${(H + 14).toFixed(1)}" text-anchor="middle" fill="rgba(148,163,184,.5)" font-size="8.5" font-family="Inter">${d.lbl}</text>
         </g>`;
-      }).join('');
-      const el = document.getElementById('fat6mChart');
-      if (!el) return;
-      el.innerHTML = `<svg style="width:100%;flex:1" viewBox="0 0 ${W} ${H+22}" xmlns="http://www.w3.org/2000/svg">
+        }).join('');
+        const el = document.getElementById('fat6mChart');
+        if (!el) return;
+        el.innerHTML = `<svg style="width:100%;flex:1" viewBox="0 0 ${W} ${H + 22}" xmlns="http://www.w3.org/2000/svg">
         <defs><linearGradient id="gBl" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#2F80FF"/>
           <stop offset="100%" stop-color="#1556c7" stop-opacity=".6"/>
         </linearGradient></defs>
-        <line x1="${pad}" y1="${H}" x2="${W-pad}" y2="${H}" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+        <line x1="${pad}" y1="${H}" x2="${W - pad}" y2="${H}" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
         ${bars}
       </svg>`;
-    })();
+      })();
 
-    // ── Despesas por Categoria ────────────────────────────────
-    (function () {
-      const cats = {};
-      financeiro.filter(l => l.tipo === 'despesa' && financeiroValido(l)).forEach(l => {
-        const c = escapeHTML(l.categoria || 'Outros');
-        cats[c] = (cats[c] || 0) + (l.valor || 0);
-      });
-      const entries = Object.entries(cats).sort((a, b) => b[1] - a[1]).slice(0, 5);
-      const total   = entries.reduce((s, [, v]) => s + v, 0);
-      const CORES   = ['#00D084','#2F80FF','#FF8C42','#A78BFA','#FF4D6D'];
-      const svgEl   = document.getElementById('despCatSvgWrap');
-      const legEl   = document.getElementById('despCatLegend');
-      if (!svgEl || !legEl) return;
-      if (total === 0) return;
-      const R = 38, circ = 2 * Math.PI * R;
-      let offset = 0;
-      const slices = entries.map(([, val], i) => {
-        const dash = (val / total) * circ;
-        const s = `<circle cx="50" cy="50" r="${R}" fill="none" stroke="${CORES[i]}" stroke-width="11"
+      // ── Despesas por Categoria ────────────────────────────────
+      (function () {
+        const cats = {};
+        financeiro.filter(l => l.tipo === 'despesa' && financeiroValido(l)).forEach(l => {
+          const c = escapeHTML(l.categoria || 'Outros');
+          cats[c] = (cats[c] || 0) + (l.valor || 0);
+        });
+        const entries = Object.entries(cats).sort((a, b) => b[1] - a[1]).slice(0, 5);
+        const total = entries.reduce((s, [, v]) => s + v, 0);
+        const CORES = ['#00D084', '#2F80FF', '#FF8C42', '#A78BFA', '#FF4D6D'];
+        const svgEl = document.getElementById('despCatSvgWrap');
+        const legEl = document.getElementById('despCatLegend');
+        if (!svgEl || !legEl) return;
+        if (total === 0) return;
+        const R = 38, circ = 2 * Math.PI * R;
+        let offset = 0;
+        const slices = entries.map(([, val], i) => {
+          const dash = (val / total) * circ;
+          const s = `<circle cx="50" cy="50" r="${R}" fill="none" stroke="${CORES[i]}" stroke-width="11"
           stroke-dasharray="${dash.toFixed(2)} ${circ.toFixed(2)}" stroke-dashoffset="${(-offset).toFixed(2)}" transform="rotate(-90 50 50)"/>`;
-        offset += dash;
-        return s;
-      }).join('');
-      const totFmt = fmtMoeda(total);
-      svgEl.innerHTML = `<svg class="donut" viewBox="0 0 100 100">
+          offset += dash;
+          return s;
+        }).join('');
+        const totFmt = fmtMoeda(total);
+        svgEl.innerHTML = `<svg class="donut" viewBox="0 0 100 100">
         <circle cx="50" cy="50" r="${R}" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="11"/>
         ${slices}
-        <text x="50" y="46" text-anchor="middle" fill="#FFF" font-size="9" font-weight="800" font-family="Inter,sans-serif">${totFmt.replace('R$ ','')}</text>
+        <text x="50" y="46" text-anchor="middle" fill="#FFF" font-size="9" font-weight="800" font-family="Inter,sans-serif">${totFmt.replace('R$ ', '')}</text>
         <text x="50" y="57" text-anchor="middle" fill="rgba(148,163,184,.5)" font-size="6.5" font-family="Inter,sans-serif">Total</text>
       </svg>`;
-      legEl.innerHTML = entries.map(([cat, val], i) =>
-        `<div class="despc-row">
+        legEl.innerHTML = entries.map(([cat, val], i) =>
+          `<div class="despc-row">
           <div class="despc-dot" style="background:${CORES[i]}"></div>
           <span class="despc-name">${cat}</span>
           <span class="despc-val">${fmtMoeda(val)}</span>
-          <span class="despc-pct" style="color:${CORES[i]}">${(val/total*100).toFixed(1)}%</span>
+          <span class="despc-pct" style="color:${CORES[i]}">${(val / total * 100).toFixed(1)}%</span>
         </div>`
-      ).join('');
-    })();
+        ).join('');
+      })();
 
-    renderFluxoCaixa('mensal');
+      renderFluxoCaixa('mensal');
     }
     initDashboard();
 
@@ -2201,98 +3217,98 @@ transition: var(--ease);
     function renderFluxoCaixa(periodo) {
       const el = document.getElementById('fluxoCaixaChart');
       if (!el) return;
-      const MESES_S = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+      const MESES_S = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
       let pts = [];
 
       if (periodo === 'diario') {
         for (let i = 6; i >= 0; i--) {
           const d = new Date(); d.setDate(d.getDate() - i);
           const key = d.toISOString().slice(0, 10);
-          const lbl = i === 0 ? 'Hoje' : `${d.getDate()}/${d.getMonth()+1}`;
-          const ent = _financeiro.filter(l=>l.tipo==='receita'&&financeiroRealizado(l)&&dataKeyLocal(dataFinanceiraRealizada(l))===key).reduce((s,l)=>s+(l.valor||0),0);
-          const sai = _financeiro.filter(l=>l.tipo==='despesa'&&financeiroRealizado(l)&&dataKeyLocal(dataFinanceiraRealizada(l))===key).reduce((s,l)=>s+(l.valor||0),0);
+          const lbl = i === 0 ? 'Hoje' : `${d.getDate()}/${d.getMonth() + 1}`;
+          const ent = _financeiro.filter(l => l.tipo === 'receita' && financeiroRealizado(l) && dataKeyLocal(dataFinanceiraRealizada(l)) === key).reduce((s, l) => s + (l.valor || 0), 0);
+          const sai = _financeiro.filter(l => l.tipo === 'despesa' && financeiroRealizado(l) && dataKeyLocal(dataFinanceiraRealizada(l)) === key).reduce((s, l) => s + (l.valor || 0), 0);
           pts.push({ lbl, ent, sai });
         }
       } else if (periodo === 'semanal') {
         for (let i = 5; i >= 0; i--) {
-          const end = new Date(); end.setDate(end.getDate() - i*7);
-          const start = new Date(end); start.setDate(start.getDate()-6);
-          const inR = l => { const d=parseDataLocal(dataFinanceiraRealizada(l)); return d&&d>=start&&d<=end; };
-          const ent = _financeiro.filter(l=>l.tipo==='receita'&&financeiroRealizado(l)&&inR(l)).reduce((s,l)=>s+(l.valor||0),0);
-          const sai = _financeiro.filter(l=>l.tipo==='despesa'&&financeiroRealizado(l)&&inR(l)).reduce((s,l)=>s+(l.valor||0),0);
-          pts.push({ lbl:`S${6-i}`, ent, sai });
+          const end = new Date(); end.setDate(end.getDate() - i * 7);
+          const start = new Date(end); start.setDate(start.getDate() - 6);
+          const inR = l => { const d = parseDataLocal(dataFinanceiraRealizada(l)); return d && d >= start && d <= end; };
+          const ent = _financeiro.filter(l => l.tipo === 'receita' && financeiroRealizado(l) && inR(l)).reduce((s, l) => s + (l.valor || 0), 0);
+          const sai = _financeiro.filter(l => l.tipo === 'despesa' && financeiroRealizado(l) && inR(l)).reduce((s, l) => s + (l.valor || 0), 0);
+          pts.push({ lbl: `S${6 - i}`, ent, sai });
         }
       } else {
         for (let i = 5; i >= 0; i--) {
-          const d = new Date(); d.setDate(1); d.setMonth(d.getMonth()-i);
+          const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i);
           const m = d.getMonth(), y = d.getFullYear();
-          const match = l => { const dd=parseDataLocal(dataFinanceiraRealizada(l)); return dd&&dd.getMonth()===m&&dd.getFullYear()===y; };
-          const ent = _financeiro.filter(l=>l.tipo==='receita'&&financeiroRealizado(l)&&match(l)).reduce((s,l)=>s+(l.valor||0),0);
-          const sai = _financeiro.filter(l=>l.tipo==='despesa'&&financeiroRealizado(l)&&match(l)).reduce((s,l)=>s+(l.valor||0),0);
+          const match = l => { const dd = parseDataLocal(dataFinanceiraRealizada(l)); return dd && dd.getMonth() === m && dd.getFullYear() === y; };
+          const ent = _financeiro.filter(l => l.tipo === 'receita' && financeiroRealizado(l) && match(l)).reduce((s, l) => s + (l.valor || 0), 0);
+          const sai = _financeiro.filter(l => l.tipo === 'despesa' && financeiroRealizado(l) && match(l)).reduce((s, l) => s + (l.valor || 0), 0);
           pts.push({ lbl: MESES_S[m], ent, sai });
         }
       }
 
       // ── resumo strip ──
-      const totalEnt  = pts.reduce((s,p)=>s+p.ent,0);
-      const totalSai  = pts.reduce((s,p)=>s+p.sai,0);
-      const saldoLiq  = totalEnt - totalSai;
-      const elEnt     = document.getElementById('fluxo-sum-ent');
-      const elSai     = document.getElementById('fluxo-sum-sai');
-      const elSaldo   = document.getElementById('fluxo-sum-saldo');
-      if (elEnt)   elEnt.textContent   = fmtMoeda(totalEnt);
-      if (elSai)   elSai.textContent   = fmtMoeda(totalSai);
+      const totalEnt = pts.reduce((s, p) => s + p.ent, 0);
+      const totalSai = pts.reduce((s, p) => s + p.sai, 0);
+      const saldoLiq = totalEnt - totalSai;
+      const elEnt = document.getElementById('fluxo-sum-ent');
+      const elSai = document.getElementById('fluxo-sum-sai');
+      const elSaldo = document.getElementById('fluxo-sum-saldo');
+      if (elEnt) elEnt.textContent = fmtMoeda(totalEnt);
+      if (elSai) elSai.textContent = fmtMoeda(totalSai);
       if (elSaldo) {
-        elSaldo.textContent  = fmtMoeda(Math.abs(saldoLiq));
-        elSaldo.style.color  = saldoLiq >= 0 ? '#00D084' : '#FF4D6D';
+        elSaldo.textContent = fmtMoeda(Math.abs(saldoLiq));
+        elSaldo.style.color = saldoLiq >= 0 ? '#00D084' : '#FF4D6D';
       }
 
       // ── chart ──
-      const n    = pts.length;
-      const W    = 560, H = 118, padL = 38, padR = 10, padB = 22;
+      const n = pts.length;
+      const W = 560, H = 118, padL = 38, padR = 10, padB = 22;
       const step = (W - padL - padR) / n;
       const maxV = Math.max(...pts.map(p => p.ent), 1);
 
       // nice Y scale
-      const mag   = Math.pow(10, Math.floor(Math.log10(maxV)));
-      const niceM = maxV/mag <= 1 ? mag : maxV/mag <= 2 ? 2*mag : maxV/mag <= 5 ? 5*mag : 10*mag;
-      const fmtK  = v => v >= 1e6 ? (v/1e6).toFixed(1)+'M' : v >= 1e3 ? (v/1e3).toFixed(0)+'k' : v.toFixed(0);
-      const ticks = [niceM*0.25, niceM*0.5, niceM*0.75, niceM].map(v => ({
-        v, y: (H - (v/niceM)*H).toFixed(1)
+      const mag = Math.pow(10, Math.floor(Math.log10(maxV)));
+      const niceM = maxV / mag <= 1 ? mag : maxV / mag <= 2 ? 2 * mag : maxV / mag <= 5 ? 5 * mag : 10 * mag;
+      const fmtK = v => v >= 1e6 ? (v / 1e6).toFixed(1) + 'M' : v >= 1e3 ? (v / 1e3).toFixed(0) + 'k' : v.toFixed(0);
+      const ticks = [niceM * 0.25, niceM * 0.5, niceM * 0.75, niceM].map(v => ({
+        v, y: (H - (v / niceM) * H).toFixed(1)
       }));
 
       const gridLines = ticks.map(t =>
-        `<line x1="${padL}" y1="${t.y}" x2="${W-padR}" y2="${t.y}" stroke="rgba(255,255,255,.05)" stroke-width=".8"/>
-         <text x="${(padL-5)}" y="${(+t.y+3.5).toFixed(1)}" text-anchor="end" fill="rgba(148,163,184,.4)" font-size="8" font-family="Inter">${fmtK(t.v)}</text>`
+        `<line x1="${padL}" y1="${t.y}" x2="${W - padR}" y2="${t.y}" stroke="rgba(255,255,255,.05)" stroke-width=".8"/>
+         <text x="${(padL - 5)}" y="${(+t.y + 3.5).toFixed(1)}" text-anchor="end" fill="rgba(148,163,184,.4)" font-size="8" font-family="Inter">${fmtK(t.v)}</text>`
       ).join('');
 
       // stacked bars: bottom = saídas (red), top = surplus entradas-saídas (green)
       const bW = Math.max(10, Math.floor(step * 0.62));
 
       const bars = pts.map((p, i) => {
-        const cx      = padL + i*step + step/2;
-        const saiH    = Math.min((p.sai / niceM) * H, H);
+        const cx = padL + i * step + step / 2;
+        const saiH = Math.min((p.sai / niceM) * H, H);
         const surplus = Math.max(0, p.ent - p.sai);
-        const surH    = (surplus / niceM) * H;
-        const totalH  = saiH + surH;
-        const rx      = 3;
+        const surH = (surplus / niceM) * H;
+        const totalH = saiH + surH;
+        const rx = 3;
         // red (saídas) — bottom
-        const redY    = (H - saiH).toFixed(1);
+        const redY = (H - saiH).toFixed(1);
         // green (surplus) — top of red
-        const grnY    = (H - saiH - surH).toFixed(1);
+        const grnY = (H - saiH - surH).toFixed(1);
         // rounded top only on the uppermost segment
-        const topSeg  = surH > 0
-          ? `<path d="M${(cx-bW/2).toFixed(1)},${(H-totalH+rx).toFixed(1)} Q${(cx-bW/2).toFixed(1)},${(H-totalH).toFixed(1)} ${(cx-bW/2+rx).toFixed(1)},${(H-totalH).toFixed(1)} H${(cx+bW/2-rx).toFixed(1)} Q${(cx+bW/2).toFixed(1)},${(H-totalH).toFixed(1)} ${(cx+bW/2).toFixed(1)},${(H-totalH+rx).toFixed(1)} V${(H-saiH).toFixed(1)} H${(cx-bW/2).toFixed(1)} Z" fill="#00D084" opacity=".85"/>`
+        const topSeg = surH > 0
+          ? `<path d="M${(cx - bW / 2).toFixed(1)},${(H - totalH + rx).toFixed(1)} Q${(cx - bW / 2).toFixed(1)},${(H - totalH).toFixed(1)} ${(cx - bW / 2 + rx).toFixed(1)},${(H - totalH).toFixed(1)} H${(cx + bW / 2 - rx).toFixed(1)} Q${(cx + bW / 2).toFixed(1)},${(H - totalH).toFixed(1)} ${(cx + bW / 2).toFixed(1)},${(H - totalH + rx).toFixed(1)} V${(H - saiH).toFixed(1)} H${(cx - bW / 2).toFixed(1)} Z" fill="#00D084" opacity=".85"/>`
           : '';
-        const botSeg  = saiH > 0
-          ? `<path d="M${(cx-bW/2).toFixed(1)},${redY} H${(cx+bW/2).toFixed(1)} V${(H-rx).toFixed(1)} Q${(cx+bW/2).toFixed(1)},${H} ${(cx+bW/2-rx).toFixed(1)},${H} H${(cx-bW/2+rx).toFixed(1)} Q${(cx-bW/2).toFixed(1)},${H} ${(cx-bW/2).toFixed(1)},${(H-rx).toFixed(1)} Z" fill="#FF4D6D" opacity=".85"/>`
+        const botSeg = saiH > 0
+          ? `<path d="M${(cx - bW / 2).toFixed(1)},${redY} H${(cx + bW / 2).toFixed(1)} V${(H - rx).toFixed(1)} Q${(cx + bW / 2).toFixed(1)},${H} ${(cx + bW / 2 - rx).toFixed(1)},${H} H${(cx - bW / 2 + rx).toFixed(1)} Q${(cx - bW / 2).toFixed(1)},${H} ${(cx - bW / 2).toFixed(1)},${(H - rx).toFixed(1)} Z" fill="#FF4D6D" opacity=".85"/>`
           : '';
         return `${botSeg}${topSeg}
-          <text x="${cx.toFixed(1)}" y="${(H+padB-4)}" text-anchor="middle" fill="rgba(148,163,184,.55)" font-size="9.5" font-family="Inter">${p.lbl}</text>`;
+          <text x="${cx.toFixed(1)}" y="${(H + padB - 4)}" text-anchor="middle" fill="rgba(148,163,184,.55)" font-size="9.5" font-family="Inter">${p.lbl}</text>`;
       }).join('');
 
-      el.innerHTML = `<svg style="width:100%;flex:1" viewBox="0 0 ${W} ${H+padB}" xmlns="http://www.w3.org/2000/svg">
-        <line x1="${padL}" y1="${H}" x2="${W-padR}" y2="${H}" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+      el.innerHTML = `<svg style="width:100%;flex:1" viewBox="0 0 ${W} ${H + padB}" xmlns="http://www.w3.org/2000/svg">
+        <line x1="${padL}" y1="${H}" x2="${W - padR}" y2="${H}" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
         ${gridLines}
         ${bars}
       </svg>`;
@@ -2333,7 +3349,7 @@ transition: var(--ease);
     }
     document.addEventListener('click', ev => {
       const btn = document.getElementById('dpBtn');
-      const dd  = document.getElementById('dpDrop');
+      const dd = document.getElementById('dpDrop');
       if (btn && dd && !btn.contains(ev.target) && !dd.contains(ev.target)) dd.classList.remove('open');
     });
 
@@ -2342,15 +3358,15 @@ transition: var(--ease);
     // ═══════════════════════════════════════════════════════════
 
     const KPI_META = {
-      faturamento:    { label: 'Faturamento Bruto',   id: 'kpi-card-faturamento'      },
-      receitas:       { label: 'Receitas',             id: 'kpi-card-receitas'         },
-      despesas:       { label: 'Despesas',             id: 'kpi-card-despesas'         },
-      lucro:          { label: 'Lucro Líquido',        id: 'kpi-card-lucro'            },
-      saldo:          { label: 'Saldo em Conta',       id: 'kpi-card-saldo'            },
-      ticket:         { label: 'Ticket Médio',         id: 'kpi-card-ticket'           },
-      pedidos:        { label: 'Total de Pedidos',     id: 'kpi-card-pedidos'          },
-      clientesAtivos: { label: 'Clientes Ativos',      id: 'kpi-card-clientes-ativos'  },
-      margem:         { label: 'Margem de Lucro',      id: 'kpi-card-margem'           },
+      faturamento: { label: 'Faturamento Bruto', id: 'kpi-card-faturamento' },
+      receitas: { label: 'Receitas', id: 'kpi-card-receitas' },
+      despesas: { label: 'Despesas', id: 'kpi-card-despesas' },
+      lucro: { label: 'Lucro Líquido', id: 'kpi-card-lucro' },
+      saldo: { label: 'Saldo em Conta', id: 'kpi-card-saldo' },
+      ticket: { label: 'Ticket Médio', id: 'kpi-card-ticket' },
+      pedidos: { label: 'Total de Pedidos', id: 'kpi-card-pedidos' },
+      clientesAtivos: { label: 'Clientes Ativos', id: 'kpi-card-clientes-ativos' },
+      margem: { label: 'Margem de Lucro', id: 'kpi-card-margem' },
     };
 
     const PAINEL_DEFAULT = {
@@ -2359,12 +3375,12 @@ transition: var(--ease);
         contasRP: true, fat6meses: true, despCat: true,
         atividades: true, acoesRapidas: true,
       },
-      kpiVisiveis: ['faturamento','receitas','despesas','lucro','saldo'],
-      kpiOrder:    ['faturamento','receitas','despesas','lucro','saldo','ticket','pedidos','clientesAtivos','margem'],
-      periodo:     'mes',
-      layout:      'confortavel',
-      cor:         'verde',
-      accentHex:   '#00D084',
+      kpiVisiveis: ['faturamento', 'receitas', 'despesas', 'lucro', 'saldo'],
+      kpiOrder: ['faturamento', 'receitas', 'despesas', 'lucro', 'saldo', 'ticket', 'pedidos', 'clientesAtivos', 'margem'],
+      periodo: 'mes',
+      layout: 'confortavel',
+      cor: 'verde',
+      accentHex: '#00D084',
       alertas: {
         estoqueBaixo: true, contasVencidas: true, fluxoNegativo: false,
         metasNaoAtingidas: false, semGiro: false, boletosVencendo: false,
@@ -2396,16 +3412,16 @@ transition: var(--ease);
         if (!raw) return JSON.parse(JSON.stringify(base));
         const saved = JSON.parse(raw);
         return {
-          widgets:       Object.assign({}, base.widgets,  saved.widgets  || {}),
-          kpiVisiveis:   Array.isArray(saved.kpiVisiveis)  ? saved.kpiVisiveis  : base.kpiVisiveis,
-          kpiOrder:      Array.isArray(saved.kpiOrder)     ? saved.kpiOrder     : base.kpiOrder,
-          periodo:       saved.periodo    || base.periodo,
-          layout:        saved.layout     || base.layout,
-          cor:           saved.cor        || base.cor,
-          accentHex:     saved.accentHex  || base.accentHex,
-          alertas:       Object.assign({}, base.alertas,  saved.alertas  || {}),
-          acoes:         Object.assign({}, base.acoes,    saved.acoes    || {}),
-          ai:            Object.assign({}, base.ai,       saved.ai       || {}),
+          widgets: Object.assign({}, base.widgets, saved.widgets || {}),
+          kpiVisiveis: Array.isArray(saved.kpiVisiveis) ? saved.kpiVisiveis : base.kpiVisiveis,
+          kpiOrder: Array.isArray(saved.kpiOrder) ? saved.kpiOrder : base.kpiOrder,
+          periodo: saved.periodo || base.periodo,
+          layout: saved.layout || base.layout,
+          cor: saved.cor || base.cor,
+          accentHex: saved.accentHex || base.accentHex,
+          alertas: Object.assign({}, base.alertas, saved.alertas || {}),
+          acoes: Object.assign({}, base.acoes, saved.acoes || {}),
+          ai: Object.assign({}, base.ai, saved.ai || {}),
           padraoEmpresa: saved.padraoEmpresa || false,
         };
       } catch (_) { return JSON.parse(JSON.stringify(PAINEL_DEFAULT)); }
@@ -2430,7 +3446,7 @@ transition: var(--ease);
         const n = u.nome || u.name || u.email?.split('@')[0] || 'Usuário';
         nome = n.split(' ')[0];
         nome = nome.charAt(0).toUpperCase() + nome.slice(1);
-      } catch (_) {}
+      } catch (_) { }
       const el = document.getElementById('greeting-text');
       if (el) el.textContent = saudacao + ', ' + nome + ' 👋';
     })();
@@ -2467,7 +3483,7 @@ transition: var(--ease);
       // Layout
       const content = document.querySelector('.content');
       if (content) {
-        content.classList.remove('layout-compacto','layout-confortavel','layout-executivo');
+        content.classList.remove('layout-compacto', 'layout-confortavel', 'layout-executivo');
         content.classList.add('layout-' + cfg.layout);
       }
 
@@ -2493,7 +3509,7 @@ transition: var(--ease);
       const card = document.getElementById('dash-alert-card');
       if (!card) return;
       const alertList = [];
-      const hoje = new Date(); hoje.setHours(0,0,0,0);
+      const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
 
       if (cfg.alertas.estoqueBaixo) {
         const n = produtos.filter(p => (p.estoque || 0) <= 0 && p.status !== 'inativo').length;
@@ -2507,10 +3523,10 @@ transition: var(--ease);
         if (n) alertList.push({ ico: 'bi-exclamation-circle', txt: n + ' conta(s) vencida(s)' });
       }
       if (cfg.alertas.fluxoNegativo) {
-        const recP  = financeiro.filter(l => l.tipo === 'receita' && financeiroRealizado(l));
+        const recP = financeiro.filter(l => l.tipo === 'receita' && financeiroRealizado(l));
         const despP = financeiro.filter(l => l.tipo === 'despesa' && financeiroRealizado(l));
         const saldoAtual = recP.reduce((s, l) => s + (l.valor || 0), 0)
-                         - despP.reduce((s, l) => s + (l.valor || 0), 0);
+          - despP.reduce((s, l) => s + (l.valor || 0), 0);
         if (saldoAtual < 0) alertList.push({ ico: 'bi-arrow-down-circle', txt: 'Fluxo de caixa negativo detectado' });
       }
       if (cfg.alertas.boletosVencendo) {
@@ -2537,7 +3553,7 @@ transition: var(--ease);
 
     // ─── Busca Global ───────────────────────────────────────────
     (function () {
-      const input   = document.getElementById('searchInput');
+      const input = document.getElementById('searchInput');
       const searchBox = document.getElementById('searchBox');
       if (!input) return;
 
@@ -2556,24 +3572,24 @@ transition: var(--ease);
 
       function positionDropdown() {
         const rect = searchBox.getBoundingClientRect();
-        dropdown.style.top  = (rect.bottom + 8) + 'px';
+        dropdown.style.top = (rect.bottom + 8) + 'px';
         dropdown.style.left = rect.left + 'px';
         dropdown.style.width = Math.max(rect.width, 360) + 'px';
       }
 
       // Páginas navegáveis (mín. 3 chars)
       const PAGES = [
-        { label: 'Dashboard',     page: 'dashboard.html',    icon: 'bi-grid',           color: 'rgba(0,200,150,.15)',   iconColor: '#00c896',  keys: ['dashboard','painel','inicio','home'] },
-        { label: 'PDV',           page: 'pdv.html',          icon: 'bi-shop',           color: 'rgba(255,107,53,.15)',  iconColor: '#ff6b35',  keys: ['pdv','ponto de venda','caixa','frente de caixa'] },
-        { label: 'Pedidos',       page: 'pedidos.html',      icon: 'bi-receipt',        color: 'rgba(168,85,247,.15)',  iconColor: '#a855f7',  keys: ['pedidos','pedido','ordem','ordens'] },
-        { label: 'Vendas',        page: 'vendas.html',       icon: 'bi-graph-up-arrow', color: 'rgba(0,119,255,.15)',   iconColor: '#0077ff',  keys: ['vendas','venda','historico','histórico'] },
-        { label: 'Clientes',      page: 'clientes.html',     icon: 'bi-people',         color: 'rgba(0,200,150,.15)',   iconColor: '#00c896',  keys: ['clientes','cliente','parceiros','fornecedores','contatos'] },
-        { label: 'Produtos',      page: 'produtos.html',     icon: 'bi-box-seam',       color: 'rgba(0,119,255,.15)',   iconColor: '#0077ff',  keys: ['produtos','produto','itens','catalogo','catálogo'] },
-        { label: 'Estoque',       page: 'estoque.html',      icon: 'bi-boxes',          color: 'rgba(20,184,166,.15)',  iconColor: '#14b8a6',  keys: ['estoque','deposito','depósito','inventario','inventário'] },
-        { label: 'Financeiro',    page: 'financeiro.html',   icon: 'bi-cash-stack',     color: 'rgba(20,184,166,.15)',  iconColor: '#14b8a6',  keys: ['financeiro','financas','finanças','contas','receita','despesa','fluxo'] },
-        { label: 'Relatórios',    page: 'relatorios.html',   icon: 'bi-bar-chart',      color: 'rgba(168,85,247,.15)',  iconColor: '#a855f7',  keys: ['relatorios','relatórios','relatorio','relatório','reports'] },
-        { label: 'Configurações', page: 'configuracoes.html',icon: 'bi-gear',           color: 'rgba(148,163,184,.15)', iconColor: '#94a3b8',  keys: ['configuracoes','configurações','config','settings','preferencias'] },
-        { label: 'Catálogo',      page: 'catalogo.html',     icon: 'bi-grid-3x3-gap',   color: 'rgba(255,107,53,.15)',  iconColor: '#ff6b35',  keys: ['catalogo','catálogo','loja','vitrine','publicar'] },
+        { label: 'Dashboard', page: 'dashboard.html', icon: 'bi-grid', color: 'rgba(0,200,150,.15)', iconColor: '#00c896', keys: ['dashboard', 'painel', 'inicio', 'home'] },
+        { label: 'PDV', page: 'pdv.html', icon: 'bi-shop', color: 'rgba(255,107,53,.15)', iconColor: '#ff6b35', keys: ['pdv', 'ponto de venda', 'caixa', 'frente de caixa'] },
+        { label: 'Pedidos', page: 'pedidos.html', icon: 'bi-receipt', color: 'rgba(168,85,247,.15)', iconColor: '#a855f7', keys: ['pedidos', 'pedido', 'ordem', 'ordens'] },
+        { label: 'Vendas', page: 'vendas.html', icon: 'bi-graph-up-arrow', color: 'rgba(0,119,255,.15)', iconColor: '#0077ff', keys: ['vendas', 'venda', 'historico', 'histórico'] },
+        { label: 'Clientes', page: 'clientes.html', icon: 'bi-people', color: 'rgba(0,200,150,.15)', iconColor: '#00c896', keys: ['clientes', 'cliente', 'parceiros', 'fornecedores', 'contatos'] },
+        { label: 'Produtos', page: 'produtos.html', icon: 'bi-box-seam', color: 'rgba(0,119,255,.15)', iconColor: '#0077ff', keys: ['produtos', 'produto', 'itens', 'catalogo', 'catálogo'] },
+        { label: 'Estoque', page: 'estoque.html', icon: 'bi-boxes', color: 'rgba(20,184,166,.15)', iconColor: '#14b8a6', keys: ['estoque', 'deposito', 'depósito', 'inventario', 'inventário'] },
+        { label: 'Financeiro', page: 'financeiro.html', icon: 'bi-cash-stack', color: 'rgba(20,184,166,.15)', iconColor: '#14b8a6', keys: ['financeiro', 'financas', 'finanças', 'contas', 'receita', 'despesa', 'fluxo'] },
+        { label: 'Relatórios', page: 'relatorios.html', icon: 'bi-bar-chart', color: 'rgba(168,85,247,.15)', iconColor: '#a855f7', keys: ['relatorios', 'relatórios', 'relatorio', 'relatório', 'reports'] },
+        { label: 'Configurações', page: 'configuracoes.html', icon: 'bi-gear', color: 'rgba(148,163,184,.15)', iconColor: '#94a3b8', keys: ['configuracoes', 'configurações', 'config', 'settings', 'preferencias'] },
+        { label: 'Catálogo', page: 'catalogo.html', icon: 'bi-grid-3x3-gap', color: 'rgba(255,107,53,.15)', iconColor: '#ff6b35', keys: ['catalogo', 'catálogo', 'loja', 'vitrine', 'publicar'] },
       ];
 
       // Dados do sistema (a partir do 1º char)
@@ -2581,37 +3597,37 @@ transition: var(--ease);
         {
           key: 'clientes', label: 'Clientes', page: 'clientes.html',
           icon: 'bi-person', color: 'rgba(0,200,150,.15)', iconColor: '#00c896',
-          match: (item, q) => (item.nome||item.name||'').toLowerCase().includes(q)
-                           || (item.email||'').toLowerCase().includes(q)
-                           || (item.telefone||'').toLowerCase().includes(q),
+          match: (item, q) => (item.nome || item.name || '').toLowerCase().includes(q)
+            || (item.email || '').toLowerCase().includes(q)
+            || (item.telefone || '').toLowerCase().includes(q),
           name: item => item.nome || item.name || '—',
-          sub:  item => item.email || item.telefone || '',
+          sub: item => item.email || item.telefone || '',
         },
         {
           key: 'produtos', label: 'Produtos', page: 'produtos.html',
           icon: 'bi-box-seam', color: 'rgba(0,119,255,.15)', iconColor: '#0077ff',
-          match: (item, q) => (item.nome||item.name||'').toLowerCase().includes(q)
-                           || (item.categoria||'').toLowerCase().includes(q)
-                           || (item.codigo||'').toLowerCase().includes(q),
+          match: (item, q) => (item.nome || item.name || '').toLowerCase().includes(q)
+            || (item.categoria || '').toLowerCase().includes(q)
+            || (item.codigo || '').toLowerCase().includes(q),
           name: item => item.nome || item.name || '—',
-          sub:  item => [item.categoria, item.estoque != null ? 'Estoque: ' + item.estoque : ''].filter(Boolean).join(' · '),
+          sub: item => [item.categoria, item.estoque != null ? 'Estoque: ' + item.estoque : ''].filter(Boolean).join(' · '),
         },
         {
           key: 'pedidos', label: 'Pedidos', page: 'pedidos.html',
           icon: 'bi-receipt', color: 'rgba(168,85,247,.15)', iconColor: '#a855f7',
-          match: (item, q) => (item.cliente||'').toLowerCase().includes(q)
-                           || String(item.id||'').toLowerCase().includes(q)
-                           || (item.status||'').toLowerCase().includes(q),
+          match: (item, q) => (item.cliente || '').toLowerCase().includes(q)
+            || String(item.id || '').toLowerCase().includes(q)
+            || (item.status || '').toLowerCase().includes(q),
           name: item => item.cliente || 'Pedido #' + item.id,
-          sub:  item => [item.status, item.total != null ? 'R$ ' + Number(item.total).toFixed(2) : ''].filter(Boolean).join(' · '),
+          sub: item => [item.status, item.total != null ? 'R$ ' + Number(item.total).toFixed(2) : ''].filter(Boolean).join(' · '),
         },
         {
           key: 'financeiro', label: 'Financeiro', page: 'financeiro.html',
           icon: 'bi-cash-stack', color: 'rgba(20,184,166,.15)', iconColor: '#14b8a6',
-          match: (item, q) => (item.descricao||item.description||'').toLowerCase().includes(q)
-                           || (item.categoria||'').toLowerCase().includes(q),
+          match: (item, q) => (item.descricao || item.description || '').toLowerCase().includes(q)
+            || (item.categoria || '').toLowerCase().includes(q),
           name: item => item.descricao || item.description || '—',
-          sub:  item => [item.tipo, item.status, item.valor != null ? 'R$ ' + Number(item.valor).toFixed(2) : ''].filter(Boolean).join(' · '),
+          sub: item => [item.tipo, item.status, item.valor != null ? 'R$ ' + Number(item.valor).toFixed(2) : ''].filter(Boolean).join(' · '),
         },
       ];
 
@@ -2620,7 +3636,7 @@ transition: var(--ease);
       const _searchMap = { clientes: _clientes, produtos: _produtos, pedidos: _pedidos, financeiro: _financeiro };
 
       function escapeHtml(s) {
-        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       }
 
       function highlight(text, query) {
@@ -2647,12 +3663,12 @@ transition: var(--ease);
 
       function render() {
         const raw = input.value;
-        const q   = raw.trim().toLowerCase();
+        const q = raw.trim().toLowerCase();
         activeIdx = -1;
 
         if (!q) { close(); return; }
 
-        let html  = '';
+        let html = '';
         let total = 0;
 
         // ── Páginas (mín. 3 chars) ──────────────────────────
@@ -2670,7 +3686,7 @@ transition: var(--ease);
 
         // ── Dados do sistema (a partir do 1º char) ──────────
         DATA_TYPES.forEach(type => {
-          const data    = _searchMap[type.key] || [];
+          const data = _searchMap[type.key] || [];
           const matches = data.filter(item => type.match(item, q)).slice(0, 3);
           if (!matches.length) return;
           total += matches.length;
@@ -2773,32 +3789,32 @@ transition: var(--ease);
 
       // Widgets
       const wmap = {
-        'cfg-w-kpis':'kpiGrid','cfg-w-fluxo':'fluxoCaixa','cfg-w-rd':'resultado',
-        'cfg-w-rp':'contasRP','cfg-w-fat6':'fat6meses','cfg-w-desp':'despCat',
-        'cfg-w-atv':'atividades','cfg-w-aq':'acoesRapidas',
+        'cfg-w-kpis': 'kpiGrid', 'cfg-w-fluxo': 'fluxoCaixa', 'cfg-w-rd': 'resultado',
+        'cfg-w-rp': 'contasRP', 'cfg-w-fat6': 'fat6meses', 'cfg-w-desp': 'despCat',
+        'cfg-w-atv': 'atividades', 'cfg-w-aq': 'acoesRapidas',
       };
-      Object.entries(wmap).forEach(([id,key]) => { const el=document.getElementById(id); if(el) el.checked=cfg.widgets[key]; });
+      Object.entries(wmap).forEach(([id, key]) => { const el = document.getElementById(id); if (el) el.checked = cfg.widgets[key]; });
 
       // Alertas
       const amap = {
-        'cfg-a-estoque':'estoqueBaixo','cfg-a-vencidas':'contasVencidas','cfg-a-fluxo':'fluxoNegativo',
-        'cfg-a-metas':'metasNaoAtingidas','cfg-a-giro':'semGiro','cfg-a-boletos':'boletosVencendo',
+        'cfg-a-estoque': 'estoqueBaixo', 'cfg-a-vencidas': 'contasVencidas', 'cfg-a-fluxo': 'fluxoNegativo',
+        'cfg-a-metas': 'metasNaoAtingidas', 'cfg-a-giro': 'semGiro', 'cfg-a-boletos': 'boletosVencendo',
       };
-      Object.entries(amap).forEach(([id,key]) => { const el=document.getElementById(id); if(el) el.checked=cfg.alertas[key]; });
+      Object.entries(amap).forEach(([id, key]) => { const el = document.getElementById(id); if (el) el.checked = cfg.alertas[key]; });
 
       // Ações rápidas
       const qmap = {
-        'cfg-aq-venda':'novaVenda','cfg-aq-pedido':'novoPedido','cfg-aq-cliente':'novoCliente',
-        'cfg-aq-produto':'novoProduto','cfg-aq-fin':'financeiro','cfg-aq-est':'estoque',
+        'cfg-aq-venda': 'novaVenda', 'cfg-aq-pedido': 'novoPedido', 'cfg-aq-cliente': 'novoCliente',
+        'cfg-aq-produto': 'novoProduto', 'cfg-aq-fin': 'financeiro', 'cfg-aq-est': 'estoque',
       };
-      Object.entries(qmap).forEach(([id,key]) => { const el=document.getElementById(id); if(el) el.checked=cfg.acoes[key]; });
+      Object.entries(qmap).forEach(([id, key]) => { const el = document.getElementById(id); if (el) el.checked = cfg.acoes[key]; });
 
       // AI
       const aimap = {
-        'cfg-ai-insights':'insights','cfg-ai-oportun':'oportunidades','cfg-ai-alertas':'alertasFinanceiros',
-        'cfg-ai-previsao':'previsaoCaixa','cfg-ai-sugest':'sugestoes','cfg-ai-giro':'semGiro',
+        'cfg-ai-insights': 'insights', 'cfg-ai-oportun': 'oportunidades', 'cfg-ai-alertas': 'alertasFinanceiros',
+        'cfg-ai-previsao': 'previsaoCaixa', 'cfg-ai-sugest': 'sugestoes', 'cfg-ai-giro': 'semGiro',
       };
-      Object.entries(aimap).forEach(([id,key]) => { const el=document.getElementById(id); if(el) el.checked=cfg.ai[key]; });
+      Object.entries(aimap).forEach(([id, key]) => { const el = document.getElementById(id); if (el) el.checked = cfg.ai[key]; });
 
       // Período
       const perEl = document.getElementById('cfg-periodo');
@@ -2818,12 +3834,12 @@ transition: var(--ease);
       try {
         const session = NexoAuth.getSession();
         const u = session ? session.user : {};
-        const isAdmin = u.role==='admin' || u.perfil==='admin' || u.nivel==='admin' || u.admin===true;
+        const isAdmin = u.role === 'admin' || u.perfil === 'admin' || u.nivel === 'admin' || u.admin === true;
         const sec = document.getElementById('cfg-admin-sec');
         if (sec) sec.style.display = isAdmin ? '' : 'none';
         const pe = document.getElementById('cfg-padrao-empresa');
         if (pe) pe.checked = cfg.padraoEmpresa;
-      } catch (_) {}
+      } catch (_) { }
 
       _renderKpiChips();
       _renderKpiDragList();
@@ -2841,7 +3857,7 @@ transition: var(--ease);
       grid.innerHTML = Object.entries(KPI_META).map(([key, meta]) => {
         const on = cfg.kpiVisiveis.includes(key);
         const disabled = !on && count >= 5;
-        return '<div class="cfg-chip' + (on?' cfg-chip-on':'') + (disabled?' cfg-chip-disabled':'') + '" '
+        return '<div class="cfg-chip' + (on ? ' cfg-chip-on' : '') + (disabled ? ' cfg-chip-disabled' : '') + '" '
           + 'onclick="toggleKpiChip(\'' + key + '\')" id="kpi-chip-' + key + '">'
           + '<span class="cfg-chip-name">' + meta.label + '</span>'
           + (on ? '<i class="bi bi-check2 cfg-chip-ico"></i>' : '<i class="bi bi-plus cfg-chip-ico" style="color:var(--muted)"></i>')
@@ -2878,30 +3894,30 @@ transition: var(--ease);
         + '</div>'
       ).join('');
 
-      list.querySelectorAll('.cfg-drag-item').forEach(function(item) {
-        item.addEventListener('dragstart', function(e) {
+      list.querySelectorAll('.cfg-drag-item').forEach(function (item) {
+        item.addEventListener('dragstart', function (e) {
           _dragSrc = item;
           item.classList.add('dragging');
           e.dataTransfer.effectAllowed = 'move';
         });
-        item.addEventListener('dragend', function() {
+        item.addEventListener('dragend', function () {
           item.classList.remove('dragging');
-          list.querySelectorAll('.cfg-drag-item').forEach(function(i){ i.classList.remove('drag-over'); });
+          list.querySelectorAll('.cfg-drag-item').forEach(function (i) { i.classList.remove('drag-over'); });
         });
-        item.addEventListener('dragover', function(e) {
+        item.addEventListener('dragover', function (e) {
           e.preventDefault();
           e.dataTransfer.dropEffect = 'move';
           if (item !== _dragSrc) {
-            list.querySelectorAll('.cfg-drag-item').forEach(function(i){ i.classList.remove('drag-over'); });
+            list.querySelectorAll('.cfg-drag-item').forEach(function (i) { i.classList.remove('drag-over'); });
             item.classList.add('drag-over');
           }
         });
-        item.addEventListener('drop', function(e) {
+        item.addEventListener('drop', function (e) {
           e.preventDefault();
           if (!_dragSrc || _dragSrc === item) return;
           const allItems = Array.from(list.querySelectorAll('.cfg-drag-item'));
           const fromIdx = allItems.indexOf(_dragSrc);
-          const toIdx   = allItems.indexOf(item);
+          const toIdx = allItems.indexOf(item);
           const vis = cfg.kpiOrder.filter(k => cfg.kpiVisiveis.includes(k));
           const moved = vis.splice(fromIdx, 1)[0];
           vis.splice(toIdx, 0, moved);
@@ -2920,14 +3936,14 @@ transition: var(--ease);
 
     function cfgPeriodo(val) {
       _cfg.periodo = val;
-      const lmap = { hoje:'Hoje','7d':'Últimos 7 dias','30d':'Últimos 30 dias',mes:'Este mês','90d':'Últimos 90 dias',ano:'Este ano' };
+      const lmap = { hoje: 'Hoje', '7d': 'Últimos 7 dias', '30d': 'Últimos 30 dias', mes: 'Este mês', '90d': 'Últimos 90 dias', ano: 'Este ano' };
       const dpLbl = document.getElementById('dpLabel');
       if (dpLbl) dpLbl.textContent = lmap[val] || val;
     }
 
     function cfgLayout(layout) {
       _cfg.layout = layout;
-      document.querySelectorAll('.cfg-layout-opt').forEach(function(o){ o.classList.remove('cfg-layout-on'); });
+      document.querySelectorAll('.cfg-layout-opt').forEach(function (o) { o.classList.remove('cfg-layout-on'); });
       const el = document.getElementById('cfg-l-' + layout);
       if (el) el.classList.add('cfg-layout-on');
       applyPainelConfig(_cfg);
@@ -2936,7 +3952,7 @@ transition: var(--ease);
     function cfgCor(nome, hex) {
       _cfg.cor = nome;
       _cfg.accentHex = hex;
-      document.querySelectorAll('.cfg-color').forEach(function(o){ o.classList.remove('cfg-color-on'); });
+      document.querySelectorAll('.cfg-color').forEach(function (o) { o.classList.remove('cfg-color-on'); });
       const el = document.getElementById('cfg-c-' + nome);
       if (el) el.classList.add('cfg-color-on');
       applyPainelConfig(_cfg);
@@ -2985,7 +4001,7 @@ transition: var(--ease);
       t.innerHTML = html;
       t.classList.add('show');
       clearTimeout(t._tmr);
-      t._tmr = setTimeout(function(){ t.classList.remove('show'); }, 3200);
+      t._tmr = setTimeout(function () { t.classList.remove('show'); }, 3200);
     }
 
     // ─── Inicialização ao carregar a página ─────────────────────
@@ -2994,7 +4010,7 @@ transition: var(--ease);
       _cfg = cfg;
       applyPainelConfig(cfg);
       // Aplicar período padrão no label do date picker
-      const lmap = { hoje:'Hoje','7d':'Últimos 7 dias','30d':'Últimos 30 dias',mes:'Este mês','90d':'Últimos 90 dias',ano:'Este ano' };
+      const lmap = { hoje: 'Hoje', '7d': 'Últimos 7 dias', '30d': 'Últimos 30 dias', mes: 'Este mês', '90d': 'Últimos 90 dias', ano: 'Este ano' };
       const dpLbl = document.getElementById('dpLabel');
       if (dpLbl && lmap[cfg.periodo]) dpLbl.textContent = lmap[cfg.periodo];
     })();

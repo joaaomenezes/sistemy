@@ -6,7 +6,7 @@
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistemy — Parceiros</title>
+  <title>Azzys — Parceiros</title>
   <link rel="stylesheet" href="global.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
@@ -651,7 +651,7 @@
         flex-wrap: wrap;
       }
 
-      .toolbar-right > *,
+      .toolbar-right>*,
       .search-input,
       .select-filter {
         width: 100%;
@@ -1957,20 +1957,20 @@
       const dispColor = d.limiteCredito > 0 && d.limiteDisponivel < 0 ? 'color:#ef4444;font-weight:700' : 'color:var(--accent);font-weight:700';
       container.innerHTML =
         `<div class="dp-credito-cards">` +
-          `<div class="dp-credito-card">` +
-            `<div class="dp-credito-label">Em aberto</div>` +
-            `<div class="dp-credito-val"${d.totalEmAberto > 0 ? ' style="color:#f59e0b;font-weight:700"' : ''}>R$ ${fmt(d.totalEmAberto)}</div>` +
-          `</div>` +
-          `<div class="dp-credito-card">` +
-            `<div class="dp-credito-label">Disponível</div>` +
-            `<div class="dp-credito-val" style="${d.limiteCredito > 0 ? dispColor : 'color:var(--muted)'}">` +
-              `${d.limiteCredito > 0 ? 'R$ ' + fmt(d.limiteDisponivel) : '—'}` +
-            `</div>` +
-          `</div>` +
+        `<div class="dp-credito-card">` +
+        `<div class="dp-credito-label">Em aberto</div>` +
+        `<div class="dp-credito-val"${d.totalEmAberto > 0 ? ' style="color:#f59e0b;font-weight:700"' : ''}>R$ ${fmt(d.totalEmAberto)}</div>` +
+        `</div>` +
+        `<div class="dp-credito-card">` +
+        `<div class="dp-credito-label">Disponível</div>` +
+        `<div class="dp-credito-val" style="${d.limiteCredito > 0 ? dispColor : 'color:var(--muted)'}">` +
+        `${d.limiteCredito > 0 ? 'R$ ' + fmt(d.limiteDisponivel) : '—'}` +
+        `</div>` +
+        `</div>` +
         `</div>`;
     }
     async function loadHistoricoFin(clienteId) {
-      const section   = document.getElementById('dp-historico-section');
+      const section = document.getElementById('dp-historico-section');
       const container = document.getElementById('dp-historico-fin');
       if (!section || !container) return;
       section.style.display = '';
@@ -1982,7 +1982,7 @@
       ]);
 
       const aberto = (rAberto.ok ? rAberto.data : []).filter(l => NexoFinanceiroStatus.contaComoAberto(l));
-      const pagos  = rPago.ok ? (rPago.data || []) : [];
+      const pagos = rPago.ok ? (rPago.data || []) : [];
 
       let html = '';
 
@@ -1991,21 +1991,21 @@
         html += aberto.map(l => {
           const venc = l.vencimento ? new Date(l.vencimento + 'T00:00:00').toLocaleDateString('pt-BR') : '—';
           return `<div class="dp-row" style="font-size:12px">
-            <span class="dp-label" style="font-size:11px">${venc} · ${escapeHTML(l.descricao||'')}</span>
-            <span class="dp-val" style="color:#f59e0b">R$ ${fmt(parseFloat(l.valor)||0)}</span>
+            <span class="dp-label" style="font-size:11px">${venc} · ${escapeHTML(l.descricao || '')}</span>
+            <span class="dp-val" style="color:#f59e0b">R$ ${fmt(parseFloat(l.valor) || 0)}</span>
           </div>`;
         }).join('');
       }
 
       if (pagos.length) {
-        html += `<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--accent);margin:${aberto.length?'12px':' 8px'} 0 4px">Recebidos</div>`;
+        html += `<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--accent);margin:${aberto.length ? '12px' : ' 8px'} 0 4px">Recebidos</div>`;
         html += pagos.map(l => {
-          const data  = l.pagoEm ? new Date(l.pagoEm + 'T00:00:00').toLocaleDateString('pt-BR') : '—';
-          const mFmt  = { dinheiro:'Dinheiro', pix:'PIX', credito:'Crédito', debito:'Débito', transferencia:'Transf.', cheque:'Cheque', outro:'Outro' };
+          const data = l.pagoEm ? new Date(l.pagoEm + 'T00:00:00').toLocaleDateString('pt-BR') : '—';
+          const mFmt = { dinheiro: 'Dinheiro', pix: 'PIX', credito: 'Crédito', debito: 'Débito', transferencia: 'Transf.', cheque: 'Cheque', outro: 'Outro' };
           const metodo = l.formaPagamento ? (mFmt[l.formaPagamento.toLowerCase()] || l.formaPagamento) : '';
           return `<div class="dp-row" style="font-size:12px">
             <span class="dp-label" style="font-size:11px">${data}${metodo ? ' · ' + metodo : ''}</span>
-            <span class="dp-val" style="color:var(--accent)">R$ ${fmt(parseFloat(l.valor)||0)}</span>
+            <span class="dp-val" style="color:var(--accent)">R$ ${fmt(parseFloat(l.valor) || 0)}</span>
           </div>`;
         }).join('');
       }

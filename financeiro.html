@@ -3,10 +3,12 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistemy — Financeiro</title>
-  <link rel="stylesheet" href="global.css">  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <title>Azzys — Financeiro</title>
+  <link rel="stylesheet" href="global.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
     /* ── KPIs ── */
     .kpi-strip {
@@ -239,7 +241,7 @@
       color: var(--muted);
       font-size: 12px;
       font-weight: 600;
-cursor: pointer;
+      cursor: pointer;
       transition: all .15s;
     }
 
@@ -447,7 +449,7 @@ cursor: pointer;
     }
 
     .donut-center-val {
-font-size: 14px;
+      font-size: 14px;
       font-weight: 800;
     }
 
@@ -641,50 +643,286 @@ font-size: 14px;
       margin-top: 3px;
     }
 
-    .modal.fin-form-modal { width:min(560px, calc(100vw - 64px)); max-width:560px; }
-    .modal.fin-form-modal.sm { width:min(500px, calc(100vw - 64px)); max-width:500px; }
-    .modal.fin-form-modal.confirm { width:min(460px, calc(100vw - 64px)); max-width:460px; }
-    .fin-form-modal .modal-header { align-items:flex-start; padding:20px 24px 16px; }
-    .fin-form-modal .modal-body { padding:20px 24px; }
-    .fin-form-title { display:flex; align-items:center; gap:10px; margin:0; font-size:17px !important; letter-spacing:-.25px; }
-    .fin-form-title-ico { width:34px; height:34px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid var(--border); background:rgba(255,255,255,.04); color:var(--accent); font-size:16px; }
-    .fin-form-title-ico.danger { background:rgba(255,71,87,.12); border-color:rgba(255,71,87,.2); color:var(--danger); }
-    .fin-form-title-ico.cost { background:rgba(255,107,53,.11); border-color:rgba(255,107,53,.22); color:#ff6b35; }
-    .fin-form-title-ico.category { background:rgba(47,128,255,.11); border-color:rgba(47,128,255,.22); color:var(--accent2); }
-    .fin-form-card { background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015)); border:1px solid var(--border); border-radius:14px; padding:14px; }
-    .fin-form-modal .form-grid { gap:14px; }
-    .fin-form-modal .form-group { margin-bottom:0; }
-    .fin-form-modal .field { color-scheme:dark; }
-    .fin-form-modal textarea.field { min-height:84px; line-height:1.45; resize:vertical; }
-    .fin-form-modal input[type="date"].field::-webkit-calendar-picker-indicator { filter:invert(1); opacity:.68; cursor:pointer; }
-    .fin-modal-footer { justify-content:space-between; gap:14px; }
-    .fin-modal-note { display:flex; align-items:center; gap:7px; color:var(--muted); font-size:12px; min-width:0; }
-    .fin-modal-note i { color:var(--accent); }
-    .fin-modal-note.danger i { color:var(--danger); }
-    .fin-modal-actions { display:flex; align-items:center; justify-content:flex-end; gap:10px; min-width:0; }
-    .cc-cat-add { white-space:nowrap; min-height:42px; }
-    .modal-field-section { margin-bottom:14px !important; }
+    .modal.fin-form-modal {
+      width: min(560px, calc(100vw - 64px));
+      max-width: 560px;
+    }
 
-    .bank-summary-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
-    .bank-kpi-card { padding:16px; border:1px solid var(--border); border-radius:14px; background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.015)); }
-    .bank-kpi-card span { display:block; color:var(--muted); font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px; }
-    .bank-kpi-card strong { color:var(--text); font-size:18px; font-weight:850; letter-spacing:0; }
-    .table-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
-    .bank-account-main { display:flex; flex-direction:column; gap:3px; min-width:170px; }
-    .bank-account-main strong { color:var(--text); font-size:13px; }
-    .bank-account-main span { color:var(--muted); font-size:11px; }
-    .bank-principal-badge { display:inline-flex; align-items:center; gap:4px; width:max-content; padding:2px 7px; border-radius:999px; background:rgba(0,200,150,.11); color:var(--accent); font-size:10px; font-weight:800; }
-    .bank-actions { display:flex; gap:7px; flex-wrap:wrap; }
-    .bank-status { display:inline-flex; padding:3px 9px; border-radius:999px; font-size:10px; font-weight:800; text-transform:uppercase; }
-    .bank-status.ativa { background:rgba(0,200,150,.11); color:var(--accent); }
-    .bank-status.inativa { background:rgba(107,127,150,.12); color:var(--muted); }
-    .bank-check-row { min-height:42px; display:flex; align-items:center; gap:9px; padding:10px 12px; border:1px solid var(--border); border-radius:12px; background:rgba(255,255,255,.025); color:var(--text); font-size:12px; font-weight:650; cursor:pointer; }
-    .bank-check-row input { width:16px; height:16px; accent-color:var(--accent); }
-    .conc-filter { min-height:34px; width:auto; min-width:132px; padding:6px 10px; border-radius:10px; font-size:12px; }
-    .card-conc-sale { display:flex; flex-direction:column; gap:3px; min-width:160px; }
-    .card-conc-sale strong { color:var(--text); font-size:13px; }
-    .card-conc-sale span { color:var(--muted); font-size:11px; }
-    .card-conc-check { width:16px; height:16px; accent-color:var(--accent); }
+    .modal.fin-form-modal.sm {
+      width: min(500px, calc(100vw - 64px));
+      max-width: 500px;
+    }
+
+    .modal.fin-form-modal.confirm {
+      width: min(460px, calc(100vw - 64px));
+      max-width: 460px;
+    }
+
+    .fin-form-modal .modal-header {
+      align-items: flex-start;
+      padding: 20px 24px 16px;
+    }
+
+    .fin-form-modal .modal-body {
+      padding: 20px 24px;
+    }
+
+    .fin-form-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+      font-size: 17px !important;
+      letter-spacing: -.25px;
+    }
+
+    .fin-form-title-ico {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .04);
+      color: var(--accent);
+      font-size: 16px;
+    }
+
+    .fin-form-title-ico.danger {
+      background: rgba(255, 71, 87, .12);
+      border-color: rgba(255, 71, 87, .2);
+      color: var(--danger);
+    }
+
+    .fin-form-title-ico.cost {
+      background: rgba(255, 107, 53, .11);
+      border-color: rgba(255, 107, 53, .22);
+      color: #ff6b35;
+    }
+
+    .fin-form-title-ico.category {
+      background: rgba(47, 128, 255, .11);
+      border-color: rgba(47, 128, 255, .22);
+      color: var(--accent2);
+    }
+
+    .fin-form-card {
+      background: linear-gradient(180deg, rgba(255, 255, 255, .03), rgba(255, 255, 255, .015));
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .fin-form-modal .form-grid {
+      gap: 14px;
+    }
+
+    .fin-form-modal .form-group {
+      margin-bottom: 0;
+    }
+
+    .fin-form-modal .field {
+      color-scheme: dark;
+    }
+
+    .fin-form-modal textarea.field {
+      min-height: 84px;
+      line-height: 1.45;
+      resize: vertical;
+    }
+
+    .fin-form-modal input[type="date"].field::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      opacity: .68;
+      cursor: pointer;
+    }
+
+    .fin-modal-footer {
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .fin-modal-note {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      min-width: 0;
+    }
+
+    .fin-modal-note i {
+      color: var(--accent);
+    }
+
+    .fin-modal-note.danger i {
+      color: var(--danger);
+    }
+
+    .fin-modal-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .cc-cat-add {
+      white-space: nowrap;
+      min-height: 42px;
+    }
+
+    .modal-field-section {
+      margin-bottom: 14px !important;
+    }
+
+    .bank-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .bank-kpi-card {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, .015));
+    }
+
+    .bank-kpi-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 8px;
+    }
+
+    .bank-kpi-card strong {
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 850;
+      letter-spacing: 0;
+    }
+
+    .table-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .bank-account-main {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 170px;
+    }
+
+    .bank-account-main strong {
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .bank-account-main span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .bank-principal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      width: max-content;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(0, 200, 150, .11);
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .bank-actions {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .bank-status {
+      display: inline-flex;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .bank-status.ativa {
+      background: rgba(0, 200, 150, .11);
+      color: var(--accent);
+    }
+
+    .bank-status.inativa {
+      background: rgba(107, 127, 150, .12);
+      color: var(--muted);
+    }
+
+    .bank-check-row {
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .025);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    .bank-check-row input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+    }
+
+    .conc-filter {
+      min-height: 34px;
+      width: auto;
+      min-width: 132px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: 12px;
+    }
+
+    .card-conc-sale {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 160px;
+    }
+
+    .card-conc-sale strong {
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .card-conc-sale span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .card-conc-check {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+    }
 
     .tipo-toggle {
       display: flex;
@@ -693,7 +931,7 @@ font-size: 14px;
       padding: 3px;
       border: 1px solid var(--border);
       border-radius: 12px;
-      background: rgba(255,255,255,.025);
+      background: rgba(255, 255, 255, .025);
     }
 
     .tipo-btn {
@@ -746,7 +984,7 @@ font-size: 14px;
       font-size: 12.5px;
       color: var(--muted);
       cursor: pointer;
-display: flex;
+      display: flex;
       align-items: center;
       justify-content: space-between;
       transition: background .1s, color .1s;
@@ -779,17 +1017,26 @@ display: flex;
       padding: 5px 9px;
       outline: none;
       color-scheme: dark;
-transition: border-color .15s;
+      transition: border-color .15s;
       display: block;
     }
 
     .fin-dp-input:focus {
       border-color: var(--accent);
     }
-  
 
-    .u-col-center   { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .u-stroke-anim  { transition: stroke-dasharray .6s ease; }
+
+    .u-col-center {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .u-stroke-anim {
+      transition: stroke-dasharray .6s ease;
+    }
 
     /* ══ UTILITÁRIOS — substituem inline styles ══
        Não remover: cada classe abaixo substitui
@@ -798,23 +1045,62 @@ transition: border-color .15s;
        altere aqui e reflete em todo o financeiro. */
 
     /* Cores */
-    .u-muted   { color: var(--muted); }
-    .u-sub     { color: var(--sub); }
-    .u-accent  { color: var(--accent); }
-    .u-danger  { color: var(--danger); }
-    .u-text    { color: var(--text); }
-    .u-accent-mr { color: var(--accent); margin-right: 6px; }
-    .u-danger-mr { color: var(--danger); margin-right: 6px; }
+    .u-muted {
+      color: var(--muted);
+    }
+
+    .u-sub {
+      color: var(--sub);
+    }
+
+    .u-accent {
+      color: var(--accent);
+    }
+
+    .u-danger {
+      color: var(--danger);
+    }
+
+    .u-text {
+      color: var(--text);
+    }
+
+    .u-accent-mr {
+      color: var(--accent);
+      margin-right: 6px;
+    }
+
+    .u-danger-mr {
+      color: var(--danger);
+      margin-right: 6px;
+    }
 
     /* Background */
-    .u-bg-accent { background: var(--accent); }
-    .u-bg-danger { background: rgba(255,71,87,.7); }
+    .u-bg-accent {
+      background: var(--accent);
+    }
+
+    .u-bg-danger {
+      background: rgba(255, 71, 87, .7);
+    }
 
     /* Tipografia */
-    .u-fw-500  { font-weight: 500; }
-    .u-fw-600  { font-weight: 600; }
-    .u-fw-700  { font-weight: 700; }
-    .u-fs-accent { color: var(--accent); font-size: 14px; }
+    .u-fw-500 {
+      font-weight: 500;
+    }
+
+    .u-fw-600 {
+      font-weight: 600;
+    }
+
+    .u-fw-700 {
+      font-weight: 700;
+    }
+
+    .u-fs-accent {
+      color: var(--accent);
+      font-size: 14px;
+    }
 
     /* Compostos tipográficos */
     .u-label-field {
@@ -823,18 +1109,25 @@ transition: border-color .15s;
       color: var(--text);
       margin-bottom: 5px;
     }
+
     .u-hint {
       color: var(--muted);
       font-size: 11px;
       line-height: 1.5;
       margin-bottom: 12px;
     }
+
     .u-label-sm {
       font-size: 11px;
       color: var(--sub);
       font-weight: 600;
     }
-    .u-muted-13 { color: var(--muted); font-size: 13px; }
+
+    .u-muted-13 {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
     .u-section-title {
       font-size: 14px;
       font-weight: 700;
@@ -843,29 +1136,54 @@ transition: border-color .15s;
     }
 
     /* Layout */
-    .u-flex-1        { flex: 1; }
-    .u-flex-center   { display: flex; align-items: center; }
-    .u-flex-g8       { display: flex; gap: 8px; align-items: center; }
-    .u-flex-g10      { display: flex; align-items: center; gap: 10px; }
-    .u-relative      { position: relative; }
+    .u-flex-1 {
+      flex: 1;
+    }
+
+    .u-flex-center {
+      display: flex;
+      align-items: center;
+    }
+
+    .u-flex-g8 {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .u-flex-g10 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .u-relative {
+      position: relative;
+    }
 
     /* Espaçamento */
-    .u-mt-20  { margin-top: 20px; }
-    .u-mt-40  { margin-top: 40px; }
+    .u-mt-20 {
+      margin-top: 20px;
+    }
+
+    .u-mt-40 {
+      margin-top: 40px;
+    }
 
     /* Badges */
     .u-badge-danger {
       padding: 3px 10px;
       border-radius: 5px;
-      background: rgba(255,71,87,.12);
+      background: rgba(255, 71, 87, .12);
       color: var(--danger);
       font-size: 10px;
       font-weight: 600;
     }
+
     .u-badge-accent {
       padding: 3px 10px;
       border-radius: 5px;
-      background: rgba(0,200,150,.12);
+      background: rgba(0, 200, 150, .12);
       color: var(--accent);
       font-size: 10px;
       font-weight: 600;
@@ -873,160 +1191,422 @@ transition: border-color .15s;
 
     /* Ícone containers */
     .u-ico-g {
-      width: 38px; height: 38px; border-radius: 10px;
-      background: rgba(0,200,150,.1); color: var(--accent);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px; flex-shrink: 0;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(0, 200, 150, .1);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
     }
+
     .u-ico-b {
-      width: 38px; height: 38px; border-radius: 10px;
-      background: rgba(0,119,255,.1); color: var(--accent2);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px; flex-shrink: 0;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(0, 119, 255, .1);
+      color: var(--accent2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
     }
+
     .u-ico-sm-g {
-      width: 32px; height: 32px; border-radius: 8px;
-      background: rgba(0,200,150,.1);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(0, 200, 150, .1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
     }
 
     /* ══ DRE PANEL ══ */
 
 
-    .fin-dp-wrap { position: relative; display: inline-flex; }
+    .fin-dp-wrap {
+      position: relative;
+      display: inline-flex;
+    }
 
     /* KPIs */
     .dre-kpis {
-      display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 12px; margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
     }
+
     .dre-kpi {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 14px; padding: 14px 16px;
-      transition: border-color .2s, transform .2s; cursor: default;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      transition: border-color .2s, transform .2s;
+      cursor: default;
     }
-    .dre-kpi:hover { border-color: var(--border-h,rgba(255,255,255,.09)); transform: translateY(-2px); }
+
+    .dre-kpi:hover {
+      border-color: var(--border-h, rgba(255, 255, 255, .09));
+      transform: translateY(-2px);
+    }
+
     .dre-kpi-icon {
-      width: 34px; height: 34px; border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 15px; margin-bottom: 10px;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      margin-bottom: 10px;
     }
-    .dre-kpi-label { font-size: 11px; color: var(--sub); margin-bottom: 4px; white-space: nowrap; }
+
+    .dre-kpi-label {
+      font-size: 11px;
+      color: var(--sub);
+      margin-bottom: 4px;
+      white-space: nowrap;
+    }
+
     .dre-kpi-val {
-      font-family: var(--font-h); font-size: 17px; font-weight: 800;
-      letter-spacing: -.5px; color: var(--text); margin-bottom: 6px;
+      font-family: var(--font-h);
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+      color: var(--text);
+      margin-bottom: 6px;
       overflow-wrap: anywhere;
     }
-    .dre-kpi-delta { font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 3px; }
-    .dre-kpi-delta.up   { color: var(--accent); }
-    .dre-kpi-delta.down { color: var(--danger); }
+
+    .dre-kpi-delta {
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .dre-kpi-delta.up {
+      color: var(--accent);
+    }
+
+    .dre-kpi-delta.down {
+      color: var(--danger);
+    }
 
     /* Grid */
-    .dre-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 360px); gap: 16px; align-items: start; }
+    .dre-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+      gap: 16px;
+      align-items: start;
+    }
 
     /* Tabela */
     .dre-table-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 16px; overflow: auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: auto;
     }
-    .dre-table-head {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 18px 12px; border-bottom: 1px solid var(--border);
-    }
-    .dre-table-head h3 {
-      font-family: var(--font-h); font-size: 14px;
-      font-weight: 700; color: var(--text);
-    }
-    .dre-table-note { font-size: 11px; color: var(--muted); }
 
-    table.dre-tbl { width: 100%; min-width: 720px; border-collapse: collapse; }
+    .dre-table-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dre-table-head h3 {
+      font-family: var(--font-h);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .dre-table-note {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    table.dre-tbl {
+      width: 100%;
+      min-width: 720px;
+      border-collapse: collapse;
+    }
+
     table.dre-tbl thead th {
-      padding: 10px 18px; font-size: 10.5px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: .6px;
-      color: var(--muted); border-bottom: 1px solid var(--border);
-      text-align: right; white-space: nowrap;
+      padding: 10px 18px;
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      text-align: right;
+      white-space: nowrap;
     }
-    table.dre-tbl thead th:first-child { text-align: left; }
-    table.dre-tbl tbody tr { transition: background .12s; }
-    table.dre-tbl tbody tr:hover td { background: rgba(255,255,255,.02); }
+
+    table.dre-tbl thead th:first-child {
+      text-align: left;
+    }
+
+    table.dre-tbl tbody tr {
+      transition: background .12s;
+    }
+
+    table.dre-tbl tbody tr:hover td {
+      background: rgba(255, 255, 255, .02);
+    }
+
     table.dre-tbl tbody td {
-      padding: 9px 18px; font-size: 13px;
-      border-bottom: 1px solid rgba(255,255,255,.03);
-      vertical-align: middle; text-align: right; white-space: nowrap;
+      padding: 9px 18px;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(255, 255, 255, .03);
+      vertical-align: middle;
+      text-align: right;
+      white-space: nowrap;
     }
-    table.dre-tbl tbody td:first-child { text-align: left; }
-    table.dre-tbl tbody tr:last-child td { border-bottom: none; }
+
+    table.dre-tbl tbody td:first-child {
+      text-align: left;
+    }
+
+    table.dre-tbl tbody tr:last-child td {
+      border-bottom: none;
+    }
 
     .dre-row-group td {
-      font-family: var(--font-h); font-size: 12px; font-weight: 800;
-      text-transform: uppercase; letter-spacing: .3px;
-      padding-top: 14px; padding-bottom: 8px;
+      font-family: var(--font-h);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+      padding-top: 14px;
+      padding-bottom: 8px;
       border-top: 1px solid var(--border);
     }
-    .dre-row-group.first-group td { border-top: none; padding-top: 10px; }
-    .dre-row-total td {
-      font-family: var(--font-h); font-size: 13px; font-weight: 800;
-      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
-      background: rgba(255,255,255,.02);
-    }
-    .dre-row-final td {
-      font-family: var(--font-h); font-size: 14px; font-weight: 800;
-      background: rgba(0,208,132,.06); border-top: 2px solid rgba(0,208,132,.25);
-    }
-    .dre-row-sub td:first-child { padding-left: 34px; color: var(--sub); font-size: 12.5px; }
-    .dre-row-sub td { font-size: 12.5px; color: var(--sub); }
 
-    .dre-pos { color: var(--accent); }
-    .dre-neg { color: var(--danger); }
-    .dre-neu { color: var(--text); }
-    .dre-var-up   { color: var(--accent); font-size: 11.5px; font-weight: 600; }
-    .dre-var-down { color: var(--danger);  font-size: 11.5px; font-weight: 600; }
+    .dre-row-group.first-group td {
+      border-top: none;
+      padding-top: 10px;
+    }
+
+    .dre-row-total td {
+      font-family: var(--font-h);
+      font-size: 13px;
+      font-weight: 800;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, .02);
+    }
+
+    .dre-row-final td {
+      font-family: var(--font-h);
+      font-size: 14px;
+      font-weight: 800;
+      background: rgba(0, 208, 132, .06);
+      border-top: 2px solid rgba(0, 208, 132, .25);
+    }
+
+    .dre-row-sub td:first-child {
+      padding-left: 34px;
+      color: var(--sub);
+      font-size: 12.5px;
+    }
+
+    .dre-row-sub td {
+      font-size: 12.5px;
+      color: var(--sub);
+    }
+
+    .dre-pos {
+      color: var(--accent);
+    }
+
+    .dre-neg {
+      color: var(--danger);
+    }
+
+    .dre-neu {
+      color: var(--text);
+    }
+
+    .dre-var-up {
+      color: var(--accent);
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+
+    .dre-var-down {
+      color: var(--danger);
+      font-size: 11.5px;
+      font-weight: 600;
+    }
 
     /* Lateral */
-    .dre-side { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+    .dre-side {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-width: 0;
+    }
+
     .dre-side-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 16px; overflow: hidden;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
     }
+
     .dre-side-head {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 13px 16px 11px; border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 16px 11px;
+      border-bottom: 1px solid var(--border);
     }
+
     .dre-side-head h4 {
-      font-family: var(--font-h); font-size: 13px;
-      font-weight: 700; color: var(--text);
+      font-family: var(--font-h);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
     }
-    .dre-side-body { padding: 14px 16px; }
 
-    .dre-line-chart { width: 100%; display: block; }
-    .dre-line-xlbl { display: flex; justify-content: space-between; padding: 4px 0 0; }
-    .dre-line-xlbl span { font-size: 10px; color: var(--muted); }
+    .dre-side-body {
+      padding: 14px 16px;
+    }
 
-    .dre-donut-wrap { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; }
-    .dre-donut-legend { flex: 1; display: flex; flex-direction: column; gap: 7px; }
-    .dre-leg-row { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--sub); }
-    .dre-leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .dre-leg-pct { margin-left: auto; font-weight: 700; font-size: 12px; color: var(--text); }
+    .dre-line-chart {
+      width: 100%;
+      display: block;
+    }
 
-    .dre-margin-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-    .dre-margin-row:last-child { margin-bottom: 0; }
-    .dre-margin-label { font-size: 12px; color: var(--sub); width: 120px; flex-shrink: 0; }
+    .dre-line-xlbl {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0 0;
+    }
+
+    .dre-line-xlbl span {
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .dre-donut-wrap {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .dre-donut-legend {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .dre-leg-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: var(--sub);
+    }
+
+    .dre-leg-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dre-leg-pct {
+      margin-left: auto;
+      font-weight: 700;
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    .dre-margin-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .dre-margin-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .dre-margin-label {
+      font-size: 12px;
+      color: var(--sub);
+      width: 120px;
+      flex-shrink: 0;
+    }
+
     .dre-margin-bar-wrap {
-      flex: 1; height: 7px; background: rgba(255,255,255,.05);
-      border-radius: 100px; overflow: hidden;
+      flex: 1;
+      height: 7px;
+      background: rgba(255, 255, 255, .05);
+      border-radius: 100px;
+      overflow: hidden;
     }
-    .dre-margin-bar { height: 100%; border-radius: 100px; transition: width .6s ease; }
-    .dre-margin-pct { font-size: 12px; font-weight: 700; color: var(--text); width: 42px; text-align: right; flex-shrink: 0; }
 
-    .dre-chips { display: flex; gap: 4px; }
-    .dre-chip {
-      font-size: 11px; font-weight: 600; padding: 3px 10px;
-      border-radius: 100px; border: 1px solid var(--border);
-      background: none; color: var(--sub); cursor: pointer; transition: all .15s;
+    .dre-margin-bar {
+      height: 100%;
+      border-radius: 100px;
+      transition: width .6s ease;
     }
-    .dre-chip:hover { color: var(--text); border-color: var(--border-h,rgba(255,255,255,.09)); }
-    .dre-chip.on { background: rgba(0,208,132,.1); border-color: rgba(0,208,132,.3); color: var(--accent); }
+
+    .dre-margin-pct {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      width: 42px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .dre-chips {
+      display: flex;
+      gap: 4px;
+    }
+
+    .dre-chip {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--sub);
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .dre-chip:hover {
+      color: var(--text);
+      border-color: var(--border-h, rgba(255, 255, 255, .09));
+    }
+
+    .dre-chip.on {
+      background: rgba(0, 208, 132, .1);
+      border-color: rgba(0, 208, 132, .3);
+      color: var(--accent);
+    }
 
 
     /* ── DRE spacing — igual ao Relatórios ── */
@@ -1072,166 +1652,980 @@ transition: border-color .15s;
 
 
     @media (max-width: 1200px) {
-      .dre-grid { grid-template-columns: 1fr; }
-      .dre-kpis { grid-template-columns: repeat(3,1fr); }
-      #panel-dre .dre-grid { grid-template-columns: 1fr !important; }
-      #panel-dre .dre-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+      .dre-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .dre-kpis {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      #panel-dre .dre-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      #panel-dre .dre-kpis {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      }
     }
 
     /* ── CENTRO DE CUSTOS ── */
-    .custos-toolbar { display:flex; justify-content:space-between; align-items:center; margin:20px 0 16px; gap:12px; flex-wrap:wrap; }
-    .custos-kpis { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:14px; margin-bottom:20px; }
-    .custos-kpi { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 18px; transition:var(--ease); }
-    .custos-kpi:hover { border-color:var(--border-h); transform:translateY(-2px); }
-    .custos-kpi-lbl { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
-    .custos-kpi-val { font-size:20px; font-weight:800; letter-spacing:-1px; overflow-wrap:anywhere; }
-    .custos-kpi-delta { font-size:11px; margin-top:5px; display:flex; align-items:center; gap:3px; }
-    .custos-kpi-delta.up { color:var(--danger); }
-    .custos-kpi-delta.down { color:var(--accent); }
-    .custos-grid { display:grid; grid-template-columns:minmax(0, 300px) minmax(0, 1fr); gap:20px; align-items:start; }
-    .custos-donut-wrap { position:relative; width:180px; height:180px; margin:0 auto 20px; }
-    .custos-donut { width:180px; height:180px; border-radius:50%; background:var(--border); }
-    .custos-donut-hole { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:108px; height:108px; border-radius:50%; background:var(--card); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
-    .custos-legend { display:flex; flex-direction:column; gap:7px; width:100%; }
-    .custos-legend-item { display:flex; align-items:center; gap:8px; font-size:12px; cursor:pointer; padding:3px 0; }
-    .custos-legend-dot { width:10px; height:10px; border-radius:3px; flex-shrink:0; }
-    .custos-legend-name { flex:1; color:var(--muted); }
-    .custos-legend-val { font-size:11px; color:var(--muted); }
-    .custos-legend-pct { font-weight:700; font-size:11px; min-width:36px; text-align:right; }
-    .cc-cat-badge { display:inline-block; padding:2px 8px; border-radius:100px; font-size:11px; font-weight:600; }
+    .custos-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 20px 0 16px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .custos-kpis {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .custos-kpi {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      transition: var(--ease);
+    }
+
+    .custos-kpi:hover {
+      border-color: var(--border-h);
+      transform: translateY(-2px);
+    }
+
+    .custos-kpi-lbl {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 6px;
+    }
+
+    .custos-kpi-val {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      overflow-wrap: anywhere;
+    }
+
+    .custos-kpi-delta {
+      font-size: 11px;
+      margin-top: 5px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .custos-kpi-delta.up {
+      color: var(--danger);
+    }
+
+    .custos-kpi-delta.down {
+      color: var(--accent);
+    }
+
+    .custos-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .custos-donut-wrap {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      margin: 0 auto 20px;
+    }
+
+    .custos-donut {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .custos-donut-hole {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 108px;
+      height: 108px;
+      border-radius: 50%;
+      background: var(--card);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .custos-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      width: 100%;
+    }
+
+    .custos-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      cursor: pointer;
+      padding: 3px 0;
+    }
+
+    .custos-legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .custos-legend-name {
+      flex: 1;
+      color: var(--muted);
+    }
+
+    .custos-legend-val {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .custos-legend-pct {
+      font-weight: 700;
+      font-size: 11px;
+      min-width: 36px;
+      text-align: right;
+    }
+
+    .cc-cat-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+    }
 
     /* ── CATEGORIES MODAL ── */
-    .cc-cat-form { display:flex; gap:10px; margin-bottom:16px; padding:12px; border:1px solid var(--border); border-radius:14px; background:rgba(255,255,255,.025); }
-    .cc-cat-items { display:flex; flex-direction:column; gap:7px; max-height:380px; overflow-y:auto; padding-right:2px; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
-    .cc-cat-row { display:flex; align-items:center; gap:10px; padding:11px 14px; border-radius:12px; background:rgba(255,255,255,.025); border:1px solid var(--border); transition:border-color .15s, background .15s, transform .15s; }
-    .cc-cat-row:hover { border-color:rgba(255,255,255,.12); background:rgba(255,255,255,.04); transform:translateY(-1px); }
-    .cc-cat-accent { width:4px; min-height:34px; border-radius:4px; flex-shrink:0; }
-    .cc-cat-name { flex:1; font-size:13px; font-weight:600; }
-    .cc-cat-pill { font-size:10px; font-weight:700; padding:2px 8px; border-radius:100px; white-space:nowrap; }
-    .cc-cat-edit-inp { flex:1; background:rgba(255,255,255,.04); border:1px solid var(--accent); border-radius:9px; color:var(--text); font-size:13px; font-weight:600; outline:none; padding:8px 10px; }
+    .cc-cat-form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .025);
+    }
+
+    .cc-cat-items {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding-right: 2px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .cc-cat-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .025);
+      border: 1px solid var(--border);
+      transition: border-color .15s, background .15s, transform .15s;
+    }
+
+    .cc-cat-row:hover {
+      border-color: rgba(255, 255, 255, .12);
+      background: rgba(255, 255, 255, .04);
+      transform: translateY(-1px);
+    }
+
+    .cc-cat-accent {
+      width: 4px;
+      min-height: 34px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .cc-cat-name {
+      flex: 1;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .cc-cat-pill {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+
+    .cc-cat-edit-inp {
+      flex: 1;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--accent);
+      border-radius: 9px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 600;
+      outline: none;
+      padding: 8px 10px;
+    }
 
     /* ── MODAL CONFIRM (custos) ── */
-    .cc-confirm-body { padding:24px; display:flex; gap:16px; align-items:flex-start; }
-    .cc-confirm-icon { width:42px; height:42px; border-radius:10px; background:rgba(255,71,87,.12); display:flex; align-items:center; justify-content:center; font-size:20px; color:var(--danger); flex-shrink:0; }
-    .cc-confirm-text h3 { font-size:15px; font-weight:800; margin-bottom:4px; }
-    .cc-confirm-text p  { font-size:13px; color:var(--muted); line-height:1.45; }
-    .btn-del { min-height:40px; padding:0 16px; border-radius:10px; border:1px solid rgba(255,71,87,.24); background:linear-gradient(135deg,var(--danger),#d93645); color:#fff; font-size:13px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:7px; transition:opacity .18s, transform .18s; white-space:nowrap; }
-    .btn-del:hover { opacity:.9; transform:translateY(-1px); }
-    .btn-receber { min-height:42px; padding:0 18px; border-radius:10px; border:1px solid rgba(0,208,132,.24); background:linear-gradient(135deg,var(--accent),#00b875); color:#021c14; font-size:13px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:opacity .18s, transform .18s, box-shadow .18s; box-shadow:0 12px 26px rgba(0,208,132,.18); white-space:nowrap; }
-    .btn-receber:hover { opacity:.9; transform:translateY(-1px); }
-    .btn-receber:disabled { opacity:.65; cursor:wait; transform:none; box-shadow:none; }
-    .btn-receber-sm { padding:5px 12px; border-radius:7px; border:1px solid var(--accent); background:transparent; color:var(--accent); font-size:12px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all .15s; white-space:nowrap; }
-    .btn-receber-sm:hover { background:var(--accent); color:#04130d; }
-    .receber-footer-left { display:flex; align-items:center; gap:10px; flex-wrap:wrap; min-width:0; }
-    .receber-total-hint { font-size:12px; color:var(--muted); }
-    .receber-total-hint strong { color:var(--accent); font-weight:800; }
-    .modal.receber-modal { width:min(560px, calc(100vw - 64px)); max-width:560px; }
-    .receber-modal .modal-header { align-items:flex-start; padding:16px 18px 13px; }
-    .receber-modal .modal-body { padding:14px 18px 16px; }
-    .receber-title { display:flex; align-items:center; gap:9px; margin:0; font-size:16px !important; letter-spacing:-.2px; }
-    .receber-title-ico { width:32px; height:32px; border-radius:9px; background:rgba(0,200,150,.12); border:1px solid rgba(0,200,150,.18); display:inline-flex; align-items:center; justify-content:center; color:var(--accent); font-size:15px; flex-shrink:0; }
-    .rc-summary-card { background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.018)); border:1px solid var(--border); border-radius:12px; padding:10px 12px; margin-bottom:12px; }
-    .rc-confirm-icon { width:42px; height:42px; border-radius:10px; background:rgba(0,200,150,.12); display:flex; align-items:center; justify-content:center; font-size:20px; color:var(--accent); flex-shrink:0; }
-    .rc-confirm-row { display:grid; grid-template-columns:92px minmax(0,1fr); align-items:center; gap:10px; font-size:12.5px; padding:8px 0; border-bottom:1px dashed var(--border, rgba(255,255,255,.08)); }
-    .rc-confirm-row:last-child { border-bottom:none; }
-    .rc-confirm-row span { color:var(--muted); }
-    .rc-confirm-row strong { color:var(--text); font-weight:700; text-align:right; overflow-wrap:anywhere; }
-    .rc-value-pill { justify-self:end; display:inline-flex; align-items:center; justify-content:center; min-height:26px; padding:3px 9px; border-radius:999px; background:rgba(0,208,132,.12); border:1px solid rgba(0,208,132,.22); color:var(--accent) !important; font-size:12.5px; }
-    .rc-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    .rc-field-group { display:flex; flex-direction:column; gap:6px; min-width:0; }
-    .rc-field-group.full { grid-column:1/-1; }
-    .rc-field-label { color:var(--sub); font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.45px; }
-    .rc-field-label span { color:var(--muted); font-weight:600; text-transform:none; letter-spacing:0; }
-    .rc-field { width:100%; min-height:40px; padding:9px 11px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,.035); color:var(--text); font-family:var(--font-b); font-size:13px; outline:none; transition:border-color .18s, box-shadow .18s, background .18s; color-scheme:dark; }
-    .rc-field:hover { border-color:var(--border-h); background:rgba(255,255,255,.05); }
-    .rc-field:focus { border-color:var(--accent); box-shadow:var(--focus-ring); }
-    .rc-field::placeholder { color:var(--muted); }
-    select.rc-field { appearance:none; padding-right:36px; cursor:pointer; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24' stroke='%238a94a6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; background-size:14px; }
-    select.rc-field option { background:#0b1220; color:var(--text); }
-    input[type="date"].rc-field::-webkit-calendar-picker-indicator { filter:invert(1); opacity:.68; cursor:pointer; }
-    .rc-textarea { min-height:72px; resize:vertical; line-height:1.45; }
-    .receber-footer { justify-content:flex-end; gap:10px; padding:12px 18px; }
-    .receber-footer-actions { display:flex; align-items:center; justify-content:flex-end; gap:10px; min-width:0; }
+    .cc-confirm-body {
+      padding: 24px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .cc-confirm-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: rgba(255, 71, 87, .12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: var(--danger);
+      flex-shrink: 0;
+    }
+
+    .cc-confirm-text h3 {
+      font-size: 15px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .cc-confirm-text p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .btn-del {
+      min-height: 40px;
+      padding: 0 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 71, 87, .24);
+      background: linear-gradient(135deg, var(--danger), #d93645);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: opacity .18s, transform .18s;
+      white-space: nowrap;
+    }
+
+    .btn-del:hover {
+      opacity: .9;
+      transform: translateY(-1px);
+    }
+
+    .btn-receber {
+      min-height: 42px;
+      padding: 0 18px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 208, 132, .24);
+      background: linear-gradient(135deg, var(--accent), #00b875);
+      color: #021c14;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity .18s, transform .18s, box-shadow .18s;
+      box-shadow: 0 12px 26px rgba(0, 208, 132, .18);
+      white-space: nowrap;
+    }
+
+    .btn-receber:hover {
+      opacity: .9;
+      transform: translateY(-1px);
+    }
+
+    .btn-receber:disabled {
+      opacity: .65;
+      cursor: wait;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-receber-sm {
+      padding: 5px 12px;
+      border-radius: 7px;
+      border: 1px solid var(--accent);
+      background: transparent;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+
+    .btn-receber-sm:hover {
+      background: var(--accent);
+      color: #04130d;
+    }
+
+    .receber-footer-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+
+    .receber-total-hint {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .receber-total-hint strong {
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    .modal.receber-modal {
+      width: min(560px, calc(100vw - 64px));
+      max-width: 560px;
+    }
+
+    .receber-modal .modal-header {
+      align-items: flex-start;
+      padding: 16px 18px 13px;
+    }
+
+    .receber-modal .modal-body {
+      padding: 14px 18px 16px;
+    }
+
+    .receber-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0;
+      font-size: 16px !important;
+      letter-spacing: -.2px;
+    }
+
+    .receber-title-ico {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      background: rgba(0, 200, 150, .12);
+      border: 1px solid rgba(0, 200, 150, .18);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .rc-summary-card {
+      background: linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, .018));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+    }
+
+    .rc-confirm-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: rgba(0, 200, 150, .12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .rc-confirm-row {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr);
+      align-items: center;
+      gap: 10px;
+      font-size: 12.5px;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--border, rgba(255, 255, 255, .08));
+    }
+
+    .rc-confirm-row:last-child {
+      border-bottom: none;
+    }
+
+    .rc-confirm-row span {
+      color: var(--muted);
+    }
+
+    .rc-confirm-row strong {
+      color: var(--text);
+      font-weight: 700;
+      text-align: right;
+      overflow-wrap: anywhere;
+    }
+
+    .rc-value-pill {
+      justify-self: end;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 26px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgba(0, 208, 132, .12);
+      border: 1px solid rgba(0, 208, 132, .22);
+      color: var(--accent) !important;
+      font-size: 12.5px;
+    }
+
+    .rc-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .rc-field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .rc-field-group.full {
+      grid-column: 1/-1;
+    }
+
+    .rc-field-label {
+      color: var(--sub);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .45px;
+    }
+
+    .rc-field-label span {
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .rc-field {
+      width: 100%;
+      min-height: 40px;
+      padding: 9px 11px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .035);
+      color: var(--text);
+      font-family: var(--font-b);
+      font-size: 13px;
+      outline: none;
+      transition: border-color .18s, box-shadow .18s, background .18s;
+      color-scheme: dark;
+    }
+
+    .rc-field:hover {
+      border-color: var(--border-h);
+      background: rgba(255, 255, 255, .05);
+    }
+
+    .rc-field:focus {
+      border-color: var(--accent);
+      box-shadow: var(--focus-ring);
+    }
+
+    .rc-field::placeholder {
+      color: var(--muted);
+    }
+
+    select.rc-field {
+      appearance: none;
+      padding-right: 36px;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24' stroke='%238a94a6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 14px;
+    }
+
+    select.rc-field option {
+      background: #0b1220;
+      color: var(--text);
+    }
+
+    input[type="date"].rc-field::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      opacity: .68;
+      cursor: pointer;
+    }
+
+    .rc-textarea {
+      min-height: 72px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .receber-footer {
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 12px 18px;
+    }
+
+    .receber-footer-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      min-width: 0;
+    }
+
     @media (max-width:700px) {
-      .fin-form-modal { max-width:100%; }
+      .fin-form-modal {
+        max-width: 100%;
+      }
+
       .fin-form-modal .modal-header,
-      .fin-form-modal .modal-body { padding-left:18px; padding-right:18px; }
+      .fin-form-modal .modal-body {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
       .fin-form-modal .form-grid,
       .cf-tipo-row,
-      .cf-rec-opts { grid-template-columns:1fr; }
-      .fin-modal-footer { flex-direction:column; align-items:stretch; }
-      .fin-modal-actions { width:100%; }
-      .fin-modal-actions > * { flex:1 1 auto; }
-      .bank-summary-grid { grid-template-columns:1fr; }
-      .table-actions { width:100%; justify-content:flex-start; }
+      .cf-rec-opts {
+        grid-template-columns: 1fr;
+      }
 
-      .receber-modal { max-width:100%; }
+      .fin-modal-footer {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .fin-modal-actions {
+        width: 100%;
+      }
+
+      .fin-modal-actions>* {
+        flex: 1 1 auto;
+      }
+
+      .bank-summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .table-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .receber-modal {
+        max-width: 100%;
+      }
+
       .receber-modal .modal-header,
-      .receber-modal .modal-body { padding-left:18px; padding-right:18px; }
-      .rc-form-grid { grid-template-columns:1fr; }
-      .rc-confirm-row { grid-template-columns:1fr; gap:4px; }
+      .receber-modal .modal-body {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .rc-form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .rc-confirm-row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+
       .rc-confirm-row strong,
-      .rc-value-pill { justify-self:start; text-align:left; }
-      .receber-footer { flex-direction:column; align-items:stretch; }
-      .receber-footer-actions { width:100%; }
-      .receber-footer-actions > * { flex:1 1 auto; }
+      .rc-value-pill {
+        justify-self: start;
+        text-align: left;
+      }
+
+      .receber-footer {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .receber-footer-actions {
+        width: 100%;
+      }
+
+      .receber-footer-actions>* {
+        flex: 1 1 auto;
+      }
     }
+
     @media (max-width:520px) {
-      .fin-modal-actions { flex-direction:column; align-items:stretch; }
-      .fin-modal-actions > * { width:100%; }
-      .tipo-toggle { flex-direction:column; }
-      .cc-cat-form { flex-direction:column; }
-      .cc-cat-add { width:100%; }
-      .receber-footer-actions { flex-direction:column; align-items:stretch; }
-      .receber-footer-actions > * { width:100%; }
+      .fin-modal-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .fin-modal-actions>* {
+        width: 100%;
+      }
+
+      .tipo-toggle {
+        flex-direction: column;
+      }
+
+      .cc-cat-form {
+        flex-direction: column;
+      }
+
+      .cc-cat-add {
+        width: 100%;
+      }
+
+      .receber-footer-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .receber-footer-actions>* {
+        width: 100%;
+      }
     }
 
     /* ── Autocomplete cliente (Recebimentos) ── */
-    .receb-cli-wrap { position:relative; }
-    .receb-cli-field { display:inline-flex; align-items:center; gap:7px; padding:0 10px; height:34px; background:var(--surface2); border:1px solid var(--border); border-radius:10px; transition:border-color .15s; }
-    .receb-cli-field:focus-within { border-color:rgba(0,208,132,.4); }
-    .receb-cli-field input { border:none; background:transparent; color:var(--text); font-size:12.5px; font-family:var(--font-b); outline:none; width:160px; }
-    .receb-cli-field input::placeholder { color:var(--muted); }
-    .receb-cli-clear { background:transparent; border:none; color:var(--muted); cursor:pointer; padding:0; display:flex; align-items:center; font-size:14px; line-height:1; transition:color .15s; }
-    .receb-cli-clear:hover { color:var(--text); }
-    .receb-cli-drop { position:absolute; top:calc(100% + 4px); left:0; min-width:220px; background:#0f1929; border:1px solid rgba(255,255,255,.09); border-radius:12px; padding:4px; z-index:400; box-shadow:0 12px 30px rgba(0,0,0,.45); display:none; }
-    .receb-cli-drop.open { display:block; }
-    .receb-cli-opt { padding:8px 11px; font-size:12.5px; font-family:var(--font-b); color:var(--sub); cursor:pointer; border-radius:8px; transition:background .1s,color .1s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .receb-cli-opt:hover { background:rgba(255,255,255,.05); color:var(--text); }
-    .receb-cli-empty { padding:8px 11px; font-size:12px; color:var(--muted); font-family:var(--font-b); }
+    .receb-cli-wrap {
+      position: relative;
+    }
+
+    .receb-cli-field {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 10px;
+      height: 34px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      transition: border-color .15s;
+    }
+
+    .receb-cli-field:focus-within {
+      border-color: rgba(0, 208, 132, .4);
+    }
+
+    .receb-cli-field input {
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 12.5px;
+      font-family: var(--font-b);
+      outline: none;
+      width: 160px;
+    }
+
+    .receb-cli-field input::placeholder {
+      color: var(--muted);
+    }
+
+    .receb-cli-clear {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      line-height: 1;
+      transition: color .15s;
+    }
+
+    .receb-cli-clear:hover {
+      color: var(--text);
+    }
+
+    .receb-cli-drop {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      min-width: 220px;
+      background: #0f1929;
+      border: 1px solid rgba(255, 255, 255, .09);
+      border-radius: 12px;
+      padding: 4px;
+      z-index: 400;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .45);
+      display: none;
+    }
+
+    .receb-cli-drop.open {
+      display: block;
+    }
+
+    .receb-cli-opt {
+      padding: 8px 11px;
+      font-size: 12.5px;
+      font-family: var(--font-b);
+      color: var(--sub);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background .1s, color .1s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .receb-cli-opt:hover {
+      background: rgba(255, 255, 255, .05);
+      color: var(--text);
+    }
+
+    .receb-cli-empty {
+      padding: 8px 11px;
+      font-size: 12px;
+      color: var(--muted);
+      font-family: var(--font-b);
+    }
 
     /* ── Tipo tabs (Todos/Custos/Despesas) ── */
-    .custos-tipo-tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px; }
-    .custos-tipo-tab { padding:7px 16px; border-radius:8px; border:1px solid var(--border); background:none; color:var(--muted); font-size:12px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px; transition:all .15s; }
-    .custos-tipo-tab:hover { color:var(--text); border-color:var(--border-h); }
-    .custos-tipo-tab.active.t-todos   { background:rgba(255,255,255,.05); border-color:var(--border-h); color:var(--text); }
-    .custos-tipo-tab.active.t-custo   { background:rgba(255,107,53,.1); border-color:#ff6b35; color:#ff6b35; }
-    .custos-tipo-tab.active.t-despesa { background:rgba(168,85,247,.1); border-color:#a855f7; color:#a855f7; }
+    .custos-tipo-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .custos-tipo-tab {
+      padding: 7px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all .15s;
+    }
+
+    .custos-tipo-tab:hover {
+      color: var(--text);
+      border-color: var(--border-h);
+    }
+
+    .custos-tipo-tab.active.t-todos {
+      background: rgba(255, 255, 255, .05);
+      border-color: var(--border-h);
+      color: var(--text);
+    }
+
+    .custos-tipo-tab.active.t-custo {
+      background: rgba(255, 107, 53, .1);
+      border-color: #ff6b35;
+      color: #ff6b35;
+    }
+
+    .custos-tipo-tab.active.t-despesa {
+      background: rgba(168, 85, 247, .1);
+      border-color: #a855f7;
+      color: #a855f7;
+    }
+
     /* ── Tipo badge na tabela ── */
-    .cc-tipo-badge { display:inline-flex; align-items:center; gap:3px; padding:1px 7px; border-radius:100px; font-size:10px; font-weight:700; }
-    .cc-tipo-badge.custo   { background:rgba(255,107,53,.12); color:#ff6b35; }
-    .cc-tipo-badge.despesa { background:rgba(168,85,247,.12); color:#a855f7; }
-    .cc-rec-badge { display:inline-flex; align-items:center; gap:2px; padding:1px 6px; border-radius:100px; font-size:10px; font-weight:700; background:rgba(0,200,150,.1); color:var(--accent); margin-left:4px; }
+    .cc-tipo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 1px 7px;
+      border-radius: 100px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .cc-tipo-badge.custo {
+      background: rgba(255, 107, 53, .12);
+      color: #ff6b35;
+    }
+
+    .cc-tipo-badge.despesa {
+      background: rgba(168, 85, 247, .12);
+      color: #a855f7;
+    }
+
+    .cc-rec-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 1px 6px;
+      border-radius: 100px;
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(0, 200, 150, .1);
+      color: var(--accent);
+      margin-left: 4px;
+    }
+
     /* ── Tipo toggle no modal ── */
-    .cf-tipo-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-    .cf-tipo-opt { cursor:pointer; }
-    .cf-tipo-opt input { display:none; }
-    .cf-tipo-card { display:flex; align-items:center; justify-content:center; gap:7px; padding:10px; border:1px solid var(--border); border-radius:10px; font-size:13px; font-weight:600; color:var(--muted); transition:all .15s; }
-    .cf-tipo-card:hover { border-color:var(--border-h); color:var(--text); }
-    .cf-tipo-opt input:checked + .cf-tipo-card.custo-card   { border-color:#ff6b35; background:rgba(255,107,53,.08); color:#ff6b35; }
-    .cf-tipo-opt input:checked + .cf-tipo-card.despesa-card { border-color:#a855f7; background:rgba(168,85,247,.08); color:#a855f7; }
+    .cf-tipo-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .cf-tipo-opt {
+      cursor: pointer;
+    }
+
+    .cf-tipo-opt input {
+      display: none;
+    }
+
+    .cf-tipo-card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      transition: all .15s;
+    }
+
+    .cf-tipo-card:hover {
+      border-color: var(--border-h);
+      color: var(--text);
+    }
+
+    .cf-tipo-opt input:checked+.cf-tipo-card.custo-card {
+      border-color: #ff6b35;
+      background: rgba(255, 107, 53, .08);
+      color: #ff6b35;
+    }
+
+    .cf-tipo-opt input:checked+.cf-tipo-card.despesa-card {
+      border-color: #a855f7;
+      background: rgba(168, 85, 247, .08);
+      color: #a855f7;
+    }
+
     /* ── Recorrência ── */
-    .cf-rec-section { margin-top:14px; }
-    .cf-rec-toggle { display:flex; align-items:center; gap:10px; padding:12px 14px; background:rgba(255,255,255,.025); border:1px solid var(--border); border-radius:12px; cursor:pointer; transition:border-color .15s, background .15s; }
-    .cf-rec-toggle:hover { border-color:var(--border-h); background:rgba(255,255,255,.04); }
-    .cf-rec-toggle input[type=checkbox] { accent-color:var(--accent); width:15px; height:15px; cursor:pointer; flex-shrink:0; }
-    .cf-rec-title { font-size:13px; font-weight:700; color:var(--text); }
-    .cf-rec-sub { font-size:11px; color:var(--muted); margin-top:2px; line-height:1.35; }
-    .cf-rec-opts { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; padding:12px; border:1px solid var(--border); border-radius:12px; background:rgba(255,255,255,.018); }
+    .cf-rec-section {
+      margin-top: 14px;
+    }
+
+    .cf-rec-toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, .025);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+    }
+
+    .cf-rec-toggle:hover {
+      border-color: var(--border-h);
+      background: rgba(255, 255, 255, .04);
+    }
+
+    .cf-rec-toggle input[type=checkbox] {
+      accent-color: var(--accent);
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .cf-rec-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .cf-rec-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+      line-height: 1.35;
+    }
+
+    .cf-rec-opts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .018);
+    }
+
     /* ── Categorias tipo tabs ── */
-    .cc-cat-tipo-tabs { display:flex; gap:0; margin-bottom:14px; background:var(--surface); border-radius:9px; padding:3px; border:1px solid var(--border); }
-    .cc-cat-tipo-tab { flex:1; padding:6px 12px; border-radius:7px; border:none; background:none; color:var(--muted); font-size:12px; font-weight:600; cursor:pointer; transition:all .15s; }
-    .cc-cat-tipo-tab.active { background:var(--card); color:var(--text); box-shadow:0 1px 4px rgba(0,0,0,.2); }
+    .cc-cat-tipo-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 14px;
+      background: var(--surface);
+      border-radius: 9px;
+      padding: 3px;
+      border: 1px solid var(--border);
+    }
+
+    .cc-cat-tipo-tab {
+      flex: 1;
+      padding: 6px 12px;
+      border-radius: 7px;
+      border: none;
+      background: none;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .cc-cat-tipo-tab.active {
+      background: var(--card);
+      color: var(--text);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .2);
+    }
 
     .table-wrap {
       max-width: 100%;
@@ -1253,8 +2647,8 @@ transition: border-color .15s;
       padding-bottom: 2px;
     }
 
-    #chartWrap > div,
-    #chartWrap2 > div {
+    #chartWrap>div,
+    #chartWrap2>div {
       min-width: 520px;
     }
 
@@ -1305,8 +2699,8 @@ transition: border-color .15s;
         flex-wrap: wrap;
       }
 
-      .table-header > div:last-child,
-      .card-header > div:last-child {
+      .table-header>div:last-child,
+      .card-header>div:last-child {
         max-width: 100%;
       }
 
@@ -1329,6 +2723,7 @@ transition: border-color .15s;
     }
 
     @media (max-width: 700px) {
+
       .kpi-strip,
       .dre-kpis,
       #panel-dre .dre-kpis,
@@ -1350,7 +2745,7 @@ transition: border-color .15s;
       }
 
       .period-btns,
-      .custos-toolbar > div {
+      .custos-toolbar>div {
         width: 100%;
         flex-wrap: wrap;
       }
@@ -1383,14 +2778,14 @@ transition: border-color .15s;
         min-width: 600px;
       }
     }
-</style>
+  </style>
 </head>
 
 <body>
 
   <!-- SIDEBAR -->
-<div id="sidebar-root"></div>
-<script src="sidebar.js"></script>
+  <div id="sidebar-root"></div>
+  <script src="sidebar.js"></script>
 
   <!-- MAIN -->
   <div class="main collapsed" id="mainContent">
@@ -1424,13 +2819,14 @@ transition: border-color .15s;
             <p id="finDesc">Resumo financeiro do mês — receitas, despesas e fluxo de caixa.</p>
           </div>
           <div class="header-actions">
-            <button class="btn-sm btn-ghost-sm" onclick="exportar()"><i class="bi bi-download"></i> Exportar CSV</button>
+            <button class="btn-sm btn-ghost-sm" onclick="exportar()"><i class="bi bi-download"></i> Exportar
+              CSV</button>
             <div class="u-relative">
               <div id="finDpBtn"
                 style="display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;transition:border-color .2s;user-select:none"
                 onclick="toggleFinDp()" onmouseenter="this.style.borderColor='var(--accent)'"
                 onmouseleave="this.style.borderColor='var(--border)'">
-                <i class="bi bi-calendar3 u-muted-13" ></i>
+                <i class="bi bi-calendar3 u-muted-13"></i>
                 <span id="finDpLabel" style="font-size:12px;color:var(--text);white-space:nowrap">Este mês</span>
                 <i class="bi bi-chevron-down" style="color:var(--muted);font-size:11px"></i>
               </div>
@@ -1487,8 +2883,7 @@ transition: border-color .15s;
             onclick="switchTab(this,'fluxo-caixa','Fluxo de Caixa','Projeção e controle do fluxo de caixa.')">
             <i class="bi bi-bar-chart-line"></i> Fluxo de Caixa
           </div>
-          <div class="fin-tab"
-            onclick="switchTab(this,'dre','DRE','Demonstração do Resultado do Exercício.')">
+          <div class="fin-tab" onclick="switchTab(this,'dre','DRE','Demonstração do Resultado do Exercício.')">
             <i class="bi bi-file-earmark-bar-graph"></i> DRE
           </div>
           <div class="fin-tab"
@@ -1534,7 +2929,8 @@ transition: border-color .15s;
                 onclick="switchTabFromMais('conciliacao','Conciliação','Concilie lançamentos com o extrato bancário.')">
                 <i class="bi bi-check2-all"></i> Conciliação
               </div>
-              <div class="mais-item mais-main-tab-only" onclick="switchTabFromMais('dre','DRE','Demonstração do Resultado do Exercício.')">
+              <div class="mais-item mais-main-tab-only"
+                onclick="switchTabFromMais('dre','DRE','Demonstração do Resultado do Exercício.')">
                 <i class="bi bi-file-earmark-bar-graph"></i> DRE
               </div>
               <div class="mais-item"
@@ -1561,7 +2957,7 @@ transition: border-color .15s;
             style="display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;transition:border-color .2s;user-select:none"
             onclick="toggleFinDp()" onmouseenter="this.style.borderColor='var(--accent)'"
             onmouseleave="this.style.borderColor='var(--border)'">
-            <i class="bi bi-calendar3 u-muted-13" ></i>
+            <i class="bi bi-calendar3 u-muted-13"></i>
             <span id="finDpLabelOld" style="font-size:12px;color:var(--text);white-space:nowrap">Este mês</span>
             <i class="bi bi-chevron-down" style="color:var(--muted);font-size:11px"></i>
           </div>
@@ -1592,7 +2988,7 @@ transition: border-color .15s;
       <!-- Visão Geral -->
       <div class="fin-panel active" id="panel-visao-geral">
 
-      <!-- KPIs -->
+        <!-- KPIs -->
         <div class="kpi-strip" id="kpiStrip">
           <div class="kpi-mini">
             <div class="kpi-mini-icon g"><i class="bi bi-graph-up-arrow"></i></div>
@@ -1637,7 +3033,7 @@ transition: border-color .15s;
           <!-- Fluxo de caixa -->
           <div class="card">
             <div class="card-header">
-              <div class="card-title"><i class="bi bi-bar-chart-fill u-accent" ></i> Fluxo de Caixa
+              <div class="card-title"><i class="bi bi-bar-chart-fill u-accent"></i> Fluxo de Caixa
               </div>
               <div class="period-btns">
                 <button class="period-btn active" onclick="setChartPeriod(this,'mensal')">Mensal</button>
@@ -1648,10 +3044,10 @@ transition: border-color .15s;
             <div class="card-body">
               <div class="chart-legend">
                 <div class="legend-item">
-                  <div class="legend-dot u-bg-accent" ></div> Entradas
+                  <div class="legend-dot u-bg-accent"></div> Entradas
                 </div>
                 <div class="legend-item">
-                  <div class="legend-dot u-bg-danger" ></div> Saídas
+                  <div class="legend-dot u-bg-danger"></div> Saídas
                 </div>
                 <div class="legend-item">
                   <div class="legend-dot" style="background:var(--accent2);border-radius:50%"></div> Saldo
@@ -1679,15 +3075,15 @@ transition: border-color .15s;
                 </div>
                 <div class="donut-info">
                   <div class="donut-item">
-                    <div class="donut-label u-accent" >● A Receber</div>
-                    <div class="donut-val u-accent"  id="donutReceber">R$ 0</div>
+                    <div class="donut-label u-accent">● A Receber</div>
+                    <div class="donut-val u-accent" id="donutReceber">R$ 0</div>
                     <div class="donut-sub">Vencidas: <span id="donutReceberVenc" class="u-danger">R$ 0</span>
                     </div>
                     <div class="donut-sub">A Vencer: <span id="donutReceberFut">R$ 0</span></div>
                   </div>
                   <div class="donut-item">
-                    <div class="donut-label u-danger" >● A Pagar</div>
-                    <div class="donut-val u-danger"  id="donutPagar">R$ 0</div>
+                    <div class="donut-label u-danger">● A Pagar</div>
+                    <div class="donut-val u-danger" id="donutPagar">R$ 0</div>
                     <div class="donut-sub">Vencidas: <span id="donutPagarVenc" class="u-danger">R$ 0</span>
                     </div>
                     <div class="donut-sub">A Vencer: <span id="donutPagarFut">R$ 0</span></div>
@@ -1709,8 +3105,8 @@ transition: border-color .15s;
           <!-- Contas a Receber -->
           <div class="card">
             <div class="table-header">
-              <div class="table-header-title"><i class="bi bi-arrow-down-circle-fill u-accent-mr"
-                  ></i>Contas a Receber</div>
+              <div class="table-header-title"><i class="bi bi-arrow-down-circle-fill u-accent-mr"></i>Contas a Receber
+              </div>
               <span class="ver-todos" onclick="setFiltro('receber')">Ver todos</span>
             </div>
             <div class="table-wrap">
@@ -1732,8 +3128,7 @@ transition: border-color .15s;
           <!-- Contas a Pagar -->
           <div class="card">
             <div class="table-header">
-              <div class="table-header-title"><i class="bi bi-arrow-up-circle-fill u-danger-mr"
-                  ></i>Contas a Pagar</div>
+              <div class="table-header-title"><i class="bi bi-arrow-up-circle-fill u-danger-mr"></i>Contas a Pagar</div>
               <span class="ver-todos" onclick="setFiltro('pagar')">Ver todos</span>
             </div>
             <div class="table-wrap">
@@ -1757,10 +3152,9 @@ transition: border-color .15s;
 
       <!-- Contas a Pagar -->
       <div class="fin-panel" id="panel-contas-pagar">
-        <div class="card u-mt-20 fin-detail-card" >
+        <div class="card u-mt-20 fin-detail-card">
           <div class="table-header">
-            <div class="table-header-title"><i class="bi bi-arrow-up-circle-fill u-danger-mr"
-                ></i>Contas a Pagar</div>
+            <div class="table-header-title"><i class="bi bi-arrow-up-circle-fill u-danger-mr"></i>Contas a Pagar</div>
             <button class="btn-sm btn-primary-sm" onclick="openModal()"><i class="bi bi-plus-lg"></i> Nova
               Conta</button>
           </div>
@@ -1788,16 +3182,16 @@ transition: border-color .15s;
 
       <!-- Contas a Receber -->
       <div class="fin-panel" id="panel-contas-receber">
-        <div class="card u-mt-20 fin-detail-card" >
+        <div class="card u-mt-20 fin-detail-card">
           <div class="table-header">
-            <div class="table-header-title"><i class="bi bi-arrow-down-circle-fill u-accent-mr"
-                ></i>Contas a Receber</div>
+            <div class="table-header-title"><i class="bi bi-arrow-down-circle-fill u-accent-mr"></i>Contas a Receber
+            </div>
             <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:flex-end">
               <div class="receb-cli-wrap" id="crCliWrap">
                 <div class="receb-cli-field">
                   <i class="bi bi-person" style="color:var(--muted);font-size:13px"></i>
-                  <input type="text" id="crCliInput" placeholder="Filtrar cliente..."
-                    oninput="onCrCliInput()" autocomplete="off">
+                  <input type="text" id="crCliInput" placeholder="Filtrar cliente..." oninput="onCrCliInput()"
+                    autocomplete="off">
                   <button class="receb-cli-clear" id="crCliClear" onclick="clearCrCli()" style="display:none">
                     <i class="bi bi-x"></i>
                   </button>
@@ -1826,7 +3220,8 @@ transition: border-color .15s;
           <div class="table-footer fin-detail-footer">
             <div class="receber-footer-left">
               <span id="receberDetalheInfo">—</span>
-              <button class="btn-sm btn-receber-sm" id="btnReceberTudo" onclick="openReceberTudoModal()" style="display:none">
+              <button class="btn-sm btn-receber-sm" id="btnReceberTudo" onclick="openReceberTudoModal()"
+                style="display:none">
                 <i class="bi bi-check2-all"></i> Receber tudo
               </button>
               <span class="receber-total-hint" id="receberTudoHint" style="display:none"></span>
@@ -1880,14 +3275,15 @@ transition: border-color .15s;
               <!-- busca -->
               <div class="search-input" style="min-width:190px">
                 <i class="bi bi-search" style="color:var(--muted)"></i>
-                <input type="text" id="recebSearch" placeholder="Buscar descrição, venda..." oninput="applyRecebFilter()">
+                <input type="text" id="recebSearch" placeholder="Buscar descrição, venda..."
+                  oninput="applyRecebFilter()">
               </div>
               <!-- autocomplete cliente -->
               <div class="receb-cli-wrap" id="recebCliWrap">
                 <div class="receb-cli-field">
                   <i class="bi bi-person" style="color:var(--muted);font-size:13px"></i>
-                  <input type="text" id="recebCliInput" placeholder="Filtrar cliente..."
-                    oninput="onRecebCliInput()" autocomplete="off">
+                  <input type="text" id="recebCliInput" placeholder="Filtrar cliente..." oninput="onRecebCliInput()"
+                    autocomplete="off">
                   <button class="receb-cli-clear" id="recebCliClear" onclick="clearRecebCli()" style="display:none">
                     <i class="bi bi-x"></i>
                   </button>
@@ -1895,8 +3291,10 @@ transition: border-color .15s;
                 <div class="receb-cli-drop" id="recebCliDrop"></div>
               </div>
               <!-- datas -->
-              <input type="date" id="recebDtIni" class="fin-dp-input" style="padding:6px 10px;border-radius:8px;width:auto" onchange="applyRecebFilter()">
-              <input type="date" id="recebDtFim" class="fin-dp-input" style="padding:6px 10px;border-radius:8px;width:auto" onchange="applyRecebFilter()">
+              <input type="date" id="recebDtIni" class="fin-dp-input"
+                style="padding:6px 10px;border-radius:8px;width:auto" onchange="applyRecebFilter()">
+              <input type="date" id="recebDtFim" class="fin-dp-input"
+                style="padding:6px 10px;border-radius:8px;width:auto" onchange="applyRecebFilter()">
               <!-- método -->
               <select id="recebMetodo" class="select-filter" onchange="applyRecebFilter()">
                 <option value="">Todos os métodos</option>
@@ -1934,7 +3332,7 @@ transition: border-color .15s;
 
       <!-- Movimentações -->
       <div class="fin-panel" id="panel-movimentacoes">
-        <div class="card u-mt-20 movim-card" >
+        <div class="card u-mt-20 movim-card">
           <div class="table-header">
             <div class="table-header-title"><i class="bi bi-arrow-left-right"
                 style="color:var(--accent2);margin-right:6px"></i>Movimentações</div>
@@ -1965,7 +3363,7 @@ transition: border-color .15s;
         <div class="u-mt-20">
           <div class="card">
             <div class="card-header">
-              <div class="card-title"><i class="bi bi-bar-chart-fill u-accent" ></i> Fluxo de Caixa
+              <div class="card-title"><i class="bi bi-bar-chart-fill u-accent"></i> Fluxo de Caixa
                 Detalhado</div>
               <div class="period-btns">
                 <button class="period-btn active" onclick="setChartPeriod(this,'mensal')">Mensal</button>
@@ -1976,10 +3374,10 @@ transition: border-color .15s;
             <div class="card-body">
               <div class="chart-legend">
                 <div class="legend-item">
-                  <div class="legend-dot u-bg-accent" ></div> Entradas
+                  <div class="legend-dot u-bg-accent"></div> Entradas
                 </div>
                 <div class="legend-item">
-                  <div class="legend-dot u-bg-danger" ></div> Saídas
+                  <div class="legend-dot u-bg-danger"></div> Saídas
                 </div>
               </div>
               <div id="chartWrap2"></div>
@@ -1990,7 +3388,7 @@ transition: border-color .15s;
 
       <!-- Extrato Bancário -->
       <div class="fin-panel" id="panel-extrato">
-        <div class="empty-state show u-mt-40" >
+        <div class="empty-state show u-mt-40">
           <i class="bi bi-bank"></i>
           <h3>Extrato Bancário</h3>
           <p>Integração bancária em desenvolvimento. Em breve disponível.</p>
@@ -2006,7 +3404,8 @@ transition: border-color .15s;
         </div>
         <div class="card u-mt-20 fin-detail-card">
           <div class="table-header">
-            <div class="table-header-title"><i class="bi bi-credit-card-2-front" style="color:var(--accent);margin-right:6px"></i>Conciliação de Cartões</div>
+            <div class="table-header-title"><i class="bi bi-credit-card-2-front"
+                style="color:var(--accent);margin-right:6px"></i>Conciliação de Cartões</div>
             <div class="table-actions">
               <select class="field conc-filter" id="cardConcStatus" onchange="loadCardConciliation(true)">
                 <option value="abertos">Abertos</option>
@@ -2019,9 +3418,12 @@ transition: border-color .15s;
                 <option value="cartao_debito">Débito</option>
                 <option value="cartao_credito">Crédito</option>
               </select>
-              <button class="btn-sm btn-ghost-sm" onclick="loadCardConciliation(true)"><i class="bi bi-arrow-clockwise"></i> Atualizar</button>
-              <button class="btn-sm btn-receber-sm" onclick="receiveSelectedCards()"><i class="bi bi-check2"></i> Receber selecionados</button>
-              <button class="btn-sm btn-ghost-sm" onclick="conciliateSelectedCards()"><i class="bi bi-check2-all"></i> Conciliar</button>
+              <button class="btn-sm btn-ghost-sm" onclick="loadCardConciliation(true)"><i
+                  class="bi bi-arrow-clockwise"></i> Atualizar</button>
+              <button class="btn-sm btn-receber-sm" onclick="receiveSelectedCards()"><i class="bi bi-check2"></i>
+                Receber selecionados</button>
+              <button class="btn-sm btn-ghost-sm" onclick="conciliateSelectedCards()"><i class="bi bi-check2-all"></i>
+                Conciliar</button>
             </div>
           </div>
           <div class="table-wrap">
@@ -2045,7 +3447,7 @@ transition: border-color .15s;
           </div>
           <div class="table-footer fin-detail-footer"><span id="cardConcInfo">-</span></div>
         </div>
-        <div class="empty-state show u-mt-40" style="display:none" >
+        <div class="empty-state show u-mt-40" style="display:none">
           <i class="bi bi-check2-all"></i>
           <h3>Conciliação Bancária</h3>
           <p>Módulo de conciliação em desenvolvimento. Em breve disponível.</p>
@@ -2104,7 +3506,7 @@ transition: border-color .15s;
       </div>
 
       <div class="fin-panel" id="panel-cobrancas">
-        <div class="empty-state show u-mt-40" >
+        <div class="empty-state show u-mt-40">
           <i class="bi bi-bell"></i>
           <h3>Cobranças</h3>
           <p>Régua de cobrança e gestão de inadimplência em desenvolvimento.</p>
@@ -2121,15 +3523,20 @@ transition: border-color .15s;
             <button class="period-btn" onclick="setCustosPeriod(this,'ano')">Este ano</button>
           </div>
           <div style="display:flex;gap:8px">
-            <button class="btn-sm btn-ghost-sm" onclick="openCustosCatModal()"><i class="bi bi-tags"></i> Categorias</button>
-            <button class="btn-sm btn-primary-sm" onclick="openCustosModal()"><i class="bi bi-plus-lg"></i> Novo Lançamento</button>
+            <button class="btn-sm btn-ghost-sm" onclick="openCustosCatModal()"><i class="bi bi-tags"></i>
+              Categorias</button>
+            <button class="btn-sm btn-primary-sm" onclick="openCustosModal()"><i class="bi bi-plus-lg"></i> Novo
+              Lançamento</button>
           </div>
         </div>
 
         <div class="custos-tipo-tabs" id="custos-tipo-tabs">
-          <button class="custos-tipo-tab active t-todos" onclick="setCustosTipo(this,'todos')"><i class="bi bi-grid-fill"></i> Todos</button>
-          <button class="custos-tipo-tab t-custo"   onclick="setCustosTipo(this,'custo')"><i class="bi bi-box-seam-fill"></i> Custos</button>
-          <button class="custos-tipo-tab t-despesa" onclick="setCustosTipo(this,'despesa')"><i class="bi bi-wallet2-fill"></i> Despesas</button>
+          <button class="custos-tipo-tab active t-todos" onclick="setCustosTipo(this,'todos')"><i
+              class="bi bi-grid-fill"></i> Todos</button>
+          <button class="custos-tipo-tab t-custo" onclick="setCustosTipo(this,'custo')"><i
+              class="bi bi-box-seam-fill"></i> Custos</button>
+          <button class="custos-tipo-tab t-despesa" onclick="setCustosTipo(this,'despesa')"><i
+              class="bi bi-wallet2-fill"></i> Despesas</button>
         </div>
 
         <div class="custos-kpis" id="custosKpis"></div>
@@ -2137,7 +3544,8 @@ transition: border-color .15s;
         <div class="custos-grid">
           <div class="card">
             <div class="card-header">
-              <div class="card-title"><i class="bi bi-pie-chart-fill" style="color:var(--accent)"></i> Distribuição</div>
+              <div class="card-title"><i class="bi bi-pie-chart-fill" style="color:var(--accent)"></i> Distribuição
+              </div>
             </div>
             <div class="card-body" style="display:flex;flex-direction:column;align-items:center">
               <div class="custos-donut-wrap">
@@ -2173,7 +3581,8 @@ transition: border-color .15s;
                 <tbody id="custosTbody"></tbody>
               </table>
               <div class="empty-state" id="custosEmpty">
-                <i class="bi bi-receipt" style="font-size:40px;color:var(--border);display:block;margin-bottom:12px"></i>
+                <i class="bi bi-receipt"
+                  style="font-size:40px;color:var(--border);display:block;margin-bottom:12px"></i>
                 <h3 id="custosEmptyH3">Nenhum lançamento cadastrado</h3>
                 <p id="custosEmptyP">Registre seu primeiro custo clicando em "Novo Lançamento".</p>
               </div>
@@ -2188,7 +3597,7 @@ transition: border-color .15s;
 
       <!-- Categorias Financeiras -->
       <div class="fin-panel" id="panel-categorias">
-        <div class="empty-state show u-mt-40" >
+        <div class="empty-state show u-mt-40">
           <i class="bi bi-tags"></i>
           <h3>Categorias Financeiras</h3>
           <p>Gerencie categorias de receitas e despesas. Em breve disponível.</p>
@@ -2202,108 +3611,117 @@ transition: border-color .15s;
       <div style="margin-top:14px">
 
 
-      <!-- KPIs —— botão comparar antes dos cards -->
-      <div class="dre-kpis">
-        <div class="dre-kpi">
-          <div class="dre-kpi-icon" style="background:rgba(0,208,132,.1);color:var(--accent)"><i class="bi bi-graph-up-arrow"></i></div>
-          <div class="dre-kpi-label">Receita Líquida</div>
-          <div class="dre-kpi-val" id="dre-rec-liq-val">R$ 0</div>
-          <div class="dre-kpi-delta" id="dre-rec-liq-delta">—</div>
-        </div>
-        <div class="dre-kpi">
-          <div class="dre-kpi-icon" style="background:rgba(47,128,255,.1);color:var(--accent2)"><i class="bi bi-bar-chart-line-fill"></i></div>
-          <div class="dre-kpi-label">Lucro Bruto</div>
-          <div class="dre-kpi-val" id="dre-luc-bruto-val">R$ 0</div>
-          <div class="dre-kpi-delta" id="dre-luc-bruto-delta">—</div>
-        </div>
-        <div class="dre-kpi">
-          <div class="dre-kpi-icon" style="background:rgba(167,139,250,.1);color:var(--purple, #a78bfa)"><i class="bi bi-percent"></i></div>
-          <div class="dre-kpi-label">Margem Bruta</div>
-          <div class="dre-kpi-val" id="dre-marg-bruta-val">0,00%</div>
-          <div class="dre-kpi-delta" id="dre-marg-bruta-delta">—</div>
-        </div>
-        <div class="dre-kpi">
-          <div class="dre-kpi-icon" style="background:rgba(0,208,132,.1);color:var(--accent)"><i class="bi bi-currency-dollar"></i></div>
-          <div class="dre-kpi-label">Lucro Líquido</div>
-          <div class="dre-kpi-val" id="dre-luc-liq-val">R$ 0</div>
-          <div class="dre-kpi-delta" id="dre-luc-liq-delta">—</div>
-        </div>
-        <div class="dre-kpi">
-          <div class="dre-kpi-icon" style="background:rgba(255,140,66,.1);color:var(--warn, #ff8c42)"><i class="bi bi-award-fill"></i></div>
-          <div class="dre-kpi-label">Margem Líquida</div>
-          <div class="dre-kpi-val" id="dre-marg-liq-val">0,00%</div>
-          <div class="dre-kpi-delta" id="dre-marg-liq-delta">—</div>
-        </div>
-      </div>
-
-      <!-- GRID PRINCIPAL -->
-      <div class="dre-grid">
-
-        <!-- TABELA DRE -->
-        <div class="dre-table-card">
-          <div class="dre-table-head">
-            <h3>DRE — Demonstrativo</h3>
-            <span class="dre-table-note">Valores expressos em Reais (R$)</span>
+        <!-- KPIs —— botão comparar antes dos cards -->
+        <div class="dre-kpis">
+          <div class="dre-kpi">
+            <div class="dre-kpi-icon" style="background:rgba(0,208,132,.1);color:var(--accent)"><i
+                class="bi bi-graph-up-arrow"></i></div>
+            <div class="dre-kpi-label">Receita Líquida</div>
+            <div class="dre-kpi-val" id="dre-rec-liq-val">R$ 0</div>
+            <div class="dre-kpi-delta" id="dre-rec-liq-delta">—</div>
           </div>
-          <table class="dre-tbl">
-            <thead>
-              <tr>
-                <th style="width:45%">Descrição</th>
-                <th id="dreTh1">Período Atual</th>
-                <th id="dreTh2">Período Anterior</th>
-                <th>Variação (%)</th>
-              </tr>
-            </thead>
-            <tbody id="dreTbody">
-              <tr><td colspan="4" style="text-align:center;padding:28px;color:var(--muted);font-size:13px">Carregando…</td></tr>
-            </tbody>
-          </table>
+          <div class="dre-kpi">
+            <div class="dre-kpi-icon" style="background:rgba(47,128,255,.1);color:var(--accent2)"><i
+                class="bi bi-bar-chart-line-fill"></i></div>
+            <div class="dre-kpi-label">Lucro Bruto</div>
+            <div class="dre-kpi-val" id="dre-luc-bruto-val">R$ 0</div>
+            <div class="dre-kpi-delta" id="dre-luc-bruto-delta">—</div>
+          </div>
+          <div class="dre-kpi">
+            <div class="dre-kpi-icon" style="background:rgba(167,139,250,.1);color:var(--purple, #a78bfa)"><i
+                class="bi bi-percent"></i></div>
+            <div class="dre-kpi-label">Margem Bruta</div>
+            <div class="dre-kpi-val" id="dre-marg-bruta-val">0,00%</div>
+            <div class="dre-kpi-delta" id="dre-marg-bruta-delta">—</div>
+          </div>
+          <div class="dre-kpi">
+            <div class="dre-kpi-icon" style="background:rgba(0,208,132,.1);color:var(--accent)"><i
+                class="bi bi-currency-dollar"></i></div>
+            <div class="dre-kpi-label">Lucro Líquido</div>
+            <div class="dre-kpi-val" id="dre-luc-liq-val">R$ 0</div>
+            <div class="dre-kpi-delta" id="dre-luc-liq-delta">—</div>
+          </div>
+          <div class="dre-kpi">
+            <div class="dre-kpi-icon" style="background:rgba(255,140,66,.1);color:var(--warn, #ff8c42)"><i
+                class="bi bi-award-fill"></i></div>
+            <div class="dre-kpi-label">Margem Líquida</div>
+            <div class="dre-kpi-val" id="dre-marg-liq-val">0,00%</div>
+            <div class="dre-kpi-delta" id="dre-marg-liq-delta">—</div>
+          </div>
         </div>
 
-        <!-- PAINEL LATERAL -->
-        <div class="dre-side">
+        <!-- GRID PRINCIPAL -->
+        <div class="dre-grid">
 
-          <!-- Evolução do Lucro Líquido -->
-          <div class="dre-side-card">
-            <div class="dre-side-head">
-              <h4>Evolução do Lucro Líquido</h4>
-              <div class="dre-chips">
-                <button class="dre-chip on" onclick="setDreChip(this)">Mensal</button>
-                <button class="dre-chip" onclick="setDreChip(this)">Trim.</button>
+          <!-- TABELA DRE -->
+          <div class="dre-table-card">
+            <div class="dre-table-head">
+              <h3>DRE — Demonstrativo</h3>
+              <span class="dre-table-note">Valores expressos em Reais (R$)</span>
+            </div>
+            <table class="dre-tbl">
+              <thead>
+                <tr>
+                  <th style="width:45%">Descrição</th>
+                  <th id="dreTh1">Período Atual</th>
+                  <th id="dreTh2">Período Anterior</th>
+                  <th>Variação (%)</th>
+                </tr>
+              </thead>
+              <tbody id="dreTbody">
+                <tr>
+                  <td colspan="4" style="text-align:center;padding:28px;color:var(--muted);font-size:13px">Carregando…
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- PAINEL LATERAL -->
+          <div class="dre-side">
+
+            <!-- Evolução do Lucro Líquido -->
+            <div class="dre-side-card">
+              <div class="dre-side-head">
+                <h4>Evolução do Lucro Líquido</h4>
+                <div class="dre-chips">
+                  <button class="dre-chip on" onclick="setDreChip(this)">Mensal</button>
+                  <button class="dre-chip" onclick="setDreChip(this)">Trim.</button>
+                </div>
+              </div>
+              <div class="dre-side-body">
+                <svg class="dre-line-chart" id="dreLineChartSvg" viewBox="0 0 320 130"
+                  xmlns="http://www.w3.org/2000/svg"></svg>
+                <div class="dre-line-xlbl" id="dreLineXlbl"></div>
               </div>
             </div>
-            <div class="dre-side-body">
-              <svg class="dre-line-chart" id="dreLineChartSvg" viewBox="0 0 320 130" xmlns="http://www.w3.org/2000/svg"></svg>
-              <div class="dre-line-xlbl" id="dreLineXlbl"></div>
-            </div>
-          </div>
 
-          <!-- Composição do Resultado -->
-          <div class="dre-side-card">
-            <div class="dre-side-head">
-              <h4>Composição do Resultado</h4>
-            </div>
-            <div class="dre-side-body">
-              <div class="dre-donut-wrap">
-                <!-- Donut SVG: circ 2π×50 ≈ 314 -->
-                <svg viewBox="0 0 120 120" style="width:110px;height:110px;flex-shrink:0" id="dreDonutSvg"></svg>
-                <div class="dre-donut-legend" id="dreDonutLegend"></div>
+            <!-- Composição do Resultado -->
+            <div class="dre-side-card">
+              <div class="dre-side-head">
+                <h4>Composição do Resultado</h4>
+              </div>
+              <div class="dre-side-body">
+                <div class="dre-donut-wrap">
+                  <!-- Donut SVG: circ 2π×50 ≈ 314 -->
+                  <svg viewBox="0 0 120 120" style="width:110px;height:110px;flex-shrink:0" id="dreDonutSvg"></svg>
+                  <div class="dre-donut-legend" id="dreDonutLegend"></div>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Margens -->
-          <div class="dre-side-card">
-            <div class="dre-side-head">
-              <h4>Margens</h4>
+            <!-- Margens -->
+            <div class="dre-side-card">
+              <div class="dre-side-head">
+                <h4>Margens</h4>
+              </div>
+              <div class="dre-side-body">
+                <div id="dreMargins"></div>
+              </div>
             </div>
-            <div class="dre-side-body">
-              <div id="dreMargins"></div>
-            </div>
-          </div>
 
-        </div><!-- /dre-side -->
-      </div><!-- /dre-grid -->
+          </div><!-- /dre-side -->
+        </div><!-- /dre-grid -->
       </div><!-- /inner-wrapper -->
     </div><!-- /panel-dre -->
   </div><!-- /main -->
@@ -2438,14 +3856,17 @@ transition: border-color .15s;
           <button class="cc-cat-tipo-tab" onclick="setCatTipoTab(this,'despesa')">Despesas</button>
         </div>
         <div class="cc-cat-form">
-          <input class="field" type="text" id="cc-cat-input" placeholder="Nome da nova categoria..." onkeydown="if(event.key==='Enter') addCustosCat()">
-          <button class="btn-sm btn-primary-sm cc-cat-add" onclick="addCustosCat()"><i class="bi bi-plus-lg"></i> Adicionar</button>
+          <input class="field" type="text" id="cc-cat-input" placeholder="Nome da nova categoria..."
+            onkeydown="if(event.key==='Enter') addCustosCat()">
+          <button class="btn-sm btn-primary-sm cc-cat-add" onclick="addCustosCat()"><i class="bi bi-plus-lg"></i>
+            Adicionar</button>
         </div>
         <div class="cc-cat-items" id="custosCatList"></div>
       </div>
       <div class="modal-footer fin-modal-footer">
         <div class="fin-modal-note" id="custosCatCount">—</div>
-        <button class="btn-sm btn-ghost-sm" onclick="closeCustosCatModal()"><i class="bi bi-check2"></i> Concluído</button>
+        <button class="btn-sm btn-ghost-sm" onclick="closeCustosCatModal()"><i class="bi bi-check2"></i>
+          Concluído</button>
       </div>
     </div>
   </div>
@@ -2461,10 +3882,12 @@ transition: border-color .15s;
         </div>
       </div>
       <div class="modal-footer fin-modal-footer">
-        <div class="fin-modal-note danger"><i class="bi bi-exclamation-triangle"></i> Esta ação não pode ser desfeita.</div>
+        <div class="fin-modal-note danger"><i class="bi bi-exclamation-triangle"></i> Esta ação não pode ser desfeita.
+        </div>
         <div class="fin-modal-actions">
           <button class="btn-cancel-m" onclick="closeCcConfirm()">Cancelar</button>
-          <button class="btn-del" id="btnDelSerie" onclick="doDelSerie()" style="display:none"><i class="bi bi-arrow-repeat"></i> Excluir série</button>
+          <button class="btn-del" id="btnDelSerie" onclick="doDelSerie()" style="display:none"><i
+              class="bi bi-arrow-repeat"></i> Excluir série</button>
           <button class="btn-del" onclick="doCcConfirm()"><i class="bi bi-trash3"></i> Excluir este</button>
         </div>
       </div>
@@ -2518,7 +3941,8 @@ transition: border-color .15s;
       <div class="modal-footer receber-footer">
         <div class="receber-footer-actions">
           <button class="btn-cancel-m" onclick="closeReceberModal()">Cancelar</button>
-          <button class="btn-receber" id="btnConfirmReceber" onclick="confirmarReceber()"><i class="bi bi-check2"></i> Confirmar recebimento</button>
+          <button class="btn-receber" id="btnConfirmReceber" onclick="confirmarReceber()"><i class="bi bi-check2"></i>
+            Confirmar recebimento</button>
         </div>
       </div>
     </div>
@@ -2643,19 +4067,23 @@ transition: border-color .15s;
         <div class="form-grid fin-form-card">
           <div class="form-group">
             <label class="lbl">Nome da conta *</label>
-            <div class="inp-wrap"><i class="bi bi-pencil pre"></i><input class="field" id="bankNome" placeholder="Ex: Itau principal"></div>
+            <div class="inp-wrap"><i class="bi bi-pencil pre"></i><input class="field" id="bankNome"
+                placeholder="Ex: Itau principal"></div>
           </div>
           <div class="form-group">
             <label class="lbl">Banco</label>
-            <div class="inp-wrap"><i class="bi bi-bank pre"></i><input class="field" id="bankBanco" placeholder="Ex: Itau, Mercado Pago"></div>
+            <div class="inp-wrap"><i class="bi bi-bank pre"></i><input class="field" id="bankBanco"
+                placeholder="Ex: Itau, Mercado Pago"></div>
           </div>
           <div class="form-group">
             <label class="lbl">Agencia</label>
-            <div class="inp-wrap"><i class="bi bi-hash pre"></i><input class="field" id="bankAgencia" placeholder="0001"></div>
+            <div class="inp-wrap"><i class="bi bi-hash pre"></i><input class="field" id="bankAgencia"
+                placeholder="0001"></div>
           </div>
           <div class="form-group">
             <label class="lbl">Conta</label>
-            <div class="inp-wrap"><i class="bi bi-credit-card-2-front pre"></i><input class="field" id="bankConta" placeholder="00000-0"></div>
+            <div class="inp-wrap"><i class="bi bi-credit-card-2-front pre"></i><input class="field" id="bankConta"
+                placeholder="00000-0"></div>
           </div>
           <div class="form-group">
             <label class="lbl">Tipo</label>
@@ -2672,11 +4100,13 @@ transition: border-color .15s;
           </div>
           <div class="form-group">
             <label class="lbl">Saldo inicial</label>
-            <div class="inp-wrap"><i class="bi bi-currency-dollar pre"></i><input class="field" id="bankSaldoInicial" placeholder="0,00" oninput="maskCurrency(this)"></div>
+            <div class="inp-wrap"><i class="bi bi-currency-dollar pre"></i><input class="field" id="bankSaldoInicial"
+                placeholder="0,00" oninput="maskCurrency(this)"></div>
           </div>
           <div class="form-group">
             <label class="lbl">Chave Pix</label>
-            <div class="inp-wrap"><i class="bi bi-qr-code pre"></i><input class="field" id="bankChavePix" placeholder="Opcional"></div>
+            <div class="inp-wrap"><i class="bi bi-qr-code pre"></i><input class="field" id="bankChavePix"
+                placeholder="Opcional"></div>
           </div>
           <div class="form-group">
             <label class="lbl">Status</label>
@@ -2690,11 +4120,13 @@ transition: border-color .15s;
           </div>
           <div class="form-group">
             <label class="lbl">Conta principal</label>
-            <label class="bank-check-row"><input type="checkbox" id="bankPrincipal"><span>Usar como conta padrao para novos recebimentos</span></label>
+            <label class="bank-check-row"><input type="checkbox" id="bankPrincipal"><span>Usar como conta padrao para
+                novos recebimentos</span></label>
           </div>
           <div class="form-group">
             <label class="lbl">Observacoes</label>
-            <div class="inp-wrap"><textarea class="field ni" id="bankObs" placeholder="Observacoes internas..."></textarea></div>
+            <div class="inp-wrap"><textarea class="field ni" id="bankObs"
+                placeholder="Observacoes internas..."></textarea></div>
           </div>
         </div>
       </div>
@@ -2702,7 +4134,8 @@ transition: border-color .15s;
         <div class="fin-modal-note"><i class="bi bi-info-circle"></i> * Campos obrigatorios</div>
         <div class="fin-modal-actions">
           <button class="btn-cancel-m" onclick="closeBankAccountModal()">Cancelar</button>
-          <button class="btn-save-m" id="btnSaveBankAccount" onclick="saveBankAccount()"><i class="bi bi-check2"></i> Salvar conta</button>
+          <button class="btn-save-m" id="btnSaveBankAccount" onclick="saveBankAccount()"><i class="bi bi-check2"></i>
+            Salvar conta</button>
         </div>
       </div>
     </div>
@@ -2719,12 +4152,12 @@ transition: border-color .15s;
     requirePermission();
 
     let PRODUTOS_DATA = [];
-    let MOVS_DATA     = [];
-    let movimPage     = 1;
+    let MOVS_DATA = [];
+    let movimPage = 1;
     let pagarDetalhePage = 1;
     let receberDetalhePage = 1;
-    let movimRows     = [];
-    let movimMeta     = { page: 1, limit: 8, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
+    let movimRows = [];
+    let movimMeta = { page: 1, limit: 8, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
     let pagarDetalheRows = [];
     let receberDetalheRows = [];
     let pagarDetalheMeta = { page: 1, limit: 1, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
@@ -2959,11 +4392,11 @@ transition: border-color .15s;
     }
 
     let lancamentos = [];
-    let finResumo   = null; // totais all-time de /financeiro/resumo
+    let finResumo = null; // totais all-time de /financeiro/resumo
 
     // Deriva RECEBER e PAGAR a partir dos lançamentos reais
     function buildReceberPagar() {
-      const hoje = new Date(); hoje.setHours(0,0,0,0);
+      const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
       const RECEBER = lancamentos
         .filter(l => l.tipo === 'receita' && !isStatusFinalizado(l.status))
         .slice(0, 10)
@@ -3152,7 +4585,7 @@ transition: border-color .15s;
       </tr>`).join('')
         : emptyRow;
 
-      const _hoje = new Date(); _hoje.setHours(0,0,0,0);
+      const _hoje = new Date(); _hoje.setHours(0, 0, 0, 0);
       const _stLanc = l => {
         if (isStatusRecebido(l.status)) return 'pago';
         const raw = l.vencimento || l.data || '';
@@ -3237,13 +4670,15 @@ transition: border-color .15s;
         if (pagarDetalhePage > pages) pagarDetalhePage = pages;
         const start = (pagarDetalhePage - 1) * perPage;
         tblPD.innerHTML = rows.length
-          ? rows.map(l => { const st = _stLanc(l); return `<tr>
+          ? rows.map(l => {
+            const st = _stLanc(l); return `<tr>
               <td>${escapeHTML(_fmtD(l.vencimento || l.data || ''))}</td>
               <td class="u-fw-500">${escapeHTML(l.parte || '—')}</td>
               <td class="u-muted">${escapeHTML(l.descricao || '')}</td>
               <td class="${st === 'pago' ? '' : 'val-negativo'}" style="${st === 'pago' ? 'color:var(--muted)' : ''}">R$ ${fmt(l.valor || 0)}</td>
               <td>${pillHtml(st)}</td><td></td>
-            </tr>`; }).join('')
+            </tr>`;
+          }).join('')
           : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Nenhuma conta a pagar</td></tr>';
         _renderFinDetailPagination('pagar', total, perPage);
       }
@@ -3257,7 +4692,8 @@ transition: border-color .15s;
         if (receberDetalhePage > pages) receberDetalhePage = pages;
         const start = (receberDetalhePage - 1) * perPage;
         tblRD.innerHTML = rows.length
-          ? rows.map(l => { const st = _stLanc(l); return `<tr>
+          ? rows.map(l => {
+            const st = _stLanc(l); return `<tr>
               <td>${escapeHTML(_fmtD(l.vencimento || l.data || ''))}</td>
               <td class="u-fw-500">${escapeHTML(l.parte || l.descricao || '—')}</td>
               <td class="u-muted">${escapeHTML(l.descricao || '')}</td>
@@ -3266,7 +4702,8 @@ transition: border-color .15s;
               <td style="text-align:right">${st !== 'pago'
                 ? `<button class="btn-sm btn-receber-sm" onclick="openReceberModal('${l.id}')"><i class="bi bi-check2"></i> Receber</button>`
                 : ''}</td>
-            </tr>`; }).join('')
+            </tr>`;
+          }).join('')
           : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Nenhuma conta a receber</td></tr>';
         _renderFinDetailPagination('receber', total, perPage);
       }
@@ -3336,9 +4773,9 @@ transition: border-color .15s;
     }
 
     async function salvarLancamento() {
-      const desc  = document.getElementById('fDesc').value.trim();
+      const desc = document.getElementById('fDesc').value.trim();
       const valor = document.getElementById('fValor').value.replace(/\./g, '').replace(',', '.');
-      const venc  = document.getElementById('fVenc').value;
+      const venc = document.getElementById('fVenc').value;
       const categ = document.getElementById('fCateg').value;
 
       if (!desc || !valor || !venc || !categ) {
@@ -3347,14 +4784,14 @@ transition: border-color .15s;
       }
 
       const payload = {
-        tipo:      tipoAtual,
+        tipo: tipoAtual,
         descricao: desc,
-        valor:     parseFloat(valor),
+        valor: parseFloat(valor),
         vencimento: venc,
         categoria: categ,
-        parte:     document.getElementById('fParte').value.trim(),
-        status:    document.getElementById('fStatus').value,
-        obs:       document.getElementById('fObs').value.trim(),
+        parte: document.getElementById('fParte').value.trim(),
+        status: document.getElementById('fStatus').value,
+        obs: document.getElementById('fObs').value.trim(),
       };
 
       const res = await NexoAuth.apiFetch('/financeiro', { method: 'POST', body: JSON.stringify(payload) });
@@ -3836,7 +5273,7 @@ transition: border-color .15s;
       const s = document.getElementById('finDpStart').value;
       const e = document.getElementById('finDpEnd').value;
       const start = s ? new Date(s + 'T00:00:00') : new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-      const end   = e ? new Date(e + 'T23:59:59') : new Date();
+      const end = e ? new Date(e + 'T23:59:59') : new Date();
       return { start, end };
     }
 
@@ -3849,7 +5286,7 @@ transition: border-color .15s;
     }
 
     function calcDRE(start, end) {
-      const movs     = MOVS_DATA;
+      const movs = MOVS_DATA;
       const products = PRODUTOS_DATA;
 
       const inL = l => _dreInPeriod(l, start, end);
@@ -3860,49 +5297,49 @@ transition: border-color .15s;
       };
 
       // ── RECEITA BRUTA
-      const recPagas  = lancamentos.filter(l => l.tipo === 'receita' && isStatusRecebido(l.status) && inL(l));
+      const recPagas = lancamentos.filter(l => l.tipo === 'receita' && isStatusRecebido(l.status) && inL(l));
       const isServico = l => /servi[cç]/i.test(l.categoria || '');
-      const recVendas   = recPagas.filter(l => !isServico(l)).reduce((s,l) => s + l.valor, 0);
-      const recServicos = recPagas.filter(l =>  isServico(l)).reduce((s,l) => s + l.valor, 0);
-      const recBruta    = recVendas + recServicos;
+      const recVendas = recPagas.filter(l => !isServico(l)).reduce((s, l) => s + l.valor, 0);
+      const recServicos = recPagas.filter(l => isServico(l)).reduce((s, l) => s + l.valor, 0);
+      const recBruta = recVendas + recServicos;
 
       // ── DEDUÇÕES
-      const isDeduc = l => /^(imposto|iss|icms|pis|cofins|dedu[cç]|devolu)/i.test((l.categoria||'') + (l.descricao||''));
+      const isDeduc = l => /^(imposto|iss|icms|pis|cofins|dedu[cç]|devolu)/i.test((l.categoria || '') + (l.descricao || ''));
       const deducoes = lancamentos.filter(l => l.tipo === 'despesa' && isStatusRecebido(l.status) && inL(l) && isDeduc(l))
-        .reduce((s,l) => s + l.valor, 0);
+        .reduce((s, l) => s + l.valor, 0);
       const recLiquida = recBruta - deducoes;
 
       // ── CMV: custosData tipo='custo' + saídas de estoque × custo
-      const cmvCC = custosData.filter(c => c.tipo === 'custo' && inC(c)).reduce((s,c) => s + c.valor, 0);
+      const cmvCC = custosData.filter(c => c.tipo === 'custo' && inC(c)).reduce((s, c) => s + c.valor, 0);
       let cmvEstoque = 0;
       movs.filter(m => m.tipo === 'saida' && inM(m)).forEach(m => {
         const p = products.find(x => x.id === m.prodId);
         cmvEstoque += Math.abs(m.qty) * (p?.custo || 0);
       });
-      const cmvTotal   = cmvCC + cmvEstoque;
+      const cmvTotal = cmvCC + cmvEstoque;
       const lucroBruto = recLiquida - cmvTotal;
-      const margBruta  = recLiquida > 0 ? lucroBruto / recLiquida * 100 : 0;
+      const margBruta = recLiquida > 0 ? lucroBruto / recLiquida * 100 : 0;
 
       // ── DESPESAS OPERACIONAIS
       const isVendas = l => /venda|marketing|comercial|publicidade|comiss[aã]o/i.test(l.categoria || '');
       const despLanc = lancamentos.filter(l => l.tipo === 'despesa' && isStatusRecebido(l.status) && inL(l) && !isDeduc(l));
-      const despVendas = despLanc.filter(l =>  isVendas(l)).reduce((s,l) => s + l.valor, 0);
-      const despCC     = custosData.filter(c => c.tipo === 'despesa' && inC(c)).reduce((s,c) => s + c.valor, 0);
-      const despAdmin  = despCC + despLanc.filter(l => !isVendas(l)).reduce((s,l) => s + l.valor, 0);
-      const despTotal  = despVendas + despAdmin;
-      const ebit       = lucroBruto - despTotal;
-      const margOp     = recLiquida > 0 ? ebit / recLiquida * 100 : 0;
+      const despVendas = despLanc.filter(l => isVendas(l)).reduce((s, l) => s + l.valor, 0);
+      const despCC = custosData.filter(c => c.tipo === 'despesa' && inC(c)).reduce((s, c) => s + c.valor, 0);
+      const despAdmin = despCC + despLanc.filter(l => !isVendas(l)).reduce((s, l) => s + l.valor, 0);
+      const despTotal = despVendas + despAdmin;
+      const ebit = lucroBruto - despTotal;
+      const margOp = recLiquida > 0 ? ebit / recLiquida * 100 : 0;
 
       // ── RESULTADO FINANCEIRO
-      const isRecFin  = l => /juros|aplicac[aã]o|rendimento|financ.*rec/i.test((l.categoria||'')+(l.descricao||''));
-      const isDespFin = l => /juros|encargo|multa|empr[eé]stimo|financ.*desp/i.test((l.categoria||'')+(l.descricao||''));
-      const recFin  = lancamentos.filter(l => l.tipo === 'receita' && isStatusRecebido(l.status) && inL(l) && isRecFin(l)).reduce((s,l) => s + l.valor, 0);
-      const despFin = lancamentos.filter(l => l.tipo === 'despesa' && isStatusRecebido(l.status) && inL(l) && isDespFin(l)).reduce((s,l) => s + l.valor, 0);
-      const resFin  = recFin - despFin;
-      const lair    = ebit + resFin;
+      const isRecFin = l => /juros|aplicac[aã]o|rendimento|financ.*rec/i.test((l.categoria || '') + (l.descricao || ''));
+      const isDespFin = l => /juros|encargo|multa|empr[eé]stimo|financ.*desp/i.test((l.categoria || '') + (l.descricao || ''));
+      const recFin = lancamentos.filter(l => l.tipo === 'receita' && isStatusRecebido(l.status) && inL(l) && isRecFin(l)).reduce((s, l) => s + l.valor, 0);
+      const despFin = lancamentos.filter(l => l.tipo === 'despesa' && isStatusRecebido(l.status) && inL(l) && isDespFin(l)).reduce((s, l) => s + l.valor, 0);
+      const resFin = recFin - despFin;
+      const lair = ebit + resFin;
 
       const lucroLiq = lair;
-      const margLiq  = recLiquida > 0 ? lucroLiq / recLiquida * 100 : 0;
+      const margLiq = recLiquida > 0 ? lucroLiq / recLiquida * 100 : 0;
 
       return { recVendas, recServicos, recBruta, deducoes, recLiquida, cmvCC, cmvEstoque, cmvTotal, lucroBruto, margBruta, despVendas, despAdmin, despTotal, ebit, margOp, recFin, despFin, resFin, lair, lucroLiq, margLiq };
     }
@@ -3910,7 +5347,7 @@ transition: border-color .15s;
     function renderDRE() {
       const { start, end } = _dreGetPeriod();
       const prevStart = new Date(start); prevStart.setFullYear(prevStart.getFullYear() - 1);
-      const prevEnd   = new Date(end);   prevEnd.setFullYear(prevEnd.getFullYear() - 1);
+      const prevEnd = new Date(end); prevEnd.setFullYear(prevEnd.getFullYear() - 1);
 
       const curr = calcDRE(start, end);
       const prev = calcDRE(prevStart, prevEnd);
@@ -3936,31 +5373,31 @@ transition: border-color .15s;
 
     function _dreRow(label, cVal, pVal, isNeg, isTotal, isFinal) {
       const trCls = isFinal ? 'dre-row-final' : isTotal ? 'dre-row-total' : 'dre-row-sub';
-      const cCls  = cVal >= 0 ? 'dre-pos' : 'dre-neg';
-      const sign  = v => v < 0 ? '-' : '';
+      const cCls = cVal >= 0 ? 'dre-pos' : 'dre-neg';
+      const sign = v => v < 0 ? '-' : '';
       return `<tr class="${trCls}">
         <td>${label}</td>
         <td class="${cCls}">${sign(cVal)}${_dreFmt(cVal)}</td>
-        <td style="color:var(--${isFinal?'text':'sub'})">${sign(pVal)}${_dreFmt(pVal)}</td>
+        <td style="color:var(--${isFinal ? 'text' : 'sub'})">${sign(pVal)}${_dreFmt(pVal)}</td>
         <td>${_dreVar(cVal, pVal, isNeg)}</td>
       </tr>`;
     }
 
     function _dreGroup(label, color, first) {
-      return `<tr class="dre-row-group${first?' first-group':''}"><td colspan="4" style="color:${color}">▸ ${label}</td></tr>`;
+      return `<tr class="dre-row-group${first ? ' first-group' : ''}"><td colspan="4" style="color:${color}">▸ ${label}</td></tr>`;
     }
 
     function _dreUpdateTable(c, p) {
       let h = '';
       h += _dreGroup('RECEITA OPERACIONAL BRUTA', 'var(--accent)', true);
-      h += _dreRow('Vendas de Produtos',      c.recVendas,   p.recVendas);
+      h += _dreRow('Vendas de Produtos', c.recVendas, p.recVendas);
       if (c.recServicos > 0 || p.recServicos > 0)
         h += _dreRow('Prestação de Serviços', c.recServicos, p.recServicos);
-      h += _dreRow('RECEITA BRUTA TOTAL',     c.recBruta,    p.recBruta,  false, true);
+      h += _dreRow('RECEITA BRUTA TOTAL', c.recBruta, p.recBruta, false, true);
 
       h += _dreGroup('DEDUÇÕES DA RECEITA', 'var(--danger)');
       h += _dreRow('Impostos e Deduções', -c.deducoes, -p.deducoes, true);
-      h += _dreRow('RECEITA LÍQUIDA',      c.recLiquida, p.recLiquida, false, true);
+      h += _dreRow('RECEITA LÍQUIDA', c.recLiquida, p.recLiquida, false, true);
 
       h += _dreGroup('CUSTO DOS PRODUTOS/SERVIÇOS', 'var(--danger)');
       if (c.cmvEstoque > 0 || p.cmvEstoque > 0)
@@ -3971,14 +5408,14 @@ transition: border-color .15s;
 
       h += _dreGroup('DESPESAS OPERACIONAIS', 'var(--danger)');
       if (c.despVendas > 0 || p.despVendas > 0)
-        h += _dreRow('Despesas de Vendas',         -c.despVendas, -p.despVendas, true);
-      h += _dreRow('Despesas Administrativas', -c.despAdmin,  -p.despAdmin, true);
+        h += _dreRow('Despesas de Vendas', -c.despVendas, -p.despVendas, true);
+      h += _dreRow('Despesas Administrativas', -c.despAdmin, -p.despAdmin, true);
       h += _dreRow('RESULTADO OPERACIONAL (EBIT)', c.ebit, p.ebit, false, true);
 
       if (c.recFin > 0 || c.despFin > 0 || p.recFin > 0 || p.despFin > 0) {
         h += _dreGroup('RESULTADO FINANCEIRO', 'var(--accent2)');
-        if (c.recFin  > 0 || p.recFin  > 0) h += _dreRow('Receitas Financeiras',  c.recFin,   p.recFin);
-        if (c.despFin > 0 || p.despFin > 0) h += _dreRow('Despesas Financeiras',  -c.despFin, -p.despFin, true);
+        if (c.recFin > 0 || p.recFin > 0) h += _dreRow('Receitas Financeiras', c.recFin, p.recFin);
+        if (c.despFin > 0 || p.despFin > 0) h += _dreRow('Despesas Financeiras', -c.despFin, -p.despFin, true);
         h += _dreRow('RESULTADO ANTES DOS IMPOSTOS', c.lair, p.lair, false, true);
       }
 
@@ -3992,19 +5429,19 @@ transition: border-color .15s;
       const setKpi = (valId, deltaId, val, prevVal, isPct) => {
         const ve = document.getElementById(valId);
         const de = document.getElementById(deltaId);
-        if (ve) ve.textContent = isPct ? val.toFixed(2).replace('.',',') + '%' : 'R$ ' + fmt(Math.abs(val));
+        if (ve) ve.textContent = isPct ? val.toFixed(2).replace('.', ',') + '%' : 'R$ ' + fmt(Math.abs(val));
         if (!de) return;
         if (Math.abs(prevVal) < 0.01) { de.textContent = '—'; de.className = 'dre-kpi-delta'; return; }
         const pct = ((val - prevVal) / Math.abs(prevVal)) * 100;
         const up = pct >= 0;
         de.className = 'dre-kpi-delta ' + (up ? 'up' : 'down');
-        de.innerHTML = `<i class="bi bi-arrow-${up?'up':'down'}-short"></i>${Math.abs(pct).toFixed(1)}% vs período anterior`;
+        de.innerHTML = `<i class="bi bi-arrow-${up ? 'up' : 'down'}-short"></i>${Math.abs(pct).toFixed(1)}% vs período anterior`;
       };
-      setKpi('dre-rec-liq-val',   'dre-rec-liq-delta',   c.recLiquida, p.recLiquida);
+      setKpi('dre-rec-liq-val', 'dre-rec-liq-delta', c.recLiquida, p.recLiquida);
       setKpi('dre-luc-bruto-val', 'dre-luc-bruto-delta', c.lucroBruto, p.lucroBruto);
-      setKpi('dre-marg-bruta-val','dre-marg-bruta-delta', c.margBruta, p.margBruta, true);
-      setKpi('dre-luc-liq-val',   'dre-luc-liq-delta',   c.lucroLiq,  p.lucroLiq);
-      setKpi('dre-marg-liq-val',  'dre-marg-liq-delta',  c.margLiq,   p.margLiq, true);
+      setKpi('dre-marg-bruta-val', 'dre-marg-bruta-delta', c.margBruta, p.margBruta, true);
+      setKpi('dre-luc-liq-val', 'dre-luc-liq-delta', c.lucroLiq, p.lucroLiq);
+      setKpi('dre-marg-liq-val', 'dre-marg-liq-delta', c.margLiq, p.margLiq, true);
     }
 
     function _dreUpdateSide(c, start, end) {
@@ -4015,19 +5452,19 @@ transition: border-color .15s;
       while (cur <= mEnd) {
         const mS = new Date(cur.getFullYear(), cur.getMonth(), 1);
         const mE = new Date(cur.getFullYear(), cur.getMonth() + 1, 0, 23, 59, 59);
-        months.push({ label: cur.toLocaleDateString('pt-BR',{month:'short'}).replace('.',''), value: calcDRE(mS, mE).lucroLiq });
+        months.push({ label: cur.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', ''), value: calcDRE(mS, mE).lucroLiq });
         cur.setMonth(cur.getMonth() + 1);
       }
       const W = 320, H = 110, pad = 16;
-      const maxV  = Math.max(...months.map(m => Math.abs(m.value)), 1);
-      const pts   = months.map((m, i) => ({
-        x: pad + (months.length < 2 ? (W - pad*2)/2 : (i / (months.length - 1)) * (W - pad*2)),
+      const maxV = Math.max(...months.map(m => Math.abs(m.value)), 1);
+      const pts = months.map((m, i) => ({
+        x: pad + (months.length < 2 ? (W - pad * 2) / 2 : (i / (months.length - 1)) * (W - pad * 2)),
         y: H - pad - (Math.max(m.value, 0) / maxV) * (H - pad * 2),
         v: m.value, label: m.label,
       }));
       const ptStr = pts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-      const fill  = pts.length > 1
-        ? `M${pts.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' L')} L${pts[pts.length-1].x.toFixed(1)},${H-pad} L${pts[0].x.toFixed(1)},${H-pad} Z`
+      const fill = pts.length > 1
+        ? `M${pts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' L')} L${pts[pts.length - 1].x.toFixed(1)},${H - pad} L${pts[0].x.toFixed(1)},${H - pad} Z`
         : '';
 
       const svgContent = `
@@ -4035,12 +5472,12 @@ transition: border-color .15s;
           <stop offset="0%" stop-color="#00D084" stop-opacity=".25"/>
           <stop offset="100%" stop-color="#00D084" stop-opacity="0"/>
         </linearGradient></defs>
-        <line x1="0" y1="${H-pad}" x2="${W}" y2="${H-pad}" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+        <line x1="0" y1="${H - pad}" x2="${W}" y2="${H - pad}" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
         ${fill ? `<path d="${fill}" fill="url(#dreGrad2)"/>` : ''}
         ${pts.length > 1 ? `<polyline points="${ptStr}" fill="none" stroke="#00D084" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>` : ''}
         ${pts.map((p, i) => `
-          <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${i===pts.length-1?'5':'4'}" fill="#00D084" stroke="#0B1220" stroke-width="2"/>
-          <text x="${p.x.toFixed(1)}" y="${(p.y-7).toFixed(1)}" text-anchor="middle" fill="rgba(148,163,184,.7)" font-size="7.5">${Math.abs(p.v)>=1000?(p.v/1000).toFixed(0)+'k':fmt(p.v)}</text>
+          <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${i === pts.length - 1 ? '5' : '4'}" fill="#00D084" stroke="#0B1220" stroke-width="2"/>
+          <text x="${p.x.toFixed(1)}" y="${(p.y - 7).toFixed(1)}" text-anchor="middle" fill="rgba(148,163,184,.7)" font-size="7.5">${Math.abs(p.v) >= 1000 ? (p.v / 1000).toFixed(0) + 'k' : fmt(p.v)}</text>
         `).join('')}`;
       document.getElementById('dreLineChartSvg').innerHTML = svgContent;
       document.getElementById('dreLineXlbl').innerHTML = pts.map(p => `<span>${p.label}</span>`).join('');
@@ -4048,9 +5485,9 @@ transition: border-color .15s;
       // ── Donut: composição da Receita Líquida
       const total = c.recLiquida;
       const slices = [
-        { label: 'CPV',        pct: total > 0 ? c.cmvTotal  / total : 0, color: '#2F80FF' },
-        { label: 'Desp. Op.',  pct: total > 0 ? c.despTotal / total : 0, color: '#FF8C42' },
-        { label: 'Res. Fin.',  pct: total > 0 ? Math.abs(c.resFin) / total : 0, color: '#A78BFA' },
+        { label: 'CPV', pct: total > 0 ? c.cmvTotal / total : 0, color: '#2F80FF' },
+        { label: 'Desp. Op.', pct: total > 0 ? c.despTotal / total : 0, color: '#FF8C42' },
+        { label: 'Res. Fin.', pct: total > 0 ? Math.abs(c.resFin) / total : 0, color: '#A78BFA' },
         { label: 'Lucro Líq.', pct: total > 0 ? Math.max(c.lucroLiq, 0) / total : 0, color: '#00D084' },
       ].filter(s => s.pct > 0.001);
 
@@ -4063,29 +5500,29 @@ transition: border-color .15s;
         return el;
       }).join('');
 
-      const liqLabel = Math.abs(c.lucroLiq) >= 1000 ? 'R$ ' + (c.lucroLiq/1000).toFixed(0)+'k' : 'R$ '+fmt(c.lucroLiq);
+      const liqLabel = Math.abs(c.lucroLiq) >= 1000 ? 'R$ ' + (c.lucroLiq / 1000).toFixed(0) + 'k' : 'R$ ' + fmt(c.lucroLiq);
       document.getElementById('dreDonutSvg').innerHTML =
         `<circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="14"/>
         ${circles}
         <text x="60" y="55" text-anchor="middle" fill="#FFF" font-size="10" font-weight="800" font-family="Inter,sans-serif">${liqLabel}</text>
         <text x="60" y="68" text-anchor="middle" fill="rgba(148,163,184,.55)" font-size="7.5">Lucro Líquido</text>`;
       document.getElementById('dreDonutLegend').innerHTML = slices.map(s =>
-        `<div class="dre-leg-row"><div class="dre-leg-dot" style="background:${s.color}"></div>${s.label}<span class="dre-leg-pct">${(s.pct*100).toFixed(1)}%</span></div>`
+        `<div class="dre-leg-row"><div class="dre-leg-dot" style="background:${s.color}"></div>${s.label}<span class="dre-leg-pct">${(s.pct * 100).toFixed(1)}%</span></div>`
       ).join('');
 
       // ── Margens
       const mB = Math.max(c.margBruta, 0);
-      const mO = Math.max(c.margOp,    0);
-      const mL = Math.max(c.margLiq,   0);
+      const mO = Math.max(c.margOp, 0);
+      const mL = Math.max(c.margLiq, 0);
       const scale = Math.max(mB, 100);
       document.getElementById('dreMargins').innerHTML = [
-        { label: 'Margem Bruta',        val: mB, color: 'var(--accent)' },
-        { label: 'Margem Operacional',  val: mO, color: 'var(--accent2)' },
-        { label: 'Margem Líquida',      val: mL, color: '#A78BFA' },
+        { label: 'Margem Bruta', val: mB, color: 'var(--accent)' },
+        { label: 'Margem Operacional', val: mO, color: 'var(--accent2)' },
+        { label: 'Margem Líquida', val: mL, color: '#A78BFA' },
       ].map(m => `<div class="dre-margin-row">
         <div class="dre-margin-label">${m.label}</div>
-        <div class="dre-margin-bar-wrap"><div class="dre-margin-bar" style="width:${(m.val/scale*100).toFixed(1)}%;background:${m.color}"></div></div>
-        <div class="dre-margin-pct">${m.val.toFixed(2).replace('.',',')}%</div>
+        <div class="dre-margin-bar-wrap"><div class="dre-margin-bar" style="width:${(m.val / scale * 100).toFixed(1)}%;background:${m.color}"></div></div>
+        <div class="dre-margin-pct">${m.val.toFixed(2).replace('.', ',')}%</div>
       </div>`).join('');
     }
 
@@ -4168,10 +5605,10 @@ transition: border-color .15s;
     }
 
     function filterVencidas() {
-      const hoje = new Date(); hoje.setHours(0,0,0,0);
+      const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
       const parseVenc = v => { if (!v) return null; const d = new Date(v.includes('/') ? v.split('/').reverse().join('-') : v); return isNaN(d) ? null : d; };
       const isVencido = l => { const d = parseVenc(l.vencimento || l.data); return d && d < hoje; };
-      const vPagar   = lancamentos.filter(l => l.tipo === 'despesa' && !isStatusFinalizado(l.status) && isVencido(l));
+      const vPagar = lancamentos.filter(l => l.tipo === 'despesa' && !isStatusFinalizado(l.status) && isVencido(l));
       const vReceber = lancamentos.filter(l => l.tipo === 'receita' && !isStatusFinalizado(l.status) && isVencido(l));
       const total = vPagar.length + vReceber.length;
       if (total === 0) { showToast('Nenhum título vencido em aberto.'); return; }
@@ -4199,7 +5636,7 @@ transition: border-color .15s;
         l.forma_pgto || ''
       ]);
       const d = new Date();
-      const dt = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+      const dt = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
       downloadCSV(`nexoerp_financeiro_${dt}.csv`, header, rows);
     }
 
@@ -4209,7 +5646,7 @@ transition: border-color .15s;
 
 
     async function init() {
-      ['tblReceber','tblPagar','tblMovim','dreTbody'].forEach(id => {
+      ['tblReceber', 'tblPagar', 'tblMovim', 'dreTbody'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = NexoSkeleton.tableRows(6, 5);
       });
@@ -4220,11 +5657,11 @@ transition: border-color .15s;
         NexoAuth.apiFetch('/produtos'),
         NexoAuth.apiFetch('/estoque/movimentacoes'),
       ]);
-      if (rLanc.ok)   lancamentos   = rLanc.data;
-      if (rResumo.ok) finResumo     = rResumo.data;
-      if (rCustos.ok) custosData    = rCustos.data;
-      if (rProd.ok)   PRODUTOS_DATA = rProd.data;
-      if (rMovs.ok)   MOVS_DATA     = rMovs.data;
+      if (rLanc.ok) lancamentos = rLanc.data;
+      if (rResumo.ok) finResumo = rResumo.data;
+      if (rCustos.ok) custosData = rCustos.data;
+      if (rProd.ok) PRODUTOS_DATA = rProd.data;
+      if (rMovs.ok) MOVS_DATA = rMovs.data;
       await loadMovimPage(1, false, false);
       await loadFinDetailPage('pagar', 1, false, false);
       await loadFinDetailPage('receber', 1, false, false);
@@ -4339,36 +5776,36 @@ transition: border-color .15s;
     // ═══════════════════════════════════════════════
     // CENTRO DE CUSTOS
     // ═══════════════════════════════════════════════
-    const CUSTO_CATS_KEY    = 'nexoerp.custos.cats.custo';
-    const DESPESA_CATS_KEY  = 'nexoerp.custos.cats.despesa';
-    const CC_COLORS         = ['#00c896','#0077ff','#ff6b35','#a855f7','#ec4899','#f59e0b','#14b8a6','#6b7f96'];
-    const CC_DEFAULT_CUSTO_CATS   = ['Insumos','Matéria-prima','Embalagens','Frete','Mão de obra','Equipamentos'];
-    const CC_DEFAULT_DESPESA_CATS = ['Funcionários','Aluguel','Marketing','Serviços','Administrativo','Outros'];
+    const CUSTO_CATS_KEY = 'nexoerp.custos.cats.custo';
+    const DESPESA_CATS_KEY = 'nexoerp.custos.cats.despesa';
+    const CC_COLORS = ['#00c896', '#0077ff', '#ff6b35', '#a855f7', '#ec4899', '#f59e0b', '#14b8a6', '#6b7f96'];
+    const CC_DEFAULT_CUSTO_CATS = ['Insumos', 'Matéria-prima', 'Embalagens', 'Frete', 'Mão de obra', 'Equipamentos'];
+    const CC_DEFAULT_DESPESA_CATS = ['Funcionários', 'Aluguel', 'Marketing', 'Serviços', 'Administrativo', 'Outros'];
 
-    let custosData  = []; // carregado em init()
-    let custoCats   = (() => { try { const r=localStorage.getItem(CUSTO_CATS_KEY); return r?JSON.parse(r):[...CC_DEFAULT_CUSTO_CATS]; } catch(_){return[...CC_DEFAULT_CUSTO_CATS];} })();
-    let despesaCats = (() => { try { const r=localStorage.getItem(DESPESA_CATS_KEY); return r?JSON.parse(r):[...CC_DEFAULT_DESPESA_CATS]; } catch(_){return[...CC_DEFAULT_DESPESA_CATS];} })();
+    let custosData = []; // carregado em init()
+    let custoCats = (() => { try { const r = localStorage.getItem(CUSTO_CATS_KEY); return r ? JSON.parse(r) : [...CC_DEFAULT_CUSTO_CATS]; } catch (_) { return [...CC_DEFAULT_CUSTO_CATS]; } })();
+    let despesaCats = (() => { try { const r = localStorage.getItem(DESPESA_CATS_KEY); return r ? JSON.parse(r) : [...CC_DEFAULT_DESPESA_CATS]; } catch (_) { return [...CC_DEFAULT_DESPESA_CATS]; } })();
 
-    let custosPeriod     = 'mes';
+    let custosPeriod = 'mes';
     let custosTipoFilter = 'todos';
-    let custosCatFilter  = null;
-    let custosPage       = 1;
-    const custosPerPage  = 8;
-    let custosRows       = [];
-    let custosMeta       = { page: 1, limit: custosPerPage, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
-    let editingCustoId   = null;
-    let ccConfirmCb      = null;
-    let ccSerieCb        = null;
-    let activeCatTab     = 'custo';
+    let custosCatFilter = null;
+    let custosPage = 1;
+    const custosPerPage = 8;
+    let custosRows = [];
+    let custosMeta = { page: 1, limit: custosPerPage, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false };
+    let editingCustoId = null;
+    let ccConfirmCb = null;
+    let ccSerieCb = null;
+    let activeCatTab = 'custo';
 
-    function saveCustoCats()   { localStorage.setItem(CUSTO_CATS_KEY,   JSON.stringify(custoCats));   }
+    function saveCustoCats() { localStorage.setItem(CUSTO_CATS_KEY, JSON.stringify(custoCats)); }
     function saveDespesaCats() { localStorage.setItem(DESPESA_CATS_KEY, JSON.stringify(despesaCats)); }
 
     function fmtCusto(v) {
-      return (v||0).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+      return (v || 0).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
 
-    function getCatsByTipo(tipo) { return tipo==='despesa' ? despesaCats : custoCats; }
+    function getCatsByTipo(tipo) { return tipo === 'despesa' ? despesaCats : custoCats; }
 
     function filterCustosByPeriod(period, tipoOvr) {
       const p = period || custosPeriod;
@@ -4376,11 +5813,11 @@ transition: border-color .15s;
       const now = new Date();
       return custosData.filter(c => {
         const d = new Date(c.data); if (isNaN(d)) return false;
-        if (p==='mes')     { if (!(d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear())) return false; }
-        if (p==='mes-ant') { const a=new Date(now.getFullYear(),now.getMonth()-1,1); if (!(d.getMonth()===a.getMonth()&&d.getFullYear()===a.getFullYear())) return false; }
-        if (p==='trim')    { const q=Math.floor(now.getMonth()/3); if (!(Math.floor(d.getMonth()/3)===q&&d.getFullYear()===now.getFullYear())) return false; }
-        if (p==='ano')     { if (d.getFullYear()!==now.getFullYear()) return false; }
-        if (t!=='todos')   { if ((c.tipo||'custo')!==t) return false; }
+        if (p === 'mes') { if (!(d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear())) return false; }
+        if (p === 'mes-ant') { const a = new Date(now.getFullYear(), now.getMonth() - 1, 1); if (!(d.getMonth() === a.getMonth() && d.getFullYear() === a.getFullYear())) return false; }
+        if (p === 'trim') { const q = Math.floor(now.getMonth() / 3); if (!(Math.floor(d.getMonth() / 3) === q && d.getFullYear() === now.getFullYear())) return false; }
+        if (p === 'ano') { if (d.getFullYear() !== now.getFullYear()) return false; }
+        if (t !== 'todos') { if ((c.tipo || 'custo') !== t) return false; }
         return true;
       });
     }
@@ -4454,88 +5891,90 @@ transition: border-color .15s;
     }
 
     function renderCustosKPIs() {
-      const allPeriod   = filterCustosByPeriod(null,'todos');
-      const anterior    = filterCustosByPeriod('mes-ant','todos');
-      const custosPer   = allPeriod.filter(c=>(c.tipo||'custo')==='custo');
-      const despesasPer = allPeriod.filter(c=>(c.tipo||'custo')==='despesa');
-      const totalGeral  = allPeriod.reduce((s,c)=>s+c.valor,0);
-      const totalCusto  = custosPer.reduce((s,c)=>s+c.valor,0);
-      const totalDesp   = despesasPer.reduce((s,c)=>s+c.valor,0);
+      const allPeriod = filterCustosByPeriod(null, 'todos');
+      const anterior = filterCustosByPeriod('mes-ant', 'todos');
+      const custosPer = allPeriod.filter(c => (c.tipo || 'custo') === 'custo');
+      const despesasPer = allPeriod.filter(c => (c.tipo || 'custo') === 'despesa');
+      const totalGeral = allPeriod.reduce((s, c) => s + c.valor, 0);
+      const totalCusto = custosPer.reduce((s, c) => s + c.valor, 0);
+      const totalDesp = despesasPer.reduce((s, c) => s + c.valor, 0);
 
       let kpis;
 
       if (custosTipoFilter === 'todos') {
-        const totalAnt = anterior.reduce((s,c)=>s+c.valor,0);
-        const delta    = totalAnt>0 ? ((totalGeral-totalAnt)/totalAnt*100) : null;
+        const totalAnt = anterior.reduce((s, c) => s + c.valor, 0);
+        const delta = totalAnt > 0 ? ((totalGeral - totalAnt) / totalAnt * 100) : null;
         kpis = [
-          { lbl:'Total no período', val:'R$ '+fmtCusto(totalGeral), color:'var(--text)', icon:'bi-cash-stack' },
-          { lbl:'Custos',           val:'R$ '+fmtCusto(totalCusto), color:'#ff6b35',       icon:'bi-box-seam-fill' },
-          { lbl:'Despesas',         val:'R$ '+fmtCusto(totalDesp),  color:'#a855f7',       icon:'bi-wallet2-fill' },
-          { lbl:'vs mês anterior',
-            val: delta!==null?(delta>0?'+':'')+delta.toFixed(1)+'%':'—',
-            color: delta===null?'var(--muted)':delta>0?'var(--danger)':'var(--accent)',
-            icon: delta!==null&&delta>0?'bi-arrow-up-short':'bi-arrow-down-short',
-            delta: delta!==null?(delta>0?'up':'down'):null,
-            sub: delta!==null?'R$ '+fmtCusto(anterior.reduce((s,c)=>s+c.valor,0))+' anterior':''
+          { lbl: 'Total no período', val: 'R$ ' + fmtCusto(totalGeral), color: 'var(--text)', icon: 'bi-cash-stack' },
+          { lbl: 'Custos', val: 'R$ ' + fmtCusto(totalCusto), color: '#ff6b35', icon: 'bi-box-seam-fill' },
+          { lbl: 'Despesas', val: 'R$ ' + fmtCusto(totalDesp), color: '#a855f7', icon: 'bi-wallet2-fill' },
+          {
+            lbl: 'vs mês anterior',
+            val: delta !== null ? (delta > 0 ? '+' : '') + delta.toFixed(1) + '%' : '—',
+            color: delta === null ? 'var(--muted)' : delta > 0 ? 'var(--danger)' : 'var(--accent)',
+            icon: delta !== null && delta > 0 ? 'bi-arrow-up-short' : 'bi-arrow-down-short',
+            delta: delta !== null ? (delta > 0 ? 'up' : 'down') : null,
+            sub: delta !== null ? 'R$ ' + fmtCusto(anterior.reduce((s, c) => s + c.valor, 0)) + ' anterior' : ''
           },
         ];
       } else {
-        const isCusto  = custosTipoFilter === 'custo';
+        const isCusto = custosTipoFilter === 'custo';
         const filtered = isCusto ? custosPer : despesasPer;
-        const total    = isCusto ? totalCusto : totalDesp;
-        const color    = isCusto ? '#ff6b35' : '#a855f7';
-        const antFilt  = anterior.filter(c=>(c.tipo||'custo')===custosTipoFilter);
-        const totalAnt = antFilt.reduce((s,c)=>s+c.valor,0);
-        const delta    = totalAnt>0 ? ((total-totalAnt)/totalAnt*100) : null;
-        const bycat    = {};
-        filtered.forEach(c=>{ bycat[c.categoria]=(bycat[c.categoria]||0)+c.valor; });
-        const topCat   = Object.entries(bycat).sort((a,b)=>b[1]-a[1])[0];
-        const cats     = getCatsByTipo(custosTipoFilter);
-        const topIdx   = topCat ? cats.indexOf(topCat[0]) : -1;
-        const topColor = topIdx>=0 ? CC_COLORS[topIdx%CC_COLORS.length] : 'var(--muted)';
+        const total = isCusto ? totalCusto : totalDesp;
+        const color = isCusto ? '#ff6b35' : '#a855f7';
+        const antFilt = anterior.filter(c => (c.tipo || 'custo') === custosTipoFilter);
+        const totalAnt = antFilt.reduce((s, c) => s + c.valor, 0);
+        const delta = totalAnt > 0 ? ((total - totalAnt) / totalAnt * 100) : null;
+        const bycat = {};
+        filtered.forEach(c => { bycat[c.categoria] = (bycat[c.categoria] || 0) + c.valor; });
+        const topCat = Object.entries(bycat).sort((a, b) => b[1] - a[1])[0];
+        const cats = getCatsByTipo(custosTipoFilter);
+        const topIdx = topCat ? cats.indexOf(topCat[0]) : -1;
+        const topColor = topIdx >= 0 ? CC_COLORS[topIdx % CC_COLORS.length] : 'var(--muted)';
         kpis = [
-          { lbl: isCusto?'Total em Custos':'Total em Despesas', val:'R$ '+fmtCusto(total), color:'var(--text)', icon:'bi-cash-stack' },
-          { lbl:'Lançamentos', val:filtered.length, color:'var(--text)', icon:'bi-receipt' },
-          { lbl:'Maior categoria', val:topCat?topCat[0]:'—', color:topColor, icon:'bi-tag' },
-          { lbl:'vs mês anterior',
-            val: delta!==null?(delta>0?'+':'')+delta.toFixed(1)+'%':'—',
-            color: delta===null?'var(--muted)':delta>0?'var(--danger)':'var(--accent)',
-            icon: delta!==null&&delta>0?'bi-arrow-up-short':'bi-arrow-down-short',
-            delta: delta!==null?(delta>0?'up':'down'):null,
-            sub: delta!==null?'R$ '+fmtCusto(totalAnt)+' anterior':''
+          { lbl: isCusto ? 'Total em Custos' : 'Total em Despesas', val: 'R$ ' + fmtCusto(total), color: 'var(--text)', icon: 'bi-cash-stack' },
+          { lbl: 'Lançamentos', val: filtered.length, color: 'var(--text)', icon: 'bi-receipt' },
+          { lbl: 'Maior categoria', val: topCat ? topCat[0] : '—', color: topColor, icon: 'bi-tag' },
+          {
+            lbl: 'vs mês anterior',
+            val: delta !== null ? (delta > 0 ? '+' : '') + delta.toFixed(1) + '%' : '—',
+            color: delta === null ? 'var(--muted)' : delta > 0 ? 'var(--danger)' : 'var(--accent)',
+            icon: delta !== null && delta > 0 ? 'bi-arrow-up-short' : 'bi-arrow-down-short',
+            delta: delta !== null ? (delta > 0 ? 'up' : 'down') : null,
+            sub: delta !== null ? 'R$ ' + fmtCusto(totalAnt) + ' anterior' : ''
           },
         ];
       }
 
-      document.getElementById('custosKpis').innerHTML = kpis.map(k=>`
+      document.getElementById('custosKpis').innerHTML = kpis.map(k => `
         <div class="custos-kpi">
           <div class="custos-kpi-lbl">${k.lbl}</div>
           <div class="custos-kpi-val" style="color:${k.color}">${k.val}</div>
-          ${k.sub?`<div class="custos-kpi-delta ${k.delta||''}"><i class="bi ${k.icon}"></i>${k.sub}</div>`:''}
+          ${k.sub ? `<div class="custos-kpi-delta ${k.delta || ''}"><i class="bi ${k.icon}"></i>${k.sub}</div>` : ''}
         </div>`).join('');
     }
 
     function renderCustosDonut() {
-      const donutEl  = document.getElementById('custosDonut');
-      const totalEl  = document.getElementById('custosDonutTotal');
+      const donutEl = document.getElementById('custosDonut');
+      const totalEl = document.getElementById('custosDonutTotal');
       const legendEl = document.getElementById('custosLegend');
 
       if (custosTipoFilter === 'todos') {
-        const allPeriod  = filterCustosByPeriod(null,'todos');
-        const totalCusto = allPeriod.filter(c=>(c.tipo||'custo')==='custo').reduce((s,c)=>s+c.valor,0);
-        const totalDesp  = allPeriod.filter(c=>(c.tipo||'custo')==='despesa').reduce((s,c)=>s+c.valor,0);
-        const total      = totalCusto + totalDesp;
-        totalEl.textContent = 'R$ '+fmtCusto(total);
-        if (!total) { donutEl.style.background='var(--border)'; legendEl.innerHTML=''; return; }
+        const allPeriod = filterCustosByPeriod(null, 'todos');
+        const totalCusto = allPeriod.filter(c => (c.tipo || 'custo') === 'custo').reduce((s, c) => s + c.valor, 0);
+        const totalDesp = allPeriod.filter(c => (c.tipo || 'custo') === 'despesa').reduce((s, c) => s + c.valor, 0);
+        const total = totalCusto + totalDesp;
+        totalEl.textContent = 'R$ ' + fmtCusto(total);
+        if (!total) { donutEl.style.background = 'var(--border)'; legendEl.innerHTML = ''; return; }
         const segments = [
-          { label:'Custos',   val:totalCusto, color:'#ff6b35' },
-          { label:'Despesas', val:totalDesp,  color:'#a855f7' },
-        ].filter(s=>s.val>0);
-        let pct=0; const stops=[];
-        segments.forEach(s=>{ const share=s.val/total*100; stops.push(`${s.color} ${pct.toFixed(2)}% ${(pct+share).toFixed(2)}%`); s.share=share; pct+=share; });
-        donutEl.style.background=`conic-gradient(${stops.join(',')})`;
-        legendEl.innerHTML=segments.map(s=>`
-          <div class="custos-legend-item" onclick="setCustosTipo(document.querySelector('.custos-tipo-tab.t-${s.label==='Custos'?'custo':'despesa'}'),'${s.label==='Custos'?'custo':'despesa'}')">
+          { label: 'Custos', val: totalCusto, color: '#ff6b35' },
+          { label: 'Despesas', val: totalDesp, color: '#a855f7' },
+        ].filter(s => s.val > 0);
+        let pct = 0; const stops = [];
+        segments.forEach(s => { const share = s.val / total * 100; stops.push(`${s.color} ${pct.toFixed(2)}% ${(pct + share).toFixed(2)}%`); s.share = share; pct += share; });
+        donutEl.style.background = `conic-gradient(${stops.join(',')})`;
+        legendEl.innerHTML = segments.map(s => `
+          <div class="custos-legend-item" onclick="setCustosTipo(document.querySelector('.custos-tipo-tab.t-${s.label === 'Custos' ? 'custo' : 'despesa'}'),'${s.label === 'Custos' ? 'custo' : 'despesa'}')">
             <div class="custos-legend-dot" style="background:${s.color}"></div>
             <span class="custos-legend-name">${s.label}</span>
             <span class="custos-legend-val">R$ ${fmtCusto(s.val)}</span>
@@ -4543,24 +5982,24 @@ transition: border-color .15s;
           </div>`).join('');
       } else {
         const current = filterCustosByPeriod();
-        const total   = current.reduce((s,c)=>s+c.valor,0);
-        const cats    = getCatsByTipo(custosTipoFilter);
-        const bycat   = {};
-        cats.forEach(c=>bycat[c]=0);
-        current.forEach(c=>{ bycat[c.categoria]=(bycat[c.categoria]||0)+c.valor; });
-        totalEl.textContent = 'R$ '+fmtCusto(total);
-        const entries = Object.entries(bycat).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
-        if (!entries.length) { donutEl.style.background='var(--border)'; legendEl.innerHTML=''; return; }
-        let pct=0; const stops=[], legendItems=[];
-        entries.forEach(([cat,val])=>{
-          const i=cats.indexOf(cat); const color=CC_COLORS[i>=0?i%CC_COLORS.length:CC_COLORS.length-1];
-          const share=val/total*100;
-          stops.push(`${color} ${pct.toFixed(2)}% ${(pct+share).toFixed(2)}%`);
-          legendItems.push({cat,val,share,color}); pct+=share;
+        const total = current.reduce((s, c) => s + c.valor, 0);
+        const cats = getCatsByTipo(custosTipoFilter);
+        const bycat = {};
+        cats.forEach(c => bycat[c] = 0);
+        current.forEach(c => { bycat[c.categoria] = (bycat[c.categoria] || 0) + c.valor; });
+        totalEl.textContent = 'R$ ' + fmtCusto(total);
+        const entries = Object.entries(bycat).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+        if (!entries.length) { donutEl.style.background = 'var(--border)'; legendEl.innerHTML = ''; return; }
+        let pct = 0; const stops = [], legendItems = [];
+        entries.forEach(([cat, val]) => {
+          const i = cats.indexOf(cat); const color = CC_COLORS[i >= 0 ? i % CC_COLORS.length : CC_COLORS.length - 1];
+          const share = val / total * 100;
+          stops.push(`${color} ${pct.toFixed(2)}% ${(pct + share).toFixed(2)}%`);
+          legendItems.push({ cat, val, share, color }); pct += share;
         });
-        donutEl.style.background=`conic-gradient(${stops.join(',')})`;
-        legendEl.innerHTML=legendItems.map(({cat,val,share,color})=>`
-          <div class="custos-legend-item" onclick="filterCustosByCat('${cat.replace(/'/g,"\\'")}')">
+        donutEl.style.background = `conic-gradient(${stops.join(',')})`;
+        legendEl.innerHTML = legendItems.map(({ cat, val, share, color }) => `
+          <div class="custos-legend-item" onclick="filterCustosByCat('${cat.replace(/'/g, "\\'")}')">
             <div class="custos-legend-dot" style="background:${color}"></div>
             <span class="custos-legend-name">${cat}</span>
             <span class="custos-legend-val">R$ ${fmtCusto(val)}</span>
@@ -4570,34 +6009,34 @@ transition: border-color .15s;
     }
 
     function filterCustosByCat(cat) {
-      custosCatFilter = custosCatFilter===cat ? null : cat;
-      custosPage=1; loadCustosPage(1);
+      custosCatFilter = custosCatFilter === cat ? null : cat;
+      custosPage = 1; loadCustosPage(1);
     }
 
     function renderCustosList() {
       const current = filterCustosByPeriod();
-      const q = (document.getElementById('custosSearch')?.value||'').toLowerCase();
-      const filtered = custosRows.filter(c=>
-        (!custosCatFilter || c.categoria===custosCatFilter) &&
-        (!q || (c.descricao||'').toLowerCase().includes(q)||(c.categoria||'').toLowerCase().includes(q)||(c.fornecedor||'').toLowerCase().includes(q))
+      const q = (document.getElementById('custosSearch')?.value || '').toLowerCase();
+      const filtered = custosRows.filter(c =>
+        (!custosCatFilter || c.categoria === custosCatFilter) &&
+        (!q || (c.descricao || '').toLowerCase().includes(q) || (c.categoria || '').toLowerCase().includes(q) || (c.fornecedor || '').toLowerCase().includes(q))
       );
-      const body=document.getElementById('custosTbody'), empty=document.getElementById('custosEmpty');
-      const total=custosMeta.total || filtered.length, start=(custosPage-1)*custosPerPage;
+      const body = document.getElementById('custosTbody'), empty = document.getElementById('custosEmpty');
+      const total = custosMeta.total || filtered.length, start = (custosPage - 1) * custosPerPage;
       if (!total) {
-        body.innerHTML=''; empty.classList.add('show');
-        document.getElementById('custosEmptyH3').textContent=custosData.length===0?'Nenhum lançamento cadastrado':'Nenhum resultado encontrado';
-        document.getElementById('custosEmptyP').textContent =custosData.length===0?'Clique em "Novo Lançamento" para começar.':'Tente ajustar o período ou a busca.';
+        body.innerHTML = ''; empty.classList.add('show');
+        document.getElementById('custosEmptyH3').textContent = custosData.length === 0 ? 'Nenhum lançamento cadastrado' : 'Nenhum resultado encontrado';
+        document.getElementById('custosEmptyP').textContent = custosData.length === 0 ? 'Clique em "Novo Lançamento" para começar.' : 'Tente ajustar o período ou a busca.';
       } else { empty.classList.remove('show'); }
 
-      const allCats=[...custoCats,...despesaCats];
-      const catColor=cat=>{ const i=allCats.indexOf(cat); return CC_COLORS[i>=0?i%CC_COLORS.length:CC_COLORS.length-1]; };
+      const allCats = [...custoCats, ...despesaCats];
+      const catColor = cat => { const i = allCats.indexOf(cat); return CC_COLORS[i >= 0 ? i % CC_COLORS.length : CC_COLORS.length - 1]; };
 
-      body.innerHTML=filtered.map(c=>{
-        const color=catColor(c.categoria);
-        const d=new Date(c.data); const dataFmt=isNaN(d)?c.data:d.toLocaleDateString('pt-BR');
-        const tipo=c.tipo||'custo';
-        const tipoLabel=tipo==='despesa'?'Despesa':'Custo';
-        const recBadge=c.recorrenciaId?`<span class="cc-rec-badge"><i class="bi bi-arrow-repeat"></i>Recorrente</span>`:'';
+      body.innerHTML = filtered.map(c => {
+        const color = catColor(c.categoria);
+        const d = new Date(c.data); const dataFmt = isNaN(d) ? c.data : d.toLocaleDateString('pt-BR');
+        const tipo = c.tipo || 'custo';
+        const tipoLabel = tipo === 'despesa' ? 'Despesa' : 'Custo';
+        const recBadge = c.recorrenciaId ? `<span class="cc-rec-badge"><i class="bi bi-arrow-repeat"></i>Recorrente</span>` : '';
         return `<tr>
           <td>
             <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
@@ -4605,7 +6044,7 @@ transition: border-color .15s;
             </div>
             <div style="display:flex;gap:5px;margin-top:2px">
               <span class="cc-tipo-badge ${tipo}">${tipoLabel}</span>
-              ${c.fornecedor?`<span style="font-size:11px;color:var(--muted)">${escapeHTML(c.fornecedor)}</span>`:''}
+              ${c.fornecedor ? `<span style="font-size:11px;color:var(--muted)">${escapeHTML(c.fornecedor)}</span>` : ''}
             </div>
           </td>
           <td><span class="cc-cat-badge" style="background:${color}18;color:${color}">${escapeHTML(c.categoria)}</span></td>
@@ -4618,106 +6057,106 @@ transition: border-color .15s;
         </tr>`;
       }).join('');
 
-      document.getElementById('custosInfo').textContent=total
-        ?`Mostrando ${Math.min(start+1,total)}–${Math.min(start+custosPerPage,total)} de ${total} lançamento${total!==1?'s':''}`:'—';
+      document.getElementById('custosInfo').textContent = total
+        ? `Mostrando ${Math.min(start + 1, total)}–${Math.min(start + custosPerPage, total)} de ${total} lançamento${total !== 1 ? 's' : ''}` : '—';
       renderCustosPagination(total);
     }
 
     function renderCustosPagination(total) {
-      const pages=custosMeta.totalPages || Math.ceil(total/custosPerPage), pg=document.getElementById('custosPagination');
-      if (pages<=1) { pg.innerHTML=''; return; }
-      let h=`<button class="pg-btn" onclick="custosGoPage(${custosPage-1})" ${custosPage===1?'disabled':''}><i class="bi bi-chevron-left"></i></button>`;
-      for(let i=1;i<=pages;i++) h+=`<button class="pg-btn ${i===custosPage?'active':''}" onclick="custosGoPage(${i})">${i}</button>`;
-      h+=`<button class="pg-btn" onclick="custosGoPage(${custosPage+1})" ${custosPage===pages?'disabled':''}><i class="bi bi-chevron-right"></i></button>`;
-      pg.innerHTML=h;
+      const pages = custosMeta.totalPages || Math.ceil(total / custosPerPage), pg = document.getElementById('custosPagination');
+      if (pages <= 1) { pg.innerHTML = ''; return; }
+      let h = `<button class="pg-btn" onclick="custosGoPage(${custosPage - 1})" ${custosPage === 1 ? 'disabled' : ''}><i class="bi bi-chevron-left"></i></button>`;
+      for (let i = 1; i <= pages; i++) h += `<button class="pg-btn ${i === custosPage ? 'active' : ''}" onclick="custosGoPage(${i})">${i}</button>`;
+      h += `<button class="pg-btn" onclick="custosGoPage(${custosPage + 1})" ${custosPage === pages ? 'disabled' : ''}><i class="bi bi-chevron-right"></i></button>`;
+      pg.innerHTML = h;
     }
     function custosGoPage(p) {
-      const pages=custosMeta.totalPages || Math.ceil((custosMeta.total || 0)/custosPerPage);
-      if(p<1||p>pages) return; loadCustosPage(p);
+      const pages = custosMeta.totalPages || Math.ceil((custosMeta.total || 0) / custosPerPage);
+      if (p < 1 || p > pages) return; loadCustosPage(p);
     }
 
-    function setCustosPeriod(el,period) {
-      custosPeriod=period; custosCatFilter=null; custosPage=1;
-      document.querySelectorAll('#custos-period-btns .period-btn').forEach(b=>b.classList.remove('active'));
+    function setCustosPeriod(el, period) {
+      custosPeriod = period; custosCatFilter = null; custosPage = 1;
+      document.querySelectorAll('#custos-period-btns .period-btn').forEach(b => b.classList.remove('active'));
       el.classList.add('active'); renderCustosKPIs(); renderCustosDonut(); loadCustosPage(1);
     }
 
-    function setCustosTipo(el,tipo) {
-      custosTipoFilter=tipo; custosCatFilter=null; custosPage=1;
-      document.querySelectorAll('#custos-tipo-tabs .custos-tipo-tab').forEach(b=>b.classList.remove('active'));
+    function setCustosTipo(el, tipo) {
+      custosTipoFilter = tipo; custosCatFilter = null; custosPage = 1;
+      document.querySelectorAll('#custos-tipo-tabs .custos-tipo-tab').forEach(b => b.classList.remove('active'));
       el.classList.add('active'); renderCustosKPIs(); renderCustosDonut(); loadCustosPage(1);
     }
 
     // ── Modal lançamento ──
     function onCfTipoChange() {
-      const tipo=document.querySelector('input[name="cf-tipo"]:checked')?.value||'custo';
+      const tipo = document.querySelector('input[name="cf-tipo"]:checked')?.value || 'custo';
       populateCfCat(tipo);
     }
 
     function populateCfCat(tipoOvr) {
-      const sel=document.getElementById('cf-cat'); if (!sel) return;
-      const tipo=tipoOvr||document.querySelector('input[name="cf-tipo"]:checked')?.value||'custo';
-      const cats=getCatsByTipo(tipo);
-      const cur=sel.value;
-      sel.innerHTML=cats.map(c=>`<option value="${c}">${c}</option>`).join('');
-      if (cur) { for(let o of sel.options) if(o.value===cur){o.selected=true;break;} }
+      const sel = document.getElementById('cf-cat'); if (!sel) return;
+      const tipo = tipoOvr || document.querySelector('input[name="cf-tipo"]:checked')?.value || 'custo';
+      const cats = getCatsByTipo(tipo);
+      const cur = sel.value;
+      sel.innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
+      if (cur) { for (let o of sel.options) if (o.value === cur) { o.selected = true; break; } }
     }
 
     function toggleCfRec() {
-      const checked=document.getElementById('cf-recorrente').checked;
-      document.getElementById('cf-rec-opts').style.display=checked?'grid':'none';
+      const checked = document.getElementById('cf-recorrente').checked;
+      document.getElementById('cf-rec-opts').style.display = checked ? 'grid' : 'none';
     }
 
     function openCustosModal(id) {
-      editingCustoId=id||null;
-      document.getElementById('custosModalTitle').textContent=id?'Editar Lançamento':'Novo Lançamento';
-      document.getElementById('cf-rec-section').style.display=id?'none':'block';
-      document.getElementById('cf-recorrente').checked=false;
-      document.getElementById('cf-rec-opts').style.display='none';
+      editingCustoId = id || null;
+      document.getElementById('custosModalTitle').textContent = id ? 'Editar Lançamento' : 'Novo Lançamento';
+      document.getElementById('cf-rec-section').style.display = id ? 'none' : 'block';
+      document.getElementById('cf-recorrente').checked = false;
+      document.getElementById('cf-rec-opts').style.display = 'none';
 
       if (id) {
-        const c=custosData.find(x=>x.id===id); if (!c) return;
-        const tipo=c.tipo||'custo';
-        document.querySelector(`input[name="cf-tipo"][value="${tipo}"]`).checked=true;
+        const c = custosData.find(x => x.id === id); if (!c) return;
+        const tipo = c.tipo || 'custo';
+        document.querySelector(`input[name="cf-tipo"][value="${tipo}"]`).checked = true;
         populateCfCat(tipo);
-        document.getElementById('cf-desc').value       = c.descricao;
-        document.getElementById('cf-valor').value      = fmtCusto(c.valor);
-        document.getElementById('cf-data').value       = c.data;
-        document.getElementById('cf-fornecedor').value = c.fornecedor||'';
-        document.getElementById('cf-obs').value        = c.obs||'';
-        for(let o of document.getElementById('cf-cat').options) if(o.value===c.categoria){o.selected=true;break;}
+        document.getElementById('cf-desc').value = c.descricao;
+        document.getElementById('cf-valor').value = fmtCusto(c.valor);
+        document.getElementById('cf-data').value = c.data;
+        document.getElementById('cf-fornecedor').value = c.fornecedor || '';
+        document.getElementById('cf-obs').value = c.obs || '';
+        for (let o of document.getElementById('cf-cat').options) if (o.value === c.categoria) { o.selected = true; break; }
       } else {
-        document.querySelector('input[name="cf-tipo"][value="custo"]').checked=true;
+        document.querySelector('input[name="cf-tipo"][value="custo"]').checked = true;
         populateCfCat('custo');
-        document.getElementById('cf-desc').value       = '';
-        document.getElementById('cf-valor').value      = '';
-        document.getElementById('cf-data').value       = new Date().toISOString().split('T')[0];
+        document.getElementById('cf-desc').value = '';
+        document.getElementById('cf-valor').value = '';
+        document.getElementById('cf-data').value = new Date().toISOString().split('T')[0];
         document.getElementById('cf-fornecedor').value = '';
-        document.getElementById('cf-obs').value        = '';
+        document.getElementById('cf-obs').value = '';
       }
       document.getElementById('custosModalOverlay').classList.add('open');
     }
     function closeCustosModal() { document.getElementById('custosModalOverlay').classList.remove('open'); }
 
     async function saveCusto() {
-      const desc  = document.getElementById('cf-desc').value.trim();
-      const valor = parseFloat((document.getElementById('cf-valor').value||'0').replace(/\./g,'').replace(',','.'));
-      const data  = document.getElementById('cf-data').value;
-      const cat   = document.getElementById('cf-cat').value;
-      const tipo  = document.querySelector('input[name="cf-tipo"]:checked')?.value||'custo';
-      if (!desc||!valor||!data||!cat) { showToast('Preencha todos os campos obrigatórios.'); return; }
+      const desc = document.getElementById('cf-desc').value.trim();
+      const valor = parseFloat((document.getElementById('cf-valor').value || '0').replace(/\./g, '').replace(',', '.'));
+      const data = document.getElementById('cf-data').value;
+      const cat = document.getElementById('cf-cat').value;
+      const tipo = document.querySelector('input[name="cf-tipo"]:checked')?.value || 'custo';
+      if (!desc || !valor || !data || !cat) { showToast('Preencha todos os campos obrigatórios.'); return; }
 
       const base = {
-        descricao: desc, valor, data, categoria:cat, tipo,
+        descricao: desc, valor, data, categoria: cat, tipo,
         fornecedor: document.getElementById('cf-fornecedor').value.trim(),
-        obs:        document.getElementById('cf-obs').value.trim(),
+        obs: document.getElementById('cf-obs').value.trim(),
       };
 
       if (editingCustoId) {
         const res = await NexoAuth.apiFetch(`/custos/${editingCustoId}`, { method: 'PUT', body: JSON.stringify(base) });
         if (!res.ok) { showToast('Erro ao atualizar: ' + res.message); return; }
-        const idx = custosData.findIndex(x=>x.id===editingCustoId);
-        if (idx>=0) custosData[idx] = res.data;
+        const idx = custosData.findIndex(x => x.id === editingCustoId);
+        if (idx >= 0) custosData[idx] = res.data;
         closeCustosModal(); renderCustosPanel();
         showToast('Lançamento atualizado!'); return;
       }
@@ -4725,15 +6164,15 @@ transition: border-color .15s;
       const recorrente = document.getElementById('cf-recorrente').checked;
       if (recorrente) {
         const freq = document.getElementById('cf-freq').value;
-        const reps = parseInt(document.getElementById('cf-rep').value)||3;
+        const reps = parseInt(document.getElementById('cf-rep').value) || 3;
         const recorrenciaId = `rec-${Date.now()}`;
         const criados = [];
-        for (let i=0;i<reps;i++) {
+        for (let i = 0; i < reps; i++) {
           const d = new Date(data);
-          if (freq==='mensal')  d.setMonth(d.getMonth()+i);
-          if (freq==='semanal') d.setDate(d.getDate()+i*7);
-          if (freq==='anual')   d.setFullYear(d.getFullYear()+i);
-          const res = await NexoAuth.apiFetch('/custos', { method: 'POST', body: JSON.stringify({...base, data:d.toISOString().split('T')[0], recorrenciaId}) });
+          if (freq === 'mensal') d.setMonth(d.getMonth() + i);
+          if (freq === 'semanal') d.setDate(d.getDate() + i * 7);
+          if (freq === 'anual') d.setFullYear(d.getFullYear() + i);
+          const res = await NexoAuth.apiFetch('/custos', { method: 'POST', body: JSON.stringify({ ...base, data: d.toISOString().split('T')[0], recorrenciaId }) });
           if (res.ok) criados.push(res.data);
         }
         custosData = [...criados, ...custosData];
@@ -4749,15 +6188,15 @@ transition: border-color .15s;
     }
 
     // ── Confirm / delete ──
-    function openCcConfirm(msg,cb,serieCb) {
-      document.getElementById('ccConfirmMsg').textContent=msg;
-      ccConfirmCb=cb; ccSerieCb=serieCb||null;
-      document.getElementById('btnDelSerie').style.display=serieCb?'flex':'none';
+    function openCcConfirm(msg, cb, serieCb) {
+      document.getElementById('ccConfirmMsg').textContent = msg;
+      ccConfirmCb = cb; ccSerieCb = serieCb || null;
+      document.getElementById('btnDelSerie').style.display = serieCb ? 'flex' : 'none';
       document.getElementById('ccConfirmOverlay').classList.add('open');
     }
-    function closeCcConfirm() { document.getElementById('ccConfirmOverlay').classList.remove('open'); ccConfirmCb=null; ccSerieCb=null; }
-    function doCcConfirm()    { if(ccConfirmCb) ccConfirmCb(); closeCcConfirm(); }
-    function doDelSerie()     { if(ccSerieCb)   ccSerieCb();   closeCcConfirm(); }
+    function closeCcConfirm() { document.getElementById('ccConfirmOverlay').classList.remove('open'); ccConfirmCb = null; ccSerieCb = null; }
+    function doCcConfirm() { if (ccConfirmCb) ccConfirmCb(); closeCcConfirm(); }
+    function doDelSerie() { if (ccSerieCb) ccSerieCb(); closeCcConfirm(); }
 
     // ── Receber conta (baixa de lançamento avencer/vencida → pago) ──
     let _receberId = null;
@@ -4778,12 +6217,12 @@ transition: border-color .15s;
       _receberTudoItems = [];
       _receberId = id;
       const hoje = new Date().toISOString().slice(0, 10);
-      document.getElementById('rcCliente').textContent  = l.parte || l.descricao || '—';
-      document.getElementById('rcDesc').textContent     = l.descricao || '—';
-      document.getElementById('rcValor').textContent    = `R$ ${fmt(l.valor || 0)}`;
-      document.getElementById('rcDataInput').value      = hoje;
-      document.getElementById('rcMetodoInput').value    = '';
-      document.getElementById('rcObsInput').value       = '';
+      document.getElementById('rcCliente').textContent = l.parte || l.descricao || '—';
+      document.getElementById('rcDesc').textContent = l.descricao || '—';
+      document.getElementById('rcValor').textContent = `R$ ${fmt(l.valor || 0)}`;
+      document.getElementById('rcDataInput').value = hoje;
+      document.getElementById('rcMetodoInput').value = '';
+      document.getElementById('rcObsInput').value = '';
       document.getElementById('receberOverlay').classList.add('open');
     }
 
@@ -4874,12 +6313,12 @@ transition: border-color .15s;
       _receberTudoItems = items;
 
       const hoje = new Date().toISOString().slice(0, 10);
-      document.getElementById('rcCliente').textContent  = receberClienteNome || items[0].parte || '—';
-      document.getElementById('rcDesc').textContent     = `Receber tudo (${items.length} venda${items.length !== 1 ? 's' : ''})`;
-      document.getElementById('rcValor').textContent    = `R$ ${fmt(total)}`;
-      document.getElementById('rcDataInput').value      = hoje;
-      document.getElementById('rcMetodoInput').value    = '';
-      document.getElementById('rcObsInput').value       = '';
+      document.getElementById('rcCliente').textContent = receberClienteNome || items[0].parte || '—';
+      document.getElementById('rcDesc').textContent = `Receber tudo (${items.length} venda${items.length !== 1 ? 's' : ''})`;
+      document.getElementById('rcValor').textContent = `R$ ${fmt(total)}`;
+      document.getElementById('rcDataInput').value = hoje;
+      document.getElementById('rcMetodoInput').value = '';
+      document.getElementById('rcObsInput').value = '';
       document.getElementById('receberOverlay').classList.add('open');
     }
 
@@ -4894,7 +6333,7 @@ transition: border-color .15s;
 
       const pagoEm = document.getElementById('rcDataInput').value || new Date().toISOString().slice(0, 10);
       const metodo = document.getElementById('rcMetodoInput').value;
-      const obs    = document.getElementById('rcObsInput').value.trim();
+      const obs = document.getElementById('rcObsInput').value.trim();
 
       const res = await NexoAuth.apiFetch(`/financeiro/${_receberId}`, {
         method: 'PUT',
@@ -4903,7 +6342,7 @@ transition: border-color .15s;
           pagoEm,
           recebidoEm: pagoEm,
           ...(metodo && { formaPagamento: metodo }),
-          ...(obs    && { obs }),
+          ...(obs && { obs }),
         }),
       });
       btn.disabled = false;
@@ -4937,7 +6376,7 @@ transition: border-color .15s;
 
       const pagoEm = document.getElementById('rcDataInput').value || new Date().toISOString().slice(0, 10);
       const metodo = document.getElementById('rcMetodoInput').value;
-      const obs    = document.getElementById('rcObsInput').value.trim();
+      const obs = document.getElementById('rcObsInput').value.trim();
       const batchId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
       const total = _receberTudoItems.reduce((sum, item) => sum + (Number(item.valor) || 0), 0);
       const marker = buildReceberTudoMarker(batchId, total, _receberTudoItems.length);
@@ -4987,7 +6426,7 @@ transition: border-color .15s;
     // ═══════════════════════════════════════════════
     let recebPage = 1;
     let recebPageMeta = { total: 0, totalPages: 1 };
-    let recebClienteId   = null;
+    let recebClienteId = null;
     let recebClienteTimer = null;
 
     function applyRecebFilter() {
@@ -4999,14 +6438,14 @@ transition: border-color .15s;
     function buildRecebParams(page, paginate) {
       const params = new URLSearchParams({ tipo: 'receita', statusIn: NexoFinanceiroStatus.realizadosParam(), sortBy: 'pagoEm' });
       if (paginate) { params.set('page', String(page)); params.set('limit', '20'); }
-      const q      = document.getElementById('recebSearch')?.value.trim()  || '';
-      const dIni   = document.getElementById('recebDtIni')?.value           || '';
-      const dFim   = document.getElementById('recebDtFim')?.value           || '';
-      const metodo = document.getElementById('recebMetodo')?.value          || '';
-      if (q)              params.set('q', q);
-      if (dIni)           params.set('pagoInicio', dIni);
-      if (dFim)           params.set('pagoFim', dFim);
-      if (metodo)         params.set('formaPagamento', metodo);
+      const q = document.getElementById('recebSearch')?.value.trim() || '';
+      const dIni = document.getElementById('recebDtIni')?.value || '';
+      const dFim = document.getElementById('recebDtFim')?.value || '';
+      const metodo = document.getElementById('recebMetodo')?.value || '';
+      if (q) params.set('q', q);
+      if (dIni) params.set('pagoInicio', dIni);
+      if (dFim) params.set('pagoFim', dFim);
+      if (metodo) params.set('formaPagamento', metodo);
       if (recebClienteId) params.set('clienteId', recebClienteId);
       return params.toString();
     }
@@ -5019,13 +6458,15 @@ transition: border-color .15s;
       const r = await NexoAuth.apiFetch('/financeiro?' + buildRecebParams(page, true));
       if (!r.ok) { showToast('Erro ao carregar recebimentos.', 'error'); return; }
 
-      recebPageMeta = r.pagination || { total: (r.data||[]).length, totalPages: 1 };
+      recebPageMeta = r.pagination || { total: (r.data || []).length, totalPages: 1 };
       renderRecebimentos(r.data || []);
     }
 
     function fmtMetodo(m) {
-      const MAP = { dinheiro:'Dinheiro', pix:'PIX', credito:'Crédito', debito:'Débito',
-        transferencia:'Transferência', cheque:'Cheque', multiplo:'Múltiplo', fiado:'—', outro:'Outro' };
+      const MAP = {
+        dinheiro: 'Dinheiro', pix: 'PIX', credito: 'Crédito', debito: 'Débito',
+        transferencia: 'Transferência', cheque: 'Cheque', multiplo: 'Múltiplo', fiado: '—', outro: 'Outro'
+      };
       return m ? (MAP[m.toLowerCase()] || m) : '—';
     }
 
@@ -5057,7 +6498,7 @@ transition: border-color .15s;
 
     function renderRecebimentos(lista) {
       const tbody = document.getElementById('tblRecebimentos');
-      const info  = document.getElementById('recebInfo');
+      const info = document.getElementById('recebInfo');
       const displayLista = agruparRecebimentosTudo(lista);
       const total = recebPageMeta.total || displayLista.length;
       if (!tbody) return;
@@ -5071,14 +6512,14 @@ transition: border-color .15s;
 
       tbody.innerHTML = displayLista.map(l => {
         const dataExib = fmtRecebDateTime(l);
-        const cliente  = escapeHTML(l.parte || '—');
-        const descr    = escapeHTML(l.descricao || '—');
+        const cliente = escapeHTML(l.parte || '—');
+        const descr = escapeHTML(l.descricao || '—');
         const metodoTx = fmtMetodo(l.formaPagamento);
         const vendaLink = l.receberTudo
           ? `<span style="font-size:11px;color:var(--muted)">${l.qtd} vendas</span>`
           : l.vendaId
-          ? `<span style="font-size:11px;font-family:var(--font-b);color:var(--accent)">${escapeHTML(l.vendaId)}</span>`
-          : '<span style="color:var(--muted)">—</span>';
+            ? `<span style="font-size:11px;font-family:var(--font-b);color:var(--accent)">${escapeHTML(l.vendaId)}</span>`
+            : '<span style="color:var(--muted)">—</span>';
         return `<tr>
           <td style="white-space:nowrap">${dataExib}</td>
           <td class="u-fw-500">${cliente}</td>
@@ -5140,37 +6581,37 @@ transition: border-color .15s;
       const pages = recebPageMeta.totalPages || 1;
       if (pages <= 1) { pg.innerHTML = ''; return; }
       let html = '';
-      if (recebPage > 1)     html += `<button class="pg-btn" onclick="loadRecebimentos(${recebPage-1},true)">‹</button>`;
+      if (recebPage > 1) html += `<button class="pg-btn" onclick="loadRecebimentos(${recebPage - 1},true)">‹</button>`;
       const start = Math.max(1, recebPage - 2), end = Math.min(pages, recebPage + 2);
       for (let i = start; i <= end; i++)
-        html += `<button class="pg-btn${i===recebPage?' active':''}" onclick="loadRecebimentos(${i},true)">${i}</button>`;
-      if (recebPage < pages) html += `<button class="pg-btn" onclick="loadRecebimentos(${recebPage+1},true)">›</button>`;
+        html += `<button class="pg-btn${i === recebPage ? ' active' : ''}" onclick="loadRecebimentos(${i},true)">${i}</button>`;
+      if (recebPage < pages) html += `<button class="pg-btn" onclick="loadRecebimentos(${recebPage + 1},true)">›</button>`;
       pg.innerHTML = html;
     }
 
     async function loadRecebKPIs() {
       const dIni = document.getElementById('recebDtIni')?.value || '';
       const dFim = document.getElementById('recebDtFim')?.value || '';
-      const cid  = recebClienteId || '';
+      const cid = recebClienteId || '';
       const params = new URLSearchParams();
       if (dIni) params.set('pagoInicio', dIni);
       if (dFim) params.set('pagoFim', dFim);
-      if (cid)  params.set('clienteId', cid);
+      if (cid) params.set('clienteId', cid);
 
       const r = await NexoAuth.apiFetch('/financeiro/resumo-recebimentos?' + params.toString());
       if (!r.ok) return;
       const d = r.data;
-      document.getElementById('recebKpiHoje').textContent    = `R$ ${fmt(d.recebidoHoje  || 0)}`;
-      document.getElementById('recebKpiMes').textContent     = `R$ ${fmt(d.recebidoMes   || 0)}`;
-      document.getElementById('recebKpiPeriodo').textContent = `R$ ${fmt(d.totalPeriodo  || 0)}`;
-      document.getElementById('recebKpiTicket').textContent  = `R$ ${fmt(d.ticketMedio   || 0)}`;
+      document.getElementById('recebKpiHoje').textContent = `R$ ${fmt(d.recebidoHoje || 0)}`;
+      document.getElementById('recebKpiMes').textContent = `R$ ${fmt(d.recebidoMes || 0)}`;
+      document.getElementById('recebKpiPeriodo').textContent = `R$ ${fmt(d.totalPeriodo || 0)}`;
+      document.getElementById('recebKpiTicket').textContent = `R$ ${fmt(d.ticketMedio || 0)}`;
     }
 
     // Autocomplete de cliente no filtro de Recebimentos
     function onCrCliInput() {
       clearTimeout(receberClienteTimer);
       const inp = document.getElementById('crCliInput');
-      const q   = inp.value.trim();
+      const q = inp.value.trim();
       document.getElementById('crCliClear').style.display = q ? '' : 'none';
 
       if (receberClienteId) {
@@ -5187,13 +6628,13 @@ transition: border-color .15s;
       }
 
       receberClienteTimer = setTimeout(async () => {
-        const r    = await NexoAuth.apiFetch(`/clientes?q=${encodeURIComponent(q)}&limit=20`);
+        const r = await NexoAuth.apiFetch(`/clientes?q=${encodeURIComponent(q)}&limit=20`);
         const drop = document.getElementById('crCliDrop');
-        if (!r.ok || !(r.data||[]).length) {
+        if (!r.ok || !(r.data || []).length) {
           drop.innerHTML = '<div class="receb-cli-empty">Nenhum cliente encontrado</div>';
         } else {
-          drop.innerHTML = (r.data||[]).map(c =>
-            `<div class="receb-cli-opt" onclick="selectCrCli('${c.id}','${c.nome.replace(/'/g,"\\'")}')">${escapeHTML(c.nome)}</div>`
+          drop.innerHTML = (r.data || []).map(c =>
+            `<div class="receb-cli-opt" onclick="selectCrCli('${c.id}','${c.nome.replace(/'/g, "\\'")}')">${escapeHTML(c.nome)}</div>`
           ).join('');
         }
         drop.classList.add('open');
@@ -5224,7 +6665,7 @@ transition: border-color .15s;
     function onRecebCliInput() {
       clearTimeout(recebClienteTimer);
       const inp = document.getElementById('recebCliInput');
-      const q   = inp.value.trim();
+      const q = inp.value.trim();
       document.getElementById('recebCliClear').style.display = q ? '' : 'none';
 
       if (recebClienteId) { recebClienteId = null; applyRecebFilter(); }
@@ -5232,13 +6673,13 @@ transition: border-color .15s;
       if (q.length < 2) { document.getElementById('recebCliDrop').classList.remove('open'); return; }
 
       recebClienteTimer = setTimeout(async () => {
-        const r    = await NexoAuth.apiFetch(`/clientes?q=${encodeURIComponent(q)}&limit=20`);
+        const r = await NexoAuth.apiFetch(`/clientes?q=${encodeURIComponent(q)}&limit=20`);
         const drop = document.getElementById('recebCliDrop');
-        if (!r.ok || !(r.data||[]).length) {
+        if (!r.ok || !(r.data || []).length) {
           drop.innerHTML = '<div class="receb-cli-empty">Nenhum cliente encontrado</div>';
         } else {
-          drop.innerHTML = (r.data||[]).map(c =>
-            `<div class="receb-cli-opt" onclick="selectRecebCli('${c.id}','${c.nome.replace(/'/g,"\\'")}')">${c.nome}</div>`
+          drop.innerHTML = (r.data || []).map(c =>
+            `<div class="receb-cli-opt" onclick="selectRecebCli('${c.id}','${c.nome.replace(/'/g, "\\'")}')">${c.nome}</div>`
           ).join('');
         }
         drop.classList.add('open');
@@ -5262,20 +6703,20 @@ transition: border-color .15s;
     }
 
     function deleteCusto(id) {
-      const c=custosData.find(x=>x.id===id); if (!c) return;
-      const serieCount=c.recorrenciaId ? custosData.filter(x=>x.recorrenciaId===c.recorrenciaId).length : 0;
-      const serieCb = serieCount>1 ? async ()=>{
+      const c = custosData.find(x => x.id === id); if (!c) return;
+      const serieCount = c.recorrenciaId ? custosData.filter(x => x.recorrenciaId === c.recorrenciaId).length : 0;
+      const serieCb = serieCount > 1 ? async () => {
         const res = await NexoAuth.apiFetch(`/custos/${id}?serie=1`, { method: 'DELETE' });
         if (!res.ok) { showToast('Erro ao remover série: ' + res.message); return; }
-        custosData = custosData.filter(x=>x.recorrenciaId!==c.recorrenciaId);
+        custosData = custosData.filter(x => x.recorrenciaId !== c.recorrenciaId);
         renderCustosPanel(); showToast(`${serieCount} lançamentos da série removidos.`);
       } : null;
       openCcConfirm(
-        serieCount>1 ? `"${c.descricao}" — série com ${serieCount} lançamentos. Remover só este ou toda a série?` : `"${c.descricao}" será removido permanentemente.`,
-        async ()=>{
+        serieCount > 1 ? `"${c.descricao}" — série com ${serieCount} lançamentos. Remover só este ou toda a série?` : `"${c.descricao}" será removido permanentemente.`,
+        async () => {
           const res = await NexoAuth.apiFetch(`/custos/${id}`, { method: 'DELETE' });
           if (!res.ok) { showToast('Erro ao remover: ' + res.message); return; }
-          custosData = custosData.filter(x=>x.id!==id);
+          custosData = custosData.filter(x => x.id !== id);
           renderCustosPanel(); showToast('Lançamento removido.');
         },
         serieCb
@@ -5284,38 +6725,38 @@ transition: border-color .15s;
 
     // ── Modal categorias ──
     function openCustosCatModal() {
-      activeCatTab='custo';
-      document.querySelectorAll('.cc-cat-tipo-tab').forEach((t,i)=>t.classList.toggle('active',i===0));
+      activeCatTab = 'custo';
+      document.querySelectorAll('.cc-cat-tipo-tab').forEach((t, i) => t.classList.toggle('active', i === 0));
       renderCustosCatList();
       document.getElementById('custosCatOverlay').classList.add('open');
     }
     function closeCustosCatModal() {
       document.getElementById('custosCatOverlay').classList.remove('open');
-      document.getElementById('cc-cat-input').value='';
+      document.getElementById('cc-cat-input').value = '';
       populateCfCat();
     }
-    function setCatTipoTab(el,tipo) {
-      activeCatTab=tipo;
-      document.querySelectorAll('.cc-cat-tipo-tab').forEach(t=>t.classList.remove('active'));
+    function setCatTipoTab(el, tipo) {
+      activeCatTab = tipo;
+      document.querySelectorAll('.cc-cat-tipo-tab').forEach(t => t.classList.remove('active'));
       el.classList.add('active');
-      document.getElementById('cc-cat-input').value='';
+      document.getElementById('cc-cat-input').value = '';
       renderCustosCatList();
     }
 
     function renderCustosCatList() {
-      const cats=getCatsByTipo(activeCatTab);
-      const list=document.getElementById('custosCatList');
-      document.getElementById('custosCatCount').textContent=cats.length+' categorias';
+      const cats = getCatsByTipo(activeCatTab);
+      const list = document.getElementById('custosCatList');
+      document.getElementById('custosCatCount').textContent = cats.length + ' categorias';
       if (!cats.length) {
-        list.innerHTML='<div style="text-align:center;padding:32px;color:var(--muted);font-size:13px">Nenhuma categoria cadastrada.</div>'; return;
+        list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--muted);font-size:13px">Nenhuma categoria cadastrada.</div>'; return;
       }
-      list.innerHTML=cats.map((cat,i)=>{
-        const count=custosData.filter(c=>c.categoria===cat).length;
-        const color=CC_COLORS[i%CC_COLORS.length];
+      list.innerHTML = cats.map((cat, i) => {
+        const count = custosData.filter(c => c.categoria === cat).length;
+        const color = CC_COLORS[i % CC_COLORS.length];
         return `<div class="cc-cat-row" id="cc-row-${i}">
           <div class="cc-cat-accent" style="background:${color}"></div>
           <span class="cc-cat-name" id="cc-name-${i}">${cat}</span>
-          <span class="cc-cat-pill" style="background:${color}20;color:${color}">${count} lançamento${count!==1?'s':''}</span>
+          <span class="cc-cat-pill" style="background:${color}20;color:${color}">${count} lançamento${count !== 1 ? 's' : ''}</span>
           <div class="act-btn" onclick="startRenameCustosCat(${i})" title="Renomear"><i class="bi bi-pencil"></i></div>
           <div class="act-btn del" onclick="deleteCustosCat(${i})" title="Excluir"><i class="bi bi-trash3"></i></div>
         </div>`;
@@ -5323,39 +6764,39 @@ transition: border-color .15s;
     }
 
     function addCustosCat() {
-      const inp=document.getElementById('cc-cat-input'), val=inp.value.trim();
+      const inp = document.getElementById('cc-cat-input'), val = inp.value.trim();
       if (!val) return;
-      const cats=getCatsByTipo(activeCatTab);
-      if (cats.some(c=>c.toLowerCase()===val.toLowerCase())) { showToast('Categoria já existe!'); return; }
+      const cats = getCatsByTipo(activeCatTab);
+      if (cats.some(c => c.toLowerCase() === val.toLowerCase())) { showToast('Categoria já existe!'); return; }
       cats.push(val);
-      activeCatTab==='despesa' ? saveDespesaCats() : saveCustoCats();
-      inp.value=''; renderCustosCatList(); showToast('Categoria adicionada!');
+      activeCatTab === 'despesa' ? saveDespesaCats() : saveCustoCats();
+      inp.value = ''; renderCustosCatList(); showToast('Categoria adicionada!');
     }
 
     function deleteCustosCat(i) {
-      const cats=getCatsByTipo(activeCatTab), cat=cats[i];
-      const inUse=custosData.filter(c=>c.categoria===cat).length;
-      if (inUse>0 && !confirm(`"${cat}" está em uso por ${inUse} lançamento(s). Remover mesmo assim?`)) return;
-      cats.splice(i,1);
-      activeCatTab==='despesa' ? saveDespesaCats() : saveCustoCats();
+      const cats = getCatsByTipo(activeCatTab), cat = cats[i];
+      const inUse = custosData.filter(c => c.categoria === cat).length;
+      if (inUse > 0 && !confirm(`"${cat}" está em uso por ${inUse} lançamento(s). Remover mesmo assim?`)) return;
+      cats.splice(i, 1);
+      activeCatTab === 'despesa' ? saveDespesaCats() : saveCustoCats();
       renderCustosCatList(); showToast('Categoria removida.');
     }
 
     function startRenameCustosCat(i) {
-      const cats=getCatsByTipo(activeCatTab);
-      const nameEl=document.getElementById(`cc-name-${i}`); if (!nameEl) return;
-      const current=cats[i]; let esc=false;
-      nameEl.outerHTML=`<input class="cc-cat-edit-inp" id="cc-edit-${i}" value="${current.replace(/"/g,'&quot;')}">`;
-      const inp=document.getElementById(`cc-edit-${i}`);
-      inp.addEventListener('keydown',e=>{ if(e.key==='Escape'){esc=true;renderCustosCatList();} if(e.key==='Enter') inp.blur(); });
-      inp.addEventListener('blur',()=>{
-        if(esc) return;
-        const nv=inp.value.trim();
-        if (nv&&nv!==current) {
-          if (cats.some((c,idx)=>idx!==i&&c.toLowerCase()===nv.toLowerCase())) { showToast('Categoria já existe!'); renderCustosCatList(); return; }
-          custosData.forEach(c=>{ if(c.categoria===current) { c.categoria=nv; NexoAuth.apiFetch(`/custos/${c.id}`,{method:'PUT',body:JSON.stringify({categoria:nv})}); } });
-          cats[i]=nv;
-          activeCatTab==='despesa' ? saveDespesaCats() : saveCustoCats();
+      const cats = getCatsByTipo(activeCatTab);
+      const nameEl = document.getElementById(`cc-name-${i}`); if (!nameEl) return;
+      const current = cats[i]; let esc = false;
+      nameEl.outerHTML = `<input class="cc-cat-edit-inp" id="cc-edit-${i}" value="${current.replace(/"/g, '&quot;')}">`;
+      const inp = document.getElementById(`cc-edit-${i}`);
+      inp.addEventListener('keydown', e => { if (e.key === 'Escape') { esc = true; renderCustosCatList(); } if (e.key === 'Enter') inp.blur(); });
+      inp.addEventListener('blur', () => {
+        if (esc) return;
+        const nv = inp.value.trim();
+        if (nv && nv !== current) {
+          if (cats.some((c, idx) => idx !== i && c.toLowerCase() === nv.toLowerCase())) { showToast('Categoria já existe!'); renderCustosCatList(); return; }
+          custosData.forEach(c => { if (c.categoria === current) { c.categoria = nv; NexoAuth.apiFetch(`/custos/${c.id}`, { method: 'PUT', body: JSON.stringify({ categoria: nv }) }); } });
+          cats[i] = nv;
+          activeCatTab === 'despesa' ? saveDespesaCats() : saveCustoCats();
           showToast('Categoria renomeada!');
         }
         renderCustosCatList();

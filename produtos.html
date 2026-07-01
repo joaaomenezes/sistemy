@@ -3,9 +3,10 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistemy — Produtos</title>
+  <title>Azzys — Produtos</title>
   <link rel="stylesheet" href="global.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
@@ -914,6 +915,7 @@
     }
 
     @media(max-width:900px) {
+
       .modal.product-modal,
       .modal.product-modal-sm,
       .modal.product-confirm-modal {
@@ -949,7 +951,7 @@
         flex-wrap: wrap;
       }
 
-      .toolbar-right > *,
+      .toolbar-right>*,
       .search-input,
       .select-filter,
       .cat-filter-wrap {
@@ -992,7 +994,7 @@
         flex-direction: column;
       }
 
-      .mf-actions > * {
+      .mf-actions>* {
         width: 100%;
       }
 
@@ -1144,7 +1146,7 @@
       padding: 10px 12px;
       border: 1px solid var(--border);
       border-radius: 12px;
-      background: rgba(255,255,255,.03);
+      background: rgba(255, 255, 255, .03);
       color: var(--sub);
       font-size: 13px;
       font-weight: 700;
@@ -1779,7 +1781,8 @@
         <div class="tab-panel" id="t-fotos">
           <div class="form-section">
             <div class="form-section-title">Imagens do produto</div>
-            <input type="file" id="imgInput" class="product-file-input" accept="image/*" onchange="handleImageUpload(event)">
+            <input type="file" id="imgInput" class="product-file-input" accept="image/*"
+              onchange="handleImageUpload(event)">
             <div class="upload-zone" onclick="document.getElementById('imgInput').click()">
               <i class="bi bi-cloud-upload"></i>
               <p>Arraste imagens aqui ou <span>clique para selecionar</span></p>
@@ -1887,13 +1890,15 @@
         <div class="stock-cta-icon"><i class="bi bi-box-seam"></i></div>
         <div class="stock-cta-text">
           <h3>Primeiro produto cadastrado</h3>
-          <p>Para vender este produto, registre uma entrada de estoque. O estoque inicial continua sendo controlado pelo módulo Estoque.</p>
+          <p>Para vender este produto, registre uma entrada de estoque. O estoque inicial continua sendo controlado pelo
+            módulo Estoque.</p>
           <div class="stock-cta-product" id="stockCtaProduct">—</div>
         </div>
       </div>
       <div class="stock-cta-actions">
         <button class="btn-cancel" onclick="closeStockCta()">Fazer depois</button>
-        <button class="btn-save" onclick="goStockEntryFromCta()"><i class="bi bi-arrow-down-circle"></i> Registrar entrada agora</button>
+        <button class="btn-save" onclick="goStockEntryFromCta()"><i class="bi bi-arrow-down-circle"></i> Registrar
+          entrada agora</button>
       </div>
     </div>
   </div>
@@ -1941,7 +1946,7 @@
 
     // ─── CONSTANTS ───────────────────────────────────────────
     const EMOJIS = ['📦', '🛒', '🔧', '🔩', '💊', '🧴', '🧹', '🍎', '🥤', '👕', '💻', '📱', '🔌', '🪑', '🛋', '🚗', '🔑', '📋', '🧰', '⚡', '🌿', '🧪', '🎯', '🏷️', '🪣', '🔦', '🧲', '📏', '🖨️', '📸'];
-const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec4899', '#f59e0b', '#14b8a6', '#6b7f96', '#e8edf5'];
+    const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec4899', '#f59e0b', '#14b8a6', '#6b7f96', '#e8edf5'];
 
     const PRODUCT_IMAGE_CACHE_KEY = 'nexoerp.produtos.imagens';
 
@@ -2018,7 +2023,7 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
     }
 
     function markFirstProductStockCtaSeen() {
-      try { localStorage.setItem(firstProductCtaKey(), '1'); } catch (_) {}
+      try { localStorage.setItem(firstProductCtaKey(), '1'); } catch (_) { }
     }
 
     function shouldShowFirstProductStockCta(savedProduct, wasEditing, hadProductsBefore) {
@@ -2446,41 +2451,41 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
       const imageForCache = imageWasRemoved ? null : (selectedImage || existing?.imagem || '');
       const payload = {
         nome,
-        sku:             document.getElementById('f-sku').value || `PRD-${Date.now().toString().slice(-4)}`,
-        ean:             document.getElementById('f-ean').value || '',
-        cat:             document.getElementById('f-cat').value || 'Outros',
-        marca:           document.getElementById('f-marca').value || '',
-        unidade:         document.getElementById('f-unidade').value || 'un',
-        descricao:       document.getElementById('f-desc').value || '',
-        preco:           parseFloat((preco || '0').replace(',', '.')) || 0,
-        custo:           parseFloat((document.getElementById('f-custo').value || '0').replace(',', '.')) || 0,
-        precoMin:        parseFloat((document.getElementById('f-precoMin').value || '0').replace(',', '.')) || 0,
-        descMax:         parseFloat((document.getElementById('f-descMax').value || '0').replace(',', '.')) || 0,
-        tabela:          document.getElementById('f-tabela').value || 'Padrão',
-        ncm:             document.getElementById('f-ncm').value || '',
-        cest:            document.getElementById('f-cest').value || '',
-        cfop:            document.getElementById('f-cfop').value || '',
-        cst:             document.getElementById('f-cst').value || '',
-        icms:            document.getElementById('f-icms').value || '',
-        pis:             document.getElementById('f-pis').value || '',
-        estoqueMin:      parseInt(document.getElementById('f-estoqueMin').value) || 5,
-        estoqueMax:      parseInt(document.getElementById('f-estoqueMax').value) || 100,
-        deposito:        document.getElementById('f-deposito').value || 'Depósito Principal',
-        posicao:         document.getElementById('f-posicao').value || '',
-        fornecedor:      document.getElementById('f-fornecedor').value || '',
-        prazo:           parseInt(document.getElementById('f-prazo').value) || 0,
-        controlEstoque:  document.getElementById('tog-estoque').classList.contains('on'),
+        sku: document.getElementById('f-sku').value || `PRD-${Date.now().toString().slice(-4)}`,
+        ean: document.getElementById('f-ean').value || '',
+        cat: document.getElementById('f-cat').value || 'Outros',
+        marca: document.getElementById('f-marca').value || '',
+        unidade: document.getElementById('f-unidade').value || 'un',
+        descricao: document.getElementById('f-desc').value || '',
+        preco: parseFloat((preco || '0').replace(',', '.')) || 0,
+        custo: parseFloat((document.getElementById('f-custo').value || '0').replace(',', '.')) || 0,
+        precoMin: parseFloat((document.getElementById('f-precoMin').value || '0').replace(',', '.')) || 0,
+        descMax: parseFloat((document.getElementById('f-descMax').value || '0').replace(',', '.')) || 0,
+        tabela: document.getElementById('f-tabela').value || 'Padrão',
+        ncm: document.getElementById('f-ncm').value || '',
+        cest: document.getElementById('f-cest').value || '',
+        cfop: document.getElementById('f-cfop').value || '',
+        cst: document.getElementById('f-cst').value || '',
+        icms: document.getElementById('f-icms').value || '',
+        pis: document.getElementById('f-pis').value || '',
+        estoqueMin: parseInt(document.getElementById('f-estoqueMin').value) || 5,
+        estoqueMax: parseInt(document.getElementById('f-estoqueMax').value) || 100,
+        deposito: document.getElementById('f-deposito').value || 'Depósito Principal',
+        posicao: document.getElementById('f-posicao').value || '',
+        fornecedor: document.getElementById('f-fornecedor').value || '',
+        prazo: parseInt(document.getElementById('f-prazo').value) || 0,
+        controlEstoque: document.getElementById('tog-estoque').classList.contains('on'),
         vendaSemEstoque: document.getElementById('tog-venda').classList.contains('on'),
-        perecivel:       document.getElementById('tog-perecivel').classList.contains('on'),
-        dataFabricacao:  document.getElementById('f-dt-fabricacao').value || '',
-        dataVencimento:  document.getElementById('f-dt-vencimento').value || '',
-        lote:            document.getElementById('f-lote').value.trim() || '',
-        status:          document.getElementById('tog-ativo').classList.contains('on') ? 'ativo' : 'inativo',
-        exibirPdv:       document.getElementById('tog-pdv').classList.contains('on'),
-        destaque:        document.getElementById('tog-destaque').classList.contains('on'),
-        emoji:           selectedEmoji,
-        cor:             selectedColor,
-        imagem:          imageWasRemoved ? null : (selectedImage || existing?.imagem || undefined),
+        perecivel: document.getElementById('tog-perecivel').classList.contains('on'),
+        dataFabricacao: document.getElementById('f-dt-fabricacao').value || '',
+        dataVencimento: document.getElementById('f-dt-vencimento').value || '',
+        lote: document.getElementById('f-lote').value.trim() || '',
+        status: document.getElementById('tog-ativo').classList.contains('on') ? 'ativo' : 'inativo',
+        exibirPdv: document.getElementById('tog-pdv').classList.contains('on'),
+        destaque: document.getElementById('tog-destaque').classList.contains('on'),
+        emoji: selectedEmoji,
+        cor: selectedColor,
+        imagem: imageWasRemoved ? null : (selectedImage || existing?.imagem || undefined),
       };
 
       const btn = document.querySelector('.btn-save');
@@ -2489,8 +2494,8 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
       const hadProductsBefore = (produtoResumo.total || pageMeta.total || products.length || 0) > 0;
 
       const res = editingId
-        ? await NexoAuth.apiFetch(`/produtos/${editingId}`, { method: 'PUT',  body: JSON.stringify(payload) })
-        : await NexoAuth.apiFetch('/produtos',              { method: 'POST', body: JSON.stringify(payload) });
+        ? await NexoAuth.apiFetch(`/produtos/${editingId}`, { method: 'PUT', body: JSON.stringify(payload) })
+        : await NexoAuth.apiFetch('/produtos', { method: 'POST', body: JSON.stringify(payload) });
 
       if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2"></i> Salvar produto'; }
 
@@ -2846,7 +2851,7 @@ const SWATCHES = ['#00c896', '#0077ff', '#ff6b35', '#ff4757', '#a855f7', '#ec489
         ];
       });
       const d = new Date();
-      const dt = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+      const dt = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
       downloadCSV(`nexoerp_produtos_${dt}.csv`, header, rows);
     }
 

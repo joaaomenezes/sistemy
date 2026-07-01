@@ -6,7 +6,7 @@
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c896'/><text x='16' y='22' font-family='Inter,sans-serif' font-size='18' font-weight='800' fill='%23021c14' text-anchor='middle'>N</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistemy — PDV</title>
+  <title>Azzys — PDV</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
@@ -38,7 +38,7 @@
         <div class="topbar-actions">
           <button class="tb-btn caixa-btn fechado" id="caixaBtn" onclick="openCaixa()"><i class="bi bi-cash-stack"></i>
             <span id="caixaBtnLabel">Abrir Caixa</span></button>
-          <button class="tb-btn accent" onclick="toggleAI()"><i class="bi bi-stars"></i> Nexo AI</button>
+          <button class="tb-btn accent" onclick="toggleAI()"><i class="bi bi-stars"></i> Azzys AI</button>
           <button class="tb-btn" onclick="openDrawer()"><i class="bi bi-clock-history"></i> Vendas</button>
           <button class="tb-btn" onclick="openPdvConfig()" title="Configurações do PDV"><i
               class="bi bi-gear-fill"></i></button>
@@ -244,14 +244,16 @@
         <section class="pay-main-panel">
           <div class="pay-step-row">
             <h3>1. Escolha a forma de pagamento</h3>
-            <button class="pay-split-top" type="button" onclick="selectMethod(document.getElementById('payMethodSplit'),'split')">
+            <button class="pay-split-top" type="button"
+              onclick="selectMethod(document.getElementById('payMethodSplit'),'split')">
               <i class="bi bi-layout-split"></i> Dividir pagamento
             </button>
           </div>
 
           <div class="pay-methods">
             <div class="pay-method" onclick="selectMethod(this,'pix')">
-              <span class="pix-logo-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span><span>PIX</span><kbd>F1</kbd>
+              <span class="pix-logo-icon"
+                aria-hidden="true"><span></span><span></span><span></span><span></span></span><span>PIX</span><kbd>F1</kbd>
             </div>
             <div id="payMethodDinheiro" class="pay-method selected" onclick="selectMethod(this,'dinheiro')">
               <i class="bi bi-cash-coin"></i><span>Dinheiro</span><kbd>F2</kbd>
@@ -286,7 +288,8 @@
 
               <div class="fiado-search-row">
                 <div class="fiado-search-wrap">
-                  <input id="fiadoSearchInput" type="text" placeholder="Buscar cliente..." oninput="renderFiadoClientes()">
+                  <input id="fiadoSearchInput" type="text" placeholder="Buscar cliente..."
+                    oninput="renderFiadoClientes()">
                   <i class="bi bi-search"></i>
                 </div>
                 <button class="fiado-new-btn" type="button" onclick="focusFiadoQuickClient()">
@@ -363,7 +366,8 @@
             <div class="pix-payment-card">
               <div class="pix-payment-head">
                 <div class="pix-payment-title">
-                  <span class="pix-logo-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+                  <span class="pix-logo-icon"
+                    aria-hidden="true"><span></span><span></span><span></span><span></span></span>
                   <div>
                     <h3>Pagamento via PIX</h3>
                     <p>Escaneie o QR Code com o app do seu banco</p>
@@ -394,7 +398,8 @@
               <div class="pix-wait-icon" id="pixFlowWaitIcon"><i class="bi bi-shield-check"></i></div>
               <div>
                 <h4 id="pixFlowStatusTitle">Aguardando pagamento...</h4>
-                <p id="pixFlowStatusText">Assim que recebermos a confirmação do seu banco, a venda poderá ser finalizada.</p>
+                <p id="pixFlowStatusText">Assim que recebermos a confirmação do seu banco, a venda poderá ser
+                  finalizada.</p>
               </div>
               <button class="pix-flow-sim-btn" id="pixFlowSimBtn" type="button" onclick="simularPagamentoPix()">
                 Simular pagamento
@@ -548,8 +553,10 @@
           <div class="pay-step pay-proof-step">
             <h3>3. NFC-e e comprovante</h3>
             <div class="pay-proof-grid">
-              <label class="pay-check"><input type="checkbox" checked> <span>Emitir NFC-e</span> <i class="bi bi-question-circle"></i></label>
-              <label class="pay-check"><input type="checkbox" checked> <span>Enviar comprovante</span> <i class="bi bi-question-circle"></i></label>
+              <label class="pay-check"><input type="checkbox" checked> <span>Emitir NFC-e</span> <i
+                  class="bi bi-question-circle"></i></label>
+              <label class="pay-check"><input type="checkbox" checked> <span>Enviar comprovante</span> <i
+                  class="bi bi-question-circle"></i></label>
               <div class="pay-share-row">
                 <button type="button"><i class="bi bi-whatsapp"></i> WhatsApp</button>
                 <button type="button"><i class="bi bi-envelope-fill"></i> E-mail</button>
@@ -566,7 +573,8 @@
           <span><i class="bi bi-cash-register"></i> Caixa: 01</span>
         </div>
         <div class="pay-footer-actions">
-          <button class="btn-cancel-pay" id="btnCancelPay" onclick="handleCancelPay()"><i class="bi bi-x-lg"></i> Cancelar</button>
+          <button class="btn-cancel-pay" id="btnCancelPay" onclick="handleCancelPay()"><i class="bi bi-x-lg"></i>
+            Cancelar</button>
           <button class="btn-back-pay" id="btnBackPayMethods" onclick="returnToPayMethods()">
             <i class="bi bi-arrow-left"></i> Formas de pagamento
           </button>
@@ -600,11 +608,11 @@
     <a href="vendas.html" class="drawer-ver-todas"><i class="bi bi-arrow-right-circle"></i> Ver todas as vendas</a>
   </div>
 
-  <!-- NEXO AI -->
+  <!-- Azzys AI -->
   <div class="ai-panel" id="aiPanel">
     <div class="ai-header">
       <div class="ai-dot"></div>
-      <span class="ai-title">Nexo AI</span>
+      <span class="ai-title">Azzys AI</span>
     </div>
     <div id="aiSuggestions"></div>
   </div>
@@ -750,11 +758,13 @@
             <div id="cfgMercadoPagoFields" style="display:none">
               <div class="config-group">
                 <label>Access Token</label>
-                <input class="caixa-input" id="cfgMpAccessToken" type="password" autocomplete="new-password" placeholder="APP_USR-...">
+                <input class="caixa-input" id="cfgMpAccessToken" type="password" autocomplete="new-password"
+                  placeholder="APP_USR-...">
               </div>
               <div class="config-group">
                 <label>Assinatura secreta do webhook</label>
-                <input class="caixa-input" id="cfgMpWebhookSecret" type="password" autocomplete="new-password" placeholder="Assinatura secreta">
+                <input class="caixa-input" id="cfgMpWebhookSecret" type="password" autocomplete="new-password"
+                  placeholder="Assinatura secreta">
               </div>
               <div class="config-group" id="cfgMpWebhookUrlGroup" style="display:none">
                 <label>URL do webhook</label>
@@ -771,7 +781,8 @@
                   <i class="bi bi-x-circle"></i> Desconectar
                 </button>
               </div>
-              <div id="cfgMpQrSetup" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-top:4px">
+              <div id="cfgMpQrSetup"
+                style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-top:4px">
                 <div style="font-size:13px;font-weight:700;margin-bottom:4px">Loja física e caixa</div>
                 <div id="cfgMpQrReady" class="config-hint" style="display:none;color:var(--accent)">
                   <i class="bi bi-check-circle"></i> Loja e caixa configurados no Mercado Pago.
@@ -861,32 +872,32 @@
             </div>
           </div>
           <div id="cfgPixManualFields">
-          <div class="config-section-title config-section-title-spaced">
-            <i class="bi bi-key"></i>
-            <span>Chave manual</span>
-          </div>
-          <div class="config-group">
-            <label>Tipo da chave</label>
-            <select class="caixa-input" id="cfgPixTipo" onchange="onCfgPixTipoChange()">
-              <option value="cpf">CPF</option>
-              <option value="cnpj">CNPJ</option>
-              <option value="email">E-mail</option>
-              <option value="telefone">Telefone</option>
-              <option value="aleatoria">Chave aleatória</option>
-            </select>
-          </div>
-          <div class="config-group">
-            <label>Chave PIX</label>
-            <input class="caixa-input" id="cfgPixChave" type="text" placeholder="Informe a chave PIX">
-          </div>
-          <div class="config-group">
-            <label>Nome do beneficiário</label>
-            <input class="caixa-input" id="cfgPixBenef" type="text" placeholder="Nome da loja">
-          </div>
-          <div class="config-group">
-            <label>Cidade</label>
-            <input class="caixa-input" id="cfgPixCidade" type="text" placeholder="Ex: SAO PAULO">
-          </div>
+            <div class="config-section-title config-section-title-spaced">
+              <i class="bi bi-key"></i>
+              <span>Chave manual</span>
+            </div>
+            <div class="config-group">
+              <label>Tipo da chave</label>
+              <select class="caixa-input" id="cfgPixTipo" onchange="onCfgPixTipoChange()">
+                <option value="cpf">CPF</option>
+                <option value="cnpj">CNPJ</option>
+                <option value="email">E-mail</option>
+                <option value="telefone">Telefone</option>
+                <option value="aleatoria">Chave aleatória</option>
+              </select>
+            </div>
+            <div class="config-group">
+              <label>Chave PIX</label>
+              <input class="caixa-input" id="cfgPixChave" type="text" placeholder="Informe a chave PIX">
+            </div>
+            <div class="config-group">
+              <label>Nome do beneficiário</label>
+              <input class="caixa-input" id="cfgPixBenef" type="text" placeholder="Nome da loja">
+            </div>
+            <div class="config-group">
+              <label>Cidade</label>
+              <input class="caixa-input" id="cfgPixCidade" type="text" placeholder="Ex: SAO PAULO">
+            </div>
           </div>
         </div>
 
@@ -951,8 +962,10 @@
             </div>
             <div class="config-check-grid">
               <label class="config-check"><input type="checkbox" id="cfgCardTypeDebit"> <span>Débito</span></label>
-              <label class="config-check"><input type="checkbox" id="cfgCardTypeCreditCash"> <span>Crédito à vista</span></label>
-              <label class="config-check"><input type="checkbox" id="cfgCardTypeCreditInstallments"> <span>Crédito parcelado</span></label>
+              <label class="config-check"><input type="checkbox" id="cfgCardTypeCreditCash"> <span>Crédito à
+                  vista</span></label>
+              <label class="config-check"><input type="checkbox" id="cfgCardTypeCreditInstallments"> <span>Crédito
+                  parcelado</span></label>
               <label class="config-check"><input type="checkbox" id="cfgCardTypeVoucher"> <span>Voucher</span></label>
             </div>
           </div>
@@ -963,12 +976,18 @@
               <span>Bandeiras aceitas</span>
             </div>
             <div class="config-check-grid brands">
-              <label class="config-check"><input type="checkbox" name="cfgCardBrand" value="Visa"> <span>Visa</span></label>
-              <label class="config-check"><input type="checkbox" name="cfgCardBrand" value="Mastercard"> <span>Mastercard</span></label>
-              <label class="config-check"><input type="checkbox" name="cfgCardBrand" value="Elo"> <span>Elo</span></label>
-              <label class="config-check"><input type="checkbox" name="cfgCardBrand" value="Hipercard"> <span>Hipercard</span></label>
-              <label class="config-check"><input type="checkbox" name="cfgCardBrand" value="American Express"> <span>American Express</span></label>
-              <label class="config-check"><input type="checkbox" name="cfgCardBrand" value="Outros"> <span>Outros</span></label>
+              <label class="config-check"><input type="checkbox" name="cfgCardBrand" value="Visa">
+                <span>Visa</span></label>
+              <label class="config-check"><input type="checkbox" name="cfgCardBrand" value="Mastercard">
+                <span>Mastercard</span></label>
+              <label class="config-check"><input type="checkbox" name="cfgCardBrand" value="Elo">
+                <span>Elo</span></label>
+              <label class="config-check"><input type="checkbox" name="cfgCardBrand" value="Hipercard">
+                <span>Hipercard</span></label>
+              <label class="config-check"><input type="checkbox" name="cfgCardBrand" value="American Express">
+                <span>American Express</span></label>
+              <label class="config-check"><input type="checkbox" name="cfgCardBrand" value="Outros">
+                <span>Outros</span></label>
             </div>
           </div>
 
@@ -996,7 +1015,8 @@
               </div>
               <div class="config-group">
                 <label>Taxa crédito parcelado (%)</label>
-                <input class="caixa-input" id="cfgCardCreditInstallmentFee" type="text" inputmode="decimal" placeholder="3,50">
+                <input class="caixa-input" id="cfgCardCreditInstallmentFee" type="text" inputmode="decimal"
+                  placeholder="3,50">
               </div>
               <div class="config-group">
                 <label>Prazo primeira parcela</label>
@@ -1038,7 +1058,8 @@
               <span>Observações</span>
             </div>
             <div class="config-group">
-              <textarea class="caixa-input card-config-textarea" id="cfgCardNotes" placeholder="Observações internas sobre taxas, contrato ou recebimento"></textarea>
+              <textarea class="caixa-input card-config-textarea" id="cfgCardNotes"
+                placeholder="Observações internas sobre taxas, contrato ou recebimento"></textarea>
             </div>
           </div>
 
@@ -1190,7 +1211,8 @@
         <label>Desconto</label>
         <div class="ied-input-wrap">
           <span class="ied-prefix" style="min-width:0"></span>
-          <input id="ied-desc-val" type="number" min="0" step="0.01" placeholder="0" inputmode="decimal" oninput="updateIedPreview()">
+          <input id="ied-desc-val" type="number" min="0" step="0.01" placeholder="0" inputmode="decimal"
+            oninput="updateIedPreview()">
           <button class="ied-tipo-btn" id="ied-tipo-btn" onclick="toggleIedTipo()">%</button>
         </div>
       </div>
@@ -1396,15 +1418,13 @@
         </div>
         <div class="nc-field">
           <label for="ncTel">Telefone *</label>
-          <input id="ncTel" type="tel" placeholder="(00) 00000-0000" autocomplete="off"
-            oninput="maskPhone(this)"
+          <input id="ncTel" type="tel" placeholder="(00) 00000-0000" autocomplete="off" oninput="maskPhone(this)"
             onkeydown="if(event.key==='Enter')document.getElementById('ncCpf').focus()">
           <span class="nc-err" id="ncTelErr">Informe o telefone.</span>
         </div>
         <div class="nc-field">
           <label for="ncCpf">CPF *</label>
-          <input id="ncCpf" type="text" placeholder="000.000.000-00" autocomplete="off"
-            oninput="maskCPF(this)"
+          <input id="ncCpf" type="text" placeholder="000.000.000-00" autocomplete="off" oninput="maskCPF(this)"
             onkeydown="if(event.key==='Enter')document.getElementById('ncLimite').focus()">
           <span class="nc-err" id="ncCpfErr">CPF inválido ou não informado.</span>
         </div>
